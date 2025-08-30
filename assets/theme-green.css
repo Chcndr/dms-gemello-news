@@ -1,0 +1,15 @@
+:root{
+  /* Fondo: verde scuro elegante (vecchia Spot) */
+  --bg-a:#071a1d;         /* più scuro */
+  --bg-b:#0b2730;         /* verde petrolio */
+  /* Testi */
+  --ink:#e8fbff;          /* testo principale chiaro */
+  --muted:#9bd6de;        /* testo secondario */
+  /* Pannelli e bordi */
+  --panel:rgba(7,26,29,.78);
+  --stroke:rgba(173,234,240,.18);
+  /* Accenti */
+  --accent:#14b8a6;       /* teal DMS */
+  --accent2:#0b5fff;      /* blu accessorio (se usato) */
+}
+
