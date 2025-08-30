@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DMS · Gemello Digitale — Mappa Interattiva</title>
+<meta name="color-scheme" content="dark">
+<style>
+  :root{ --bgA:#0e2d38; --bgB:#155268; --ink:#dde2e4; --accent:#46a0bd; }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink);
+    background: radial-gradient(1000px 700px at 60% 18%, #1a566b 0%, transparent 60%),
+                linear-gradient(180deg, var(--bgB), var(--bgA));
+    font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  }
+  .top{display:flex; gap:10px; padding:18px}
+  .btn{
+    appearance:none; border:2px solid rgba(255,255,255,.2);
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    color:var(--ink); padding:.55rem .9rem; border-radius:12px; font-weight:700;
+    backdrop-filter:blur(6px); text-decoration:none; cursor:pointer;
+  }
+  .frame{padding:0 18px 28px}
+  .panel{background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:14px}
+  h2{margin:6px}
+  svg{width:100%; height:min(72vh, 860px); display:block}
+  .hub{fill:#187aa0; }
+  .node{ fill:rgba(255,255,255,.08); stroke:rgba(255,255,255,.35); stroke-width:1.5 }
+  .label{ font:700 14px/1.2 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; fill:var(--ink) }
+  .ring{ fill:none; stroke: rgba(255,255,255,.35); stroke-dasharray:6 6 }
+  .link{ stroke:rgba(255,255,255,.35); stroke-width:1.2; fill:none }
+  a rect.node{ cursor:pointer }
+</style>
+</head>
+<body>
+  <div class="top">
+    <a class="btn" href="./home.html">← Torna all'Orologio</a>
+    <a class="btn" href="./index.html">🎬 Spot</a>
+  </div>
+
+  <div class="frame">
+    <section class="panel">
+      <h2>🧠 DMS — Mappa Interattiva</h2>
+      <svg id="map" viewBox="0 0 1200 800" aria-label="mappa radiale">
+        <circle class="ring" cx="600" cy="400" r="260"/>
+        <!-- Hub centrale -->
+        <rect x="470" y="360" rx="12" ry="12" width="260" height="80" class="hub"/>
+        <text x="600" y="395" text-anchor="middle" class="label">DMS — Hub di Prossimità</text>
+        <text x="600" y="415" text-anchor="middle" class="label" style="opacity:.8;font-weight:600">Pagamenti · Gemello · Once-Only · ECC</text>
+        <g id="nodes"></g>
+        <g id="links"></g>
+      </svg>
+    </section>
+  </div>
+
+<script>
+  // Nodi (titolo + PDF). Aprono in nuova scheda.
+  const NODES = [
+    ["Hub Nazionale del Commercio","./docs/hub-nazionale.pdf"],
+    ["DMS & CLUST-ER","./docs/dms-cluster.pdf"],
+    ["DMS — Riaccendiamo i Mercati","./docs/riaccendiamo.pdf"],
+    ["Dossier Nazionale","./docs/dossier.pdf"],
+    ["Equilibrio Ecosostenibile","./docs/equilibrio-ecosostenibile.pdf"],
+    ["Progetto Nazionale","./docs/progetto-nazionale.pdf"],
+    ["Passaporto EU","./docs/passaporto-eu.pdf"],
+    ["Presentazione DMS (Compressa)","./docs/presentazione-dms-compressa.pdf"],
+    ["Città Metropolitana di Bologna","./docs/citta-metropolitana-bologna.pdf"]
+  ];
+
+  const svg = document.getElementById('map');
+  const nodesG = document.getElementById('nodes');
+  const linksG = document.getElementById('links');
+  const cx=600, cy=400, r=260;
+
+  NODES.forEach((node,i)=>{
+    const [title,href] = node;
+    const angle = (i / NODES.length) * 2 * Math.PI - Math.PI/2;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+
+    // Link dal centro al nodo
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',cx); line.setAttribute('y1',cy);
+    line.setAttribute('x2',x); line.setAttribute('y2',y);
+    line.setAttribute('class','link');
+    linksG.appendChild(line);
+
+    // Nodo cliccabile
+    const a = document.createElementNS('http://www.w3.org/2000/svg','a');
+    a.setAttribute('href',href); a.setAttribute('target','_blank'); a.setAttribute('rel','noopener');
+
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x',x-80); rect.setAttribute('y',y-20);
+    rect.setAttribute('width',160); rect.setAttribute('height',40);
+    rect.setAttribute('rx',8); rect.setAttribute('ry',8);
+    rect.setAttribute('class','node');
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x',x); text.setAttribute('y',y+5);
+    text.setAttribute('text-anchor','middle'); text.setAttribute('class','label');
+    text.textContent = title.length > 20 ? title.substring(0,18)+'…' : title;
+
+    a.appendChild(rect); a.appendChild(text);
+    nodesG.appendChild(a);
+  });
+</script>
+</body>
+</html>
+

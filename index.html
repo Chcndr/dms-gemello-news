@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DMS · Gemello Digitale — Spot & Documenti</title>
+<meta name="color-scheme" content="dark">
+<style>
+  :root{ --bgA:#0e2d38; --bgB:#155268; --ink:#dde2e4; --accent:#46a0bd; --r:14px; }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink);
+    background: radial-gradient(1000px 700px at 60% 18%, #1a566b 0%, transparent 60%),
+                linear-gradient(180deg, var(--bgB), var(--bgA));
+    font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  }
+  .top{display:flex; gap:10px; padding:18px}
+  .btn{
+    appearance:none; border:2px solid rgba(255,255,255,.2);
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    color:var(--ink); padding:.55rem .9rem; border-radius:12px; font-weight:700;
+    backdrop-filter:blur(6px); text-decoration:none; cursor:pointer;
+  }
+  .wrap{display:grid; grid-template-columns: minmax(260px, 520px) 1fr; gap:18px; padding:0 18px 28px}
+  .panel{background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:14px}
+  h2{margin:6px 6px 12px 6px}
+  .doc{display:flex; align-items:center; justify-content:space-between; gap:8px;
+       border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:.7rem 1rem;
+       margin:10px 6px; background:rgba(255,255,255,.05); text-decoration:none; color:var(--ink)}
+  .doc:hover{background:rgba(255,255,255,.08)}
+  .videos{display:flex; flex-direction:column; gap:14px}
+  video{width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.18); display:block}
+  @media (max-width:900px){ .wrap{grid-template-columns: 1fr} }
+</style>
+</head>
+<body>
+  <div class="top">
+    <a class="btn" href="./home.html">← Torna all'Orologio</a>
+    <a class="btn" href="./mindmap.html">🧠 Mappa</a>
+  </div>
+
+  <div class="wrap">
+    <section class="panel">
+      <h2>Documenti (PDF)</h2>
+      <div id="docs"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Video</h2>
+      <div class="videos">
+        <video controls playsinline muted preload="metadata" poster="./assets/poster-hero.jpg">
+          <source src="./videos/video-hero.mp4" type="video/mp4">
+        </video>
+        <video controls playsinline muted preload="metadata" poster="./assets/poster-hub.jpg">
+          <source src="./videos/teaser-hub-dms.mp4" type="video/mp4">
+        </video>
+        <video controls playsinline muted preload="metadata" poster="./assets/poster-riaccendiamo.jpg">
+          <source src="./videos/teaser-riaccendiamo.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+  </div>
+
+<script>
+  // Elenco PDF (placeholder) — modifica i path in /docs/
+  const PDFS = [
+    ["Hub Nazionale del Commercio","./docs/hub-nazionale.pdf"],
+    ["DMS & CLUST-ER","./docs/dms-cluster.pdf"],
+    ["DMS — Riaccendiamo i Mercati","./docs/riaccendiamo.pdf"],
+    ["Dossier Nazionale","./docs/dossier.pdf"],
+    ["Equilibrio Ecosostenibile","./docs/equilibrio-ecosostenibile.pdf"],
+    ["Progetto Nazionale","./docs/progetto-nazionale.pdf"],
+    ["Passaporto EU","./docs/passaporto-eu.pdf"],
+    ["Presentazione DMS (Compressa)","./docs/presentazione-dms-compressa.pdf"],
+    ["Città Metropolitana di Bologna","./docs/citta-metropolitana-bologna.pdf"]
+  ];
+  const list = document.getElementById('docs');
+  PDFS.forEach(([title,href])=>{
+    const a=document.createElement('a');
+    a.className='doc'; a.href=href; a.target='_blank'; a.rel='noopener';
+    a.innerHTML=`<span>${title}</span><span>Apri ⤴</span>`;
+    list.appendChild(a);
+  });
+</script>
+</body>
+</html>
+
