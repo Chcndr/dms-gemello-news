@@ -80,6 +80,44 @@
   .node:hover::before, .node:focus-visible::before{ opacity:1; }
   .node:focus-visible{ outline:2px solid var(--accent); outline-offset:2px }
 
+  /* --- Glow HOVER/FOCUS dei 12 pulsanti --- */
+  .node{
+    position: fixed;                  /* già presente, lo reiteriamo senza conflitti */
+    border-radius: 16px;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+
+  .node::after{
+    content:"";
+    position:absolute; inset:-2px;    /* sottile alone che "sborda" un filo */
+    border-radius: inherit;
+    pointer-events:none;
+    background: radial-gradient(120px 120px at 50% 60%, rgba(70,160,189,.35), transparent 60%);
+    opacity: 0;                        /* invisibile finché non si passa sopra */
+    transition: opacity .15s ease;
+  }
+
+  /* Hover (mouse) e focus (tastiera/touch) */
+  .node:hover,
+  .node:focus-visible{
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 28px rgba(0,0,0,.30),      /* ombra sotto */
+      0 0 22px rgba(70,160,189,.55);    /* glow teal */
+    border-color: rgba(190,230,240,.95);
+  }
+
+  .node:hover::after,
+  .node:focus-visible::after{
+    opacity: 1;
+  }
+
+  /* Accessibilità focus chiaro e visibile */
+  .node:focus-visible{
+    outline: 2px solid rgba(70,160,189,.8);
+    outline-offset: 3px;
+  }
+
   /* Mini controlli nel viewport */
   .vp-actions{
     position:absolute; right:10px; bottom:10px; display:flex; gap:8px; z-index:10;
