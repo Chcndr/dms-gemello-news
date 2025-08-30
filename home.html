@@ -233,7 +233,15 @@
     const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
     c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',10); c.setAttribute('class','center-dot'); g.appendChild(c);
     const hand=document.createElementNS('http://www.w3.org/2000/svg','line');
-    hand.id='hand'; hand.setAttribute('x1',cx); hand.setAttribute('y1',cy); hand.setAttribute('x2',cx); hand.setAttribute('y2',cy); g.appendChild(hand);
+    hand.id='hand'; hand.setAttribute('x1',cx); hand.setAttribute('y1',cy); hand.setAttribute('x2',cx); hand.setAttribute('y2',cy);
+    hand.setAttribute('stroke','rgba(255,255,255,.9)'); hand.setAttribute('stroke-width','3'); hand.setAttribute('stroke-linecap','round');
+    g.appendChild(hand);
+
+    // ✅ NUOVO: puntale triangolare
+    const handTip = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    handTip.id = 'handTip';
+    handTip.setAttribute('fill','rgba(255,255,255,.95)');
+    g.appendChild(handTip);
 
     // posiziona i 12 nodi
     document.querySelectorAll('.node').forEach((el,i)=>{
@@ -249,8 +257,23 @@
       const anim = ts=>{
         if(!start) start=ts;
         const T=12000, th=-Math.PI/2 + 2*Math.PI*((ts-start)%T)/T;
-        hand.setAttribute('x2', cx + a*Math.cos(th)*0.95);
-        hand.setAttribute('y2', cy + b*Math.sin(th)*0.95);
+        const px = cx + a*Math.cos(th)*0.95; // punta linea
+        const py = cy + b*Math.sin(th)*0.95;
+        hand.setAttribute('x2', px);
+        hand.setAttribute('y2', py);
+        
+        // ✅ NUOVO: geometria del triangolo
+        const baseX = cx + a * Math.cos(th) * 0.86; // base triangolo arretrata lungo la lancetta
+        const baseY = cy + b * Math.sin(th) * 0.86;
+        const nx = -Math.sin(th), ny = Math.cos(th); // normale per larghezza
+        const half = 10; // metà larghezza del puntale
+        
+        // punti: punta + vertice base dx + vertice base sx
+        handTip.setAttribute(
+          'points',
+          `${px},${py} ${baseX + nx*half},${baseY + ny*half} ${baseX - nx*half},${baseY - ny*half}`
+        );
+        
         requestAnimationFrame(anim);
       };
       requestAnimationFrame(anim);
