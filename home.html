@@ -31,12 +31,6 @@
   .brand b{display:block; font-size:28px}
   .brand small{opacity:.85; display:block; margin-top:6px}
 
-  /* titolo in alto a destra */
-  .brand b{
-    font-size: calc(var(--title-base) * var(--scale) * 1px);
-    line-height: 1.1;
-  }
-
   /* Toolbar */
   .toolbar{position:fixed; left:20px; top:20px; display:flex; gap:10px; z-index:5}
   .btn{
@@ -152,12 +146,6 @@
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
 <style id="theme-green">
   :root{
-    /* Scala proporzionale per telefono */
-    --scale: 1;                 /* scala generale */
-    --btnW-base: 160;           /* lato base pulsanti px */
-    --title-base: 28;           /* font-size base titolo px */
-    --btnW: clamp(88px, calc(var(--btnW-base) * var(--scale) * 1px), 160px);
-    
     /* Fondo: verde scuro elegante */
     --bg-a:#071a1d;
     --bg-b:#0b2730;
@@ -217,37 +205,6 @@
 
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" role="region" aria-label="contenuto centrale"></div>
-
-<script>
-/* --- SCALA PROPORZIONALE SOLO PER TELEFONO --- */
-function setScaleForPhone(){
-  const W = window.innerWidth, H = window.innerHeight;
-  const ua = navigator.userAgent || "";
-  const isIpad = /iPad|Macintosh/.test(ua) && 'ontouchend' in document; // iPadOS
-  const isPhoneUA = /iPhone|Android/.test(ua) && !isIpad;
-  const isNarrow = W <= 820 && H <= 1100;
-
-  // Applica scala solo se è telefono (UA o molto stretto). iPad no.
-  const isPhone = isPhoneUA || isNarrow;
-
-  let s = 1;
-  if (isPhone){
-    // scala proporzionale rispetto al layout di riferimento 1280x800
-    const sx = W / 1280;
-    const sy = H / 800;
-    s = Math.min(0.92, Math.max(0.62, Math.min(sx, sy))); // tra 0.62 e 0.92
-  }
-
-  document.documentElement.style.setProperty('--scale', s);
-}
-
-/* debounce resize per evitare ricalcoli continui */
-let __rsz_t = 0;
-function onResizeDebounced(){
-  clearTimeout(__rsz_t);
-  __rsz_t = setTimeout(()=>{ setScaleForPhone(); layout(); }, 80);
-}
-</script>
 
 <script>
 (() => {
@@ -350,8 +307,9 @@ function onResizeDebounced(){
     viewport = $('#viewport'); svg = $('#ellipseLayer');
     const W=innerWidth, H=innerHeight, cx=W/2, cy=H*0.50;
 
-    // dimensione pulsanti letta davvero dal CSS (dopo la scala)
-    let btnW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--btnW')) || 140;
+    // dimensione nodi
+    const btnW = Math.max(92, Math.min(Math.round(W*0.10), 150));
+    document.documentElement.style.setProperty('--btnW', btnW+'px');
 
     // ellisse calcolata per non tagliare i nodi
     const margin=24;
@@ -452,14 +410,9 @@ function onResizeDebounced(){
 
   // bootstrap
   document.addEventListener('DOMContentLoaded', ()=>{
-    setScaleForPhone();      // <-- prima
-    makeNodes();
-    layout();
-    ensureHero();
-    bindNodes();
-    initSpotlight();
+    makeNodes(); layout(); ensureHero(); bindNodes(); initSpotlight();
   });
-  window.addEventListener('resize', onResizeDebounced, {passive:true});
+  addEventListener('resize', layout);
   addEventListener('pageshow', ensureHero);
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ ensureHero(); }});
 })();
