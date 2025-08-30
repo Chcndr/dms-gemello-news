@@ -33,6 +33,29 @@
   a rect.node{ cursor:pointer }
 </style>
 <link rel="stylesheet" href="./assets/theme-green.css">
+<!-- THEME GREEN OVERRIDE (safe, removable) -->
+<style id="theme-green">
+  :root{
+    /* Fondo: verde scuro elegante */
+    --bg-a:#071a1d;
+    --bg-b:#0b2730;
+    /* Testi */
+    --ink:#e8fbff;
+    --muted:#9bd6de;
+    /* Pannelli e bordi */
+    --panel:rgba(7,26,29,.78);
+    --stroke:rgba(173,234,240,.18);
+    /* Accenti */
+    --accent:#14b8a6;
+    --accent2:#0b5fff;
+  }
+  /* Forziamo lo sfondo a usare le variabili sopra */
+  body{
+    background:
+      radial-gradient(1200px 800px at 20% -10%, rgba(20,184,166,.08), transparent 60%),
+      linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  }
+</style>
 </head>
 <body>
   <div class="top">
