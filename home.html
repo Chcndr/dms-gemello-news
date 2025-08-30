@@ -165,9 +165,31 @@
       radial-gradient(1200px 800px at 20% -10%, rgba(20,184,166,.08), transparent 60%),
       linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
   }
+
+  /* Phone Safe Canvas — attivo solo con classe .phone-safe */
+  .phone-safe, .phone-safe body { overflow: hidden; }
+
+  /* Il canvas che contiene tutti i layer in modalità telefono */
+  #safeCanvas{
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform-origin: center center;
+    z-index: 0; /* i layer interni mantengono i loro z-index */
+  }
+
+  /* Letterboxing (facoltativo ma consigliato) */
+  .phone-safe .letterbox{
+    position: fixed; inset: 0; z-index: -1;
+    background: radial-gradient(1200px 800px at 60% 20%, rgba(20,160,180,.12), transparent 60%),
+                linear-gradient(180deg, #155268, #0e2d38);
+  }
 </style>
 </head>
 <body>
+  <!-- Wrapper usato SOLO in modalità telefono -->
+  <div id="safeCanvas" aria-hidden="false"></div>
+  
   <div id="glowLayer" aria-hidden="true"></div> <!-- spotlight mouse -->
 
   <p class="brand">
@@ -393,6 +415,63 @@
   addEventListener('resize', layout);
   addEventListener('pageshow', ensureHero);
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ ensureHero(); }});
+})();
+</script>
+
+<script>
+/**
+ * Phone Safe Canvas
+ * - Triggera solo su telefoni (niente iPad/desktop)
+ * - Sposta #ellipseLayer, #viewport e .node dentro #safeCanvas
+ * - Scala il canvas per stare nello schermo senza deformazioni
+ */
+(function(){
+  const isPhone = (() => {
+    const w = Math.min(window.innerWidth, window.innerHeight);
+    const ua = navigator.userAgent || '';
+    const isiPad = /iPad|Macintosh/.test(ua) && 'ontouchend' in document; // iPadOS
+    const isiPhone = /iPhone/.test(ua);
+    const isAndroidPhone = /Android/.test(ua) && w < 820;
+    return !isiPad && (isiPhone || isAndroidPhone) && w < 820;
+  })();
+
+  if (!isPhone) return; // iPad/desktop: esci
+
+  document.documentElement.classList.add('phone-safe');
+
+  // Letterbox (opzionale)
+  const lb = document.createElement('div');
+  lb.className = 'letterbox';
+  document.body.appendChild(lb);
+
+  const baseW = 1280, baseH = 800; // "scena" desktop di riferimento
+  const sc = document.getElementById('safeCanvas');
+
+  // Sposta i layer dentro il canvas, mantenendo i loro z-index
+  ['ellipseLayer','viewport'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) sc.appendChild(el);
+  });
+  // Sposta i 12 pulsanti
+  document.querySelectorAll('.node').forEach(n => sc.appendChild(n));
+  // (Se esiste un layer glow/spotlight, spostalo sotto agli altri)
+  const glow = document.getElementById('glowLayer');
+  if (glow) sc.insertBefore(glow, sc.firstChild);
+
+  // Dimensiona e scala
+  function fit(){
+    const W = window.innerWidth, H = window.innerHeight;
+    const s = Math.min(W / baseW, H / baseH);
+    sc.style.width = baseW + 'px';
+    sc.style.height = baseH + 'px';
+    sc.style.transform = `translate(-50%, -50%) scale(${s})`;
+  }
+  fit();
+  window.addEventListener('resize', fit, { passive: true });
+  window.addEventListener('orientationchange', () => setTimeout(fit, 50));
+
+  // Importante: non cambiare i nostri z-index originali
+  // Restano: #ellipseLayer(z:2, pointer-events:none), #viewport(z:3), .node(z:4)
 })();
 </script>
 </body>
