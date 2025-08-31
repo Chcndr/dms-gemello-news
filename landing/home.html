@@ -187,10 +187,10 @@
         vp.style.left   = (cx - vw/2) + 'px';
         vp.style.top    = (cy - vh/2) + 'px';
 
-        // Semi-assi ellisse per i nodi INTORNO al video con spazio lancetta
-        const GAP = 96; // spazio tra video e pulsanti (per lancetta)
-        const a = Math.min((vw/2) + GAP + (BTN/2), (W/2) - SAFE - (BTN/2));
-        const b = Math.min((vh/2) + GAP + (BTN/2), (H/2) - SAFE - (BTN/2));
+        // Semi-assi ellisse OVALE: laterali quasi a bordo, verticali equilibrati
+        const GAP = 80; // spazio tra video e pulsanti verticali
+        const a = (W/2) - SAFE - (BTN/2); // semiasse orizzontale massimo
+        const b = (vh/2) + GAP + (BTN/2);  // semiasse verticale equilibrato
 
         // Posiziona i 12 pulsanti
         const nodes = document.querySelectorAll('.node');
