@@ -165,6 +165,20 @@
       radial-gradient(1200px 800px at 20% -10%, rgba(20,184,166,.08), transparent 60%),
       linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
   }
+
+  /* Hover/focus colorati per nodo: legge la variabile --hc impostata via JS.
+     A riposo NON cambia nulla. */
+  .node:hover,
+  .node:focus-visible{
+    /* bordo e glow derivati da --hc; se manca, fallback al teal attuale */
+    --_hc: var(--hc, #46a0bd);
+    border-color: color-mix(in oklab, var(--_hc) 65%, white 15%);
+    box-shadow:
+      0 14px 36px color-mix(in oklab, var(--_hc) 30%, transparent),
+      0 0 0 4px color-mix(in oklab, var(--_hc) 35%, transparent),
+      inset 0 0 0 1px color-mix(in oklab, var(--_hc) 40%, transparent);
+    transform: translateY(-2px);
+  }
 </style>
 </head>
 <body>
@@ -394,6 +408,30 @@
   addEventListener('pageshow', ensureHero);
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ ensureHero(); }});
 })();
+</script>
+
+<script>
+/* Palette 12 tinte armonizzate col tema; primo slot = colore più "caldo".
+   Puoi sostituire i valori mantenendo 12 voci. */
+const PALETTE = [
+  '#e98f3c', '#d77841', '#c56249', '#b24f55', '#9a4b6d',
+  '#6fb1a8', '#55a2a0', '#3d9494', '#2b8687', '#1f777a', '#16686c', '#115c61'
+];
+
+/* Inverti SOLO gli indici 0..4 (0↔4, 1↔3, 2 resta 2); 5..11 invariati */
+const mapIndex = i => (i <= 4 ? (4 - i) : i);
+
+/* Imposta per ogni .node la variabile CSS --hc da usare SOLO su hover */
+function applyHoverColors(){
+  document.querySelectorAll('.node').forEach((el, i) => {
+    const m = mapIndex(i);
+    const c = PALETTE[m % PALETTE.length];
+    el.style.setProperty('--hc', c);
+  });
+}
+
+applyHoverColors();
+addEventListener('pageshow', applyHoverColors);
 </script>
 </body>
 </html>
