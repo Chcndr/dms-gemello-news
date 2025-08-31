@@ -1,9 +1,26 @@
 <!doctype html>
 <html lang="it">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DMS · Gemello Digitale del Commercio — Home</title>
+
+<style id="critical-home-css">
+  /* stato iniziale SICURO: i nodi non vengono mai dipinti a (0,0) */
+  .node{
+    position:absolute; left:0; top:0;
+    width:var(--btnW,140px); height:var(--btnW,140px);
+    transform:translate3d(-9999px,-9999px,0); /* off-canvas di default */
+    will-change: transform;
+  }
+  /* durante il bootstrap disabilitiamo transizioni dei nodi */
+  .prepaint .node{ transition:none !important; opacity:0; }
+</style>
+
+<script>
+  // impedisce il paint visibile finché non finiamo il layout
+  document.documentElement.classList.add('prepaint');
+</script>
 <meta name="color-scheme" content="dark">
 <style>
   :root{
@@ -143,7 +160,7 @@
   .node         { z-index: 4; backdrop-filter: blur(2px); }
 </style>
 <link rel="icon" href="data:,">
-<link rel="stylesheet" href="./assets/theme-green.css?v=noflick3-correct">
+<link rel="stylesheet" href="./assets/theme-green.css?v=nfp3">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
 <style id="theme-green">
   :root{
@@ -205,7 +222,7 @@
   #glowLayer,#spotlight{ position:fixed; inset:0; z-index:1; pointer-events:none; }
   #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
   #viewport{ position:fixed; z-index:3; }
-  .node::before,.node::after{ pointer-events:none; }
+  .node{ z-index:4; pointer-events:auto; }
   
   /* Nasconde i nodi finché non finiscono layout */
   .prepaint .node { opacity: 0; }
@@ -465,85 +482,66 @@
 
 <script>
 (() => {
-  const root = document.documentElement;
-  root.classList.add('prepaint');   // nasconde i nodi finché non finiscono layout
+  const N = 12, TAU = Math.PI*2;
 
-  const N = 12;
-
-  // (se serve) crea i nodi mancanti
-  if (document.querySelectorAll('.node').length === 0){
+  function ensureNodes(){
+    // Rimuovi tutti i nodi esistenti per evitare duplicazioni
+    document.querySelectorAll('.node').forEach(n => n.remove());
+    
+    // Crea esattamente 12 nodi
     const f = document.createDocumentFragment();
     for (let i=0;i<N;i++){
-      const b = document.createElement('button');
+      const b=document.createElement('button');
       b.type='button'; b.className='node'; b.dataset.i=i;
-      b.innerHTML = '<span class="tag">PDF</span>';
+      b.innerHTML='<span class="tag">PDF</span>';
       f.appendChild(b);
     }
     document.body.appendChild(f);
   }
 
-  function layout(){
-    const W = innerWidth, H = innerHeight;
-    const cx = W/2, cy = H*0.52;
+  function measure(){
+    const W=innerWidth, H=innerHeight;
+    const cx=W/2, cy=H*0.52;
+    const btn=parseFloat(getComputedStyle(document.documentElement)
+                .getPropertyValue('--btnW'))||140;
+    // ellisse sempre dentro schermo, con margine di sicurezza
+    const SAFE=24;
+    const a=Math.min(W*0.44, (W/2)-SAFE);
+    const b=Math.min(H*0.34, (H/2)-SAFE);
+    return {W,H,cx,cy,a,b,btn};
+  }
 
-    // larghezza card coerente con CSS
-    const btn = parseFloat(getComputedStyle(document.documentElement)
-                 .getPropertyValue('--btnW')) || 140;
-
-    // margine di sicurezza per non toccare il video
-    const SAFE = 24;
-    const a = Math.min(W * 0.46, W/2 - SAFE - btn/2);
-    const b = Math.min(H * 0.34, H/2 - SAFE - btn/2);
-
-    // Posiziona i 12 pulsanti (uso translate → niente ricalcoli di layout)
-    const nodes = document.querySelectorAll('.node');
+  function layoutNodes(){
+    const {cx,cy,a,b,btn}=measure();
+    const nodes=document.querySelectorAll('.node');
     nodes.forEach((el,i)=>{
-      const t = -Math.PI/2 + 2*Math.PI * (i / N);
-      const x = cx + a*Math.cos(t) - btn/2;
-      const y = cy + b*Math.sin(t) - btn/2;
-      el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
-    });
-
-    // Calcola il viewport 16:9 dentro ellisse interna (con margine)
-    const innerA = a - (btn/2 + SAFE);
-    const innerB = b - (btn/2 + SAFE);
-    let vw = Math.min(W * 0.64, 1280), vh = vw * 9/16, maxH = H * 0.48;
-    if (vh > maxH){ vh = maxH; vw = vh * 16/9; }
-
-    // Se non entra, riduci in scala contro ellisse interna
-    const R = Math.max(((vw/2)**2)/(innerA**2) + ((vh/2)**2)/(innerB**2), 1);
-    const k = 1/Math.sqrt(R);
-    vw *= k; vh *= k;
-
-    const vp = document.getElementById('viewport');
-    vp.style.width  = vw + 'px';
-    vp.style.height = vh + 'px';
-    vp.style.left   = (cx - vw/2) + 'px';
-    vp.style.top    = (cy - vh/2) + 'px';
-  }
-
-  function firstLayout(){
-    layout();                       // calcola
-    requestAnimationFrame(()=>{     // poi mostra i nodi
-      root.classList.remove('prepaint');
+      const t=-Math.PI/2 + (TAU*i/nodes.length);
+      const x=Math.round(cx + a*Math.cos(t) - btn/2);
+      const y=Math.round(cy + b*Math.sin(t) - btn/2);
+      // niente left/top: SOLO transform → niente flicker
+      el.style.transform=`translate3d(${x}px,${y}px,0)`;
     });
   }
 
-  document.addEventListener('DOMContentLoaded', ()=>{
-    // primo layout appena possibile
-    requestAnimationFrame(firstLayout);
+  function boot(){
+    ensureNodes();
+    // 1° frame: assicurati che i CSS siano applicati
+    requestAnimationFrame(()=>{
+      // 2° frame: applica posizioni finali
+      layoutNodes();
+      // 3° frame: rendi visibili i nodi senza flash
+      requestAnimationFrame(()=>{
+        document.documentElement.classList.remove('prepaint');
+      });
+    });
+  }
 
-    // se il video aggiorna i metadata (dimensioni reali), riallinea
-    const v = document.querySelector('#viewport video');
-    v?.addEventListener('loadedmetadata', ()=> requestAnimationFrame(layout), {once:true});
-  });
-
-  // resize debounced
-  let rAFid = 0;
-  addEventListener('resize', ()=>{
-    if (rAFid) cancelAnimationFrame(rAFid);
-    rAFid = requestAnimationFrame(()=>{ rAFid=0; layout(); });
-  });
+  // primo avvio
+  window.addEventListener('DOMContentLoaded', boot, { once:true });
+  // ritorno da bfcache (Safari/iOS)
+  window.addEventListener('pageshow', (e)=>{ if(e.persisted) boot(); });
+  // adattamento viewport
+  window.addEventListener('resize', (()=>{ let t; return ()=>{ clearTimeout(t); t=setTimeout(layoutNodes, 80); };})());
 })();
 </script>
 </body>
