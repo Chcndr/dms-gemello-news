@@ -453,7 +453,17 @@
 
   // bootstrap
   document.addEventListener('DOMContentLoaded', ()=>{
-    makeNodes(); layout(); ensureHero(); bindNodes(); initSpotlight(); applyAllHoverColors();
+    makeNodes(); 
+    layout(); 
+    ensureHero(); 
+    bindNodes(); 
+    initSpotlight(); 
+    
+    // Applica colori con timeout per assicurare che i nodi siano pronti
+    setTimeout(() => {
+      applyAllHoverColors();
+      console.log('Colori hover applicati a', document.querySelectorAll('.node').length, 'pulsanti');
+    }, 100);
   });
   addEventListener('resize', layout);
   addEventListener('pageshow', ensureHero);
