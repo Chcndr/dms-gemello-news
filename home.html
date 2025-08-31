@@ -3,367 +3,301 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DMS · Gemello Digitale del Commercio — Home</title>
-<meta name="color-scheme" content="dark">
+<title>DMS · Gemello del Commercio — Home</title>
+
 <style>
   :root{
-    --bgA:#0e2d38; --bgB:#155268;
-    --ink:#dde2e4; --accent:#46a0bd;
-    --panel:#0b2128; --glass:rgba(255,255,255,.08);
-    --btnW:clamp(92px, 11vmin, 150px);
-    --r:16px;
+    --bg-a:#071a1d; --bg-b:#0b2730;       /* tema verde scuro elegante */
+    --ink:#e8fbff; --ink-2:#9bd6de;
+    --accent:#14b8a6;
+    --btnW-base:140;                      /* base in px, usata anche da JS */
   }
-  *{box-sizing:border-box}
   html,body{height:100%}
   body{
     margin:0; color:var(--ink);
-    background: radial-gradient(1200px 800px at 60% 20%, #1a566b 0%, transparent 60%),
-                linear-gradient(180deg, var(--bgB), var(--bgA));
-    font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(1200px 800px at 60% 20%, rgba(255,255,255,.04), transparent 60%),
+      linear-gradient(180deg, var(--bg-b), var(--bg-a));
+    font: 16px/1.4 system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     overflow:hidden;
   }
 
-  /* Testata */
-  .brand{
-    position:fixed; right:24px; top:28px; text-align:right; z-index:5;
-    letter-spacing:.02em; line-height:1.1; margin:0;
+  /* Toolbar sinistra */
+  .toolbar{
+    position:fixed; left:20px; top:20px; z-index:5; display:flex; gap:8px;
   }
-  .brand b{display:block; font-size:28px}
-  .brand small{opacity:.85; display:block; margin-top:6px}
-
-  /* Toolbar */
-  .toolbar{position:fixed; left:20px; top:20px; display:flex; gap:10px; z-index:5}
   .btn{
-    appearance:none; border:2px solid rgba(255,255,255,.2);
-    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
-    color:var(--ink); padding:.55rem .9rem; border-radius:12px; font-weight:700;
-    backdrop-filter:blur(6px); text-decoration:none; cursor:pointer;
-    transition:transform .15s ease, box-shadow .15s ease;
+    appearance:none; border:none; cursor:pointer;
+    padding:.55rem .9rem; border-radius:12px;
+    color:var(--ink); background:rgba(20,80,100,.32);
+    border:2px solid rgba(255,255,255,.20);
+    backdrop-filter: blur(6px);
+    font-weight:700; text-decoration:none;
   }
-  .btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(0,0,0,.25) }
-  .btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px }
 
-  /* Layering sicuro */
-  #glowLayer{ position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
-  #ellipseLayer{position:fixed; inset:0; z-index:2; pointer-events:none}
-  .tick{ stroke:rgba(220,245,255,.6); stroke-width:2; stroke-linecap:round }
-  .center-dot{ fill:rgba(255,255,255,.8) }
-  #hand{ stroke:#fff; stroke-width:3; stroke-linecap:round }
-  #handTip{ fill:rgba(255,255,255,.95) }
-  
-  #viewport{
-    position:fixed; z-index:3; border-radius:20px; overflow:hidden;
-    border:2px solid rgba(255,255,255,.25);
-    background:rgba(0,0,0,.28); box-shadow:0 18px 40px rgba(0,0,0,.45);
+  /* Claim destra */
+  .claim{
+    position:fixed; right:24px; top:24px; z-index:5; text-align:right;
+    margin:0; line-height:1.1; letter-spacing:.02em;
   }
-  /* Disattiva qualunque glow preesistente del video */
-  #viewport::before, #viewport::after { content:none !important; }
-  #viewport video,#viewport iframe{width:100%; height:100%; display:block; border:0}
+  .claim b{display:block; font-size:28px}
+  .claim small{display:block; opacity:.8; font-size:14px; margin-top:6px}
 
-  /* 12 nodi con glow */
+  /* Layering: spotlight(1) → ellipse(2) → viewport(3) → nodes(4) */
+  #glowLayer{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+  #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
+  #viewport{ position:fixed; z-index:3; border-radius:20px; overflow:hidden;
+    border:2px solid rgba(255,255,255,.22);
+    background: rgba(0,0,0,.28);
+    box-shadow: 0 18px 40px rgba(0,0,0,.45);
+  }
+
+  /* Pulsanti */
   .node{
-    position:fixed; width:var(--btnW); height:var(--btnW); z-index:4;
-    border-radius:var(--r); border:2px solid rgba(190,230,240,.95);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-    display:grid; place-items:center; color:var(--ink);
-    box-shadow:0 10px 22px rgba(0,0,0,.28), inset 0 0 0 0 rgba(255,255,255,.15);
-    backdrop-filter:blur(4px); transition:transform .15s ease, box-shadow .15s ease;
-    pointer-events:auto;
+    position:fixed;
+    width:calc(var(--btnW, 140) * 1px); height:calc(var(--btnW, 140) * 1px);
+    left:50%; top:50%;
+    transform: translate(var(--x, -50%), var(--y, -50%)); /* posizionati da JS */
+    border-radius:16px; z-index:4;
+    border: 2px solid rgba(255,255,255,.55);
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    color: var(--ink);
+    display:grid; place-items:center;
+    box-shadow: 0 12px 26px rgba(0,0,0,.30), inset 0 0 0 1px rgba(255,255,255,.12);
+    backdrop-filter: blur(4px);
+    transition: transform .15s ease;
+    will-change: transform;
   }
-  .node::before{
-    content:""; position:absolute; inset:-16px; border-radius:20px;
-    background: radial-gradient(60% 60% at 50% 50%, rgba(70,160,189,.30), transparent 70%);
-    opacity:0; filter:blur(12px); pointer-events:none; transition:opacity .15s ease;
-  }
-  .node span{font-weight:700; opacity:.9}
-  .node:hover, .node:focus-visible{ transform:translateY(-2px); }
-  .node:hover::before, .node:focus-visible::before{ opacity:1; }
-  .node:focus-visible{ outline:2px solid var(--accent); outline-offset:2px }
+  .node .tag{opacity:.95; font-weight:800; letter-spacing:.02em}
 
-  /* --- Glow HOVER/FOCUS dei 12 pulsanti --- */
-  .node{
-    position: fixed;                  /* già presente, lo reiteriamo senza conflitti */
-    border-radius: 16px;
-    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-  }
-
-  .node::after{
-    content:"";
-    position:absolute; inset:-2px;    /* sottile alone che "sborda" un filo */
-    border-radius: inherit;
-    pointer-events:none;
-    background: radial-gradient(120px 120px at 50% 60%, rgba(70,160,189,.35), transparent 60%);
-    opacity: 0;                        /* invisibile finché non si passa sopra */
-    transition: opacity .15s ease;
-  }
-
-  /* Hover (mouse) e focus (tastiera/touch) */
-  .node:hover,
-  .node:focus-visible{
-    transform: translateY(-2px);
+  /* Glow forte solo su hover (tutti neutri a riposo) */
+  .node:hover{
+    transform: translate(var(--x), var(--y)) translateY(-2px);
     box-shadow:
-      0 12px 28px rgba(0,0,0,.30),      /* ombra sotto */
-      0 0 22px rgba(70,160,189,.55);    /* glow teal */
-    border-color: rgba(190,230,240,.95);
+      0 18px 38px rgba(0,0,0,.36),
+      0 0 0 6px rgba(20, 184, 166, .35),
+      0 0 38px 28px rgba(20, 184, 166, .20),
+      inset 0 0 0 2px rgba(255,255,255,.22);
+    border-color: rgba(255,255,255,.85);
   }
 
-  .node:hover::after,
-  .node:focus-visible::after{
-    opacity: 1;
+  /* Spotlight che segue il mouse (sotto ai pulsanti) */
+  #glowLayer{
+    background:
+      radial-gradient(300px 300px at var(--mx, -1000px) var(--my, -1000px),
+        rgba(20,184,166,.32), transparent 70%);
   }
 
-  /* Accessibilità focus chiaro e visibile */
-  .node:focus-visible{
-    outline: 2px solid rgba(70,160,189,.8);
-    outline-offset: 3px;
+  /* Video e iframe dentro viewport */
+  #viewport > video, #viewport > iframe{
+    width:100%; height:100%; display:block; border:0;
+    background:#000;
   }
 
-  /* Mini controlli nel viewport */
-  .vp-actions{
-    position:absolute; right:10px; bottom:10px; display:flex; gap:8px; z-index:10;
-  }
-  .vp-actions .chip{
-    font-weight:700; padding:.45rem .6rem; border-radius:10px; cursor:pointer;
-    border:1px solid rgba(255,255,255,.25); background:var(--glass);
-  }
-
-  /* Layering factory */
-  #glowLayer,#spotlight{position:fixed;inset:0;z-index:1;pointer-events:none;}
-  #ellipseLayer{position:fixed;inset:0;z-index:2;pointer-events:none;}
-  #viewport{position:fixed;z-index:3;}
-  .node{position:absolute;z-index:4;pointer-events:auto;opacity:1;}
-
-  @media (max-width:820px){
-    .brand b{font-size:22px}
+  /* Accessibilità */
+  @media (prefers-reduced-motion: reduce){
+    .node{ transition:none }
   }
 </style>
+
 </head>
 <body>
-  <div id="glowLayer" aria-hidden="true"></div> <!-- spotlight mouse -->
-
-  <p class="brand">
-    <b>GEMELLO DIGITALE</b>
-    <b>DEL COMMERCIO</b>
-    <small>DMS • Orologio roadmap</small>
-  </p>
 
   <div class="toolbar">
     <a class="btn" href="./index.html">🎬 Spot</a>
     <a class="btn" href="./mindmap.html">🧠 Mappa</a>
   </div>
 
+  <h1 class="claim">
+    <b>GEMELLO DIGITALE</b>
+    <b>DEL COMMERCIO</b>
+    <small>DMS • Orologio roadmap</small>
+  </h1>
+
+  <div id="glowLayer" aria-hidden="true"></div>
   <svg id="ellipseLayer" aria-hidden="true"></svg>
-  <div id="viewport" role="region" aria-label="contenuto centrale"></div>
+  <div id="viewport" role="region" aria-label="contenuti"></div>
 
 <script>
-(() => {
-  const S = {nodes:12, tries:10, retryMs:300};
-  let viewport, svg, heroPlaying=false, mods=null;
+/* ====== Bootstrap stabile senza flash 0,0 ======
+   - Crea i nodi solo dopo aver calcolato layout
+   - Posiziona i nodi con transform (nessun jump)
+   - Ricalcola su resize e pageshow (bfcache)
+================================================= */
 
-  // --- Helpers --------------------------------------------------------------
-  const $ = sel => document.querySelector(sel);
-  const el = (tag, attrs={}) => Object.assign(document.createElement(tag), attrs);
+(function(){
+  const N = 12;
+  let viewport, svg;
+  let a=0, b=0, cx=0, cy=0, btnW=140;
 
-  function makeNodes(){
+  // Spotlight mouse (sotto i pulsanti)
+  document.addEventListener('pointermove', e=>{
+    const g = document.getElementById('glowLayer');
+    if(!g) return;
+    g.style.setProperty('--mx', e.clientX + 'px');
+    g.style.setProperty('--my', e.clientY + 'px');
+  }, {passive:true});
+
+  function ensureHero(){
+    if(!viewport) return;
+    if (viewport.firstElementChild) return;
+    const v = document.createElement('video');
+    v.src = './videos/video-hero.mp4';
+    v.muted = true; v.autoplay = true; v.loop = true;
+    v.playsInline = true; v.setAttribute('playsinline','');
+    v.preload = 'metadata';
+    viewport.appendChild(v);
+    v.play?.().catch(()=>{}); // iOS-safe
+  }
+
+  function layout(){
+    viewport = document.getElementById('viewport');
+    svg = document.getElementById('ellipseLayer');
+
+    const W = innerWidth, H = innerHeight;
+    cx = W/2; cy = H*0.52;
+
+    // dimensione pulsanti coerente
+    btnW = Math.max(96, Math.min(Math.round(W*0.09), 150));
+    document.documentElement.style.setProperty('--btnW', btnW);
+
+    // ellisse esterna
+    a = Math.min(W*0.46, W/2-24);
+    b = Math.min(H*0.34, H/2-36);
+
+    // viewport 16:9 che entra nell'ellisse interna
+    const innerA = a - btnW*0.60, innerB = b - btnW*0.60;
+    let vw = W*0.62, vh = vw*9/16, maxH = H*0.44;
+    if (vh > maxH){ vh = maxH; vw = vh*16/9; }
+    let k=1;
+    while(((((vw*k)/2)**2)/(innerA**2)+(((vh*k)/2)**2)/(innerB**2))>1 && k>0.4){ k-=0.02; }
+    vw*=k; vh*=k;
+    viewport.style.cssText = `width:${vw}px;height:${vh}px;left:${cx-vw/2}px;top:${cy-vh/2}px`;
+
+    // disegna tacche e lancetta
+    svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.innerHTML='';
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g'); svg.appendChild(g);
+    for(let i=0;i<N;i++){
+      const t=-Math.PI/2 + 2*Math.PI*i/N;
+      const ix=cx+(a-18)*Math.cos(t), iy=cy+(b-18)*Math.sin(t);
+      const ex=cx+a*Math.cos(t),      ey=cy+b*Math.sin(t);
+      const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+      ln.setAttribute('x1',ix); ln.setAttribute('y1',iy);
+      ln.setAttribute('x2',ex); ln.setAttribute('y2',ey);
+      ln.setAttribute('stroke','rgba(220,245,255,.6)');
+      ln.setAttribute('stroke-width','2'); ln.setAttribute('stroke-linecap','round');
+      g.appendChild(ln);
+    }
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',10);
+    c.setAttribute('fill','rgba(255,255,255,.7)'); g.appendChild(c);
+
+    const hand=document.createElementNS('http://www.w3.org/2000/svg','line');
+    hand.id='hand'; hand.setAttribute('x1',cx); hand.setAttribute('y1',cy);
+    hand.setAttribute('x2',cx); hand.setAttribute('y2',cy);
+    hand.setAttribute('stroke','rgba(255,255,255,.9)');
+    hand.setAttribute('stroke-width','3'); hand.setAttribute('stroke-linecap','round');
+    g.appendChild(hand);
+
+    const tip=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    tip.id='handTip'; tip.setAttribute('fill','rgba(255,255,255,.9)'); g.appendChild(tip);
+
+    let start=null; function anim(ts){
+      if(!start) start=ts;
+      const T=12000, th=-Math.PI/2 + 2*Math.PI*((ts-start)%T)/T;
+      const px=cx+a*Math.cos(th)*0.95, py=cy+b*Math.sin(th)*0.95;
+      hand.setAttribute('x2',px); hand.setAttribute('y2',py);
+      const bx=cx+a*Math.cos(th)*0.86, by=cy+b*Math.sin(th)*0.86, nx=-Math.sin(th), ny=Math.cos(th), tipW=18;
+      tip.setAttribute('points',`${px},${py} ${bx+nx*tipW},${by+ny*tipW} ${bx-nx*tipW},${by-ny*tipW}`);
+      requestAnimationFrame(anim);
+    }
+    requestAnimationFrame(anim);
+  }
+
+  function createNodes(){
+    // se già presenti, non duplicare
+    if (document.querySelectorAll('.node').length) return;
+
     const frag = document.createDocumentFragment();
-    for(let i=0;i<S.nodes;i++){
-      const b = el('button',{className:'node','aria-label':`Apri PDF ${i+1}`});
-      b.innerHTML = '<span>PDF</span>';
-      b.dataset.i = i;
-      frag.appendChild(b);
+    for(let i=0;i<N;i++){
+      const t = -Math.PI/2 + 2*Math.PI*i/N;
+      const x = (a*Math.cos(t)) - (btnW/2);
+      const y = (b*Math.sin(t)) - (btnW/2);
+      const btt = document.createElement('button');
+      btt.type='button'; btt.className='node'; btt.dataset.i=i;
+      btt.style.setProperty('--x', (x)+'px');
+      btt.style.setProperty('--y', (y)+'px');
+      btt.innerHTML = `<span class="tag">PDF</span>`;
+      btt.addEventListener('click', onNodeClick);
+      frag.appendChild(btt);
     }
     document.body.appendChild(frag);
   }
 
+  async function onNodeClick(e){
+    const i = +e.currentTarget.dataset.i;
+    const mods = await loadModules();
+    const m = mods[i] || null;
+    // viewport sempre dentro z-index 3
+    if(!m || !m.pdf){
+      const box=document.createElement('div');
+      box.style.cssText="display:grid;place-items:center;height:100%;color:#cfe8f0;font-weight:800;font-size:1.2rem";
+      box.textContent = '· presto';
+      viewport.innerHTML=''; viewport.appendChild(box);
+      return;
+    }
+    // iframe PDF inline + due bottoni
+    const wrap=document.createElement('div');
+    wrap.style.cssText="display:flex;flex-direction:column;height:100%";
+    const bar=document.createElement('div');
+    bar.style.cssText="display:flex;gap:10px;padding:10px;background:rgba(0,0,0,.35)";
+    const open=document.createElement('a');
+    open.textContent='Apri in nuova scheda'; open.className='btn'; open.href=m.pdf; open.target='_blank';
+    const back=document.createElement('button');
+    back.textContent='Torna al video'; back.className='btn'; back.type='button';
+    bar.append(open, back);
+
+    const f=document.createElement('iframe');
+    f.src=m.pdf; f.style.cssText="width:100%;height:100%;border:0;flex:1";
+
+    wrap.append(bar, f);
+    viewport.innerHTML=''; viewport.appendChild(wrap);
+    back.onclick = ()=>{ viewport.innerHTML=''; ensureHero(); };
+  }
+
   async function loadModules(){
-    if(mods) return mods;
+    if (loadModules._cache) return loadModules._cache;
     try{
-      const r = await fetch('./data/modules.json?ts='+Date.now());
-      if(!r.ok) throw new Error(r.status);
-      mods = await r.json();
+      const res = await fetch('./data/modules.json', {cache:'no-cache'});
+      if(!res.ok) throw new Error('modules.json '+res.status);
+      loadModules._cache = await res.json();
     }catch(e){
       console.warn('modules.json non disponibile:', e);
-      mods = []; // fallback: nessun blocco
+      loadModules._cache = [];
     }
-    return mods;
+    return loadModules._cache;
   }
 
-  function ensureHero(){
-    if(!viewport) return;
-    // se c'è già un media, non raddoppiare
-    if(viewport.querySelector('video,iframe')) return;
-    viewport.innerHTML = '';
-    const v = el('video',{
-      muted:true, autoplay:true, loop:true, playsInline:true,
-      src:'./videos/video-hero.mp4'
-    });
-    v.setAttribute('webkit-playsinline','');
-    v.preload = 'metadata';
-
-    // retry robusto per iOS
-    const tryPlay = async (n=0) => {
-      try{
-        await v.play();
-        heroPlaying=true;
-      }catch{
-        if(n < S.tries){
-          setTimeout(()=>tryPlay(n+1), S.retryMs);
-        }else{
-          // fallback
-          v.src = './videos/teaser-hub-dms.mp4';
-          v.load(); setTimeout(()=>tryPlay(n+1), S.retryMs);
-        }
-      }
-    };
-    v.addEventListener('loadeddata', ()=>{ if(!heroPlaying) tryPlay(); });
-    viewport.appendChild(v);
-    tryPlay();
+  function bootstrap(){
+    layout();         // calcola ellisse + viewport + lancetta
+    ensureHero();     // garantisce video hero
+    createNodes();    // crea i 12 pulsanti già nelle posizioni finali
   }
 
-  function viewportPanel(mod){
-    const box = el('div');
-    box.style = "position:relative;width:100%;height:100%";
-    const iframe = el('iframe',{src:mod.pdf, title:mod.title||'Documento'});
-    iframe.loading = 'lazy';
-    box.appendChild(iframe);
-
-    const actions = el('div',{className:'vp-actions'});
-    const open = el('a',{className:'chip',textContent:'Apri in nuova scheda', target:'_blank', rel:'noopener', href:mod.pdf});
-    const back = el('button',{className:'chip',textContent:'Torna al video'});
-    back.onclick = () => { viewport.innerHTML=''; heroPlaying=false; ensureHero(); };
-    actions.append(open, back);
-    box.appendChild(actions);
-
-    viewport.innerHTML=''; viewport.appendChild(box);
-  }
-
-  function bindNodes(){
-    document.querySelectorAll('.node').forEach(btn=>{
-      btn.addEventListener('click', async ()=>{
-        const i = +btn.dataset.i;
-        const list = await loadModules();
-        const mod = list[i];
-        if(mod && mod.pdf){
-          viewportPanel(mod);
-        }else{
-          viewport.innerHTML = '<div style="display:grid;place-items:center;height:100%;font-weight:800;color:#cfe8f0">· presto</div>';
-        }
-      });
-    });
-  }
-
-  function layout(){
-    viewport = $('#viewport'); svg = $('#ellipseLayer');
-    const W=innerWidth, H=innerHeight, cx=W/2, cy=H*0.50;
-
-    // dimensione nodi
-    const btnW = Math.max(92, Math.min(Math.round(W*0.10), 150));
-    document.documentElement.style.setProperty('--btnW', btnW+'px');
-
-    // ellisse calcolata per non tagliare i nodi
-    const margin=24;
-    const a = Math.min(W/2 - margin - btnW/2, W*0.46);
-    const b = Math.min(H/2 - margin - btnW/2, H*0.36);
-
-    // viewport 16:9 dentro ellisse interna
-    const innerA=a-btnW*0.60, innerB=b-btnW*0.60;
-    let vw=W*0.62, vh=vw*9/16, maxH=H*0.44;
-    if(vh>maxH){ vh=maxH; vw=vh*16/9; }
-    let k=1;
-    while(((((vw*k)/2)**2)/(innerA**2) + (((vh*k)/2)**2)/(innerB**2))>1 && k>0.4){ k-=0.02; }
-    vw*=k; vh*=k;
-    viewport.style.cssText = `width:${vw}px;height:${vh}px;left:${cx-vw/2}px;top:${cy-vh/2}px`;
-
-    // ellisse con tacche
-    svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.innerHTML='';
-    const g = document.createElementNS('http://www.w3.org/2000/svg','g'); svg.appendChild(g);
-    for(let i=0;i<12;i++){
-      const t = -Math.PI/2 + 2*Math.PI*i/12;
-      const ix=cx+(a-18)*Math.cos(t), iy=cy+(b-18)*Math.sin(t);
-      const ex=cx+a*Math.cos(t),      ey=cy+b*Math.sin(t);
-      const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
-      ln.setAttribute('x1',ix); ln.setAttribute('y1',iy); ln.setAttribute('x2',ex); ln.setAttribute('y2',ey);
-      ln.setAttribute('class','tick'); g.appendChild(ln);
-    }
-    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',10); c.setAttribute('class','center-dot'); g.appendChild(c);
-    const hand=document.createElementNS('http://www.w3.org/2000/svg','line');
-    hand.id='hand'; hand.setAttribute('x1',cx); hand.setAttribute('y1',cy); hand.setAttribute('x2',cx); hand.setAttribute('y2',cy);
-    hand.setAttribute('stroke','rgba(255,255,255,.9)'); hand.setAttribute('stroke-width','3'); hand.setAttribute('stroke-linecap','round');
-    g.appendChild(hand);
-
-    // ✅ NUOVO: puntale triangolare
-    const handTip = document.createElementNS('http://www.w3.org/2000/svg','polygon');
-    handTip.id = 'handTip';
-    handTip.setAttribute('fill','rgba(255,255,255,.95)');
-    g.appendChild(handTip);
-
-    // posiziona i 12 nodi
-    document.querySelectorAll('.node').forEach((el,i)=>{
-      const t = -Math.PI/2 + 2*Math.PI*i/12;
-      el.style.left = (cx + a*Math.cos(t) - btnW/2)+'px';
-      el.style.top  = (cy + b*Math.sin(t) - btnW/2)+'px';
-    });
-
-    // animazione lancetta (rispetta prefers-reduced-motion)
-    const prefers = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(!prefers){
-      let start=null;
-      const anim = ts=>{
-        if(!start) start=ts;
-        const T=12000, th=-Math.PI/2 + 2*Math.PI*((ts-start)%T)/T;
-        const px = cx + a*Math.cos(th)*0.95; // punta linea
-        const py = cy + b*Math.sin(th)*0.95;
-        hand.setAttribute('x2', px);
-        hand.setAttribute('y2', py);
-        
-        // ✅ NUOVO: geometria del triangolo
-        const baseX = cx + a * Math.cos(th) * 0.86; // base triangolo arretrata lungo la lancetta
-        const baseY = cy + b * Math.sin(th) * 0.86;
-        const nx = -Math.sin(th), ny = Math.cos(th); // normale per larghezza
-        const half = 10; // metà larghezza del puntale
-        
-        // punti: punta + vertice base dx + vertice base sx
-        handTip.setAttribute(
-          'points',
-          `${px},${py} ${baseX + nx*half},${baseY + ny*half} ${baseX - nx*half},${baseY - ny*half}`
-        );
-        
-        requestAnimationFrame(anim);
-      };
-      requestAnimationFrame(anim);
-    }
-  }
-
-  // Spotlight mouse/touch in background (non prende click)
-  function initSpotlight() {
-    const gl = document.getElementById('glowLayer');
-    gl.innerHTML = '';
-    const spot = document.createElement('div');
-    spot.style.cssText = `
-      position:absolute; left:50%; top:50%;
-      width:60vmin; height:60vmin; border-radius:50%;
-      background: radial-gradient(circle at center,
-                  rgba(70,160,189,.35) 0%,
-                  rgba(70,160,189,.20) 35%,
-                  transparent 60%);
-      filter: blur(40px); opacity:.35; transform: translate(-50%,-50%);
-      will-change: transform,left,top;
-    `;
-    gl.appendChild(spot);
-
-    function moveGlow(x,y){ spot.style.left = x+'px'; spot.style.top = y+'px'; }
-    addEventListener('pointermove', e => moveGlow(e.clientX, e.clientY), {passive:true});
-    addEventListener('touchmove',  e => { const t=e.touches[0]; if(t) moveGlow(t.clientX,t.clientY); }, {passive:true});
-  }
-
-  // bootstrap
-  document.addEventListener('DOMContentLoaded', ()=>{
-    makeNodes(); layout(); ensureHero(); bindNodes(); initSpotlight();
-  });
-  addEventListener('resize', layout);
+  // Primo avvio
+  document.addEventListener('DOMContentLoaded', bootstrap);
+  // Rientro da cronologia (Safari/iOS bfcache)
+  window.addEventListener('pageshow', bootstrap, {once:true});
+  // Ridimensionamento
+  let t; window.addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=>{
+    // ricalcola posizioni e aggiorna nodi
+    const nodes = document.querySelectorAll('.node');
+    nodes.forEach(n=>n.remove());
+    bootstrap();
+  }, 80);});
 })();
 </script>
+
 </body>
 </html>
 
