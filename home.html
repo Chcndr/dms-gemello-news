@@ -140,8 +140,9 @@
   /* Conferma layering e ombra neutra del riquadro */
   #ellipseLayer { z-index: 2; pointer-events: none; }
   #viewport     { z-index: 3; box-shadow: 0 18px 40px rgba(0,0,0,.40); }
-  .node         { z-index: 4; }
+  .node         { z-index: 4; backdrop-filter: blur(2px); }
 </style>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="./assets/theme-green.css">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
 <style id="theme-green">
@@ -164,6 +165,30 @@
     background:
       radial-gradient(1200px 800px at 20% -10%, rgba(20,184,166,.08), transparent 60%),
       linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  }
+
+  /* Glow in hover/focus: molto più visibile per tutti i 12 pulsanti */
+  .node:is(:hover,:focus-visible){
+    box-shadow:
+      0 0 0 6px var(--hc), /* anello pieno e brillante */
+      0 0 40px 14px color-mix(in srgb, var(--hc) 85%, transparent), /* alone marcato */
+      0 16px 36px rgba(0,0,0,.65), /* stacco dal fondo */
+      inset 0 0 0 2px rgba(255,255,255,.35);
+    border-color: color-mix(in srgb, var(--hc) 85%, #fff 10%);
+    transform: translateY(-2px);
+  }
+
+  /* Spotlight ottimizzato */
+  #glowLayer{
+    pointer-events:none;
+    background:
+      radial-gradient(240px 240px at var(--mx,50%) var(--my,50%),
+        rgba(20,184,166,.25), transparent 60%);
+  }
+
+  /* Disattiva spotlight su mobile per performance */
+  @media (hover:none) and (pointer:coarse){ 
+    #glowLayer{display:none} 
   }
 </style>
 </head>
@@ -207,7 +232,7 @@
   async function loadModules(){
     if(mods) return mods;
     try{
-      const r = await fetch('./data/modules.json?ts='+Date.now());
+      const r = await fetch('./data/modules.json');
       if(!r.ok) throw new Error(r.status);
       mods = await r.json();
     }catch(e){
@@ -224,7 +249,8 @@
     viewport.innerHTML = '';
     const v = el('video',{
       muted:true, autoplay:true, loop:true, playsInline:true,
-      src:'./videos/video-hero.mp4'
+      src:'./videos/video-hero.mp4',
+      poster:'./assets/poster-hero.jpg'
     });
     v.setAttribute('webkit-playsinline','');
     v.preload = 'metadata';
@@ -382,13 +408,52 @@
     gl.appendChild(spot);
 
     function moveGlow(x,y){ spot.style.left = x+'px'; spot.style.top = y+'px'; }
-    addEventListener('pointermove', e => moveGlow(e.clientX, e.clientY), {passive:true});
-    addEventListener('touchmove',  e => { const t=e.touches[0]; if(t) moveGlow(t.clientX,t.clientY); }, {passive:true});
+    // Spotlight ottimizzato con rAF
+    let mx=0,my=0,pending=false;
+    const glow=document.getElementById('glowLayer');
+    addEventListener('pointermove', e => { 
+      mx=e.clientX; my=e.clientY; 
+      if(!pending){ 
+        pending=true; 
+        requestAnimationFrame(()=>{ 
+          glow.style.setProperty('--mx', mx+'px'); 
+          glow.style.setProperty('--my', my+'px'); 
+          pending=false; 
+        }); 
+      } 
+    }, {passive:true});
+  }
+
+  // Applica tutti i 12 colori hover (mantiene inversione 0↔4, 1↔3 già fatta)
+  function applyAllHoverColors(){
+    // palette dal caldo al freddo (armonizzata col tema)
+    const palette = [
+      '#ff8a3d', // 0
+      '#ff9b4f', // 1
+      '#ffb766', // 2
+      '#ffd27c', // 3
+      '#ffe38f', // 4
+      '#c6f0d9', // 5
+      '#9ee7d2', // 6
+      '#72dcc7', // 7
+      '#4ed3c0', // 8
+      '#2ecabe', // 9
+      '#17bdb3', // 10
+      '#10a7a4'  // 11
+    ];
+
+    // mappatura: primi 5 invertiti già stabilita, il resto invariato
+    const map = [4,3,2,1,0,5,6,7,8,9,10,11];
+
+    document.querySelectorAll('.node').forEach((n,i)=>{
+      const idx = map[i] ?? i;
+      n.style.setProperty('--hc', palette[idx]);
+    });
   }
 
   // bootstrap
   document.addEventListener('DOMContentLoaded', ()=>{
-    makeNodes(); layout(); ensureHero(); bindNodes(); initSpotlight();
+    makeNodes(); layout(); ensureHero(); bindNodes(); initSpotlight(); applyAllHoverColors();
   });
   addEventListener('resize', layout);
   addEventListener('pageshow', ensureHero);
