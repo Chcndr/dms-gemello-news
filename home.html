@@ -167,14 +167,14 @@
       linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
   }
 
-  /* Glow in hover/focus: molto più visibile per tutti i 12 pulsanti */
+  /* Glow in hover/focus: TEAL UNIFORME FORZATO per tutti i 12 pulsanti */
   .node:is(:hover,:focus-visible){
     box-shadow:
-      0 0 0 6px var(--hc), /* anello pieno e brillante */
-      0 0 40px 14px color-mix(in srgb, var(--hc) 85%, transparent), /* alone marcato */
+      0 0 0 6px #14b8a6, /* anello pieno teal forzato */
+      0 0 40px 14px rgba(20,184,166,.85), /* alone marcato teal */
       0 16px 36px rgba(0,0,0,.65), /* stacco dal fondo */
       inset 0 0 0 2px rgba(255,255,255,.35);
-    border-color: color-mix(in srgb, var(--hc) 85%, #fff 10%);
+    border-color: #14b8a6 !important; /* bordo teal forzato */
     transform: translateY(-2px);
   }
 
