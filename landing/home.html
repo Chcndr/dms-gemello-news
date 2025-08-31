@@ -46,12 +46,12 @@
     .claim h1{margin:0 0 6px; letter-spacing:.02em; font-size:32px; line-height:1.1}
     .claim p{margin:0; color:var(--ink-2); font-weight:500}
 
-    /* LAYER BLINDATI - lancetta visibile */
+    /* LAYER BLINDATI - lancetta corretta */
     #glowLayer   { position:fixed; inset:0; z-index:1; pointer-events:none; }
     #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
+    #handLayer   { position:fixed; inset:0; z-index:2; pointer-events:none; }
     #viewport    { position:fixed;           z-index:3; }
-    .hand-tip    { position:fixed;           z-index:4; pointer-events:none; }
-    .node        { position:fixed; left:0; top:0; z-index:5; }
+    .node        { position:fixed; left:0; top:0; z-index:4; }
 
     /* Video */
     #viewport{
@@ -99,6 +99,20 @@
       background:#e8fbff; box-shadow:0 0 12px rgba(232,251,255,.35);
       pointer-events:none;
     }
+
+    /* Stili lancetta SVG */
+    #handLayer .hand-shaft{
+      stroke:#cde6df; stroke-width:3; stroke-linecap:round;
+      vector-effect:non-scaling-stroke;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,.45));
+    }
+    #handLayer .hand-tip{
+      fill:#cde6df; 
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,.45));
+    }
+    #handLayer .hand-hub{
+      fill:#d9ece7; stroke:rgba(0,0,0,.35); stroke-width:1;
+    }
   </style>
 </head>
 <body>
@@ -119,6 +133,7 @@
     <line id="handLine" x1="50%" y1="52%" x2="50%" y2="52%" 
           stroke="#e8fbff" stroke-width="2" opacity="0.8"/>
   </svg>
+  <svg id="handLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
     <video id="hero" src="../videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
@@ -228,38 +243,99 @@
       }, {passive:true});
     })();
 
-    // Puntale lancetta animato con asta
-    (function(){
-      const tip = document.getElementById('handTip');
-      const line = document.getElementById('handLine');
-      
-      function placeTip(x, y){ tip.style.transform = `translate(${x-5}px,${y-5}px)`; }
-      function updateLine(cx, cy, x, y){ 
-        line.setAttribute('x1', cx);
-        line.setAttribute('y1', cy);
-        line.setAttribute('x2', x);
-        line.setAttribute('y2', y);
+    // Puntale lancetta animato con asta - RIMOSSO (sostituito da handLayer)
+  </script>
+
+  <script>
+    // Lancetta orologio corretta (sotto il video, asta + puntale)
+    (() => {
+      // ----- costruzione SVG
+      const svg = document.getElementById('handLayer');
+      const NS = 'http://www.w3.org/2000/svg';
+      const g = document.createElementNS(NS, 'g');        // gruppo rotante
+      const shaft = document.createElementNS(NS, 'line');  // asta
+      const tip = document.createElementNS(NS, 'polygon'); // puntale triangolo
+      const hub = document.createElementNS(NS, 'circle');  // perno centrale
+
+      shaft.setAttribute('class','hand-shaft');
+      tip.setAttribute('class','hand-tip');
+      hub.setAttribute('class','hand-hub'); hub.setAttribute('r','4');
+
+      g.appendChild(shaft); g.appendChild(tip); g.appendChild(hub);
+      svg.appendChild(g);
+
+      // ----- utilità
+      function placeSvg() {
+        // grandezza SVG = viewport pieno
+        svg.setAttribute('width', innerWidth);
+        svg.setAttribute('height', innerHeight);
+        svg.setAttribute('viewBox', `0 0 ${innerWidth} ${innerHeight}`);
       }
-      
+
+      function layoutHand() {
+        // centro del riquadro video
+        const vp = document.getElementById('viewport');
+        const R = vp.getBoundingClientRect();
+
+        const cx = R.left + R.width/2;
+        const cy = R.top  + R.height/2;
+
+        // lunghezza lancetta (resta costante, non si allunga)
+        const len = Math.min(R.width, R.height) * 0.48;  // 48% del lato minore
+        const tipW = Math.max(8, len * 0.04);            // base del triangolo
+
+        // asta: dal centro verso destra (poi il gruppo ruota)
+        shaft.setAttribute('x1', cx);
+        shaft.setAttribute('y1', cy);
+        shaft.setAttribute('x2', cx + len - tipW);
+        shaft.setAttribute('y2', cy);
+
+        // puntale triangolare
+        const tx = cx + len;
+        const ty = cy;
+        tip.setAttribute('points', `${cx+len-tipW},${ty} ${tx},${ty-6} ${tx},${ty+6}`);
+
+        // perno
+        hub.setAttribute('cx', cx);
+        hub.setAttribute('cy', cy);
+      }
+
+      // rotazione fluida del gruppo (non altera la lunghezza)
       let start = null;
-      function animate(timestamp) {
-        if (!start) start = timestamp;
-        const elapsed = timestamp - start;
-        const T = 12000;
-        const angle = -Math.PI/2 + (2 * Math.PI * (elapsed % T)) / T;
+      let cx = 0, cy = 0;
+      function tick(ts){
+        if(!start) start = ts;
+        const t = (ts - start) / 1000;      // secondi
+        const deg = (t * 20) % 360;         // 20°/s (regola la velocità se serve)
         
-        const W = innerWidth, H = innerHeight;
-        const cx = W * 0.5, cy = H * 0.52;
-        const radius = Math.min(W * 0.28, H * 0.22);
+        // aggiorna centro per rotazione
+        const vp = document.getElementById('viewport');
+        const R = vp.getBoundingClientRect();
+        cx = R.left + R.width/2;
+        cy = R.top  + R.height/2;
         
-        const x = cx + radius * Math.cos(angle);
-        const y = cy + radius * Math.sin(angle);
-        
-        placeTip(x, y);
-        updateLine(cx, cy, x, y);
-        requestAnimationFrame(animate);
+        g.setAttribute('transform', `rotate(${deg} ${cx} ${cy})`);
+        requestAnimationFrame(tick);
       }
-      requestAnimationFrame(animate);
+
+      // importante: prima dimensiono SVG, poi layout, poi animazione
+      function bootstrap(){
+        placeSvg();
+        layoutHand();
+        requestAnimationFrame(tick);
+      }
+
+      // ricalcolo su resize/orientamento/pageshow
+      addEventListener('resize', () => { placeSvg(); layoutHand(); });
+      addEventListener('orientationchange', () => { setTimeout(() => { placeSvg(); layoutHand(); }, 200); });
+      addEventListener('pageshow', () => { placeSvg(); layoutHand(); });
+
+      // assicurati di eseguire dopo che #viewport è in pagina
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootstrap);
+      } else {
+        bootstrap();
+      }
     })();
   </script>
 
