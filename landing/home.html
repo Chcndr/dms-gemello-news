@@ -5,13 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>DMS • Orologio roadmap</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="home.css?v=clean2">
+  <style>
+    :root{
+      --bg1:#071a1d; --bg2:#0b2730;
+      --ink:#e8fbff; --ink-2:#9bd6de;
+      --accent:#14b8a6;
+      --hc:#23b5a6; /* hover color default */
+      
+      /* scala armonica: rosso → arancio → giallo → giallo-verde → verde */
+      --hc0:#e11d48;  /* rosso acceso */
+      --hc1:#f97316;  /* arancio intenso */
+      --hc2:#fb923c;  /* arancio chiaro */
+      --hc3:#fbbf24;  /* ambra */
+      --hc4:#eab308;  /* giallo scuro */
+      --hc5:#d9f000;  /* giallo pieno */
+      --hc6:#bde34a;  /* giallo-verde */
+      --hc7:#9bdc4b;  /* verde-giallo */
+      --hc8:#66c653;  /* verde medio */
+      --hc9:#36b24a;  /* verde intenso */
+      --hc10:#22a866; /* verde con punta teal */
+      --hc11:#21c55d; /* verde acceso (finale) */
+    }
+
+    /* fondo */
+    html,body{height:100%;margin:0}
+    body{
+      background: radial-gradient(1400px 900px at 50% 20%, #0f3640 0%, var(--bg1) 35%, var(--bg2) 100%);
+      color:var(--ink); font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      overflow:hidden;
+    }
+
+    /* nav+claim */
+    .top{position:fixed; left:16px; top:16px; display:flex; gap:10px; z-index:10}
+    .btn{
+      padding:.55rem .9rem; border-radius:14px; border:1.5px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.06); backdrop-filter: blur(6px);
+      text-decoration:none; color:var(--ink); font-weight:600
+    }
+    .claim{position:fixed; right:20px; top:26px; text-align:right; z-index:10}
+    .claim h1{margin:0 0 6px; letter-spacing:.02em; font-size:32px; line-height:1.1}
+    .claim p{margin:0; color:var(--ink-2); font-weight:500}
+
+    /* LAYER BLINDATI */
+    #glowLayer   { position:fixed; inset:0; z-index:1; pointer-events:none; }
+    #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
+    #viewport    { position:fixed;           z-index:3; }
+    .node        { position:fixed; left:0; top:0; z-index:4; }
+
+    /* Video */
+    #viewport{
+      display:flex; align-items:center; justify-content:center;
+    }
+    #viewport > video{
+      width:100%; height:100%; object-fit:cover; border-radius:16px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.08) inset;
+      background:#0c1e25;
+    }
+
+    /* Pulsanti base */
+    .node{
+      width:140px; height:140px;
+      border-radius:16px; background: rgba(255,255,255,.06);
+      border:2px solid rgba(255,255,255,.55);
+      box-shadow: 0 12px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.10);
+      color:var(--ink); font-weight:600; letter-spacing:.02em;
+      display:grid; place-items:center;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      will-change: transform;
+    }
+    .tag{opacity:.9}
+
+    /* hover con colore variabile */
+    .node:is(:hover,:focus-visible){
+      border-color: color-mix(in srgb, var(--hc) 90%, white 10%);
+      box-shadow:
+        0 0 0 6px color-mix(in srgb, var(--hc) 65%, transparent 35%),
+        0 0 28px color-mix(in srgb, var(--hc) 80%, transparent 20%),
+        0 0 1px rgba(0,0,0,.4) inset;
+      transform: translateY(-2px);
+    }
+
+    /* spotlight leggero che segue il mouse */
+    #glowLayer{
+      background:
+        radial-gradient(240px 240px at var(--mx,50%) var(--my,50%),
+          rgba(20,184,166,.22), transparent 60%);
+    }
+
+    /* Puntale lancetta */
+    .hand-tip{
+      width:10px; height:10px; border-radius:50%;
+      background:#e8fbff; box-shadow:0 0 12px rgba(232,251,255,.35);
+      position:fixed; z-index:4; pointer-events:none;
+    }
+  </style>
 </head>
 <body>
   <!-- Nav -->
   <nav class="top">
-    <a class="btn" href="index.html">🎬 Spot</a>
-    <a class="btn" href="mindmap.html">🧠 Mappa</a>
+    <a class="btn" href="../index.html">🎬 Spot</a>
+    <a class="btn" href="../mindmap.html">🧠 Mappa</a>
   </nav>
 
   <!-- Claim -->
@@ -23,9 +116,9 @@
   <!-- Layers -->
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
-  <video id="hero" src="../videos/teaser-hub-dms.mp4"
-    muted playsinline webkit-playsinline preload="metadata"
-    poster="../assets/poster-hub.jpg"></video>
+    <video id="hero" src="../videos/teaser-hub-dms.mp4"
+      muted playsinline webkit-playsinline preload="metadata"
+      poster="../assets/poster-hero.jpg"></video>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
 
@@ -46,7 +139,128 @@
   <!-- Puntale lancetta -->
   <div id="handTip" class="hand-tip" aria-hidden="true"></div>
 
-  <script src="home.js?v=clean2" defer></script>
+  <script>
+    (function(){
+      const RATIO = 16/9;
+      const BTN   = 140;
+      const SAFE  = 48;
+      const N     = 12;
+
+      function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+      function layout(){
+        const W  = innerWidth, H = innerHeight;
+        const cx = W * 0.50;
+        const cy = H * 0.52;
+
+        // Spazio utile per i NODI dal centro ai bordi
+        const Aroom = Math.min(cx, W-cx) - (SAFE + BTN/2);
+        const Broom = Math.min(cy, H-cy) - (SAFE + BTN/2);
+
+        // Dimensioni video massime
+        let vhMaxFromNodes = 2 * (Broom - (BTN/2 + SAFE));
+        let vwMaxFromNodes = 2 * (Aroom - (BTN/2 + SAFE));
+
+        const vhMaxSoft = H * 0.40;
+        const vwMaxSoft = W * 0.58;
+
+        let vh = clamp(vhMaxFromNodes, 180, vhMaxSoft);
+        let vw = Math.min(vh * RATIO, vwMaxSoft, vwMaxFromNodes);
+
+        if (vw > vwMaxFromNodes) {
+          vw = vwMaxFromNodes;
+          vh = vw / RATIO;
+        }
+
+        // Riduci se serve più spazio ai nodi
+        for (let k=0; k<8; k++){
+          const topClear    = (cy - vh/2) - (SAFE + BTN/2);
+          const bottomClear = (H - (cy + vh/2)) - (SAFE + BTN/2);
+          if (Math.min(topClear, bottomClear) >= BTN*0.75) break;
+          vh *= 0.90; vw = vh * RATIO;
+        }
+
+        // Applica il video centrato
+        const vp = document.getElementById('viewport');
+        vp.style.width  = vw + 'px';
+        vp.style.height = vh + 'px';
+        vp.style.left   = (cx - vw/2) + 'px';
+        vp.style.top    = (cy - vh/2) + 'px';
+
+        // Semi-assi ellisse per i nodi
+        const a = Aroom;
+        const b = Math.min(
+          (cy - vh/2) - (SAFE + BTN/2),
+          (H - (cy + vh/2)) - (SAFE + BTN/2)
+        );
+
+        // Posiziona i 12 pulsanti
+        const nodes = document.querySelectorAll('.node');
+        nodes.forEach((el, i) => {
+          const t = -Math.PI/2 + (2*Math.PI*i)/N;
+          const x = cx + a * Math.cos(t) - BTN/2;
+          const y = cy + b * Math.sin(t) - BTN/2;
+          el.style.transform = `translate(${Math.round(x)}px,${Math.round(y)}px)`;
+        });
+      }
+
+      layout();
+      addEventListener('resize', layout, {passive:true});
+      addEventListener('pageshow', layout);
+    })();
+
+    // spotlight mouse
+    (function(){
+      const glow = document.getElementById('glowLayer');
+      let mx=0, my=0, ticking=false;
+      addEventListener('pointermove', e => {
+        mx=e.clientX; my=e.clientY;
+        if(!ticking){
+          requestAnimationFrame(()=>{ 
+            glow.style.setProperty('--mx', mx+'px');
+            glow.style.setProperty('--my', my+'px');
+            ticking=false;
+          });
+          ticking=true;
+        }
+      }, {passive:true});
+    })();
+
+    // Puntale lancetta animato
+    (function(){
+      const tip = document.getElementById('handTip');
+      function placeTip(x, y){ tip.style.transform = `translate(${x-5}px,${y-5}px)`; }
+      
+      let start = null;
+      function animate(timestamp) {
+        if (!start) start = timestamp;
+        const elapsed = timestamp - start;
+        const T = 12000;
+        const angle = -Math.PI/2 + (2 * Math.PI * (elapsed % T)) / T;
+        
+        const W = innerWidth, H = innerHeight;
+        const cx = W * 0.5, cy = H * 0.52;
+        const radius = Math.min(W * 0.28, H * 0.22);
+        
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+        
+        placeTip(x, y);
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    })();
+  </script>
+
+  <script>
+    (function applyHoverPalette(){
+      const root = getComputedStyle(document.documentElement);
+      document.querySelectorAll('.node').forEach((el, i)=>{
+        const v = root.getPropertyValue(`--hc${i}`).trim();
+        el.style.setProperty('--hc', v || '#23b5a6'); // fallback teal
+      });
+    })();
+  </script>
 </body>
 </html>
 
