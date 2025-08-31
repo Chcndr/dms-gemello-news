@@ -1,26 +1,9 @@
 <!doctype html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DMS · Gemello Digitale del Commercio — Home</title>
-
-<style id="critical-home-css">
-  /* stato iniziale SICURO: i nodi non vengono mai dipinti a (0,0) */
-  .node{
-    position:absolute; left:0; top:0;
-    width:var(--btnW,140px); height:var(--btnW,140px);
-    transform:translate3d(-9999px,-9999px,0); /* off-canvas di default */
-    will-change: transform;
-  }
-  /* durante il bootstrap disabilitiamo transizioni dei nodi */
-  .prepaint .node{ transition:none !important; opacity:0; }
-</style>
-
-<script>
-  // impedisce il paint visibile finché non finiamo il layout
-  document.documentElement.classList.add('prepaint');
-</script>
 <meta name="color-scheme" content="dark">
 <style>
   :root{
@@ -144,93 +127,20 @@
     border:1px solid rgba(255,255,255,.25); background:var(--glass);
   }
 
+  /* Layering factory */
+  #glowLayer,#spotlight{position:fixed;inset:0;z-index:1;pointer-events:none;}
+  #ellipseLayer{position:fixed;inset:0;z-index:2;pointer-events:none;}
+  #viewport{position:fixed;z-index:3;}
+  .node{position:absolute;z-index:4;pointer-events:auto;opacity:1;}
+
   @media (max-width:820px){
     .brand b{font-size:22px}
   }
-
-  /* OFF: retro-illuminazione del video */
-  #viewport::before,
-  #viewport::after,
-  .video-glow,
-  #videoGlow { display: none !important; content: none !important; }
-
-  /* Conferma layering e ombra neutra del riquadro */
-  #ellipseLayer { z-index: 2; pointer-events: none; }
-  #viewport     { z-index: 3; box-shadow: 0 18px 40px rgba(0,0,0,.40); }
-  .node         { z-index: 4; backdrop-filter: blur(2px); }
-</style>
-<link rel="icon" href="data:,">
-<link rel="stylesheet" href="./assets/theme-green.css?v=nfp3">
-<!-- THEME GREEN OVERRIDE (safe, removable) -->
-<style id="theme-green">
-  :root{
-    /* Fondo: verde scuro elegante */
-    --bg-a:#071a1d;
-    --bg-b:#0b2730;
-    /* Testi */
-    --ink:#e8fbff;
-    --muted:#9bd6de;
-    /* Pannelli e bordi */
-    --panel:rgba(7,26,29,.78);
-    --stroke:rgba(173,234,240,.18);
-    /* Accenti */
-    --accent:#14b8a6;
-    --accent2:#0b5fff;
-  }
-  /* Forziamo lo sfondo a usare le variabili sopra */
-  body{
-    background:
-      radial-gradient(1200px 800px at 20% -10%, rgba(20,184,166,.08), transparent 60%),
-      linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
-  }
-
-  /* Glow in hover/focus: molto più visibile per tutti i 12 pulsanti */
-  .node:is(:hover,:focus-visible){
-    box-shadow:
-      0 0 0 6px var(--hc), /* anello pieno e brillante */
-      0 0 40px 14px color-mix(in srgb, var(--hc) 85%, transparent), /* alone marcato */
-      0 16px 36px rgba(0,0,0,.65), /* stacco dal fondo */
-      inset 0 0 0 2px rgba(255,255,255,.35);
-    border-color: color-mix(in srgb, var(--hc) 85%, #fff 10%);
-    transform: translateY(-2px);
-  }
-
-  /* Spotlight ottimizzato */
-  #glowLayer{
-    pointer-events:none;
-    background:
-      radial-gradient(240px 240px at var(--mx,50%) var(--my,50%),
-        rgba(20,184,166,.25), transparent 60%);
-  }
-
-  /* Disattiva spotlight su mobile per performance */
-  @media (hover:none) and (pointer:coarse){ 
-    #glowLayer{display:none} 
-  }
-
-  /* CSS di sicurezza per pulsanti */
-  :root{ --btnW:140px; }
-  .node{
-    position:fixed; width:var(--btnW); height:var(--btnW);
-    display:grid; place-items:center;
-    border:2px solid rgba(255,255,255,.6);
-    border-radius:16px; background:rgba(255,255,255,.06);
-    color:#e6f7fb; z-index:4; pointer-events:auto !important;
-    opacity:1; visibility:visible; will-change:transform;
-    left: 0; top: 0;                 /* àncora stabile */
-  }
-  #glowLayer,#spotlight{ position:fixed; inset:0; z-index:1; pointer-events:none; }
-  #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
-  #viewport{ position:fixed; z-index:3; }
-  .node{ z-index:4; pointer-events:auto; }
-  
-  /* Nasconde i nodi finché non finiscono layout */
-  .prepaint .node { opacity: 0; }
-  /* Dopo il primo layout, lasciamo solo animazioni leggere */
-  .node { transition: transform .15s ease, box-shadow .15s ease; }
 </style>
 </head>
 <body>
+  <div id="glowLayer" aria-hidden="true"></div> <!-- spotlight mouse -->
+
   <p class="brand">
     <b>GEMELLO DIGITALE</b>
     <b>DEL COMMERCIO</b>
@@ -244,7 +154,6 @@
 
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" role="region" aria-label="contenuto centrale"></div>
-  <div id="glowLayer" aria-hidden="true"></div>
 
 <script>
 (() => {
@@ -261,25 +170,15 @@
       const b = el('button',{className:'node','aria-label':`Apri PDF ${i+1}`});
       b.innerHTML = '<span>PDF</span>';
       b.dataset.i = i;
-      // Rimuovi qualunque stile inline preesistente
-      b.removeAttribute('style');
       frag.appendChild(b);
     }
     document.body.appendChild(frag);
-    
-    // Pulizia aggressiva di tutti gli stili inline sui pulsanti
-    setTimeout(() => {
-      document.querySelectorAll('.node').forEach(node => {
-        node.removeAttribute('style');
-        node.style.removeProperty('--hc');
-      });
-    }, 100);
   }
 
   async function loadModules(){
     if(mods) return mods;
     try{
-      const r = await fetch('./data/modules.json');
+      const r = await fetch('./data/modules.json?ts='+Date.now());
       if(!r.ok) throw new Error(r.status);
       mods = await r.json();
     }catch(e){
@@ -296,8 +195,7 @@
     viewport.innerHTML = '';
     const v = el('video',{
       muted:true, autoplay:true, loop:true, playsInline:true,
-      src:'./videos/video-hero.mp4',
-      poster:'./assets/poster-hero.jpg'
+      src:'./videos/video-hero.mp4'
     });
     v.setAttribute('webkit-playsinline','');
     v.preload = 'metadata';
@@ -455,93 +353,15 @@
     gl.appendChild(spot);
 
     function moveGlow(x,y){ spot.style.left = x+'px'; spot.style.top = y+'px'; }
-    // Spotlight ottimizzato con rAF
-    let mx=0,my=0,pending=false;
-    const glow=document.getElementById('glowLayer');
-    addEventListener('pointermove', e => { 
-      mx=e.clientX; my=e.clientY; 
-      if(!pending){ 
-        pending=true; 
-        requestAnimationFrame(()=>{ 
-          glow.style.setProperty('--mx', mx+'px'); 
-          glow.style.setProperty('--my', my+'px'); 
-          pending=false; 
-        }); 
-      } 
-    }, {passive:true});
+    addEventListener('pointermove', e => moveGlow(e.clientX, e.clientY), {passive:true});
+    addEventListener('touchmove',  e => { const t=e.touches[0]; if(t) moveGlow(t.clientX,t.clientY); }, {passive:true});
   }
 
   // bootstrap
   document.addEventListener('DOMContentLoaded', ()=>{
     makeNodes(); layout(); ensureHero(); bindNodes(); initSpotlight();
-    addEventListener('resize', layout);
-  });addEventListener('pageshow', ensureHero);
-  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ ensureHero(); }});
-})();
-</script>
-
-<script>
-(() => {
-  const N = 12, TAU = Math.PI*2;
-
-  function ensureNodes(){
-    // Rimuovi tutti i nodi esistenti per evitare duplicazioni
-    document.querySelectorAll('.node').forEach(n => n.remove());
-    
-    // Crea esattamente 12 nodi
-    const f = document.createDocumentFragment();
-    for (let i=0;i<N;i++){
-      const b=document.createElement('button');
-      b.type='button'; b.className='node'; b.dataset.i=i;
-      b.innerHTML='<span class="tag">PDF</span>';
-      f.appendChild(b);
-    }
-    document.body.appendChild(f);
-  }
-
-  function measure(){
-    const W=innerWidth, H=innerHeight;
-    const cx=W/2, cy=H*0.52;
-    const btn=parseFloat(getComputedStyle(document.documentElement)
-                .getPropertyValue('--btnW'))||140;
-    // ellisse sempre dentro schermo, con margine di sicurezza
-    const SAFE=24;
-    const a=Math.min(W*0.44, (W/2)-SAFE);
-    const b=Math.min(H*0.34, (H/2)-SAFE);
-    return {W,H,cx,cy,a,b,btn};
-  }
-
-  function layoutNodes(){
-    const {cx,cy,a,b,btn}=measure();
-    const nodes=document.querySelectorAll('.node');
-    nodes.forEach((el,i)=>{
-      const t=-Math.PI/2 + (TAU*i/nodes.length);
-      const x=Math.round(cx + a*Math.cos(t) - btn/2);
-      const y=Math.round(cy + b*Math.sin(t) - btn/2);
-      // niente left/top: SOLO transform → niente flicker
-      el.style.transform=`translate3d(${x}px,${y}px,0)`;
-    });
-  }
-
-  function boot(){
-    ensureNodes();
-    // 1° frame: assicurati che i CSS siano applicati
-    requestAnimationFrame(()=>{
-      // 2° frame: applica posizioni finali
-      layoutNodes();
-      // 3° frame: rendi visibili i nodi senza flash
-      requestAnimationFrame(()=>{
-        document.documentElement.classList.remove('prepaint');
-      });
-    });
-  }
-
-  // primo avvio
-  window.addEventListener('DOMContentLoaded', boot, { once:true });
-  // ritorno da bfcache (Safari/iOS)
-  window.addEventListener('pageshow', (e)=>{ if(e.persisted) boot(); });
-  // adattamento viewport
-  window.addEventListener('resize', (()=>{ let t; return ()=>{ clearTimeout(t); t=setTimeout(layoutNodes, 80); };})());
+  });
+  addEventListener('resize', layout);
 })();
 </script>
 </body>
