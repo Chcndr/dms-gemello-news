@@ -72,8 +72,8 @@
     <section class="panel">
       <h2>Video</h2>
       <div class="videos">
-        <video controls playsinline muted preload="metadata" poster="./assets/poster-emilia-romagna.jpg">
-          <source src="./videos/teaser-emilia-romagna.mp4" type="video/mp4">
+        <video controls playsinline muted preload="metadata" poster="./assets/poster-hub.jpg">
+          <source src="./videos/teaser-hub-dms.mp4" type="video/mp4">
         </video>
         <video controls playsinline muted preload="metadata" poster="./assets/poster-hub.jpg">
           <source src="./videos/teaser-hub-dms.mp4" type="video/mp4">
@@ -86,27 +86,23 @@
   </div>
 
 <script>
-  // Lista PDF completa e ordinata (19 voci)
+  // Lista PDF ordinata (solo file esistenti, nessun 404)
   const PDFS = [
     ["Hub Nazionale del Commercio","./docs/hub-nazionale-commercio.pdf"],
-    ["DMS & CLUST-ER","./docs/dms-clust-er.pdf"],
-    ["DMS — Riaccendiamo i Mercati","./docs/riaccendiamo-mercati.pdf"],
+    ["DMS & CLUST-ER","./docs/dms-cluster-er.pdf"],
     ["Dossier Nazionale","./docs/dossier-nazionale.pdf"],
-    ["DMS ECC (narrativo)","./docs/dms-ecc-narrativo.pdf"],
-    ["DMS ECC 2 (tecnico)","./docs/dms-ecc-2-tecnico.pdf"],
-    ["Carbon Credit – Logica","./docs/carbon-credit-logica.pdf"],
     ["Equilibrio Ecosostenibile","./docs/equilibrio-ecosostenibile.pdf"],
     ["Passaporto EU","./docs/passaporto-eu.pdf"],
-    ["DPP Explained","./docs/dpp-explained.pdf"],
-    ["Scenario Futuro","./docs/scenario-futuro.pdf"],
+    ["Presentazione DMS (Bologna)","./docs/presentazione-dms-bologna.pdf"],
+    ["Hub Urbani e di Prossimità in Emilia-Romagna","./docs/hub-urbani-prossimita-er.pdf"],
     ["Gemello DMS","./docs/gemello-dms.pdf"],
+    ["DMS ECC (narrativo)","./docs/dms-ecc-narrativo.pdf"],
+    ["DMS ECC (tecnico)","./docs/dms-ecc-tecnico.pdf"],
+    ["Carbon Credit – Logica","./docs/carbon-credit-logica.pdf"],
+    ["Carbon Credit DMS","./docs/carbon-credit-dms.pdf"],
     ["Ecosistema Costi PA","./docs/ecosistema-costi-pa.pdf"],
-    ["Analisi & Soluzione","./docs/analisi-soluzione.pdf"],
-    ["Progetto Nazionale","./docs/progetto-nazionale.pdf"],
-    ["Presentazione DMS (Compressa)","./docs/presentazione-dms-compressa.pdf"],
-    ["Città Metropolitana di Bologna","./docs/citta-metropolitana-bologna.pdf"],
-    ["HUB URBANI E DI PROSSIMITÀ","./docs/hub-urbani-prossimita.pdf"],
-    ["Hub Urbani e di Prossimità in Emilia-Romagna","./docs/hub-urbani-prossimita-er.pdf"]
+    ["Analisi & Soluzione DMS","./docs/analisi-soluzione-dms.pdf"],
+    ["Scenario Futuro","./docs/scenario-futuro.pdf"]
   ];
   const list = document.getElementById('docs');
   PDFS.forEach(([title,href])=>{
