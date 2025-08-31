@@ -72,24 +72,25 @@
     <section class="panel">
       <h2>Video</h2>
       <div class="videos">
-        <video controls playsinline muted preload="metadata" poster="./assets/poster-hub.jpg">
+        <video id="v1" controls playsinline muted preload="metadata" poster="./assets/poster-hub.jpg">
           <source src="./videos/teaser-hub-dms.mp4" type="video/mp4">
         </video>
-        <video controls playsinline muted preload="metadata" poster="./assets/poster-hub.jpg">
-          <source src="./videos/teaser-hub-dms.mp4" type="video/mp4">
-        </video>
-        <video controls playsinline muted preload="metadata" poster="./assets/poster-riaccendiamo.jpg">
+        <video id="v2" controls playsinline muted preload="metadata" poster="./assets/poster-riaccendiamo.jpg">
           <source src="./videos/teaser-riaccendiamo.mp4" type="video/mp4">
+        </video>
+        <video id="v3" controls playsinline muted preload="metadata" poster="./assets/poster-mercato.jpg">
+          <source src="./videos/spot-dms.mp4" type="video/mp4">
         </video>
       </div>
     </section>
   </div>
 
 <script>
-  // Lista PDF ordinata (solo file esistenti, nessun 404)
+  // Lista PDF pulita (15 voci ordinate, nessun duplicato)
   const PDFS = [
     ["Hub Nazionale del Commercio","./docs/hub-nazionale-commercio.pdf"],
     ["DMS & CLUST-ER","./docs/dms-cluster-er.pdf"],
+    ["DMS — Riaccendiamo i Mercati","#"],
     ["Dossier Nazionale","./docs/dossier-nazionale.pdf"],
     ["Equilibrio Ecosostenibile","./docs/equilibrio-ecosostenibile.pdf"],
     ["Passaporto EU","./docs/passaporto-eu.pdf"],
@@ -99,7 +100,6 @@
     ["DMS ECC (narrativo)","./docs/dms-ecc-narrativo.pdf"],
     ["DMS ECC (tecnico)","./docs/dms-ecc-tecnico.pdf"],
     ["Carbon Credit – Logica","./docs/carbon-credit-logica.pdf"],
-    ["Carbon Credit DMS","./docs/carbon-credit-dms.pdf"],
     ["Ecosistema Costi PA","./docs/ecosistema-costi-pa.pdf"],
     ["Analisi & Soluzione DMS","./docs/analisi-soluzione-dms.pdf"],
     ["Scenario Futuro","./docs/scenario-futuro.pdf"]
