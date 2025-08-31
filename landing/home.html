@@ -66,30 +66,45 @@
       background:#0c1e25;
     }
 
-    /* Pulsanti base */
+    /* card neutra vetrosa - stile mockup */
     .node{
+      position:absolute;
       width:140px; height:140px;
-      border-radius:16px; background: rgba(255,255,255,.06);
-      border:2px solid rgba(255,255,255,.55);
-      box-shadow: 0 12px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.10);
+      border-radius:22px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,.45),
+        inset 0 0 0 1px rgba(255,255,255,.12);
       color:var(--ink); font-weight:600; letter-spacing:.02em;
       display:grid; place-items:center;
       transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      will-change: transform;
+      will-change: transform, box-shadow;
+      z-index:4; /* layer confermato */
     }
     .tag{opacity:.9}
 
-    /* hover con colore variabile */
+    /* badge tondo in alto-sinistra */
+    .node::after{
+      content:""; position:absolute; left:8px; top:8px;
+      width:12px; height:12px; border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 16px color-mix(in srgb, var(--accent) 70%, transparent);
+      pointer-events:none;
+    }
+
+    /* hover/focus come nel mockup: bordo + alone "neon" */
     .node:is(:hover,:focus-visible){
-      border-color: color-mix(in srgb, var(--hc) 90%, white 10%);
       box-shadow:
-        0 0 0 6px color-mix(in srgb, var(--hc) 65%, transparent 35%),
-        0 0 28px color-mix(in srgb, var(--hc) 80%, transparent 20%),
-        0 0 1px rgba(0,0,0,.4) inset;
+        0 0 0 3px var(--accent),
+        0 0 32px 10px color-mix(in srgb, var(--accent) 65%, transparent),
+        0 14px 34px rgba(0,0,0,.55),
+        inset 0 0 0 1px rgba(255,255,255,.22);
+      border-color: color-mix(in srgb, var(--accent) 70%, #fff 15%);
       transform: translateY(-2px);
     }
 
-    /* spotlight leggero che segue il mouse */
+    /* alone leggero che segue il mouse */
     #glowLayer{
       background:
         radial-gradient(240px 240px at var(--mx,50%) var(--my,50%),
@@ -97,6 +112,53 @@
     }
 
     /* Puntale lancetta - RIMOSSO (ora in SVG) */
+
+    /* Pannello PDF nel video - stile mockup */
+    .panel{
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(8,34,38,.72), rgba(8,34,38,.62));
+      box-shadow:
+        0 30px 60px rgba(0,0,0,.50),
+        inset 0 0 0 1px rgba(255,255,255,.10);
+      backdrop-filter: blur(6px);
+      color:#e6f7f4;
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    /* titolo enorme */
+    .panel h1{
+      margin: 0 0 .6em 0;
+      font-weight: 800;
+      font-size: clamp(28px, 4.4vw, 56px);
+      letter-spacing: .02em;
+    }
+
+    /* sottotitoli */
+    .panel .lead{ font-size: clamp(16px,1.5vw,22px); opacity:.88; margin: .3em 0; }
+
+    /* righe CTA PDF */
+    .panel .cta{
+      display:flex; align-items:center; gap:12px;
+      margin-top:14px;
+      padding:18px 22px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.04);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.08);
+    }
+    .panel .cta:hover{
+      border-color: color-mix(in srgb, var(--accent) 60%, #fff 20%);
+      box-shadow:
+        0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent),
+        inset 0 2px 0 rgba(255,255,255,.10);
+      transform: translateY(-1px);
+    }
+    .panel .pdfdot{
+      width:28px; height:28px; border-radius:8px;
+      background: color-mix(in srgb, var(--accent) 22%, #0b1f22);
+      display:grid; place-items:center; font-weight:700; font-size:12px;
+      color:#cfeeea;
+    }
   </style>
 </head>
 <body>
@@ -118,6 +180,29 @@
     <video id="hero" src="../videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
       poster="../assets/poster-hero.jpg"></video>
+    
+    <div class="panel" id="panel-0" hidden>
+      <h1>DMS — Riaccendiamo il Commercio</h1>
+      <p class="lead">Visione, gemello nazionale del commercio</p>
+      <p class="lead">L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi</p>
+
+      <a class="cta" href="./docs/riaccendiamo.pdf" target="_blank" rel="noopener">
+        <span class="pdfdot">PDF</span>
+        <span>Apri documento principale (PDF)</span>
+      </a>
+      <a class="cta" href="./docs/hub-nazionale.pdf" target="_blank" rel="noopener">
+        <span class="pdfdot">PDF</span>
+        <span>Hub Nazionale del Commercio (PDF)</span>
+      </a>
+      <a class="cta" href="./docs/dms-cluster.pdf" target="_blank" rel="noopener">
+        <span class="pdfdot">PDF</span>
+        <span>DMS &amp; CLUST-ER (PDF)</span>
+      </a>
+      <a class="cta" href="./docs/dms-ecc.pdf" target="_blank" rel="noopener">
+        <span class="pdfdot">PDF</span>
+        <span>DMS ECC — Executive (PDF)</span>
+      </a>
+    </div>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
 
@@ -314,25 +399,35 @@
   </script>
 
   <script>
-    // Ripristina handler click dei 12 pulsanti verso il viewport
-    (() => {
+    // Pannello PDF - show/hide nel viewport
+    function openPanel0(){
       const vp = document.getElementById('viewport');
-      function showInViewport(i){
-        if (typeof window.showModule === 'function') { 
-          // usa il loader originale, se presente
-          window.showModule(i);
-          return;
-        }
-        // fallback: evidenzia il viewport e porta il focus
-        vp?.scrollIntoView({behavior:'smooth', block:'center'});
-      }
-      document.addEventListener('click', (e)=>{
-        const btn = e.target.closest('.node');
-        if (!btn) return;
-        const i = +btn.dataset.i || 0;
-        showInViewport(i);
-      });
-    })();
+      const p0 = document.getElementById('panel-0');
+      if (!vp || !p0) return;
+      vp.querySelector('video')?.setAttribute('hidden','');   // nascondi video
+      p0.hidden = false;
+    }
+    function closePanel0(){
+      const vp = document.getElementById('viewport');
+      const p0 = document.getElementById('panel-0');
+      if (!vp || !p0) return;
+      p0.hidden = true;
+      vp.querySelector('video')?.removeAttribute('hidden');   // mostra video
+    }
+
+    // Collega il click del tasto 0 all'apertura pannello
+    document.querySelector('.node[data-i="0"]')?.addEventListener('click', openPanel0);
+    
+    // Altri pulsanti - fallback scroll al viewport
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.node');
+      if (!btn) return;
+      const i = +btn.dataset.i || 0;
+      if (i === 0) return; // già gestito sopra
+      
+      const vp = document.getElementById('viewport');
+      vp?.scrollIntoView({behavior:'smooth', block:'center'});
+    });
   </script>
 
   <script>
