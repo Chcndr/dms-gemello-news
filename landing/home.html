@@ -187,12 +187,10 @@
         vp.style.left   = (cx - vw/2) + 'px';
         vp.style.top    = (cy - vh/2) + 'px';
 
-        // Semi-assi ellisse per i nodi
-        const a = Aroom;
-        const b = Math.min(
-          (cy - vh/2) - (SAFE + BTN/2),
-          (H - (cy + vh/2)) - (SAFE + BTN/2)
-        );
+        // Semi-assi ellisse per i nodi INTORNO al video
+        const GAP = 32; // spazio tra video e pulsanti
+        const a = (vw/2) + GAP + (BTN/2);
+        const b = (vh/2) + GAP + (BTN/2);
 
         // Posiziona i 12 pulsanti
         const nodes = document.querySelectorAll('.node');
