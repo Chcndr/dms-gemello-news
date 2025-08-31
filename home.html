@@ -143,7 +143,7 @@
   .node         { z-index: 4; backdrop-filter: blur(2px); }
 </style>
 <link rel="icon" href="data:,">
-<link rel="stylesheet" href="./assets/theme-green.css?v=neutral3">
+<link rel="stylesheet" href="./assets/theme-green.css?v=neutral4">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
 <style id="theme-green">
   :root{
@@ -192,21 +192,27 @@
   }
 
   /* RESET colori hover — forza TEAL per tutti i pulsanti */
-  :root { --teal: #46a0bd; }
+  :root { --teal: #46a0bd !important; }
 
-  .node { --hc: var(--teal); }
+  .node { --hc: var(--teal) !important; }
+  .node[style] { --hc: var(--teal) !important; }
+  .node[data-i] { --hc: var(--teal) !important; }
 
   /* Se arrivano inline vecchi valori, sovrascrivi comunque */
   [style*="--hc"] { --hc: var(--teal) !important; }
+  button[style*="--hc"] { --hc: var(--teal) !important; }
+  .node[style*="--hc"] { --hc: var(--teal) !important; }
 
-  /* Glow forte ma unico per tutti */
-  .node:hover, .node:focus-visible {
-    border-color: color-mix(in srgb, var(--teal) 90%, white 10%);
+  /* Glow forte ma unico per tutti - specificity massima */
+  .node:hover, .node:focus-visible,
+  .node[data-i]:hover, .node[data-i]:focus-visible,
+  button.node:hover, button.node:focus-visible {
+    border-color: color-mix(in srgb, var(--teal) 90%, white 10%) !important;
     box-shadow:
       0 0 0 6px color-mix(in srgb, var(--teal) 65%, transparent 35%),
       0 0 28px color-mix(in srgb, var(--teal) 80%, transparent 20%),
-      0 0 1px rgba(0,0,0,.4) inset;
-    transform: translateY(-2px);
+      0 0 1px rgba(0,0,0,.4) inset !important;
+    transform: translateY(-2px) !important;
   }
 </style>
 </head>
@@ -242,9 +248,19 @@
       const b = el('button',{className:'node','aria-label':`Apri PDF ${i+1}`});
       b.innerHTML = '<span>PDF</span>';
       b.dataset.i = i;
+      // Rimuovi qualunque stile inline preesistente
+      b.removeAttribute('style');
       frag.appendChild(b);
     }
     document.body.appendChild(frag);
+    
+    // Pulizia aggressiva di tutti gli stili inline sui pulsanti
+    setTimeout(() => {
+      document.querySelectorAll('.node').forEach(node => {
+        node.removeAttribute('style');
+        node.style.removeProperty('--hc');
+      });
+    }, 100);
   }
 
   async function loadModules(){
