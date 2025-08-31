@@ -46,12 +46,15 @@
     .claim h1{margin:0 0 6px; letter-spacing:.02em; font-size:32px; line-height:1.1}
     .claim p{margin:0; color:var(--ink-2); font-weight:500}
 
-    /* LAYER BLINDATI - lancetta sopra video */
+    /* LAYER BLINDATI - layering sicuro */
     #glowLayer   { position:fixed; inset:0; z-index:1; pointer-events:none; }
     #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
     #viewport    { position:fixed;           z-index:3; }
-    #handLayer   { position:fixed; inset:0; z-index:4; pointer-events:none; }
-    .node        { position:fixed; left:0; top:0; z-index:5; }
+    .node        { position:fixed; left:0; top:0; z-index:4; }
+
+    /* Stile lancetta (dentro l'SVG #ellipseLayer) */
+    #hand-shaft { stroke: rgba(255,255,255,.85); stroke-width: 4; stroke-linecap: round; }
+    #hand-tip   { fill: rgba(255,255,255,.92); }
 
     /* Video */
     #viewport{
@@ -93,26 +96,7 @@
           rgba(20,184,166,.22), transparent 60%);
     }
 
-    /* Puntale lancetta */
-    .hand-tip{
-      width:10px; height:10px; border-radius:50%;
-      background:#e8fbff; box-shadow:0 0 12px rgba(232,251,255,.35);
-      pointer-events:none;
-    }
-
-    /* Stili lancetta SVG */
-    #handLayer .hand-shaft{
-      stroke:#cde6df; stroke-width:3; stroke-linecap:round;
-      vector-effect:non-scaling-stroke;
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,.45));
-    }
-    #handLayer .hand-tip{
-      fill:#cde6df; 
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,.45));
-    }
-    #handLayer .hand-hub{
-      fill:#d9ece7; stroke:rgba(0,0,0,.35); stroke-width:1;
-    }
+    /* Puntale lancetta - RIMOSSO (ora in SVG) */
   </style>
 </head>
 <body>
@@ -129,11 +113,7 @@
   </header>
 
   <!-- Layers -->
-  <svg id="ellipseLayer" aria-hidden="true">
-    <line id="handLine" x1="50%" y1="52%" x2="50%" y2="52%" 
-          stroke="#e8fbff" stroke-width="2" opacity="0.8"/>
-  </svg>
-  <svg id="handLayer" aria-hidden="true"></svg>
+  <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
     <video id="hero" src="../videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
@@ -247,95 +227,111 @@
   </script>
 
   <script>
-    // Lancetta orologio corretta (sotto il video, asta + puntale)
+    // Lancetta ellittica sotto al video + puntale
     (() => {
-      // ----- costruzione SVG
-      const svg = document.getElementById('handLayer');
-      const NS = 'http://www.w3.org/2000/svg';
-      const g = document.createElementNS(NS, 'g');        // gruppo rotante
-      const shaft = document.createElementNS(NS, 'line');  // asta
-      const tip = document.createElementNS(NS, 'polygon'); // puntale triangolo
-      const hub = document.createElementNS(NS, 'circle');  // perno centrale
+      const svg = document.getElementById('ellipseLayer');
+      if (!svg) return;
 
-      shaft.setAttribute('class','hand-shaft');
-      tip.setAttribute('class','hand-tip');
-      hub.setAttribute('class','hand-hub'); hub.setAttribute('r','4');
+      // Crea elementi (una sola volta) dentro l'SVG
+      let shaft = svg.querySelector('#hand-shaft');
+      let tip   = svg.querySelector('#hand-tip');
+      if (!shaft) {
+        shaft = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        shaft.setAttribute('id','hand-shaft');
+        svg.appendChild(shaft);
+      }
+      if (!tip) {
+        tip = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        tip.setAttribute('id','hand-tip');
+        svg.appendChild(tip);
+      }
 
-      g.appendChild(shaft); g.appendChild(tip); g.appendChild(hub);
-      svg.appendChild(g);
+      // Utility: calcola ellisse usata anche per i pulsanti
+      function computeEllipse() {
+        const W = innerWidth, H = innerHeight;
+        const cx = W/2;
+        const cy = H*0.52;                 // stesso centro usato per i nodi
+        const btn = 140;                   // diametro card approx (usa il tuo valore se in :root)
+        const SAFE = 26;                   // margine sicurezza dal video/bordi
+        const a = Math.min(W*0.44, W/2 - btn/2 - SAFE); // semiasse orizzontale
+        const b = Math.min(H*0.34, H/2 - btn/2 - SAFE); // semiasse verticale
+        return {cx, cy, a, b};
+      }
 
-      // ----- utilità
-      function placeSvg() {
-        // grandezza SVG = viewport pieno
+      // Aggiorna dimensioni dell'SVG a tutto schermo
+      function sizeSVG() {
         svg.setAttribute('width', innerWidth);
         svg.setAttribute('height', innerHeight);
         svg.setAttribute('viewBox', `0 0 ${innerWidth} ${innerHeight}`);
       }
 
-      function layoutHand() {
-        // centro del riquadro video
-        const vp = document.getElementById('viewport');
-        const R = vp.getBoundingClientRect();
+      // Disegna lancetta all'angolo t (radiani) con puntale triangolare
+      function drawHand(t) {
+        const {cx, cy, a, b} = computeEllipse();
 
-        const cx = R.left + R.width/2;
-        const cy = R.top  + R.height/2;
+        // punta sulla traiettoria ellittica, arretrata di pochi px per non toccare i pulsanti
+        const MARGIN = 18;
+        const x2 = cx + (a - MARGIN) * Math.cos(t);
+        const y2 = cy + (b - MARGIN) * Math.sin(t);
 
-        // lunghezza lancetta (resta costante, non si allunga)
-        const len = Math.min(R.width, R.height) * 0.48;  // 48% del lato minore
-        const tipW = Math.max(8, len * 0.04);            // base del triangolo
+        // base in centro
+        const x1 = cx, y1 = cy;
 
-        // asta: dal centro verso destra (poi il gruppo ruota)
-        shaft.setAttribute('x1', cx);
-        shaft.setAttribute('y1', cy);
-        shaft.setAttribute('x2', cx + len - tipW);
-        shaft.setAttribute('y2', cy);
+        // applica alla "asta"
+        shaft.setAttribute('x1', x1);
+        shaft.setAttribute('y1', y1);
+        shaft.setAttribute('x2', x2);
+        shaft.setAttribute('y2', y2);
 
-        // puntale triangolare
-        const tx = cx + len;
-        const ty = cy;
-        tip.setAttribute('points', `${cx+len-tipW},${ty} ${tx},${ty-6} ${tx},${ty+6}`);
+        // puntale triangolare orientato lungo la direzione della lancetta
+        const ang = Math.atan2(y2 - y1, x2 - x1);  // direzione
+        const TIP_LEN = 16;                         // lunghezza punta
+        const TIP_W   = 12;                         // larghezza base
+        const bx = x2 - TIP_LEN * Math.cos(ang);   // centro base
+        const by = y2 - TIP_LEN * Math.sin(ang);
+        const nx =  Math.sin(ang), ny = -Math.cos(ang); // normale
 
-        // perno
-        hub.setAttribute('cx', cx);
-        hub.setAttribute('cy', cy);
+        const p1x = x2,  p1y = y2;                                    // vertice punta
+        const p2x = bx + (TIP_W/2) * nx, p2y = by + (TIP_W/2) * ny;   // base dx
+        const p3x = bx - (TIP_W/2) * nx, p3y = by - (TIP_W/2) * ny;   // base sx
+        tip.setAttribute('points', `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y}`);
       }
 
-      // rotazione fluida del gruppo (non altera la lunghezza)
-      let start = null;
-      let cx = 0, cy = 0;
-      function tick(ts){
-        if(!start) start = ts;
-        const t = (ts - start) / 1000;      // secondi
-        const deg = (t * 20) % 360;         // 20°/s (regola la velocità se serve)
-        
-        // aggiorna centro per rotazione
-        const vp = document.getElementById('viewport');
-        const R = vp.getBoundingClientRect();
-        cx = R.left + R.width/2;
-        cy = R.top  + R.height/2;
-        
-        g.setAttribute('transform', `rotate(${deg} ${cx} ${cy})`);
+      // Animazione continua (segue l'ovale, non un cerchio) – velocità dolce
+      let t = -Math.PI/2;           // parte da ore 12
+      function tick() {
+        sizeSVG();
+        drawHand(t);
+        t += 0.008;                 // velocità (regola se serve)
         requestAnimationFrame(tick);
       }
+      tick();
 
-      // importante: prima dimensiono SVG, poi layout, poi animazione
-      function bootstrap(){
-        placeSvg();
-        layoutHand();
-        requestAnimationFrame(tick);
+      // Re-layout su resize/bfcache
+      addEventListener('resize',   () => { sizeSVG(); });
+      addEventListener('pageshow', () => { sizeSVG(); });
+    })();
+  </script>
+
+  <script>
+    // Ripristina handler click dei 12 pulsanti verso il viewport
+    (() => {
+      const vp = document.getElementById('viewport');
+      function showInViewport(i){
+        if (typeof window.showModule === 'function') { 
+          // usa il loader originale, se presente
+          window.showModule(i);
+          return;
+        }
+        // fallback: evidenzia il viewport e porta il focus
+        vp?.scrollIntoView({behavior:'smooth', block:'center'});
       }
-
-      // ricalcolo su resize/orientamento/pageshow
-      addEventListener('resize', () => { placeSvg(); layoutHand(); });
-      addEventListener('orientationchange', () => { setTimeout(() => { placeSvg(); layoutHand(); }, 200); });
-      addEventListener('pageshow', () => { placeSvg(); layoutHand(); });
-
-      // assicurati di eseguire dopo che #viewport è in pagina
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bootstrap);
-      } else {
-        bootstrap();
-      }
+      document.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.node');
+        if (!btn) return;
+        const i = +btn.dataset.i || 0;
+        showInViewport(i);
+      });
     })();
   </script>
 
