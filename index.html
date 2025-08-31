@@ -30,6 +30,10 @@
   .doc:hover{background:rgba(255,255,255,.08)}
   .videos{display:flex; flex-direction:column; gap:14px}
   video{width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.18); display:block}
+  .video-card { margin-bottom: 28px; }
+  .video-card header { margin: 0 0 10px 0; }
+  .video-card h3 { margin: 0; font-weight: 800; font-size: 20px; letter-spacing: .2px; }
+  .video-card p  { margin: 6px 0 0 0; opacity: .8; font-size: 14px; }
   @media (max-width:900px){ .wrap{grid-template-columns: 1fr} }
 </style>
 <link rel="stylesheet" href="./assets/theme-green.css">
@@ -71,37 +75,40 @@
 
     <section class="panel">
       <h2>Video</h2>
-      <div class="videos">
+      <section id="videos">
+        <!-- Video 1 -->
         <article class="video-card">
           <header>
             <h3>Riaccendiamo il Commercio</h3>
             <p>Lo stato attuale e la soluzione DMS.</p>
           </header>
           <video id="v1" controls playsinline preload="metadata" poster="assets/poster-riaccendiamo.jpg">
-            <source src="videos/teaser-riaccendiamo.mp4" type="video/mp4" />
+            <source src="videos/teaser-riaccendiamo.mp4" type="video/mp4">
           </video>
         </article>
 
+        <!-- Video 2 (il TUO filmato 23) -->
         <article class="video-card">
           <header>
             <h3>DMS — Il Futuro del Commercio</h3>
             <p>Dalla visione al rollout operativo.</p>
           </header>
           <video id="v2" controls playsinline preload="metadata" poster="assets/poster-futuro.jpg">
-            <source src="videos/teaser-futuro.mp4" type="video/mp4" />
+            <source src="videos/teaser-futuro.mp4" type="video/mp4">
           </video>
         </article>
 
+        <!-- Video 3 -->
         <article class="video-card">
           <header>
             <h3>Hub Emilia-Romagna</h3>
             <p>Una visione chiara per il commercio di prossimità.</p>
           </header>
           <video id="v3" controls playsinline preload="metadata" poster="assets/poster-emilia-romagna.jpg">
-            <source src="videos/teaser-emilia-romagna.mp4" type="video/mp4" />
+            <source src="videos/teaser-emilia-romagna.mp4" type="video/mp4">
           </video>
         </article>
-      </div>
+      </section>
     </section>
   </div>
 
