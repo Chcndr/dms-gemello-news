@@ -151,50 +151,79 @@
   }
 
   function layout(){
-    viewport = document.getElementById('viewport');
-    svg = document.getElementById('ellipseLayer');
-
     const W = innerWidth, H = innerHeight;
-    cx = W/2; cy = H*0.52;
+
+    const SAFE = 24;      // margine schermo (px)
+    const GAP  = 24;      // spazio minimo tra video e pulsanti inferiori (px)
+
+    // riferimenti ai layer
+    const claim = document.querySelector('.claim');
+    const viewport = document.getElementById('viewport');
+    const svg = document.getElementById('ellipseLayer');
 
     // dimensione pulsanti coerente
-    btnW = Math.max(96, Math.min(Math.round(W*0.09), 150));
+    let btnW = Math.max(96, Math.min(Math.round(W*0.09), 150));
     document.documentElement.style.setProperty('--btnW', btnW);
 
-    // ellisse esterna
-    a = Math.min(W*0.46, W/2-24);
-    b = Math.min(H*0.34, H/2-36);
+    // semiasse orizzontale: tiene sempre i laterali dentro
+    const a = Math.floor((W - 2*SAFE - btnW) / 2);
 
-    // viewport 16:9 che entra nell'ellisse interna
-    const innerA = a - btnW*0.60, innerB = b - btnW*0.60;
-    let vw = W*0.62, vh = vw*9/16, maxH = H*0.44;
-    if (vh > maxH){ vh = maxH; vw = vh*16/9; }
-    let k=1;
-    while(((((vw*k)/2)**2)/(innerA**2)+(((vh*k)/2)**2)/(innerB**2))>1 && k>0.4){ k-=0.02; }
-    vw*=k; vh*=k;
-    viewport.style.cssText = `width:${vw}px;height:${vh}px;left:${cx-vw/2}px;top:${cy-vh/2}px`;
+    // viewport 16:9 di base
+    const maxVH = H * 0.45;                    // non superare ~45% dell'altezza
+    let vw = Math.min(W * 0.62, 1280);         // larghezza desiderata
+    let vh = vw * 9 / 16;                      // proporzione 16:9
+    if (vh > maxVH) { vh = maxVH; vw = vh * 16 / 9; }
 
-    // disegna tacche e lancetta
-    svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.innerHTML='';
-    const g=document.createElementNS('http://www.w3.org/2000/svg','g'); svg.appendChild(g);
-    for(let i=0;i<N;i++){
-      const t=-Math.PI/2 + 2*Math.PI*i/N;
-      const ix=cx+(a-18)*Math.cos(t), iy=cy+(b-18)*Math.sin(t);
-      const ex=cx+a*Math.cos(t),      ey=cy+b*Math.sin(t);
-      const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+    // semiasse verticale massimo consentito dai bordi schermo
+    const bMaxByScreen = Math.floor((H - 2*SAFE - btnW) / 2);
+
+    // per NON coprire il video, il semiasse verticale deve rispettare:
+    //   b >= (vh + btnW)/2 + GAP
+    let bMinByVideo = Math.ceil((vh + btnW) / 2 + GAP);
+
+    // se la richiesta di spazio per non sovrapporre è troppo alta,
+    // riduciamo gradualmente il video finché rientra nei limiti
+    while (bMinByVideo > bMaxByScreen && vh > 180) {
+      vw *= 0.96; vh = vw * 9 / 16;
+      bMinByVideo = Math.ceil((vh + btnW) / 2 + GAP);
+    }
+
+    // semiasse verticale finale
+    const b = Math.min(bMaxByScreen, Math.max(bMinByVideo, Math.floor(H*0.34)));
+
+    // centro scena: clamp per garantire SAFE ai bordi alto/basso
+    let cx = W / 2;
+    let cy = H * 0.52;
+    const cyMin = b + SAFE + btnW/2;
+    const cyMax = H - SAFE - btnW/2 - b;
+    cy = Math.max(cyMin, Math.min(cy, cyMax));
+
+    // posiziona viewport centrato nel punto scelto
+    viewport.style.cssText = `width:${vw}px;height:${vh}px;left:${cx - vw/2}px;top:${cy - vh/2}px`;
+
+    // disegna tacche + lancetta
+    const N = 12;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.innerHTML = '';
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); svg.appendChild(g);
+
+    for (let i=0;i<N;i++){
+      const t = -Math.PI/2 + 2*Math.PI*i/N;
+      const ix = cx + (a-18)*Math.cos(t), iy = cy + (b-18)*Math.sin(t);
+      const ex = cx + a*Math.cos(t),      ey = cy + b*Math.sin(t);
+      const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
       ln.setAttribute('x1',ix); ln.setAttribute('y1',iy);
       ln.setAttribute('x2',ex); ln.setAttribute('y2',ey);
       ln.setAttribute('stroke','rgba(220,245,255,.6)');
       ln.setAttribute('stroke-width','2'); ln.setAttribute('stroke-linecap','round');
       g.appendChild(ln);
     }
-    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
     c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',10);
     c.setAttribute('fill','rgba(255,255,255,.7)'); g.appendChild(c);
 
     const hand=document.createElementNS('http://www.w3.org/2000/svg','line');
     hand.id='hand'; hand.setAttribute('x1',cx); hand.setAttribute('y1',cy);
-    hand.setAttribute('x2',cx); hand.setAttribute('y2',cy);
+    hand.setAttribute('x2',cx);  hand.setAttribute('y2',cy);
     hand.setAttribute('stroke','rgba(255,255,255,.9)');
     hand.setAttribute('stroke-width','3'); hand.setAttribute('stroke-linecap','round');
     g.appendChild(hand);
@@ -202,12 +231,26 @@
     const tip=document.createElementNS('http://www.w3.org/2000/svg','polygon');
     tip.id='handTip'; tip.setAttribute('fill','rgba(255,255,255,.9)'); g.appendChild(tip);
 
-    let start=null; function anim(ts){
+    // posiziona i 12 pulsanti (mai off-screen)
+    const nodes = document.querySelectorAll('.node');
+    const BTN = btnW;
+    nodes.forEach((el,i)=>{
+      const t = -Math.PI/2 + 2*Math.PI*i/N;
+      const x = (a*Math.cos(t)) - BTN/2;
+      const y = (b*Math.sin(t)) - BTN/2;
+      el.style.setProperty('--x', `${x}px`);
+      el.style.setProperty('--y', `${y}px`);
+    });
+
+    // animazione lancetta con puntale
+    let start=null;
+    function anim(ts){
       if(!start) start=ts;
       const T=12000, th=-Math.PI/2 + 2*Math.PI*((ts-start)%T)/T;
       const px=cx+a*Math.cos(th)*0.95, py=cy+b*Math.sin(th)*0.95;
       hand.setAttribute('x2',px); hand.setAttribute('y2',py);
-      const bx=cx+a*Math.cos(th)*0.86, by=cy+b*Math.sin(th)*0.86, nx=-Math.sin(th), ny=Math.cos(th), tipW=18;
+      const bx=cx+a*Math.cos(th)*0.86, by=cy+b*Math.sin(th)*0.86,
+            nx=-Math.sin(th), ny=Math.cos(th), tipW=18;
       tip.setAttribute('points',`${px},${py} ${bx+nx*tipW},${by+ny*tipW} ${bx-nx*tipW},${by-ny*tipW}`);
       requestAnimationFrame(anim);
     }
