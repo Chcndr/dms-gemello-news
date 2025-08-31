@@ -1,0 +1,40 @@
+:root{
+  --bg1:#071a1d; --bg2:#0b2730;
+  --ink:#e8fbff; --ink-2:#9bd6de;
+  --accent:#14b8a6;
+  --btnW:140px;
+}
+
+/* fondo */
+html,body{height:100%;margin:0}
+body{
+  background: radial-gradient(1400px 900px at 50% 20%, #0f3640 0%, var(--bg1) 35%, var(--bg2) 100%);
+  color:var(--ink); font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  overflow:hidden;
+}
+
+/* nav+claim */
+.top{position:fixed; left:16px; top:16px; display:flex; gap:10px; z-index:10}
+.btn{
+  padding:.55rem .9rem; border-radius:14px; border:1.5px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.06); backdrop-filter: blur(6px);
+  text-decoration:none; color:var(--ink); font-weight:600
+}
+.claim{position:fixed; right:20px; top:26px; text-align:right; z-index:10}
+.claim h1{margin:0 0 6px; letter-spacing:.02em; font-size:32px; line-height:1.1}
+.claim p{margin:0; color:var(--ink-2); font-weight:500}
+
+/* LAYERING COMPATTO DALLE ISTRUZIONI */
+#glowLayer,#spotlight{position:fixed;inset:0;z-index:1;pointer-events:none}
+#ellipseLayer{position:fixed;inset:0;z-index:2;pointer-events:none}
+#viewport{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;width:clamp(720px,56vw,1120px)}
+#viewport::before{content:"";display:block;padding-top:56.25%}
+#viewport>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.08) inset}
+
+.node{position:absolute;left:0;top:0;width:var(--btnW,140px);height:var(--btnW,140px);border-radius:16px;
+      background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.55);
+      box-shadow:0 12px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.10);
+      z-index:4;transition:box-shadow .15s,transform .15s,border-color .15s;display:grid;place-items:center}
+.node .tag{color:#dde2e4;font-weight:600;letter-spacing:.3px}
+.node:hover{transform:translateY(-2px);box-shadow:0 18px 42px rgba(0,0,0,.40), inset 0 0 0 1px rgba(255,255,255,.12)}
+
