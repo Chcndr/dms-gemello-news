@@ -200,14 +200,15 @@
     border-radius:16px; background:rgba(255,255,255,.06);
     color:#e6f7fb; z-index:4; pointer-events:auto !important;
     opacity:1; visibility:visible; will-change:transform;
+    left: 0; top: 0;                 /* àncora stabile */
   }
   #glowLayer,#spotlight{ position:fixed; inset:0; z-index:1; pointer-events:none; }
   #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
   #viewport{ position:fixed; z-index:3; }
   .node::before,.node::after{ pointer-events:none; }
   
-  /* Niente transizioni durante il primo paint → zero flicker */
-  .prelayout .node { transition: none !important; }
+  /* Nasconde i nodi finché non finiscono layout */
+  .prepaint .node { opacity: 0; }
   /* Dopo il primo layout, lasciamo solo animazioni leggere */
   .node { transition: transform .15s ease, box-shadow .15s ease; }
 </style>
@@ -463,71 +464,87 @@
 </script>
 
 <script>
-document.documentElement.classList.add('prelayout');
+(() => {
+  const root = document.documentElement;
+  root.classList.add('prepaint');   // nasconde i nodi finché non finiscono layout
 
-function layout(){
-  const W = innerWidth, H = innerHeight;
-  const cx = W/2, cy = H*0.52;
   const N = 12;
 
-  // larghezza card coerente con CSS
-  const btn = parseFloat(getComputedStyle(document.documentElement)
-               .getPropertyValue('--btnW')) || 140;
+  // (se serve) crea i nodi mancanti
+  if (document.querySelectorAll('.node').length === 0){
+    const f = document.createDocumentFragment();
+    for (let i=0;i<N;i++){
+      const b = document.createElement('button');
+      b.type='button'; b.className='node'; b.dataset.i=i;
+      b.innerHTML = '<span class="tag">PDF</span>';
+      f.appendChild(b);
+    }
+    document.body.appendChild(f);
+  }
 
-  // margine di sicurezza per non toccare il video
-  const SAFE = 24;
-  const a = Math.min(W * 0.46, W/2 - SAFE - btn/2);
-  const b = Math.min(H * 0.34, H/2 - SAFE - btn/2);
+  function layout(){
+    const W = innerWidth, H = innerHeight;
+    const cx = W/2, cy = H*0.52;
 
-  // Posiziona i 12 pulsanti (uso translate → niente ricalcoli di layout)
-  const nodes = document.querySelectorAll('.node');
-  nodes.forEach((el,i)=>{
-    const t = -Math.PI/2 + 2*Math.PI * (i / N);
-    const x = cx + a*Math.cos(t) - btn/2;
-    const y = cy + b*Math.sin(t) - btn/2;
-    el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    // larghezza card coerente con CSS
+    const btn = parseFloat(getComputedStyle(document.documentElement)
+                 .getPropertyValue('--btnW')) || 140;
+
+    // margine di sicurezza per non toccare il video
+    const SAFE = 24;
+    const a = Math.min(W * 0.46, W/2 - SAFE - btn/2);
+    const b = Math.min(H * 0.34, H/2 - SAFE - btn/2);
+
+    // Posiziona i 12 pulsanti (uso translate → niente ricalcoli di layout)
+    const nodes = document.querySelectorAll('.node');
+    nodes.forEach((el,i)=>{
+      const t = -Math.PI/2 + 2*Math.PI * (i / N);
+      const x = cx + a*Math.cos(t) - btn/2;
+      const y = cy + b*Math.sin(t) - btn/2;
+      el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    });
+
+    // Calcola il viewport 16:9 dentro ellisse interna (con margine)
+    const innerA = a - (btn/2 + SAFE);
+    const innerB = b - (btn/2 + SAFE);
+    let vw = Math.min(W * 0.64, 1280), vh = vw * 9/16, maxH = H * 0.48;
+    if (vh > maxH){ vh = maxH; vw = vh * 16/9; }
+
+    // Se non entra, riduci in scala contro ellisse interna
+    const R = Math.max(((vw/2)**2)/(innerA**2) + ((vh/2)**2)/(innerB**2), 1);
+    const k = 1/Math.sqrt(R);
+    vw *= k; vh *= k;
+
+    const vp = document.getElementById('viewport');
+    vp.style.width  = vw + 'px';
+    vp.style.height = vh + 'px';
+    vp.style.left   = (cx - vw/2) + 'px';
+    vp.style.top    = (cy - vh/2) + 'px';
+  }
+
+  function firstLayout(){
+    layout();                       // calcola
+    requestAnimationFrame(()=>{     // poi mostra i nodi
+      root.classList.remove('prepaint');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    // primo layout appena possibile
+    requestAnimationFrame(firstLayout);
+
+    // se il video aggiorna i metadata (dimensioni reali), riallinea
+    const v = document.querySelector('#viewport video');
+    v?.addEventListener('loadedmetadata', ()=> requestAnimationFrame(layout), {once:true});
   });
 
-  // Calcola il viewport 16:9 dentro ellisse interna (con margine)
-  const innerA = a - (btn/2 + SAFE);
-  const innerB = b - (btn/2 + SAFE);
-  let vw = Math.min(W * 0.64, 1280), vh = vw * 9/16, maxH = H * 0.48;
-  if (vh > maxH){ vh = maxH; vw = vh * 16/9; }
-
-  // Se non entra, riduci in scala contro ellisse interna
-  const R = Math.max(((vw/2)**2)/(innerA**2) + ((vh/2)**2)/(innerB**2), 1);
-  const k = 1/Math.sqrt(R);
-  vw *= k; vh *= k;
-
-  const vp = document.getElementById('viewport');
-  vp.style.width  = vw + 'px';
-  vp.style.height = vh + 'px';
-  vp.style.left   = (cx - vw/2) + 'px';
-  vp.style.top    = (cy - vh/2) + 'px';
-}
-
-function firstLayout(){
-  layout();                       // calcola
-  requestAnimationFrame(()=>{     // poi abilita transizioni
-    document.documentElement.classList.remove('prelayout');
+  // resize debounced
+  let rAFid = 0;
+  addEventListener('resize', ()=>{
+    if (rAFid) cancelAnimationFrame(rAFid);
+    rAFid = requestAnimationFrame(()=>{ rAFid=0; layout(); });
   });
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  // primo layout appena possibile
-  requestAnimationFrame(firstLayout);
-
-  // se il video aggiorna i metadata (dimensioni reali), riallinea
-  const v = document.querySelector('#viewport video');
-  v?.addEventListener('loadedmetadata', ()=> requestAnimationFrame(layout), {once:true});
-});
-
-// resize debounced
-let rAFid = 0;
-addEventListener('resize', ()=>{
-  if (rAFid) cancelAnimationFrame(rAFid);
-  rAFid = requestAnimationFrame(()=>{ rAFid=0; layout(); });
-});
+})();
 </script>
 </body>
 </html>
