@@ -4,7 +4,8 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>DMS • Orologio roadmap</title>
-  <link rel="stylesheet" href="home.css?v=clean2">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="home.css?v=resetA">
 </head>
 <body>
   <!-- Nav -->
@@ -21,15 +22,31 @@
 
   <!-- Layers -->
   <svg id="ellipseLayer" aria-hidden="true"></svg>
-  <div id="viewport" aria-label="Contenuto centrale">
-    <video id="videoHero" playsinline webkit-playsinline muted autoplay loop
-           preload="metadata" poster="../assets/poster-hero.jpg">
-      <source src="../videos/video-hero.mp4" type="video/mp4">
-    </video>
+  <div id="viewport" aria-label="contenuti">
+    <video id="hero" src="../videos/video-hero.mp4"
+      muted playsinline webkit-playsinline preload="metadata"
+      poster="../assets/poster-hero.jpg"></video>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
 
-  <script src="home.js?v=clean2" defer></script>
+  <!-- 12 pulsanti ore 0..11 -->
+  <button class="node" data-i="0"><span class="tag">PDF</span></button>
+  <button class="node" data-i="1"><span class="tag">PDF</span></button>
+  <button class="node" data-i="2"><span class="tag">PDF</span></button>
+  <button class="node" data-i="3"><span class="tag">PDF</span></button>
+  <button class="node" data-i="4"><span class="tag">PDF</span></button>
+  <button class="node" data-i="5"><span class="tag">PDF</span></button>
+  <button class="node" data-i="6"><span class="tag">PDF</span></button>
+  <button class="node" data-i="7"><span class="tag">PDF</span></button>
+  <button class="node" data-i="8"><span class="tag">PDF</span></button>
+  <button class="node" data-i="9"><span class="tag">PDF</span></button>
+  <button class="node" data-i="10"><span class="tag">PDF</span></button>
+  <button class="node" data-i="11"><span class="tag">PDF</span></button>
+
+  <!-- Puntale lancetta -->
+  <div id="handTip" class="hand-tip" aria-hidden="true"></div>
+
+  <script src="home.js?v=resetA" defer></script>
 </body>
 </html>
 
