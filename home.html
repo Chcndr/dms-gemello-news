@@ -142,6 +142,7 @@
   #viewport     { z-index: 3; box-shadow: 0 18px 40px rgba(0,0,0,.40); }
   .node         { z-index: 4; }
 </style>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="./assets/theme-green.css">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
 <style id="theme-green">
@@ -168,17 +169,24 @@
 
   /* Hover/focus colorati per nodo: legge la variabile --hc impostata via JS.
      A riposo NON cambia nulla. */
-  .node:hover,
-  .node:focus-visible{
-    /* bordo e glow derivati da --hc; se manca, fallback al teal attuale */
-    --_hc: var(--hc, #46a0bd);
-    border-color: color-mix(in oklab, var(--_hc) 65%, white 15%);
+  .node:is(:hover,:focus-visible){
+    /* bordo esterno "netto" e brillante */
     box-shadow:
-      0 14px 36px color-mix(in oklab, var(--_hc) 30%, transparent),
-      0 0 0 4px color-mix(in oklab, var(--_hc) 35%, transparent),
-      inset 0 0 0 1px color-mix(in oklab, var(--_hc) 40%, transparent);
+      0 0 0 4px var(--hc),                                   /* anello pieno e visibile */
+      0 0 22px 8px color-mix(in srgb, var(--hc) 80%, transparent),  /* alone più forte ma meno "largo" */
+      0 12px 28px rgba(0,0,0,.55),                           /* ombra scura per stacco */
+      inset 0 0 0 2px rgba(255,255,255,.25);                 /* filo interno leggero */
+    border-color: color-mix(in srgb, var(--hc) 70%, #ffffff 15%);
     transform: translateY(-2px);
   }
+
+  /* NIENTE glow sul video */
+  #viewport{ z-index:3; }
+
+  /* Layer confermati */
+  #glowLayer{ z-index:1; pointer-events:none; }
+  #ellipseLayer{ z-index:2; pointer-events:none; }
+  .node{ z-index:4; }
 </style>
 </head>
 <body>
@@ -221,7 +229,7 @@
   async function loadModules(){
     if(mods) return mods;
     try{
-      const r = await fetch('./data/modules.json?ts='+Date.now());
+      const r = await fetch('./data/modules.json');
       if(!r.ok) throw new Error(r.status);
       mods = await r.json();
     }catch(e){
@@ -238,7 +246,8 @@
     viewport.innerHTML = '';
     const v = el('video',{
       muted:true, autoplay:true, loop:true, playsInline:true,
-      src:'./videos/video-hero.mp4'
+      src:'./videos/video-hero.mp4',
+      poster:'./assets/poster-hero.jpg'
     });
     v.setAttribute('webkit-playsinline','');
     v.preload = 'metadata';
@@ -395,7 +404,17 @@
     `;
     gl.appendChild(spot);
 
-    function moveGlow(x,y){ spot.style.left = x+'px'; spot.style.top = y+'px'; }
+    // Spotlight leggero con rAF
+    let needs = false, mx = 0, my = 0;
+    function moveGlow(x,y){ 
+      mx = x; my = y;
+      if(!needs){ needs = true; requestAnimationFrame(tick); }
+    }
+    function tick(){
+      spot.style.left = mx+'px'; 
+      spot.style.top = my+'px';
+      needs = false;
+    }
     addEventListener('pointermove', e => moveGlow(e.clientX, e.clientY), {passive:true});
     addEventListener('touchmove',  e => { const t=e.touches[0]; if(t) moveGlow(t.clientX,t.clientY); }, {passive:true});
   }
