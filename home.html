@@ -143,7 +143,7 @@
   .node         { z-index: 4; backdrop-filter: blur(2px); }
 </style>
 <link rel="icon" href="data:,">
-<link rel="stylesheet" href="./assets/theme-green.css?v=reset-final-urgent">
+<link rel="stylesheet" href="./assets/theme-green.css?v=permanent-nodes-fix">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
 <style id="theme-green">
   :root{
@@ -191,71 +191,20 @@
     #glowLayer{display:none} 
   }
 
-  /* RESET colori hover — forza TEAL per tutti i pulsanti */
-  :root { --teal: #46a0bd !important; }
-
-  .node { --hc: var(--teal) !important; }
-  .node[style] { --hc: var(--teal) !important; }
-  .node[data-i] { --hc: var(--teal) !important; }
-  .node[data-i="0"] { --hc: var(--teal) !important; }
-  .node[data-i="1"] { --hc: var(--teal) !important; }
-  .node[data-i="2"] { --hc: var(--teal) !important; }
-  .node[data-i="3"] { --hc: var(--teal) !important; }
-  .node[data-i="4"] { --hc: var(--teal) !important; }
-  .node[data-i="5"] { --hc: var(--teal) !important; }
-  .node[data-i="6"] { --hc: var(--teal) !important; }
-  .node[data-i="7"] { --hc: var(--teal) !important; }
-  .node[data-i="8"] { --hc: var(--teal) !important; }
-  .node[data-i="9"] { --hc: var(--teal) !important; }
-  .node[data-i="10"] { --hc: var(--teal) !important; }
-  .node[data-i="11"] { --hc: var(--teal) !important; }
-
-  /* Se arrivano inline vecchi valori, sovrascrivi comunque */
-  [style*="--hc"] { --hc: var(--teal) !important; }
-  button[style*="--hc"] { --hc: var(--teal) !important; }
-  .node[style*="--hc"] { --hc: var(--teal) !important; }
-
-  /* LAYERING CANONICO (non modificare) */
-  #glowLayer,
-  #spotlight {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;   /* mai intercettare click */
+  /* CSS di sicurezza per pulsanti */
+  :root{ --btnW:140px; }
+  .node{
+    position:fixed; width:var(--btnW); height:var(--btnW);
+    display:grid; place-items:center;
+    border:2px solid rgba(255,255,255,.6);
+    border-radius:16px; background:rgba(255,255,255,.06);
+    color:#e6f7fb; z-index:4; pointer-events:auto !important;
+    opacity:1; visibility:visible;
   }
-
-  #ellipseLayer {
-    position: fixed;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;   /* orologio non cliccabile */
-  }
-
-  #viewport {
-    position: fixed;
-    z-index: 3;             /* video/iframe */
-  }
-
-  .node {
-    position: fixed;
-    z-index: 4;             /* pulsanti sopra tutto */
-  }
-
-  /* Qualsiasi alone dei pulsanti non deve bloccare i click */
-  .node::before,
-  .node::after {
-    pointer-events: none;
-  }
-
-  /* Glow neutro per tutti i pulsanti */
-  .node:hover, .node:focus-visible {
-    border-color: color-mix(in srgb, var(--teal) 90%, white 10%) !important;
-    box-shadow:
-      0 0 0 6px color-mix(in srgb, var(--teal) 65%, transparent 35%),
-      0 0 28px color-mix(in srgb, var(--teal) 80%, transparent 20%),
-      0 0 1px rgba(0,0,0,.4) inset !important;
-    transform: translateY(-2px) !important;
-  }
+  #glowLayer,#spotlight{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+  #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
+  #viewport{ position:fixed; z-index:3; }
+  .node::before,.node::after{ pointer-events:none; }
 </style>
 </head>
 <body>
@@ -506,6 +455,79 @@
     addEventListener('resize', layout);
   });addEventListener('pageshow', ensureHero);
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ ensureHero(); }});
+})();
+</script>
+
+<script>
+(() => {
+  const N = 12;
+
+  // 1) Ricrea i 12 pulsanti SEMPRE (anche se esistono già)
+  function createNodes() {
+    // Rimuovi pulsanti esistenti
+    document.querySelectorAll('.node').forEach(n => n.remove());
+    
+    const frag = document.createDocumentFragment();
+    for (let i=0;i<N;i++){
+      const b = document.createElement('button');
+      b.type='button'; b.className='node'; b.dataset.i=i;
+      b.innerHTML = '<span class="tag">PDF</span>';
+      // CSS inline per garantire visibilità
+      b.style.cssText = `
+        position: fixed !important;
+        width: 140px !important;
+        height: 140px !important;
+        display: grid !important;
+        place-items: center !important;
+        border: 2px solid rgba(255,255,255,.6) !important;
+        border-radius: 16px !important;
+        background: rgba(255,255,255,.06) !important;
+        color: #e6f7fb !important;
+        z-index: 9999 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+      `;
+      frag.appendChild(b);
+    }
+    document.body.appendChild(frag);
+  }
+
+  // 2) Layout ellittico robusto (sempre)
+  function layout(){
+    const W=innerWidth, H=innerHeight, cx=W/2, cy=H*0.52;
+    const btn = 140;
+    const a=Math.min(W*0.44, W/2-24);
+    const b=Math.min(H*0.34, H/2-36);
+    document.querySelectorAll('.node').forEach((el,i)=>{
+      const t=-Math.PI/2 + 2*Math.PI*i/N;
+      el.style.left = (cx + a*Math.cos(t) - btn/2) + 'px';
+      el.style.top  = (cy + b*Math.sin(t) - btn/2) + 'px';
+    });
+  }
+
+  // 3) Inizializzazione robusta
+  function init() {
+    createNodes();
+    layout();
+    
+    // Anti–CSS killer
+    document.querySelectorAll('.node').forEach(n=>{
+      n.style.removeProperty('display');
+      n.style.removeProperty('visibility');
+      n.style.removeProperty('opacity');
+    });
+  }
+
+  // 4) Esegui sempre
+  init();
+  addEventListener('resize', layout);
+  addEventListener('load', init);
+  document.addEventListener('DOMContentLoaded', init);
+  
+  // 5) Backup timer per sicurezza
+  setTimeout(init, 1000);
+  setTimeout(init, 3000);
 })();
 </script>
 </body>
