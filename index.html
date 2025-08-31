@@ -72,18 +72,51 @@
     <section class="panel">
       <h2>Video</h2>
       <div class="videos">
-        <video id="v1" controls playsinline muted preload="metadata" poster="assets/poster-hub.jpg">
-          <source src="videos/teaser-hub-dms.mp4" type="video/mp4">
-        </video>
-        <video id="v2" controls playsinline muted preload="metadata" poster="assets/poster-riaccendiamo.jpg">
-          <source src="videos/teaser-riaccendiamo.mp4" type="video/mp4">
-        </video>
-        <video id="v3" controls playsinline muted preload="metadata" poster="assets/poster-mercato.jpg">
-          <source src="videos/spot-dms.mp4" type="video/mp4">
-        </video>
+        <article class="video-card">
+          <header>
+            <h3>Riaccendiamo il Commercio</h3>
+            <p>Lo stato attuale e la soluzione DMS.</p>
+          </header>
+          <video id="v1" controls playsinline preload="metadata" poster="assets/poster-riaccendiamo.jpg">
+            <source src="videos/teaser-riaccendiamo.mp4" type="video/mp4" />
+          </video>
+        </article>
+
+        <article class="video-card">
+          <header>
+            <h3>DMS — Il Futuro del Commercio</h3>
+            <p>Dalla visione al rollout operativo.</p>
+          </header>
+          <video id="v2" controls playsinline preload="metadata" poster="assets/poster-futuro.jpg">
+            <source src="videos/teaser-futuro.mp4" type="video/mp4" />
+          </video>
+        </article>
+
+        <article class="video-card">
+          <header>
+            <h3>Hub Emilia-Romagna</h3>
+            <p>Una visione chiara per il commercio di prossimità.</p>
+          </header>
+          <video id="v3" controls playsinline preload="metadata" poster="assets/poster-emilia-romagna.jpg">
+            <source src="videos/teaser-emilia-romagna.mp4" type="video/mp4" />
+          </video>
+        </article>
       </div>
     </section>
   </div>
+
+<script>
+  // Abilita l'audio al click su Play (niente autoplay)
+  document.querySelectorAll('.videos video').forEach(v => {
+    v.defaultMuted = false;
+    v.muted = false;
+    v.volume = 1.0;
+    v.addEventListener('play', () => {
+      v.muted = false;
+      if (v.volume === 0) v.volume = 1.0;
+    });
+  });
+</script>
 
 <script>
   // Lista PDF pulita (15 voci ordinate, nessun duplicato)
