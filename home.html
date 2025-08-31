@@ -4,23 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DMS · Gemello Digitale del Commercio — Home</title>
-
-<style id="critical-home-css">
-  /* stato iniziale SICURO: i nodi non vengono mai dipinti a (0,0) */
-  .node{
-    position:absolute; left:0; top:0;
-    width:var(--btnW,140px); height:var(--btnW,140px);
-    transform:translate3d(-9999px,-9999px,0); /* off-canvas di default */
-    will-change: transform;
-  }
-  /* durante il bootstrap disabilitiamo transizioni dei nodi */
-  .prepaint .node{ transition:none !important; opacity:0; }
-</style>
-
-<script>
-  // impedisce il paint visibile finché non finiamo il layout
-  document.documentElement.classList.add('prepaint');
-</script>
 <meta name="color-scheme" content="dark">
 <style>
   :root{
@@ -160,7 +143,7 @@
   .node         { z-index: 4; backdrop-filter: blur(2px); }
 </style>
 <link rel="icon" href="data:,">
-<link rel="stylesheet" href="./assets/theme-green.css?v=nfp3">
+<link rel="stylesheet" href="./assets/theme-green.css?v=factory1">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
 <style id="theme-green">
   :root{
@@ -208,26 +191,25 @@
     #glowLayer{display:none} 
   }
 
-  /* CSS di sicurezza per pulsanti */
+  /* Layering "di fabbrica" */
+  #glowLayer, #spotlight { position:fixed; inset:0; z-index:1; pointer-events:none; }
+  #ellipseLayer         { position:fixed; inset:0; z-index:2; pointer-events:none; }
+  #viewport             { position:fixed;      z-index:3; }
+  #arena                { position:fixed; inset:0; z-index:4; pointer-events:none; } /* contiene i bottoni */
+  #arena .node          { position:absolute; pointer-events:auto; }
+
+  /* Stile pulsanti */
   :root{ --btnW:140px; }
-  .node{
-    position:fixed; width:var(--btnW); height:var(--btnW);
+  #arena .node{
+    width:var(--btnW); height:var(--btnW);
     display:grid; place-items:center;
     border:2px solid rgba(255,255,255,.6);
     border-radius:16px; background:rgba(255,255,255,.06);
-    color:#e6f7fb; z-index:4; pointer-events:auto !important;
-    opacity:1; visibility:visible; will-change:transform;
-    left: 0; top: 0;                 /* àncora stabile */
+    color:#e6f7fb;
   }
-  #glowLayer,#spotlight{ position:fixed; inset:0; z-index:1; pointer-events:none; }
-  #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
-  #viewport{ position:fixed; z-index:3; }
-  .node{ z-index:4; pointer-events:auto; }
-  
-  /* Nasconde i nodi finché non finiscono layout */
-  .prepaint .node { opacity: 0; }
-  /* Dopo il primo layout, lasciamo solo animazioni leggere */
-  .node { transition: transform .15s ease, box-shadow .15s ease; }
+
+  /* Avvio: niente trucchi off-screen, niente transform iniziale */
+  #arena .node { opacity:0; transition:opacity .001s linear; }  /* invisibili finché non posizionati */
 </style>
 </head>
 <body>
@@ -244,6 +226,23 @@
 
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" role="region" aria-label="contenuto centrale"></div>
+  
+  <!-- Arena dei pulsanti -->
+  <div id="arena" aria-hidden="false">
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+    <button type="button" class="node"><span class="tag">PDF</span></button>
+  </div>
+  
   <div id="glowLayer" aria-hidden="true"></div>
 
 <script>
@@ -481,67 +480,66 @@
 </script>
 
 <script>
-(() => {
-  const N = 12, TAU = Math.PI*2;
+(function () {
+  const NODES = Array.from(document.querySelectorAll('#arena .node'));
+  if (!NODES.length) return; // sicurezza
 
-  function ensureNodes(){
-    // Rimuovi tutti i nodi esistenti per evitare duplicazioni
-    document.querySelectorAll('.node').forEach(n => n.remove());
-    
-    // Crea esattamente 12 nodi
-    const f = document.createDocumentFragment();
-    for (let i=0;i<N;i++){
-      const b=document.createElement('button');
-      b.type='button'; b.className='node'; b.dataset.i=i;
-      b.innerHTML='<span class="tag">PDF</span>';
-      f.appendChild(b);
-    }
-    document.body.appendChild(f);
+  const raf = fn => new Promise(r => requestAnimationFrame(()=>{ fn(); r(); }));
+
+  function btnSize() {
+    const val = getComputedStyle(document.documentElement).getPropertyValue('--btnW');
+    const n = parseFloat(val);
+    return Number.isFinite(n) && n > 40 ? n : 140; // fallback sicuro
   }
 
-  function measure(){
-    const W=innerWidth, H=innerHeight;
-    const cx=W/2, cy=H*0.52;
-    const btn=parseFloat(getComputedStyle(document.documentElement)
-                .getPropertyValue('--btnW'))||140;
-    // ellisse sempre dentro schermo, con margine di sicurezza
-    const SAFE=24;
-    const a=Math.min(W*0.44, (W/2)-SAFE);
-    const b=Math.min(H*0.34, (H/2)-SAFE);
-    return {W,H,cx,cy,a,b,btn};
-  }
+  function layout() {
+    const W = innerWidth, H = innerHeight;
+    const cx = W / 2, cy = H * 0.52;
 
-  function layoutNodes(){
-    const {cx,cy,a,b,btn}=measure();
-    const nodes=document.querySelectorAll('.node');
-    nodes.forEach((el,i)=>{
-      const t=-Math.PI/2 + (TAU*i/nodes.length);
-      const x=Math.round(cx + a*Math.cos(t) - btn/2);
-      const y=Math.round(cy + b*Math.sin(t) - btn/2);
-      // niente left/top: SOLO transform → niente flicker
-      el.style.transform=`translate3d(${x}px,${y}px,0)`;
+    const btn = btnSize();
+    // spazio sicuro dal video
+    const vp   = document.querySelector('#viewport');
+    const vpr  = vp ? vp.getBoundingClientRect() : {width:0,height:0,top:0,left:0};
+    const margin = 24;
+
+    // ellisse massima che non collide col video
+    const aMax = Math.min(W/2 - margin, W*0.44);
+    const bMax = Math.min(H/2 - margin, H*0.34);
+
+    const a = aMax;
+    const b = bMax;
+
+    NODES.forEach((el, i) => {
+      const t = -Math.PI/2 + 2*Math.PI*i/NODES.length;
+      const x = cx + a*Math.cos(t) - btn/2;
+      const y = cy + b*Math.sin(t) - btn/2;
+      el.style.left = Math.round(x) + 'px';
+      el.style.top  = Math.round(y) + 'px';
     });
   }
 
-  function boot(){
-    ensureNodes();
-    // 1° frame: assicurati che i CSS siano applicati
-    requestAnimationFrame(()=>{
-      // 2° frame: applica posizioni finali
-      layoutNodes();
-      // 3° frame: rendi visibili i nodi senza flash
-      requestAnimationFrame(()=>{
-        document.documentElement.classList.remove('prepaint');
-      });
+  async function boot() {
+    // Aspetta che CSS + DOM + metadati video siano pronti
+    const link = document.querySelector('link[href*="theme-green.css"]');
+    await new Promise(r => link && !link.sheet ? link.addEventListener('load', r, {once:true}) : r());
+    await new Promise(r => {
+      const v = document.querySelector('#viewport video');
+      if (v && v.readyState < 1) v.addEventListener('loadedmetadata', r, {once:true}); else r();
     });
+
+    // Primo layout nella stessa "epoca" di paint
+    layout();
+    // mostra i nodi solo dopo che hanno left/top finali
+    NODES.forEach(el => el.style.opacity = '1');
+
+    // aggiornamenti
+    let t;
+    addEventListener('resize', () => { clearTimeout(t); t = setTimeout(layout, 120); });
+    addEventListener('orientationchange', () => { clearTimeout(t); t = setTimeout(layout, 120); });
+    addEventListener('pageshow', e => { if (e.persisted) layout(); });
   }
 
-  // primo avvio
-  window.addEventListener('DOMContentLoaded', boot, { once:true });
-  // ritorno da bfcache (Safari/iOS)
-  window.addEventListener('pageshow', (e)=>{ if(e.persisted) boot(); });
-  // adattamento viewport
-  window.addEventListener('resize', (()=>{ let t; return ()=>{ clearTimeout(t); t=setTimeout(layoutNodes, 80); };})());
+  boot();
 })();
 </script>
 </body>
