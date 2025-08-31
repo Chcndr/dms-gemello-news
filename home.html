@@ -424,6 +424,14 @@
     }, {passive:true});
   }
 
+  // Rimuove esplicitamente tutte le variabili --hc per reset completo
+  function resetAllHoverColors(){
+    document.querySelectorAll('.node').forEach((n,i)=>{
+      n.style.removeProperty('--hc');
+    });
+    console.log('Reset completo: rimosse tutte le variabili --hc personalizzate');
+  }
+
   // bootstrap
   document.addEventListener('DOMContentLoaded', ()=>{
     makeNodes(); 
@@ -431,6 +439,11 @@
     ensureHero(); 
     bindNodes(); 
     initSpotlight(); 
+    
+    // Reset completo con timeout per assicurare che i nodi siano pronti
+    setTimeout(() => {
+      resetAllHoverColors();
+    }, 100);
   });
   addEventListener('resize', layout);
   addEventListener('pageshow', ensureHero);
