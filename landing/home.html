@@ -164,6 +164,95 @@
       color:#e6f5f7; overflow:auto;
     }
 
+    /* Pannello nel viewport */
+    #viewport .panel{
+      --panel-accent:#14b8a6;              /* teal mockup */
+      position: relative;
+      width: min(96vw, 980px);
+      max-width: 980px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.14);
+      /* opaco, NON trasparente */
+      background: linear-gradient(180deg,#0a3b3d 0%, #0a3436 100%);
+      box-shadow:
+        0 28px 68px rgba(0,0,0,.45),
+        inset 0 0 0 1px rgba(255,255,255,.06);
+      color:#e6f6f4;
+      padding: 28px 28px 22px;
+      overflow: hidden;
+    }
+
+    /* Titoli + testo */
+    #viewport .panel h1{
+      margin: 0 0 6px;
+      font-size: clamp(26px, 3.6vw, 44px);
+      line-height: 1.05;
+      letter-spacing:.2px;
+    }
+    #viewport .panel .sub{
+      margin: 0 0 12px;
+      font-weight: 500;
+      color: rgba(230,246,244,.85);
+    }
+    #viewport .panel .desc{
+      margin: 0 0 22px;
+      color: rgba(230,246,244,.80);
+    }
+
+    /* Liste CTA con "luce" sotto i tasti */
+    #viewport .panel .cta-list{ display: grid; gap: 12px; }
+    #viewport .panel .cta{
+      display:flex; align-items:center; gap:12px;
+      border-radius: 16px;
+      padding: 14px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:
+        0 10px 26px rgba(0,0,0,.35),                   /* ombra sotto (luce percepita) */
+        0 0 0 1px rgba(255,255,255,.06) inset;
+      color:#eafdfb; text-decoration:none; font-weight:600;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    #viewport .panel .cta::before{                 /* bollino PDF */
+      content:"PDF";
+      font: 700 12px/1 ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(20,184,166,.16);
+      color:#c9fffb;
+      border:1px solid rgba(20,184,166,.32);
+    }
+    #viewport .panel .cta:hover,
+    #viewport .panel .cta:focus-visible{
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--panel-accent) 50%, white 10%);
+      box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--panel-accent) 65%, transparent), /* anello */
+        0 18px 42px rgba(0,0,0,.45);
+    }
+
+    /* "Torna al video" laterale */
+    #viewport .panel .back{
+      margin-top:14px;
+      display:inline-flex; align-items:center; gap:10px;
+      opacity:.9;
+    }
+    #viewport .panel .back .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--panel-accent);
+      box-shadow: 0 0 14px color-mix(in srgb, var(--panel-accent) 60%, transparent);
+    }
+
+    /* Auto-altezza: il pannello cresce fino a un massimo, poi scrolla */
+    #viewport{ display:flex; align-items:center; justify-content:center;
+      padding: clamp(10px, 2.5vh, 24px);
+    }
+    #viewport .panel{
+      max-height: min(74vh, 760px);
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+    }
+
     .viewport-panel header{
       display:flex; flex-direction:column; gap:4px;
       border-bottom:1px solid rgba(255,255,255,.14);
@@ -247,6 +336,25 @@
     <video id="hero" src="../videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
       poster="../assets/poster-hero.jpg"></video>
+  </div>
+
+  <!-- Pannello nascosto per il tasto 0 -->
+  <div class="panel" id="panel-0" style="display:none;">
+    <h1>DMS — Riaccendiamo il Commercio</h1>
+    <div class="sub">Visione, gemello nazionale del commercio</div>
+    <p class="desc">L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi.</p>
+
+    <nav class="cta-list">
+      <a class="cta" href="./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf" target="_blank" rel="noopener">Apri documento principale (PDF)</a>
+      <a class="cta" href="./docs/HUB NAZIONALE DEL COMMERCIO.pdf" target="_blank" rel="noopener">Hub Nazionale del Commercio (PDF)</a>
+      <a class="cta" href="./docs/DMS E CLUST-ER.pdf" target="_blank" rel="noopener">DMS &amp; CLUST-ER (PDF)</a>
+      <a class="cta" href="./docs/DMS ECC.pdf" target="_blank" rel="noopener">DMS ECC — Executive (PDF)</a>
+    </nav>
+
+    <div class="back">
+      <span class="dot" aria-hidden="true"></span>
+      <button type="button" id="backToVideo">Torna al video</button>
+    </div>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
 
@@ -443,32 +551,42 @@
   </script>
 
   <script>
-(async function(){
-  const viewport = document.getElementById('viewport');
+// mostra pannello 0
+function openPanel0(){
+  const vp = document.getElementById('viewport');
+  const panel = document.getElementById('panel-0');
+  vp.innerHTML = panel.outerHTML; // monta la copia
+  vp.querySelector('#panel-0').style.display = 'block';
+  
+  // assicura che la lancetta resti sotto
+  const hand = document.querySelector('#ellipseLayer');
+  if(hand) hand.style.setProperty('z-index','2');
+  
+  const back = vp.querySelector('#backToVideo');
+  back?.addEventListener('click', showVideo, {once:true});
+}
 
+function showVideo(){
+  const vp = document.getElementById('viewport');
+  vp.innerHTML = '<video id="hero" src="../videos/video-hero.mp4" muted playsinline webkit-playsinline preload="metadata" autoplay loop poster="../assets/poster-hero.jpg"></video>';
+  
+  // riavvia il video
+  const video = vp.querySelector('video');
+  video?.play?.().catch(()=>{});
+}
+
+// collega il tasto 0 dell'orologio
+document.querySelector('.node[data-i="0"]')?.addEventListener('click', openPanel0);
+
+// Altri pulsanti - usa il sistema esistente delle card colorate
+async function openPanelByIndex(index){
+  const viewport = document.getElementById('viewport');
+  
   async function getModules(){
     try{
       const r = await fetch('./data/modules.json', {cache:'no-store'});
       return r.ok ? (await r.json()) : [];
     }catch(e){ return []; }
-  }
-
-  function stopAndClearViewport(){
-    // stop video se presente
-    const v = viewport.querySelector('video');
-    try{ v && v.pause && v.pause(); }catch(_){}
-    viewport.innerHTML = '';
-  }
-
-  function restoreHero(){
-    stopAndClearViewport();
-    const v = document.createElement('video');
-    v.src = '../videos/video-hero.mp4';
-    v.muted = true; v.loop = true; v.playsInline = true;
-    v.setAttribute('playsinline','');
-    v.preload = 'metadata';
-    viewport.appendChild(v);
-    v.play?.().catch(()=>{ /* iOS: resterà in muto */ });
   }
 
   function panelTemplate(mod, accent){
@@ -492,12 +610,11 @@
     `;
     // wiring
     const back = el.querySelector('#backToVideo');
-    back?.addEventListener('click', restoreHero, {once:true});
+    back?.addEventListener('click', showVideo, {once:true});
 
     const open = el.querySelector('#openInline');
     if(open && mod.pdf){
       open.addEventListener('click', ()=>{
-        // sostituisci la card con l'iframe del PDF
         const iframe = document.createElement('iframe');
         iframe.src = mod.pdf;
         iframe.style.cssText = 'width:100%;height:100%;border:0;display:block;';
@@ -505,46 +622,35 @@
         viewport.appendChild(iframe);
       });
     }
-    // ESC per tornare al video
-    el.addEventListener('keydown', (e)=>{
-      if(e.key === 'Escape'){ restoreHero(); }
-    });
     return el;
   }
 
-  async function openPanelByIndex(index){
-    const mods = await getModules();
-    const mod = mods[index];
-    stopAndClearViewport();
-    if(!mod){
-      const ph = document.createElement('div');
-      ph.className = 'viewport-panel';
-      ph.innerHTML = `<h2>· presto</h2>`;
-      viewport.appendChild(ph);
-      return;
-    }
-    // accento: preferisci mod.accent; altrimenti prendi --hc del tasto cliccato
-    const node = document.querySelector(`.node[data-i="${index}"]`);
-    const computed = node ? getComputedStyle(node).getPropertyValue('--hc').trim() : '';
-    const accent = mod.accent || (computed || '#14b8a6');
-    viewport.appendChild(panelTemplate(mod, accent));
-    // focus per accessibilità
-    const h2 = viewport.querySelector('h2'); h2 && h2.focus && h2.focus();
+  const mods = await getModules();
+  const mod = mods[index];
+  viewport.innerHTML = '';
+  
+  if(!mod){
+    const ph = document.createElement('div');
+    ph.className = 'viewport-panel';
+    ph.innerHTML = `<h2>· presto</h2>`;
+    viewport.appendChild(ph);
+    return;
   }
+  
+  const node = document.querySelector(`.node[data-i="${index}"]`);
+  const computed = node ? getComputedStyle(node).getPropertyValue('--hc').trim() : '';
+  const accent = mod.accent || (computed || '#14b8a6');
+  viewport.appendChild(panelTemplate(mod, accent));
+}
 
-  // BIND click ai 12 pulsanti (non toccare layout/strati)
-  document.querySelectorAll('.node').forEach((btn)=>{
-    btn.addEventListener('click', ()=>{
-      const i = +btn.dataset.i;
-      openPanelByIndex(i);
-    }, {passive:true});
-  });
-
-  // opzionale: ripristina video se si torna con back/forward cache
-  addEventListener('pageshow', (e)=>{
-    if(e.persisted){ /* niente */ }
-  });
-})();
+document.querySelectorAll('.node').forEach((btn)=>{
+  const i = +btn.dataset.i;
+  if(i === 0) return; // già gestito sopra
+  
+  btn.addEventListener('click', ()=>{
+    openPanelByIndex(i);
+  }, {passive:true});
+});
   </script>
 
   <script>
