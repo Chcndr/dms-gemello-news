@@ -143,7 +143,7 @@
   .node         { z-index: 4; backdrop-filter: blur(2px); }
 </style>
 <link rel="icon" href="data:,">
-<link rel="stylesheet" href="./assets/theme-green.css?v=colorflag2">
+<link rel="stylesheet" href="./assets/theme-green.css?v=reset-layers2">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
 <style id="theme-green">
   :root{
@@ -203,37 +203,39 @@
   button[style*="--hc"] { --hc: var(--teal) !important; }
   .node[style*="--hc"] { --hc: var(--teal) !important; }
 
-  /* Feature flag per colori hover */
-  :root { --color-hover-enabled: 0; }      /* flag: 0=neutro, 1=colori on */
-
-  /* Colori per-indice (0-11) */
-  .node { --hc:#46a0bd; }                  /* fallback teal */
-  .node[data-i="0"]  { --hc:#ff2a2a; }     /* 0 rosso acceso */
-  .node[data-i="1"]  { --hc:#ff6a1a; }     /* 1 arancio */
-  .node[data-i="2"]  { --hc:#ff8a1a; }     /* 2 arancio chiaro */
-  .node[data-i="3"]  { --hc:#ffb21a; }     /* 3 giallo-arancio */
-  .node[data-i="4"]  { --hc:#d9b400; }     /* 4 giallo scuro */
-  .node[data-i="5"]  { --hc:#ffd000; }     /* 5 giallo */
-  .node[data-i="6"]  { --hc:#ffe24d; }     /* 6 giallo acceso */
-  .node[data-i="7"]  { --hc:#b7e04f; }     /* 7 giallo-verde */
-  .node[data-i="8"]  { --hc:#4ec36b; }     /* 8 verde */
-  .node[data-i="9"]  { --hc:#74d39b; }     /* 9 verdino */
-  .node[data-i="10"] { --hc:#66d9c0; }     /* 10 azzurro-verdino */
-  .node[data-i="11"] { --hc:#3bb0ff; }     /* 11 azzurro-blu */
-
-  /* Hover colorato (solo quando feature flag attivo) */
-  .color-hover-on .node:hover,
-  .color-hover-on .node:focus-visible {
-    border-color: color-mix(in srgb, var(--hc) 90%, white 10%) !important;
-    box-shadow:
-      0 0 0 6px color-mix(in srgb, var(--hc) 85%, transparent 15%),
-      0 0 40px color-mix(in srgb, var(--hc) 85%, transparent 15%),
-      0 0 1px rgba(0,0,0,.4) inset,
-      0 18px 28px rgba(0,0,0,.35) !important;
-    transform: translateY(-2px) !important;
+  /* LAYERING CANONICO (non modificare) */
+  #glowLayer,
+  #spotlight {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;   /* mai intercettare click */
   }
 
-  /* Fallback neutro (quando feature flag disattivo) */
+  #ellipseLayer {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;   /* orologio non cliccabile */
+  }
+
+  #viewport {
+    position: fixed;
+    z-index: 3;             /* video/iframe */
+  }
+
+  .node {
+    position: fixed;
+    z-index: 4;             /* pulsanti sopra tutto */
+  }
+
+  /* Qualsiasi alone dei pulsanti non deve bloccare i click */
+  .node::before,
+  .node::after {
+    pointer-events: none;
+  }
+
+  /* Glow neutro per tutti i pulsanti */
   .node:hover, .node:focus-visible {
     border-color: color-mix(in srgb, var(--teal) 90%, white 10%) !important;
     box-shadow:
@@ -244,7 +246,7 @@
   }
 </style>
 </head>
-<body class="color-hover-on">
+<body>
   <div id="glowLayer" aria-hidden="true"></div> <!-- spotlight mouse -->
 
   <p class="brand">
