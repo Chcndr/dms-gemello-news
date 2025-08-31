@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Visione — Riaccendiamo il Commercio",
+    "subtitle": "Una visione concreta per riaccendere mercati e città",
+    "summary": "Tre pilastri DMS e percorso operativo nazionale.",
+    "pdf": "./docs/riaccendiamo.pdf",
+    "more": [
+      "./docs/hub-nazionale.pdf",
+      "./docs/dms-cluster.pdf",
+      "./docs/dms-ecc.pdf"
+    ],
+    "accent": "#e53935"
+  },
+  {
+    "title": "Grosseto — Partenza",
+    "subtitle": "Collegamento e prima attivazione",
+    "summary": "Data stimata, azione, ministero, benefici.",
+    "pdf": "./docs/grosseto.pdf",
+    "more": ["./docs/atto-grosseto.pdf"]
+  },
+  {
+    "title": "Modulo 3",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo3.pdf"
+  },
+  {
+    "title": "Modulo 4",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo4.pdf"
+  },
+  {
+    "title": "Modulo 5",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo5.pdf"
+  },
+  {
+    "title": "Modulo 6",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo6.pdf"
+  },
+  {
+    "title": "Modulo 7",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo7.pdf"
+  },
+  {
+    "title": "Modulo 8",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo8.pdf"
+  },
+  {
+    "title": "Modulo 9",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo9.pdf"
+  },
+  {
+    "title": "Modulo 10",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo10.pdf"
+  },
+  {
+    "title": "Modulo 11",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo11.pdf"
+  },
+  {
+    "title": "Modulo 12",
+    "subtitle": "In sviluppo",
+    "summary": "Contenuti in preparazione.",
+    "pdf": "./docs/modulo12.pdf"
+  }
+]
+
