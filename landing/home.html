@@ -46,12 +46,12 @@
     .claim h1{margin:0 0 6px; letter-spacing:.02em; font-size:32px; line-height:1.1}
     .claim p{margin:0; color:var(--ink-2); font-weight:500}
 
-    /* LAYER BLINDATI - lancetta corretta */
+    /* LAYER BLINDATI - lancetta sopra video */
     #glowLayer   { position:fixed; inset:0; z-index:1; pointer-events:none; }
     #ellipseLayer{ position:fixed; inset:0; z-index:2; pointer-events:none; }
-    #handLayer   { position:fixed; inset:0; z-index:2; pointer-events:none; }
     #viewport    { position:fixed;           z-index:3; }
-    .node        { position:fixed; left:0; top:0; z-index:4; }
+    #handLayer   { position:fixed; inset:0; z-index:4; pointer-events:none; }
+    .node        { position:fixed; left:0; top:0; z-index:5; }
 
     /* Video */
     #viewport{
