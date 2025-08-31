@@ -150,6 +150,82 @@
       display:grid; place-items:center; font-weight:700; font-size:12px;
       color:#cfeeea;
     }
+
+    /* Card nel viewport (pannello contenuti) */
+    .viewport-panel{
+      --accent: #14b8a6;
+      position: absolute; inset:0;
+      display:flex; flex-direction:column; gap:14px;
+      padding:18px 18px 16px; border-radius:18px;
+      background:
+        linear-gradient(180deg, rgba(10,30,36,.72), rgba(8,22,28,.58));
+      border: 2px solid rgba(255,255,255,.22);
+      box-shadow: 0 20px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.12);
+      color:#e6f5f7; overflow:auto;
+    }
+
+    .viewport-panel header{
+      display:flex; flex-direction:column; gap:4px;
+      border-bottom:1px solid rgba(255,255,255,.14);
+      padding-bottom:10px;
+    }
+    .viewport-panel h2{
+      margin:0; font-size:1.25rem; line-height:1.2; font-weight:800;
+      letter-spacing:.2px;
+    }
+    .viewport-panel .subtitle{
+      margin:0; opacity:.85; font-size:.95rem;
+      color: color-mix(in srgb, var(--accent) 60%, #dff9ff 40%);
+    }
+    .viewport-panel .summary{
+      margin:6px 0 2px; opacity:.92; font-size:.98rem;
+    }
+
+    .panel-actions{
+      margin-top:auto; display:flex; flex-wrap:wrap; gap:10px;
+    }
+
+    /* CTA primario */
+    .btn-cta{
+      appearance:none; cursor:pointer; border:0;
+      padding:.65rem 1rem; border-radius:12px; font-weight:800;
+      background: color-mix(in srgb, var(--accent) 65%, #0a1e24 35%);
+      color:#082226; /* contrasto sull'accento */
+      border:2px solid color-mix(in srgb, var(--accent) 70%, white 12%);
+      box-shadow:
+        0 10px 24px color-mix(in srgb, var(--accent) 35%, transparent),
+        inset 0 0 0 1px rgba(255,255,255,.18);
+    }
+    .btn-cta:hover{ transform:translateY(-1px); }
+
+    /* CTA secondari */
+    .btn-link{
+      appearance:none; cursor:pointer; text-decoration:none;
+      padding:.6rem .9rem; border-radius:10px; font-weight:700;
+      color:#e6f5f7; background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .btn-link:hover{
+      box-shadow: 0 8px 18px rgba(0,0,0,.28);
+    }
+
+    /* "Torna al video" */
+    .btn-ghost{
+      background:transparent; color:#e6f5f7;
+      border:1px dashed rgba(255,255,255,.28);
+    }
+    .btn-ghost:hover{ border-style:solid; }
+
+    /* Badge accento nell'header */
+    .badge{
+      display:inline-block; align-self:flex-start;
+      padding:.25rem .55rem; border-radius:999px;
+      font-size:.78rem; font-weight:800; letter-spacing:.2px;
+      color:#082226;
+      background: color-mix(in srgb, var(--accent) 72%, #0a1e24 28%);
+      border:1px solid color-mix(in srgb, var(--accent) 70%, white 12%);
+      box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 50%, transparent);
+    }
   </style>
 </head>
 <body>
@@ -171,29 +247,6 @@
     <video id="hero" src="../videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
       poster="../assets/poster-hero.jpg"></video>
-    
-    <div class="panel" id="panel-0" hidden>
-      <h1>DMS — Riaccendiamo il Commercio</h1>
-      <p class="lead">Visione, gemello nazionale del commercio</p>
-      <p class="lead">L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi</p>
-
-      <a class="cta" href="./docs/riaccendiamo.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>Apri documento principale (PDF)</span>
-      </a>
-      <a class="cta" href="./docs/hub-nazionale.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>Hub Nazionale del Commercio (PDF)</span>
-      </a>
-      <a class="cta" href="./docs/dms-cluster.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>DMS &amp; CLUST-ER (PDF)</span>
-      </a>
-      <a class="cta" href="./docs/dms-ecc.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>DMS ECC — Executive (PDF)</span>
-      </a>
-    </div>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
 
@@ -390,35 +443,108 @@
   </script>
 
   <script>
-    // Pannello PDF - show/hide nel viewport
-    function openPanel0(){
-      const vp = document.getElementById('viewport');
-      const p0 = document.getElementById('panel-0');
-      if (!vp || !p0) return;
-      vp.querySelector('video')?.setAttribute('hidden','');   // nascondi video
-      p0.hidden = false;
-    }
-    function closePanel0(){
-      const vp = document.getElementById('viewport');
-      const p0 = document.getElementById('panel-0');
-      if (!vp || !p0) return;
-      p0.hidden = true;
-      vp.querySelector('video')?.removeAttribute('hidden');   // mostra video
-    }
+(async function(){
+  const viewport = document.getElementById('viewport');
 
-    // Collega il click del tasto 0 all'apertura pannello
-    document.querySelector('.node[data-i="0"]')?.addEventListener('click', openPanel0);
-    
-    // Altri pulsanti - fallback scroll al viewport
-    document.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.node');
-      if (!btn) return;
-      const i = +btn.dataset.i || 0;
-      if (i === 0) return; // già gestito sopra
-      
-      const vp = document.getElementById('viewport');
-      vp?.scrollIntoView({behavior:'smooth', block:'center'});
+  async function getModules(){
+    try{
+      const r = await fetch('./data/modules.json', {cache:'no-store'});
+      return r.ok ? (await r.json()) : [];
+    }catch(e){ return []; }
+  }
+
+  function stopAndClearViewport(){
+    // stop video se presente
+    const v = viewport.querySelector('video');
+    try{ v && v.pause && v.pause(); }catch(_){}
+    viewport.innerHTML = '';
+  }
+
+  function restoreHero(){
+    stopAndClearViewport();
+    const v = document.createElement('video');
+    v.src = '../videos/video-hero.mp4';
+    v.muted = true; v.loop = true; v.playsInline = true;
+    v.setAttribute('playsinline','');
+    v.preload = 'metadata';
+    viewport.appendChild(v);
+    v.play?.().catch(()=>{ /* iOS: resterà in muto */ });
+  }
+
+  function panelTemplate(mod, accent){
+    const el = document.createElement('section');
+    el.className = 'viewport-panel';
+    el.style.setProperty('--accent', accent || '#14b8a6');
+    el.innerHTML = `
+      <header>
+        <span class="badge">Percorso</span>
+        <h2>${mod.title || 'Modulo'}</h2>
+        ${mod.subtitle ? `<p class="subtitle">${mod.subtitle}</p>` : ''}
+      </header>
+      ${mod.summary ? `<p class="summary">${mod.summary}</p>` : ''}
+      <div class="panel-actions">
+        ${mod.pdf ? `<button class="btn-cta" id="openInline">Apri documento principale</button>` : ''}
+        ${Array.isArray(mod.more) ? mod.more.map(h => 
+          `<a class="btn-link" href="${h}" target="_blank" rel="noopener">Apri allegato</a>`
+        ).join('') : ''}
+        <button class="btn-link btn-ghost" id="backToVideo">Torna al video</button>
+      </div>
+    `;
+    // wiring
+    const back = el.querySelector('#backToVideo');
+    back?.addEventListener('click', restoreHero, {once:true});
+
+    const open = el.querySelector('#openInline');
+    if(open && mod.pdf){
+      open.addEventListener('click', ()=>{
+        // sostituisci la card con l'iframe del PDF
+        const iframe = document.createElement('iframe');
+        iframe.src = mod.pdf;
+        iframe.style.cssText = 'width:100%;height:100%;border:0;display:block;';
+        viewport.innerHTML = '';
+        viewport.appendChild(iframe);
+      });
+    }
+    // ESC per tornare al video
+    el.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){ restoreHero(); }
     });
+    return el;
+  }
+
+  async function openPanelByIndex(index){
+    const mods = await getModules();
+    const mod = mods[index];
+    stopAndClearViewport();
+    if(!mod){
+      const ph = document.createElement('div');
+      ph.className = 'viewport-panel';
+      ph.innerHTML = `<h2>· presto</h2>`;
+      viewport.appendChild(ph);
+      return;
+    }
+    // accento: preferisci mod.accent; altrimenti prendi --hc del tasto cliccato
+    const node = document.querySelector(`.node[data-i="${index}"]`);
+    const computed = node ? getComputedStyle(node).getPropertyValue('--hc').trim() : '';
+    const accent = mod.accent || (computed || '#14b8a6');
+    viewport.appendChild(panelTemplate(mod, accent));
+    // focus per accessibilità
+    const h2 = viewport.querySelector('h2'); h2 && h2.focus && h2.focus();
+  }
+
+  // BIND click ai 12 pulsanti (non toccare layout/strati)
+  document.querySelectorAll('.node').forEach((btn)=>{
+    btn.addEventListener('click', ()=>{
+      const i = +btn.dataset.i;
+      openPanelByIndex(i);
+    }, {passive:true});
+  });
+
+  // opzionale: ripristina video se si torna con back/forward cache
+  addEventListener('pageshow', (e)=>{
+    if(e.persisted){ /* niente */ }
+  });
+})();
   </script>
 
   <script>
