@@ -115,7 +115,10 @@
   </header>
 
   <!-- Layers -->
-  <svg id="ellipseLayer" aria-hidden="true"></svg>
+  <svg id="ellipseLayer" aria-hidden="true">
+    <line id="handLine" x1="50%" y1="52%" x2="50%" y2="52%" 
+          stroke="#e8fbff" stroke-width="2" opacity="0.8"/>
+  </svg>
   <div id="viewport" aria-label="contenuti">
     <video id="hero" src="../videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
@@ -225,10 +228,18 @@
       }, {passive:true});
     })();
 
-    // Puntale lancetta animato
+    // Puntale lancetta animato con asta
     (function(){
       const tip = document.getElementById('handTip');
+      const line = document.getElementById('handLine');
+      
       function placeTip(x, y){ tip.style.transform = `translate(${x-5}px,${y-5}px)`; }
+      function updateLine(cx, cy, x, y){ 
+        line.setAttribute('x1', cx);
+        line.setAttribute('y1', cy);
+        line.setAttribute('x2', x);
+        line.setAttribute('y2', y);
+      }
       
       let start = null;
       function animate(timestamp) {
@@ -245,6 +256,7 @@
         const y = cy + radius * Math.sin(angle);
         
         placeTip(x, y);
+        updateLine(cx, cy, x, y);
         requestAnimationFrame(animate);
       }
       requestAnimationFrame(animate);
