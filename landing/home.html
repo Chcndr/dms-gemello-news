@@ -236,6 +236,61 @@
     #ellipseLayer{ z-index:2; pointer-events:none; }
     #viewport{ z-index:3; } /* video + panel */
     .node{ z-index:4; }     /* pulsanti */
+
+    /* --- LIGHT TWEAK: pannello più luminoso e meno pesante --- */
+    :root{
+      --accent:#14b8a6;
+      --accent-rgb:20,184,166;
+    }
+
+    /* Pannello: schiarito, meno opaco */
+    #panel{
+      /* niente cambio di posizionamento o misure */
+      background:
+        linear-gradient(180deg, rgba(15,32,36,0.88) 0%, rgba(16,35,39,0.84) 100%),
+        #0f2024;                  /* prima era ~0.92/0.90: ora più luminoso */
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.10);
+      /* ombra più leggera = meno lavoro GPU/CPU */
+      box-shadow:0 16px 40px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06);
+      color:#e7fbf5;
+      -webkit-font-smoothing:antialiased;
+      backface-visibility:hidden;
+      transform:translateZ(0);
+    }
+
+    /* Glow dietro: meno blur e meno intensità (migliore performance) */
+    #panel::after{
+      content:"";
+      position:absolute; inset:-18px; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(60% 70% at 50% 12%,
+          rgba(var(--accent-rgb),.24) 0%, transparent 60%);
+      filter:blur(12px);   /* prima ~22px */
+      opacity:.32;         /* prima ~.55 */
+    }
+
+    /* Testi pannello un filo più chiari */
+    #panel h1, #panel h2{ color:#f2fffb; }
+    #panel p, #panel .meta{ color:#d6efe9; }
+
+    /* Bottoni: alleggeriti (meno ombra) e senza filtri pesanti */
+    .btn{
+      box-shadow:0 6px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06);
+      background:rgba(255,255,255,.05);
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .btn--accent{
+      background:linear-gradient(180deg, rgba(var(--accent-rgb),.16), rgba(var(--accent-rgb),.12));
+      border-color:rgba(var(--accent-rgb),.38);
+      box-shadow:0 10px 22px rgba(var(--accent-rgb),.16), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .btn::after{ display:none; } /* rimuovo il glow extra sotto i bottoni (costoso) */
+
+    /* Se l'utente preferisce meno animazioni, disattivale */
+    @media (prefers-reduced-motion: reduce){
+      .btn{ transition:none; }
+    }
   </style>
 </head>
 <body>
