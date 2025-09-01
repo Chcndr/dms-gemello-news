@@ -212,12 +212,98 @@
       background: rgba(255,255,255,.03);
     }
 
-    /* scrollbar sobria */
-    #panel::-webkit-scrollbar{ width:10px; }
-    #panel::-webkit-scrollbar-thumb{
-      background: color-mix(in oklab, var(--accent) 25%, rgba(255,255,255,.12));
-      border-radius:8px;
+    /* Palette accenti (stessi colori dei tasti; se esistono --hc0..--hc11, li usiamo) */
+    :root{
+      /* fallback se --hc0..--hc11 non sono presenti */
+      --hc0:#14b8a6; --hc1:#fb923c; --hc2:#8da0cb; --hc3:#a6d854;
+      --hc4:#ffd92f; --hc5:#e78ac3; --hc6:#9ecae1; --hc7:#fdae6b;
+      --hc8:#c994c7; --hc9:#a1d99b; --hc10:#e5c494; --hc11:#b3b3b3;
+      --accent: var(--hc0);            /* verrà aggiornato da JS al click */
+      --vw: 800px; --vh: 450px;        /* verranno aggiornate da JS con la misura reale del video */
     }
+
+    /* Il viewport contiene video + pannello */
+    #viewport{ position:relative; width:var(--vw); height:var(--vh); margin:0 auto; }
+
+    /* Pannello identico al video, centrato, sfondo SOLIDO (no trasparenze) */
+    .panel{
+      position:absolute; left:50%; top:50%; translate:-50% -50%;
+      width:var(--vw); height:var(--vh);
+      border-radius:24px;
+      background:
+        linear-gradient(180deg, rgba(9,22,24,.96), rgba(9,22,24,.94));
+      outline:1px solid rgba(255,255,255,.08);
+      box-shadow:
+        0 18px 48px rgba(0,0,0,.55),
+        0 0 0 2px color-mix(in srgb, var(--accent) 38%, transparent) inset,
+        0 0 36px color-mix(in srgb, var(--accent) 28%, transparent);
+      backdrop-filter: blur(8px);
+      overflow:hidden;
+      pointer-events:auto;
+      z-index:1; /* dentro il viewport */
+    }
+
+    /* Testata + corpo con scroll interno per testi lunghi */
+    .panel-head{ padding:24px 28px 8px; }
+    .panel-head .badge{
+      display:inline-block; padding:4px 10px; border-radius:12px;
+      background: color-mix(in srgb, var(--accent) 22%, rgba(255,255,255,.06));
+      border:1px solid color-mix(in srgb, var(--accent) 55%, rgba(255,255,255,.2));
+      color:#fff; font-weight:600; letter-spacing:.2px;
+    }
+    .panel-head h1{ margin:10px 0 6px; font-size:clamp(22px, 3.6vw, 36px); }
+    .panel-head p{ opacity:.8; margin:0; }
+
+    .panel-body{
+      height: calc(100% - 112px);
+      padding: 8px 28px 22px;
+      overflow:auto;
+    }
+
+    /* CTA stile mockup */
+    .btn-cta{
+      display:flex; align-items:center; gap:12px;
+      margin:10px 12px 0 0; padding:12px 16px;
+      border-radius:14px;
+      border:1px solid color-mix(in srgb, var(--accent) 55%, rgba(255,255,255,.16));
+      background: color-mix(in srgb, var(--accent) 12%, rgba(255,255,255,.04));
+      text-decoration:none; color:#e9f6f3; font-weight:600;
+      box-shadow: 0 10px 18px rgba(0,0,0,.35),
+                  0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+      transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+    }
+    .btn-cta .pdf{
+      display:inline-grid; place-items:center; width:34px; height:34px; border-radius:10px;
+      background: color-mix(in srgb, var(--accent) 24%, rgba(255,255,255,.06));
+      border:1px solid color-mix(in srgb, var(--accent) 55%, rgba(255,255,255,.2));
+      font-size:12px; font-weight:700;
+    }
+    .btn-cta:is(:hover,:focus-visible){
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--accent) 80%, #fff 10%);
+      box-shadow:
+        0 12px 22px rgba(0,0,0,.45),
+        0 0 0 3px var(--accent),
+        0 0 26px 10px color-mix(in srgb, var(--accent) 65%, transparent);
+    }
+
+    /* Ghost button per "Torna al video" */
+    .btn-ghost{
+      margin-top:14px; padding:10px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.05); color:#e9f6f3; font-weight:600;
+    }
+    .btn-ghost:is(:hover,:focus-visible){ border-color:#fff; }
+
+    /* CLICK-THROUGH FIX: quando il pannello è aperto i nodi non "rubano" i click */
+    body.is-panel-open #viewport{ z-index:5; }
+    body.is-panel-open .node{ pointer-events:none; }
+
+    /* Layer confermati */
+    #glowLayer{ z-index:1; pointer-events:none; }
+    #ellipseLayer{ z-index:2; pointer-events:none; }
+    #viewport{ z-index:3; }
+    .node{ z-index:4; }
   </style>
 </head>
 <body>
@@ -236,10 +322,34 @@
   <!-- Layers -->
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
-    <video id="hero" src="../videos/video-hero.mp4"
-      muted playsinline webkit-playsinline preload="metadata" autoplay loop
-      poster="../assets/poster-hero.jpg"></video>
-    <div id="panel" hidden aria-live="polite"></div>
+    <div id="hero">
+      <video src="../videos/video-hero.mp4"
+        muted playsinline webkit-playsinline preload="metadata" autoplay loop
+        poster="../assets/poster-hero.jpg"></video>
+    </div>
+
+    <article id="panel" class="panel" hidden>
+      <header class="panel-head">
+        <span class="badge">Percorso</span>
+        <h1 id="p-title">Titolo</h1>
+        <p id="p-sub">Sottotitolo</p>
+      </header>
+
+      <div class="panel-body">
+        <p id="p-desc">Testo descrittivo.</p>
+
+        <nav class="cta">
+          <a id="cta0" class="btn-cta" target="_blank" rel="noopener">
+            <span class="pdf">PDF</span><span class="txt">Apri documento principale (PDF)</span>
+          </a>
+          <a id="cta1" class="btn-cta" target="_blank" rel="noopener"><span class="pdf">PDF</span><span class="txt">Allegato 1</span></a>
+          <a id="cta2" class="btn-cta" target="_blank" rel="noopener"><span class="pdf">PDF</span><span class="txt">Allegato 2</span></a>
+          <a id="cta3" class="btn-cta" target="_blank" rel="noopener"><span class="pdf">PDF</span><span class="txt">Allegato 3</span></a>
+        </nav>
+
+        <button id="backToVideo" class="btn-ghost">Torna al video</button>
+      </div>
+    </article>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
 
@@ -436,91 +546,106 @@
   </script>
 
   <script>
-(() => {
-  // 12 moduli: definisci contenuti minimi; il resto "in preparazione".
+(function(){
+  const root = document.documentElement;
+  const hero = document.querySelector('#hero');
+  const video = hero?.querySelector('video');
+  const panel = document.getElementById('panel');
+  const back = document.getElementById('backToVideo');
+  const title = document.getElementById('p-title');
+  const sub   = document.getElementById('p-sub');
+  const desc  = document.getElementById('p-desc');
+  const cta0  = document.getElementById('cta0');
+  const cta1  = document.getElementById('cta1');
+  const cta2  = document.getElementById('cta2');
+  const cta3  = document.getElementById('cta3');
+
+  // Dati minimi per i moduli (0 completo + placeholder per gli altri)
   const MODULES = [
     {
       title: "DMS — Riaccendiamo il Commercio",
-      sub: "Visione, gemello nazionale del commercio",
-      lead: "L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi.",
+      sub:   "Visione, gemello nazionale del commercio",
+      desc:  "L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi.",
       links: [
-        {label:"Apri documento principale (PDF)", href:"./docs/riaccendiamo.pdf"},
-        {label:"Hub Nazionale del Commercio (PDF)", href:"./docs/hub-nazionale.pdf"},
-        {label:"DMS & CLUST-ER (PDF)", href:"./docs/dms-cluster.pdf"},
-        {label:"DMS ECC — Executive (PDF)", href:"./docs/dms-ecc.pdf"}
+        { href:"./docs/PROGETTO NAZIONALE.pdf", text:"Apri documento principale (PDF)"},
+        { href:"./docs/HUB URBANI E DI PROSSIMITÀ.pdf", text:"Hub Nazionale del Commercio (PDF)"},
+        { href:"./docs/DMS & CLUST-ER.pdf",           text:"DMS & CLUST-ER (PDF)"},
+        { href:"./docs/DMS ECC — Executive.pdf",      text:"DMS ECC — Executive (PDF)"}
       ]
     },
-    ...Array.from({length: 11}, (_,k) => ({
-      title: `Modulo ${k+1}`,
-      sub: "In sviluppo",
-      lead: "Contenuti in preparazione.",
-      links: []  // opzionale aggiunte dopo
-    }))
+    { title:"Modulo 1", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 2", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 3", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 4", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 5", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 6", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 7", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 8", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 9", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 10",sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 11",sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
   ];
 
-  const viewport = document.getElementById('viewport');
-  const panel    = document.getElementById('panel');
-  const video    = viewport.querySelector('video');
-
-  function colorFromNode(node){
-    // legge il colore già assegnato al tasto (variabile --hc o --c)
-    const cs = getComputedStyle(node);
-    return (cs.getPropertyValue('--hc') || cs.getPropertyValue('--c') || '#14b8a6').trim();
+  function setViewportSizeFromHero(){
+    // misura il video/hero per far combaciare il pannello
+    const r = hero.getBoundingClientRect();
+    root.style.setProperty('--vw', r.width + 'px');
+    root.style.setProperty('--vh', r.height + 'px');
   }
+  setViewportSizeFromHero();
+  addEventListener('resize', setViewportSizeFromHero);
+  addEventListener('pageshow', setViewportSizeFromHero);
 
-  function tpl(i, accent){
+  // Apre pannello: usa il colore del tasto cliccato come accento
+  function openPanelByIndex(i, nodeEl){
+    // 1) accento dal nodo (variabile --hc già assegnata ai bottoni)
+    const cs = getComputedStyle(nodeEl);
+    const c  = cs.getPropertyValue('--hc').trim() || getComputedStyle(root).getPropertyValue(`--hc${i}`).trim() || '#14b8a6';
+    root.style.setProperty('--accent', c);
+
+    // 2) contenuti
     const m = MODULES[i] || MODULES[0];
-    const btns = [
-      ...m.links.map(l => `<a class="pdf" target="_blank" rel="noopener" href="${l.href}"><span>PDF</span>${l.label}</a>`),
-      `<a class="back" href="#" data-back> Torna al video </a>`
-    ].join('');
-    return `
-      <div class="head">
-        <span class="badge">Percorso</span>
-        <h2>${m.title}</h2>
-        <p class="sub">${m.sub || ""}</p>
-      </div>
-      <hr />
-      <p>${m.lead || ""}</p>
-      <div class="cta">${btns}</div>
-    `;
-  }
+    title.textContent = m.title;
+    sub.textContent   = m.sub || '';
+    desc.textContent  = m.desc || '';
 
-  function showPanel(i, accent){
-    // tinta
-    panel.style.setProperty('--accent', accent);
-    // contenuto
-    panel.innerHTML = tpl(i, accent);
-    panel.hidden = false;
-    // nascondi video
-    if (video) { video.pause?.(); video.style.visibility = 'hidden'; }
-    // chiudi
-    panel.querySelector('[data-back]').addEventListener('click', (e)=>{
-      e.preventDefault(); hidePanel();
-    }, {once:true});
-  }
-
-  function hidePanel(){
-    panel.hidden = true;
-    panel.innerHTML = "";
-    if (video) { video.style.visibility = 'visible'; video.play?.(); }
-  }
-
-  // Click su ciascun tasto
-  document.querySelectorAll('.node').forEach((node, i) => {
-    node.addEventListener('click', (e) => {
-      e.preventDefault();
-      const accent = colorFromNode(node);
-      showPanel(i, accent);
+    // CTA
+    [cta0, cta1, cta2, cta3].forEach((a, k)=>{
+      const link = m.links[k];
+      if(link){
+        a.hidden = false;
+        a.href = link.href;
+        a.querySelector('.txt').textContent = link.text;
+      }else{
+        a.hidden = true;
+      }
     });
-  });
 
-  // chiudi con ESC
-  addEventListener('keydown', (e)=>{
-    if (e.key === 'Escape' && !panel.hidden) hidePanel();
+    // 3) mostra pannello, nasconde video, blocca click dei nodi dietro
+    panel.hidden = false;
+    hero.hidden  = true;
+    document.body.classList.add('is-panel-open');
+    setViewportSizeFromHero();
+  }
+
+  // Chiudi pannello → torna al video
+  function closePanel(){
+    panel.hidden = true;
+    hero.hidden  = false;
+    document.body.classList.remove('is-panel-open');
+    setViewportSizeFromHero();
+  }
+  back?.addEventListener('click', closePanel);
+
+  // Aggancia i 12 bottoni dell'orologio
+  document.querySelectorAll('.node').forEach((el, idx)=>{
+    el.addEventListener('click', (e)=>{
+      e.preventDefault();
+      openPanelByIndex(idx, el);
+    }, {passive:false});
   });
 })();
-  </script>
+</script>
 
   <script>
     (function applyHoverPalette(){
