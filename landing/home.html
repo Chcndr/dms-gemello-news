@@ -151,66 +151,90 @@
       color:#cfeeea;
     }
 
-    /* ---- PANEL base ------------------------------------ */
-    #panel{
-      --accent: #14b8a6;                 /* colore dal tasto */
-      --radius: 18px;
-      --shell-w: min( clamp(520px, var(--heroW, 740px)*0.75, 980px), 86vw );
-      --shell-h: auto;                   /* altezza auto, ma non oltre il video */
-      --max-h: calc(var(--heroH, 420px) * 0.78);
-      position:absolute; inset:0; display:grid; place-items:center;
-      z-index: 3;                        /* sotto .node (4), sopra video (3) */
-      pointer-events:none;               /* i click li prende il contenuto */
+    /* ---- PANEL SOLIDO V1 ------------------------------------ */
+    :root{
+      /* dimensioni del video (dalla JS) */
+      --heroW: 720px;
+      --heroH: 405px;
     }
+
+    /* Il viewport resta il contenitore di video + pannello */
+    #viewport{
+      position: relative;
+      display: grid;
+      place-items: center;
+      z-index: 3;
+    }
+
+    /* Pannello: centrato, stessa misura del video, sfondo pieno */
+    #panel{
+      position: absolute;
+      width: var(--heroW);
+      height: var(--heroH);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 22px 24px;
+      border-radius: 22px;
+
+      /* tinta = accent del tasto (iniettata via JS in --panel-accent) */
+      --panel-accent: #14b8a6;
+      background:
+        linear-gradient(180deg,
+          color-mix(in oklab, var(--panel-accent) 8%, #0a1717) 0%,
+          color-mix(in oklab, var(--panel-accent) 12%, #0a1717) 100%);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow:
+        0 18px 40px rgba(0,0,0,.55),
+        inset 0 1px 0 rgba(255,255,255,.06);
+      color: #eaf6f3;
+      overflow: hidden;
+    }
+
     #panel[hidden]{ display:none; }
 
-    #panel .panel__shell{
-      width: var(--shell-w);
-      max-height: var(--max-h);
-      background: color-mix(in oklab, var(--accent) 12%, #0f1f23);
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: var(--radius);
+    .panel-head{ display:flex; align-items:center; justify-content:space-between; }
+    .badge{
+      font: 600 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--panel-accent) 55%, #0a1717);
+      border: 1px solid color-mix(in oklab, var(--panel-accent) 70%, white 12%);
+      box-shadow: 0 0 0 6px color-mix(in oklab, var(--panel-accent) 20%, transparent);
+    }
+    .panel-close{
+      appearance: none;
+      border: 0;
+      background: rgba(255,255,255,.08);
+      color: #eaf6f3;
+      width: 32px; height: 32px;
+      border-radius: 8px; cursor: pointer;
+    }
+    .panel-title{ font-size: clamp(22px, 3.1vmin, 28px); margin: 4px 0 0; }
+    .panel-desc{ opacity:.9; margin: 0 0 8px; }
+
+    .panel-actions{ display:flex; gap:10px; margin-top:auto; }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      height: 40px; padding: 0 14px; border-radius: 10px;
+      background: color-mix(in oklab, var(--panel-accent) 75%, #0a1717);
+      color: #071312; font-weight: 700; text-decoration: none; border: 0;
       box-shadow:
-        0 30px 60px rgba(0,0,0,.45),
-        0 0 0 1px rgba(255,255,255,.06) inset;
-      padding: 22px 24px 18px;
-      color: #e7f5f3;
-      filter: drop-shadow(0 0 24px color-mix(in oklab, var(--accent) 35%, transparent));
-      pointer-events:auto;
+        0 0 0 3px color-mix(in oklab, var(--panel-accent) 70%, transparent),
+        0 10px 20px rgba(0,0,0,.45);
+    }
+    .btn:hover{ filter: brightness(1.05); }
+    .btn-ghost{
+      height: 40px; padding: 0 12px; border-radius: 10px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+      color: #eaf6f3; cursor:pointer;
     }
 
-    /* tipografia */
-    .panel__badge{
-      display:inline-block; font-weight:700; font-size:.9rem; letter-spacing:.02em;
-      background: color-mix(in oklab, var(--accent) 80%, #0000);
-      color: #041414; padding: 6px 10px; border-radius:999px; margin-bottom:8px;
-    }
-    .panel__title{ margin: 8px 0 6px; font-size: 1.6rem; line-height:1.25; }
-    .panel__subtitle{ margin: 0 0 10px; opacity:.85 }
-    .panel__body{ margin: 0 0 16px; opacity:.9 }
+    /* Mentre la scheda è aperta: niente click sui nodi (evita conflitti) */
+    body.panel-open .node{ pointer-events:none; }
 
-    /* CTA */
-    .panel__cta{ display:flex; flex-wrap:wrap; gap:10px; margin: 6px 0 12px; }
-    .panel__cta .btn{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 14px; border-radius:12px; font-weight:700;
-      border:1px solid color-mix(in oklab, var(--accent) 70%, #fff 0%);
-      background: color-mix(in oklab, var(--accent) 22%, #0d1b1f);
-    }
-    .panel__cta .btn:hover{
-      box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 40%, transparent);
-      transform: translateY(-1px);
-    }
-
-    /* back */
-    .panel__back{
-      padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.18);
-      background:#0e1c20; color:#e7f5f3; font-weight:700;
-    }
-    .panel__footer{ display:flex; justify-content:flex-end; }
-
-    /* quando il pannello è aperto, disattivo i click sui nodi */
-    body.is-panel-open .node{ pointer-events:none; }
+    /* Alza solo il viewport quando la scheda è aperta (click sicuri) */
+    body.panel-open #viewport{ z-index: 5; }
 
     /* layering confermato */
     #glowLayer{ z-index:1; pointer-events:none; }
@@ -239,21 +263,19 @@
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
       poster="../assets/poster-hero.jpg"></video>
     
-    <!-- PANEL: compatto, scala rispetto al video -->
-    <div id="panel" hidden aria-hidden="true">
-      <div class="panel__shell">
-        <div class="panel__badge">Percorso</div>
-        <h2 class="panel__title" id="panelTitle">Titolo</h2>
-        <p class="panel__subtitle" id="panelSub">Sottotitolo</p>
-        <p class="panel__body" id="panelBody">Testo del modulo…</p>
+    <!-- Pannello scheda (stessa misura del video) -->
+    <div id="panel" hidden>
+      <div class="panel-head">
+        <span class="badge">PDF</span>
+        <button class="panel-close" type="button" aria-label="Chiudi" data-close>×</button>
+      </div>
 
-        <div class="panel__cta" id="panelCtas">
-          <!-- CTA principali generati da JS -->
-        </div>
+      <h2 class="panel-title" data-title>Modulo</h2>
+      <p class="panel-desc" data-desc>Contenuti in arrivo.</p>
 
-        <div class="panel__footer">
-          <button class="panel__back" type="button" id="panelBack">Torna al video</button>
-        </div>
+      <div class="panel-actions">
+        <a class="btn" data-primary href="#" target="_blank" rel="noopener">Apri PDF</a>
+        <button class="btn-ghost" type="button" data-close>⚑ Torna al video</button>
       </div>
     </div>
   </div>
@@ -526,85 +548,68 @@
   </script>
 
   <script>
-(() => {
+(function(){
+  const root = document.documentElement;
+  const hero = document.getElementById('hero') || document.getElementById('video') || document.querySelector('#viewport video')?.parentElement;
   const panel = document.getElementById('panel');
-  const shell = panel?.querySelector('.panel__shell');
-  const elTitle = panel?.querySelector('#panelTitle');
-  const elSub   = panel?.querySelector('#panelSub');
-  const elBody  = panel?.querySelector('#panelBody');
-  const elCtas  = panel?.querySelector('#panelCtas');
-  const btnBack = panel?.querySelector('#panelBack');
-  const hero    = document.getElementById('heroVideo') || document.querySelector('#viewport video');
 
-  // ---- misura video e aggiorna variabili (anche su resize/orientazione)
-  function sizeFromHero(){
-    const r = hero?.getBoundingClientRect?.();
-    const w = Math.round(r?.width || 740);
-    const h = Math.round(r?.height || 420);
-    document.documentElement.style.setProperty('--heroW', w + 'px');
-    document.documentElement.style.setProperty('--heroH', h + 'px');
-  }
-  sizeFromHero();
-  addEventListener('resize', sizeFromHero, {passive:true});
-  addEventListener('orientationchange', () => setTimeout(sizeFromHero, 120));
-
-  // ---- carica dati moduli se servono
-  let MODULES = (window.MODULES || window.modules || null);
-  async function ensureModules(){
-    if (MODULES) return MODULES;
-    try{
-      const r = await fetch('./data/modules.json', {cache:'no-store'});
-      MODULES = await r.json();
-      return MODULES;
-    }catch{ return []; }
+  function syncHeroSize(){
+    if(!hero) return;
+    const r = hero.getBoundingClientRect();
+    root.style.setProperty('--heroW', r.width + 'px');
+    root.style.setProperty('--heroH', r.height + 'px');
   }
 
-  // ---- costruisce CTA PDF
-  function buildCtas(mod){
-    elCtas.innerHTML = '';
-    const makeBtn = (label, href) => {
-      const a = document.createElement('a');
-      a.className = 'btn'; a.textContent = label; a.target = '_blank'; a.rel='noopener';
-      a.href = href;
-      return a;
-    };
-    if (mod.pdf) elCtas.appendChild(makeBtn('Apri documento principale (PDF)', mod.pdf));
-    (mod.more || []).forEach((m, i) => elCtas.appendChild(makeBtn(`Apri allegato ${i+1}`, m)));
-  }
+  // Call all the times it matters
+  addEventListener('resize', ()=>requestAnimationFrame(syncHeroSize));
+  addEventListener('orientationchange', ()=>setTimeout(syncHeroSize, 50));
+  document.addEventListener('DOMContentLoaded', syncHeroSize);
+  setTimeout(syncHeroSize, 100); // Safari iOS first paint
 
-  // ---- apre pannello con indice i
-  async function openPanel(i){
-    const mods = await ensureModules();
-    const mod = Array.isArray(mods) ? mods[i] : mods?.[i];
-    // testo
-    elTitle.textContent = (mod?.title || `Modulo ${i}`);
-    elSub.textContent   = (mod?.when  || 'In sviluppo');
-    elBody.textContent  = (mod?.desc  || mod?.description || 'Contenuti in arrivo.');
-    buildCtas(mod || {});
-    // colore dal tasto
-    const node = document.querySelector(`.node[data-i="${i}"]`) || document.querySelectorAll('.node')[i];
-    const hc = node ? getComputedStyle(node).getPropertyValue('--hc').trim() : '';
-    shell.style.setProperty('--accent', hc || '#14b8a6');
-    // mostra pannello
-    panel.hidden = false; panel.setAttribute('aria-hidden','false');
-    document.body.classList.add('is-panel-open');
-  }
+  // Open panel by index (hook sui pulsanti esistenti)
+  window.openPanelByIndex = function(i){
+    syncHeroSize();
 
-  // ---- chiudi pannello
+    // Prendi la tinta del tasto (variabile --hc già assegnata ai .node)
+    const node = document.querySelector('.node[data-i="'+i+'"]');
+    const hc = node ? getComputedStyle(node).getPropertyValue('--hc') : '#14b8a6';
+    panel.style.setProperty('--panel-accent', hc.trim() || '#14b8a6');
+
+    // Dati modulo se disponibili (fallback testuale)
+    const m = (window.modules && window.modules[i]) || {};
+    panel.querySelector('[data-title]').textContent = m.title || ('Modulo ' + i);
+    panel.querySelector('[data-desc]').textContent  = m.desc  || 'Contenuti in arrivo.';
+    const a = panel.querySelector('[data-primary]');
+    a.href = m.pdf || '#';
+
+    // Mostra pannello, nasconde il video (senza spostarlo)
+    panel.hidden = false;
+    if (hero) hero.style.visibility = 'hidden';
+    document.body.classList.add('panel-open');
+  };
+
   function closePanel(){
-    panel.hidden = true; panel.setAttribute('aria-hidden','true');
-    document.body.classList.remove('is-panel-open');
+    panel.hidden = true;
+    if (hero) hero.style.visibility = '';
+    document.body.classList.remove('panel-open');
+    // riallinea dimensioni
+    requestAnimationFrame(syncHeroSize);
   }
-  btnBack?.addEventListener('click', closePanel);
 
-  // ---- collega i 12 tasti dell'orologio
-  document.querySelectorAll('.node').forEach((el, i) => {
-    el.addEventListener('click', (e) => { e.preventDefault(); openPanel(i); }, {passive:false});
+  // Collega i pulsanti "Torna al video" e la X
+  panel.querySelectorAll('[data-close]').forEach(btn=>{
+    btn.addEventListener('click', closePanel);
   });
 
-  // ---- utilità: test veloce ?panel=i
-  const qs = new URLSearchParams(location.search);
-  if (qs.has('panel')) { openPanel(parseInt(qs.get('panel'),10)||0); }
+  // Se i .node non hanno già un handler, aggancialo
+  document.querySelectorAll('.node').forEach((el)=>{
+    if (el._panelHooked) return;
+    el._panelHooked = true;
+    el.addEventListener('click', ()=>{
+      const i = Number(el.dataset.i || 0);
+      openPanelByIndex(i);
+    });
+  });
 })();
   </script>
 </body>
