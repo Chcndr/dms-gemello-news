@@ -390,14 +390,14 @@
   </script>
 
   <script>
-    // Pannello PDF - show/hide nel viewport
-    function openPanel0(){
+    // Pannello PDF - show/hide nel viewport    function openPanel0(){
       const vp = document.getElementById('viewport');
       const p0 = document.getElementById('panel-0');
       if (!vp || !p0) return;
-      vp.querySelector('video')?.setAttribute('hidden','');   // nascondi video
+      vp.querySelector('video')?.setAttribute('hidden', '');  // nascondi video
       p0.hidden = false;
     }
+
     function closePanel0(){
       const vp = document.getElementById('viewport');
       const p0 = document.getElementById('panel-0');
@@ -406,18 +406,90 @@
       vp.querySelector('video')?.removeAttribute('hidden');   // mostra video
     }
 
-    // Collega il click del tasto 0 all'apertura pannello
-    document.querySelector('.node[data-i="0"]')?.addEventListener('click', openPanel0);
-    
-    // Altri pulsanti - fallback scroll al viewport
-    document.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.node');
-      if (!btn) return;
-      const i = +btn.dataset.i || 0;
-      if (i === 0) return; // già gestito sopra
-      
+    // Funzione per aprire pannello colorato per qualsiasi pulsante
+    function openPanelByIndex(index) {
       const vp = document.getElementById('viewport');
-      vp?.scrollIntoView({behavior:'smooth', block:'center'});
+      const video = vp?.querySelector('video');
+      if (!vp || !video) return;
+
+      // Nascondi video
+      video.setAttribute('hidden', '');
+
+      // Ottieni colore del pulsante
+      const btn = document.querySelector(`.node[data-i="${index}"]`);
+      const color = btn ? getComputedStyle(btn).getPropertyValue('--hc').trim() : '#14b8a6';
+
+      // Crea pannello colorato
+      const panelHTML = `
+        <div class="panel" id="panel-${index}" style="
+          background: linear-gradient(180deg, 
+            color-mix(in srgb, ${color} 35%, #0a3b3d), 
+            color-mix(in srgb, ${color} 25%, #0a3436)
+          );
+          width: ${video.offsetWidth}px;
+          height: ${video.offsetHeight}px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        ">
+          <div style="
+            background: color-mix(in srgb, ${color} 80%, #000 20%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+          ">Percorso</div>
+          
+          <h1 style="margin: 0 0 8px 0; font-size: 28px; font-weight: 800;">Modulo ${index}</h1>
+          <p style="margin: 0 0 16px 0; opacity: 0.8; font-size: 16px;">In sviluppo</p>
+          <p style="margin: 0 0 24px 0; opacity: 0.9;">Contenuti in preparazione.</p>
+          
+          <button onclick="closePanelByIndex(${index})" style="
+            background: none;
+            border: 2px solid ${color};
+            color: ${color};
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+          ">Torna al video</button>
+        </div>
+      `;
+
+      // Rimuovi pannelli esistenti e aggiungi nuovo
+      vp.querySelectorAll('.panel').forEach(p => p.remove());
+      vp.insertAdjacentHTML('beforeend', panelHTML);
+    }
+
+    function closePanelByIndex(index) {
+      const vp = document.getElementById('viewport');
+      const panel = document.getElementById(`panel-${index}`);
+      const video = vp?.querySelector('video');
+      
+      if (panel) panel.remove();
+      if (video) video.removeAttribute('hidden');
+    }
+
+    // Collega tutti i pulsanti ai pannelli colorati
+    document.querySelectorAll('.node').forEach((btn, i) => {
+      btn.addEventListener('click', () => openPanelByIndex(i));
+    });
+
+    // ESC per chiudere pannello
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const vp = document.getElementById('viewport');
+        const video = vp?.querySelector('video');
+        vp?.querySelectorAll('.panel').forEach(p => p.remove());
+        if (video) video.removeAttribute('hidden');
+      }
     });
   </script>
 
