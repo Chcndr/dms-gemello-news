@@ -2,10 +2,12 @@
   const viewport = document.getElementById('viewport');
 
   function setViewportSizeFromHero(){
-    const hero = document.getElementById('hero') || viewport;
-    const r = hero.getBoundingClientRect();
-    viewport.style.setProperty('--vw', Math.round(r.width)  + 'px');
-    viewport.style.setProperty('--vh', Math.round(r.height) + 'px');
+    const video = document.getElementById('heroVideo') || document.querySelector('#hero video');
+    if (video) {
+      const r = video.getBoundingClientRect();
+      viewport.style.setProperty('--vw', Math.round(r.width)  + 'px');
+      viewport.style.setProperty('--vh', Math.round(r.height) + 'px');
+    }
   }
 
   // Call allineamento su load/resize
