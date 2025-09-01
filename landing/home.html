@@ -150,6 +150,74 @@
       display:grid; place-items:center; font-weight:700; font-size:12px;
       color:#cfeeea;
     }
+
+    /* Card nel viewport: tinta da --accent (presa dal tasto) */
+    #panel{
+      --accent: #14b8a6;                      /* fallback */
+      position: absolute; inset: 0; margin: auto;
+      width: min(880px, 92vw);
+      max-height: 84%;
+      overflow: auto;
+      padding: 28px 28px 22px;
+      border-radius: 18px;
+      background: rgba(12,18,20,.92);         /* quasi opaca: la lancetta NON si vede sotto */
+      border: 1px solid color-mix(in oklab, var(--accent) 28%, rgba(255,255,255,.12));
+      box-shadow:
+        0 20px 60px rgba(0,0,0,.5),
+        0 0 0 1px rgba(255,255,255,.06) inset;
+      color: #e9f0ee;
+      z-index: 3;   /* dentro il viewport, NON sopra i .node */
+    }
+
+    /* testata e badge "Percorso" */
+    #panel .head{ margin-bottom: 12px; }
+    #panel .badge{
+      display:inline-block; font:600 12px/1.1 ui-sans-serif,system-ui;
+      padding:6px 10px; border-radius:999px; letter-spacing:.02em;
+      color:#0b1615;
+      background: color-mix(in oklab, var(--accent) 92%, white 6%);
+      box-shadow: 0 0 18px color-mix(in oklab, var(--accent) 45%, transparent);
+    }
+
+    /* titoli */
+    #panel h2{ font:700 clamp(22px,3.8vw,34px)/1.16 ui-sans-serif,system-ui; margin:10px 0 6px; }
+    #panel p.sub{ opacity:.85; margin:0 0 16px; }
+
+    /* righe di separazione */
+    #panel hr{ border:0; height:1px; margin:14px 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
+    }
+
+    /* CTA list */
+    #panel .cta{
+      display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;
+    }
+    #panel .cta a{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:12px 16px; border-radius:12px; text-decoration:none;
+      font:600 16px/1.1 ui-sans-serif,system-ui;
+      color: #e8fcf7; background: color-mix(in oklab, var(--accent) 18%, rgba(255,255,255,.02));
+      border:1px solid color-mix(in oklab, var(--accent) 55%, rgba(255,255,255,.14));
+      box-shadow: 0 0 22px color-mix(in oklab, var(--accent) 35%, transparent);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    #panel .cta a:hover{ transform: translateY(-2px);
+      box-shadow: 0 10px 30px color-mix(in oklab, var(--accent) 45%, transparent);
+    }
+
+    /* link "Torna al video" (neutro ma con contorno accent) */
+    #panel .back{
+      margin-left:auto;
+      color:#cfe5e1; border:1px dashed color-mix(in oklab, var(--accent) 40%, rgba(255,255,255,.16));
+      background: rgba(255,255,255,.03);
+    }
+
+    /* scrollbar sobria */
+    #panel::-webkit-scrollbar{ width:10px; }
+    #panel::-webkit-scrollbar-thumb{
+      background: color-mix(in oklab, var(--accent) 25%, rgba(255,255,255,.12));
+      border-radius:8px;
+    }
   </style>
 </head>
 <body>
@@ -171,29 +239,7 @@
     <video id="hero" src="../videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
       poster="../assets/poster-hero.jpg"></video>
-    
-    <div class="panel" id="panel-0" hidden>
-      <h1>DMS — Riaccendiamo il Commercio</h1>
-      <p class="lead">Visione, gemello nazionale del commercio</p>
-      <p class="lead">L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi</p>
-
-      <a class="cta" href="./docs/riaccendiamo.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>Apri documento principale (PDF)</span>
-      </a>
-      <a class="cta" href="./docs/hub-nazionale.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>Hub Nazionale del Commercio (PDF)</span>
-      </a>
-      <a class="cta" href="./docs/dms-cluster.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>DMS &amp; CLUST-ER (PDF)</span>
-      </a>
-      <a class="cta" href="./docs/dms-ecc.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>DMS ECC — Executive (PDF)</span>
-      </a>
-    </div>
+    <div id="panel" hidden aria-live="polite"></div>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
 
@@ -390,35 +436,90 @@
   </script>
 
   <script>
-    // Pannello PDF - show/hide nel viewport
-    function openPanel0(){
-      const vp = document.getElementById('viewport');
-      const p0 = document.getElementById('panel-0');
-      if (!vp || !p0) return;
-      vp.querySelector('video')?.setAttribute('hidden','');   // nascondi video
-      p0.hidden = false;
-    }
-    function closePanel0(){
-      const vp = document.getElementById('viewport');
-      const p0 = document.getElementById('panel-0');
-      if (!vp || !p0) return;
-      p0.hidden = true;
-      vp.querySelector('video')?.removeAttribute('hidden');   // mostra video
-    }
+(() => {
+  // 12 moduli: definisci contenuti minimi; il resto "in preparazione".
+  const MODULES = [
+    {
+      title: "DMS — Riaccendiamo il Commercio",
+      sub: "Visione, gemello nazionale del commercio",
+      lead: "L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi.",
+      links: [
+        {label:"Apri documento principale (PDF)", href:"./docs/riaccendiamo.pdf"},
+        {label:"Hub Nazionale del Commercio (PDF)", href:"./docs/hub-nazionale.pdf"},
+        {label:"DMS & CLUST-ER (PDF)", href:"./docs/dms-cluster.pdf"},
+        {label:"DMS ECC — Executive (PDF)", href:"./docs/dms-ecc.pdf"}
+      ]
+    },
+    ...Array.from({length: 11}, (_,k) => ({
+      title: `Modulo ${k+1}`,
+      sub: "In sviluppo",
+      lead: "Contenuti in preparazione.",
+      links: []  // opzionale aggiunte dopo
+    }))
+  ];
 
-    // Collega il click del tasto 0 all'apertura pannello
-    document.querySelector('.node[data-i="0"]')?.addEventListener('click', openPanel0);
-    
-    // Altri pulsanti - fallback scroll al viewport
-    document.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.node');
-      if (!btn) return;
-      const i = +btn.dataset.i || 0;
-      if (i === 0) return; // già gestito sopra
-      
-      const vp = document.getElementById('viewport');
-      vp?.scrollIntoView({behavior:'smooth', block:'center'});
+  const viewport = document.getElementById('viewport');
+  const panel    = document.getElementById('panel');
+  const video    = viewport.querySelector('video');
+
+  function colorFromNode(node){
+    // legge il colore già assegnato al tasto (variabile --hc o --c)
+    const cs = getComputedStyle(node);
+    return (cs.getPropertyValue('--hc') || cs.getPropertyValue('--c') || '#14b8a6').trim();
+  }
+
+  function tpl(i, accent){
+    const m = MODULES[i] || MODULES[0];
+    const btns = [
+      ...m.links.map(l => `<a class="pdf" target="_blank" rel="noopener" href="${l.href}"><span>PDF</span>${l.label}</a>`),
+      `<a class="back" href="#" data-back> Torna al video </a>`
+    ].join('');
+    return `
+      <div class="head">
+        <span class="badge">Percorso</span>
+        <h2>${m.title}</h2>
+        <p class="sub">${m.sub || ""}</p>
+      </div>
+      <hr />
+      <p>${m.lead || ""}</p>
+      <div class="cta">${btns}</div>
+    `;
+  }
+
+  function showPanel(i, accent){
+    // tinta
+    panel.style.setProperty('--accent', accent);
+    // contenuto
+    panel.innerHTML = tpl(i, accent);
+    panel.hidden = false;
+    // nascondi video
+    if (video) { video.pause?.(); video.style.visibility = 'hidden'; }
+    // chiudi
+    panel.querySelector('[data-back]').addEventListener('click', (e)=>{
+      e.preventDefault(); hidePanel();
+    }, {once:true});
+  }
+
+  function hidePanel(){
+    panel.hidden = true;
+    panel.innerHTML = "";
+    if (video) { video.style.visibility = 'visible'; video.play?.(); }
+  }
+
+  // Click su ciascun tasto
+  document.querySelectorAll('.node').forEach((node, i) => {
+    node.addEventListener('click', (e) => {
+      e.preventDefault();
+      const accent = colorFromNode(node);
+      showPanel(i, accent);
     });
+  });
+
+  // chiudi con ESC
+  addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape' && !panel.hidden) hidePanel();
+  });
+})();
   </script>
 
   <script>
