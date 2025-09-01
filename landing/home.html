@@ -313,6 +313,19 @@
     /* niente ::after finché non abbiamo verificato */
     #panel h1,#panel h2{color:#f2fffb}
     #panel p,.meta{color:#d6efe9}
+
+    /* Punto di stato nel pannello Home */
+    #panel{ position:relative; } /* safe */
+    #panel::before{
+      content:"";
+      position:absolute; right:12px; top:12px;
+      width:10px; height:10px; border-radius:50%;
+      background:#14b8a6;                   /* teal DMS */
+      box-shadow:0 0 0 2px rgba(20,184,166,.25), 0 0 10px rgba(20,184,166,.55);
+      opacity:.9;
+      pointer-events:none; z-index:1;
+    }
+    /* Variante in basso a destra: sostituisci con -> bottom:12px; top:auto; */
   </style>
 </head>
 <body>
