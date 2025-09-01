@@ -150,6 +150,73 @@
       display:grid; place-items:center; font-weight:700; font-size:12px;
       color:#cfeeea;
     }
+
+    /* ---- PANEL base ------------------------------------ */
+    #panel{
+      --accent: #14b8a6;                 /* colore dal tasto */
+      --radius: 18px;
+      --shell-w: min( clamp(520px, var(--heroW, 740px)*0.75, 980px), 86vw );
+      --shell-h: auto;                   /* altezza auto, ma non oltre il video */
+      --max-h: calc(var(--heroH, 420px) * 0.78);
+      position:absolute; inset:0; display:grid; place-items:center;
+      z-index: 3;                        /* sotto .node (4), sopra video (3) */
+      pointer-events:none;               /* i click li prende il contenuto */
+    }
+    #panel[hidden]{ display:none; }
+
+    #panel .panel__shell{
+      width: var(--shell-w);
+      max-height: var(--max-h);
+      background: color-mix(in oklab, var(--accent) 12%, #0f1f23);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: var(--radius);
+      box-shadow:
+        0 30px 60px rgba(0,0,0,.45),
+        0 0 0 1px rgba(255,255,255,.06) inset;
+      padding: 22px 24px 18px;
+      color: #e7f5f3;
+      filter: drop-shadow(0 0 24px color-mix(in oklab, var(--accent) 35%, transparent));
+      pointer-events:auto;
+    }
+
+    /* tipografia */
+    .panel__badge{
+      display:inline-block; font-weight:700; font-size:.9rem; letter-spacing:.02em;
+      background: color-mix(in oklab, var(--accent) 80%, #0000);
+      color: #041414; padding: 6px 10px; border-radius:999px; margin-bottom:8px;
+    }
+    .panel__title{ margin: 8px 0 6px; font-size: 1.6rem; line-height:1.25; }
+    .panel__subtitle{ margin: 0 0 10px; opacity:.85 }
+    .panel__body{ margin: 0 0 16px; opacity:.9 }
+
+    /* CTA */
+    .panel__cta{ display:flex; flex-wrap:wrap; gap:10px; margin: 6px 0 12px; }
+    .panel__cta .btn{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 14px; border-radius:12px; font-weight:700;
+      border:1px solid color-mix(in oklab, var(--accent) 70%, #fff 0%);
+      background: color-mix(in oklab, var(--accent) 22%, #0d1b1f);
+    }
+    .panel__cta .btn:hover{
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 40%, transparent);
+      transform: translateY(-1px);
+    }
+
+    /* back */
+    .panel__back{
+      padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.18);
+      background:#0e1c20; color:#e7f5f3; font-weight:700;
+    }
+    .panel__footer{ display:flex; justify-content:flex-end; }
+
+    /* quando il pannello è aperto, disattivo i click sui nodi */
+    body.is-panel-open .node{ pointer-events:none; }
+
+    /* layering confermato */
+    #glowLayer{ z-index:1; pointer-events:none; }
+    #ellipseLayer{ z-index:2; pointer-events:none; }
+    #viewport{ z-index:3; }
+    .node{ z-index:4; }
   </style>
 </head>
 <body>
@@ -168,31 +235,26 @@
   <!-- Layers -->
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
-    <video id="hero" src="../videos/video-hero.mp4"
+    <video id="heroVideo" src="../videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
       poster="../assets/poster-hero.jpg"></video>
     
-    <div class="panel" id="panel-0" hidden>
-      <h1>DMS — Riaccendiamo il Commercio</h1>
-      <p class="lead">Visione, gemello nazionale del commercio</p>
-      <p class="lead">L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi</p>
+    <!-- PANEL: compatto, scala rispetto al video -->
+    <div id="panel" hidden aria-hidden="true">
+      <div class="panel__shell">
+        <div class="panel__badge">Percorso</div>
+        <h2 class="panel__title" id="panelTitle">Titolo</h2>
+        <p class="panel__subtitle" id="panelSub">Sottotitolo</p>
+        <p class="panel__body" id="panelBody">Testo del modulo…</p>
 
-      <a class="cta" href="./docs/riaccendiamo.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>Apri documento principale (PDF)</span>
-      </a>
-      <a class="cta" href="./docs/hub-nazionale.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>Hub Nazionale del Commercio (PDF)</span>
-      </a>
-      <a class="cta" href="./docs/dms-cluster.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>DMS &amp; CLUST-ER (PDF)</span>
-      </a>
-      <a class="cta" href="./docs/dms-ecc.pdf" target="_blank" rel="noopener">
-        <span class="pdfdot">PDF</span>
-        <span>DMS ECC — Executive (PDF)</span>
-      </a>
+        <div class="panel__cta" id="panelCtas">
+          <!-- CTA principali generati da JS -->
+        </div>
+
+        <div class="panel__footer">
+          <button class="panel__back" type="button" id="panelBack">Torna al video</button>
+        </div>
+      </div>
     </div>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
@@ -461,38 +523,89 @@
         el.style.setProperty('--hc', v || '#23b5a6'); // fallback teal
       });
     })();
+  </script>
 
-    // Click sui pulsanti per aprire PDF nel viewport
-    (function(){
-      const viewport = document.getElementById('viewport');
-      const originalVideo = viewport.innerHTML;
-      
-      document.querySelectorAll('.node').forEach((btn, i) => {
-        btn.addEventListener('click', () => {
-          const pdfPath = `../docs/pdf${i + 1}.pdf`;
-          
-          viewport.innerHTML = `
-            <div style="width:100%; height:100%; display:flex; flex-direction:column; background:#0c1e25; border-radius:16px; overflow:hidden;">
-              <div style="padding:12px; background:rgba(0,0,0,.3); display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:#e8fbff; font-weight:600;">PDF ${i + 1}</span>
-                <button onclick="this.closest('#viewport').innerHTML = \`${originalVideo.replace(/`/g, '\\`')}\`" 
-                        style="padding:6px 12px; background:#14b8a6; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
-                  Torna al video
-                </button>
-              </div>
-              <iframe src="${pdfPath}" 
-                      style="flex:1; border:none; background:white;"
-                      title="PDF ${i + 1}">
-                <p style="color:#e8fbff; padding:20px; text-align:center;">
-                  Il PDF non può essere visualizzato. 
-                  <a href="${pdfPath}" style="color:#14b8a6;">Apri in una nuova finestra</a>
-                </p>
-              </iframe>
-            </div>
-          `;
-        });
-      });
-    })();
+  <script>
+(() => {
+  const panel = document.getElementById('panel');
+  const shell = panel?.querySelector('.panel__shell');
+  const elTitle = panel?.querySelector('#panelTitle');
+  const elSub   = panel?.querySelector('#panelSub');
+  const elBody  = panel?.querySelector('#panelBody');
+  const elCtas  = panel?.querySelector('#panelCtas');
+  const btnBack = panel?.querySelector('#panelBack');
+  const hero    = document.getElementById('heroVideo') || document.querySelector('#viewport video');
+
+  // ---- misura video e aggiorna variabili (anche su resize/orientazione)
+  function sizeFromHero(){
+    const r = hero?.getBoundingClientRect?.();
+    const w = Math.round(r?.width || 740);
+    const h = Math.round(r?.height || 420);
+    document.documentElement.style.setProperty('--heroW', w + 'px');
+    document.documentElement.style.setProperty('--heroH', h + 'px');
+  }
+  sizeFromHero();
+  addEventListener('resize', sizeFromHero, {passive:true});
+  addEventListener('orientationchange', () => setTimeout(sizeFromHero, 120));
+
+  // ---- carica dati moduli se servono
+  let MODULES = (window.MODULES || window.modules || null);
+  async function ensureModules(){
+    if (MODULES) return MODULES;
+    try{
+      const r = await fetch('./data/modules.json', {cache:'no-store'});
+      MODULES = await r.json();
+      return MODULES;
+    }catch{ return []; }
+  }
+
+  // ---- costruisce CTA PDF
+  function buildCtas(mod){
+    elCtas.innerHTML = '';
+    const makeBtn = (label, href) => {
+      const a = document.createElement('a');
+      a.className = 'btn'; a.textContent = label; a.target = '_blank'; a.rel='noopener';
+      a.href = href;
+      return a;
+    };
+    if (mod.pdf) elCtas.appendChild(makeBtn('Apri documento principale (PDF)', mod.pdf));
+    (mod.more || []).forEach((m, i) => elCtas.appendChild(makeBtn(`Apri allegato ${i+1}`, m)));
+  }
+
+  // ---- apre pannello con indice i
+  async function openPanel(i){
+    const mods = await ensureModules();
+    const mod = Array.isArray(mods) ? mods[i] : mods?.[i];
+    // testo
+    elTitle.textContent = (mod?.title || `Modulo ${i}`);
+    elSub.textContent   = (mod?.when  || 'In sviluppo');
+    elBody.textContent  = (mod?.desc  || mod?.description || 'Contenuti in arrivo.');
+    buildCtas(mod || {});
+    // colore dal tasto
+    const node = document.querySelector(`.node[data-i="${i}"]`) || document.querySelectorAll('.node')[i];
+    const hc = node ? getComputedStyle(node).getPropertyValue('--hc').trim() : '';
+    shell.style.setProperty('--accent', hc || '#14b8a6');
+    // mostra pannello
+    panel.hidden = false; panel.setAttribute('aria-hidden','false');
+    document.body.classList.add('is-panel-open');
+  }
+
+  // ---- chiudi pannello
+  function closePanel(){
+    panel.hidden = true; panel.setAttribute('aria-hidden','true');
+    document.body.classList.remove('is-panel-open');
+  }
+  btnBack?.addEventListener('click', closePanel);
+
+  // ---- collega i 12 tasti dell'orologio
+  document.querySelectorAll('.node').forEach((el, i) => {
+    el.addEventListener('click', (e) => { e.preventDefault(); openPanel(i); }, {passive:false});
+  });
+
+  // ---- utilità: test veloce ?panel=i
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('panel')) { openPanel(parseInt(qs.get('panel'),10)||0); }
+})();
   </script>
 </body>
 </html>
