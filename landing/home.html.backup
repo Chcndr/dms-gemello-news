@@ -399,68 +399,292 @@
   <!-- Puntale lancetta -->
   <div id="handTip" class="hand-tip" aria-hidden="true"></div>
 
+  <script>
+    (function(){
+      const RATIO = 16/9;
+      const BTN   = 140;
+      const SAFE  = 48;
+      const N     = 12;
 
+      function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
+      function layout(){
+        const W  = innerWidth, H = innerHeight;
+        const cx = W * 0.50;
+        const cy = H * 0.52;
+
+        // Spazio utile per i NODI dal centro ai bordi
+        const Aroom = Math.min(cx, W-cx) - (SAFE + BTN/2);
+        const Broom = Math.min(cy, H-cy) - (SAFE + BTN/2);
+
+        // Dimensioni video massime
+        let vhMaxFromNodes = 2 * (Broom - (BTN/2 + SAFE));
+        let vwMaxFromNodes = 2 * (Aroom - (BTN/2 + SAFE));
+
+        const vhMaxSoft = H * 0.40;
+        const vwMaxSoft = W * 0.58;
+
+        let vh = clamp(vhMaxFromNodes, 180, vhMaxSoft);
+        let vw = Math.min(vh * RATIO, vwMaxSoft, vwMaxFromNodes);
+
+        if (vw > vwMaxFromNodes) {
+          vw = vwMaxFromNodes;
+          vh = vw / RATIO;
+        }
+
+        // Riduci se serve più spazio ai nodi
+        for (let k=0; k<8; k++){
+          const topClear    = (cy - vh/2) - (SAFE + BTN/2);
+          const bottomClear = (H - (cy + vh/2)) - (SAFE + BTN/2);
+          if (Math.min(topClear, bottomClear) >= BTN*0.75) break;
+          vh *= 0.90; vw = vh * RATIO;
+        }
+
+        // Applica il video centrato
+        const vp = document.getElementById('viewport');
+        vp.style.width  = vw + 'px';
+        vp.style.height = vh + 'px';
+        vp.style.left   = (cx - vw/2) + 'px';
+        vp.style.top    = (cy - vh/2) + 'px';
+
+        // Semi-assi ellisse OVALE: laterali quasi a bordo, verticali equilibrati
+        const GAP = 80; // spazio tra video e pulsanti verticali
+        const a = (W/2) - SAFE - (BTN/2); // semiasse orizzontale massimo
+        const b = (vh/2) + GAP + (BTN/2);  // semiasse verticale equilibrato
+
+        // Posiziona i 12 pulsanti
+        const nodes = document.querySelectorAll('.node');
+        nodes.forEach((el, i) => {
+          const t = -Math.PI/2 + (2*Math.PI*i)/N;
+          const x = cx + a * Math.cos(t) - BTN/2;
+          const y = cy + b * Math.sin(t) - BTN/2;
+          el.style.transform = `translate(${Math.round(x)}px,${Math.round(y)}px)`;
+        });
+      }
+
+      layout();
+      addEventListener('resize', layout, {passive:true});
+      addEventListener('pageshow', layout);
+    })();
+
+    // spotlight mouse
+    (function(){
+      const glow = document.getElementById('glowLayer');
+      let mx=0, my=0, ticking=false;
+      addEventListener('pointermove', e => {
+        mx=e.clientX; my=e.clientY;
+        if(!ticking){
+          requestAnimationFrame(()=>{ 
+            glow.style.setProperty('--mx', mx+'px');
+            glow.style.setProperty('--my', my+'px');
+            ticking=false;
+          });
+          ticking=true;
+        }
+      }, {passive:true});
+    })();
+
+    // Puntale lancetta animato con asta - RIMOSSO (sostituito da handLayer)
+  </script>
+
+  <script>
+    // Lancetta ellittica sotto al video + puntale
+    (() => {
+      const svg = document.getElementById('ellipseLayer');
+      if (!svg) return;
+
+      // Crea elementi (una sola volta) dentro l'SVG
+      let shaft = svg.querySelector('#hand-shaft');
+      let tip   = svg.querySelector('#hand-tip');
+      if (!shaft) {
+        shaft = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        shaft.setAttribute('id','hand-shaft');
+        svg.appendChild(shaft);
+      }
+      if (!tip) {
+        tip = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        tip.setAttribute('id','hand-tip');
+        svg.appendChild(tip);
+      }
+
+      // Utility: calcola ellisse usata anche per i pulsanti
+      function computeEllipse() {
+        const W = innerWidth, H = innerHeight;
+        const cx = W/2;
+        const cy = H*0.52;                 // stesso centro usato per i nodi
+        const btn = 140;                   // diametro card approx (usa il tuo valore se in :root)
+        const SAFE = 26;                   // margine sicurezza dal video/bordi
+        const a = Math.min(W*0.44, W/2 - btn/2 - SAFE); // semiasse orizzontale
+        const b = Math.min(H*0.34, H/2 - btn/2 - SAFE); // semiasse verticale
+        return {cx, cy, a, b};
+      }
+
+      // Aggiorna dimensioni dell'SVG a tutto schermo
+      function sizeSVG() {
+        svg.setAttribute('width', innerWidth);
+        svg.setAttribute('height', innerHeight);
+        svg.setAttribute('viewBox', `0 0 ${innerWidth} ${innerHeight}`);
+      }
+
+      // Disegna lancetta all'angolo t (radiani) con puntale triangolare
+      function drawHand(t) {
+        const {cx, cy, a, b} = computeEllipse();
+
+        // punta sulla traiettoria ellittica, arretrata di pochi px per non toccare i pulsanti
+        const MARGIN = 18;
+        const x2 = cx + (a - MARGIN) * Math.cos(t);
+        const y2 = cy + (b - MARGIN) * Math.sin(t);
+
+        // base in centro
+        const x1 = cx, y1 = cy;
+
+        // applica alla "asta"
+        shaft.setAttribute('x1', x1);
+        shaft.setAttribute('y1', y1);
+        shaft.setAttribute('x2', x2);
+        shaft.setAttribute('y2', y2);
+
+        // puntale triangolare orientato lungo la direzione della lancetta
+        const ang = Math.atan2(y2 - y1, x2 - x1);  // direzione
+        const TIP_LEN = 16;                         // lunghezza punta
+        const TIP_W   = 12;                         // larghezza base
+        const bx = x2 - TIP_LEN * Math.cos(ang);   // centro base
+        const by = y2 - TIP_LEN * Math.sin(ang);
+        const nx =  Math.sin(ang), ny = -Math.cos(ang); // normale
+
+        const p1x = x2,  p1y = y2;                                    // vertice punta
+        const p2x = bx + (TIP_W/2) * nx, p2y = by + (TIP_W/2) * ny;   // base dx
+        const p3x = bx - (TIP_W/2) * nx, p3y = by - (TIP_W/2) * ny;   // base sx
+        tip.setAttribute('points', `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y}`);
+      }
+
+      // Animazione continua (segue l'ovale, non un cerchio) – velocità dolce
+      let t = -Math.PI/2;           // parte da ore 12
+      function tick() {
+        sizeSVG();
+        drawHand(t);
+        t += 0.008;                 // velocità (regola se serve)
+        requestAnimationFrame(tick);
+      }
+      tick();
+
+      // Re-layout su resize/bfcache
+      addEventListener('resize',   () => { sizeSVG(); });
+      addEventListener('pageshow', () => { sizeSVG(); });
+    })();
+  </script>
 
   <script>
 (function(){
   const root = document.documentElement;
-  const vp   = document.getElementById('viewport');
-  const hero = document.getElementById('hero');
-  const video= hero?.querySelector('video');
-  const panel= document.getElementById('panel');
+  const hero = document.querySelector('#hero');
+  const video = hero?.querySelector('video');
+  const panel = document.getElementById('panel');
   const back = document.getElementById('backToVideo');
-  const t=document.getElementById('p-title'), s=document.getElementById('p-sub'), d=document.getElementById('p-desc');
-  const cta=[0,1,2,3].map(i=>document.getElementById('cta'+i));
+  const title = document.getElementById('p-title');
+  const sub   = document.getElementById('p-sub');
+  const desc  = document.getElementById('p-desc');
+  const cta0  = document.getElementById('cta0');
+  const cta1  = document.getElementById('cta1');
+  const cta2  = document.getElementById('cta2');
+  const cta3  = document.getElementById('cta3');
 
-  function setSizeFromHero(){
-    const r = (video || vp).getBoundingClientRect();
+  // Dati minimi per i moduli (0 completo + placeholder per gli altri)
+  const MODULES = [
+    {
+      title: "DMS — Riaccendiamo il Commercio",
+      sub:   "Visione, gemello nazionale del commercio",
+      desc:  "L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi.",
+      links: [
+        { href:"./docs/PROGETTO NAZIONALE.pdf", text:"Apri documento principale (PDF)"},
+        { href:"./docs/HUB URBANI E DI PROSSIMITÀ.pdf", text:"Hub Nazionale del Commercio (PDF)"},
+        { href:"./docs/DMS & CLUST-ER.pdf",           text:"DMS & CLUST-ER (PDF)"},
+        { href:"./docs/DMS ECC — Executive.pdf",      text:"DMS ECC — Executive (PDF)"}
+      ]
+    },
+    { title:"Modulo 1", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 2", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 3", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 4", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 5", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 6", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 7", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 8", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 9", sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 10",sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+    { title:"Modulo 11",sub:"In sviluppo", desc:"Contenuti in preparazione.", links:[] },
+  ];
+
+  function setViewportSizeFromHero(){
+    // misura il video/hero per far combaciare il pannello
+    const r = hero.getBoundingClientRect();
     root.style.setProperty('--vw', r.width + 'px');
     root.style.setProperty('--vh', r.height + 'px');
-    // fallback duro contro CSS non caricato
-    panel.style.width  = r.width + 'px';
-    panel.style.height = r.height + 'px';
   }
-  setSizeFromHero();
-  addEventListener('resize', setSizeFromHero);
-  addEventListener('pageshow', setSizeFromHero);
-  if ('ResizeObserver' in window && video){
-    new ResizeObserver(setSizeFromHero).observe(video);
-  }
+  setViewportSizeFromHero();
+  addEventListener('resize', setViewportSizeFromHero);
+  addEventListener('pageshow', setViewportSizeFromHero);
 
-  const MODULES=[{
-    title:"DMS — Riaccendiamo il Commercio",
-    sub:"Visione, gemello nazionale del commercio",
-    desc:"L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi.",
-    links:[
-      {href:"./docs/PROGETTO NAZIONALE.pdf", text:"Apri documento principale (PDF)"},
-      {href:"./docs/HUB URBANI E DI PROSSIMITÀ.pdf", text:"Hub Nazionale del Commercio (PDF)"},
-      {href:"./docs/DMS & CLUST-ER.pdf", text:"DMS & CLUST-ER (PDF)"},
-      {href:"./docs/DMS ECC — Executive.pdf", text:"DMS ECC — Executive (PDF)"}
-    ]
-  }];
+  // Apre pannello: usa il colore del tasto cliccato come accento
+  function openPanelByIndex(i, nodeEl){
+    // 1) accento dal nodo (variabile --hc già assegnata ai bottoni)
+    const cs = getComputedStyle(nodeEl);
+    const c  = cs.getPropertyValue('--hc').trim() || getComputedStyle(root).getPropertyValue(`--hc${i}`).trim() || '#14b8a6';
+    root.style.setProperty('--accent', c);
 
-  function openPanel(i, nodeEl){
-    const hc = getComputedStyle(nodeEl).getPropertyValue('--hc').trim()
-            || getComputedStyle(root).getPropertyValue(`--hc${i}`).trim()
-            || '#14b8a6';
-    root.style.setProperty('--accent', hc);
-
+    // 2) contenuti
     const m = MODULES[i] || MODULES[0];
-    t.textContent = m.title; s.textContent = m.sub || ''; d.textContent = m.desc || '';
-    cta.forEach((a,k)=>{ const L=m.links?.[k]; if(L){ a.hidden=false; a.href=L.href; a.querySelector('.txt').textContent=L.text; } else { a.hidden=true; } });
+    title.textContent = m.title;
+    sub.textContent   = m.sub || '';
+    desc.textContent  = m.desc || '';
 
-    hero.hidden=true; panel.hidden=false; document.body.classList.add('is-panel-open');
-    setSizeFromHero();
+    // CTA
+    [cta0, cta1, cta2, cta3].forEach((a, k)=>{
+      const link = m.links[k];
+      if(link){
+        a.hidden = false;
+        a.href = link.href;
+        a.querySelector('.txt').textContent = link.text;
+      }else{
+        a.hidden = true;
+      }
+    });
+
+    // 3) mostra pannello, nasconde video, blocca click dei nodi dietro
+    panel.hidden = false;
+    hero.hidden  = true;
+    document.body.classList.add('is-panel-open');
+    setViewportSizeFromHero();
   }
-  function closePanel(){ panel.hidden=true; hero.hidden=false; document.body.classList.remove('is-panel-open'); setSizeFromHero(); }
+
+  // Chiudi pannello → torna al video
+  function closePanel(){
+    panel.hidden = true;
+    hero.hidden  = false;
+    document.body.classList.remove('is-panel-open');
+    setViewportSizeFromHero();
+  }
   back?.addEventListener('click', closePanel);
 
-  document.querySelectorAll('.node').forEach((el,idx)=>{
-    el.addEventListener('click', (e)=>{ e.preventDefault(); openPanel(idx, el); }, {passive:false});
+  // Aggancia i 12 bottoni dell'orologio
+  document.querySelectorAll('.node').forEach((el, idx)=>{
+    el.addEventListener('click', (e)=>{
+      e.preventDefault();
+      openPanelByIndex(idx, el);
+    }, {passive:false});
   });
 })();
-\n  </script>
+</script>
+
+  <script>
+    (function applyHoverPalette(){
+      const root = getComputedStyle(document.documentElement);
+      document.querySelectorAll('.node').forEach((el, i)=>{
+        const v = root.getPropertyValue(`--hc${i}`).trim();
+        el.style.setProperty('--hc', v || '#23b5a6'); // fallback teal
+      });
+    })();
+  </script>
 </body>
 </html>
 
