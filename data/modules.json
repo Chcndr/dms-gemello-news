@@ -1,15 +1,15 @@
 [
-  {"title":"Hub Nazionale del Commercio","pdf":"./docs/hub-nazionale.pdf"},
-  {"title":"DMS & CLUST-ER","pdf":"./docs/dms-cluster.pdf"},
-  {"title":"DMS — Riaccendiamo i Mercati","pdf":"./docs/riaccendiamo.pdf"},
-  {"title":"Dossier Nazionale","pdf":"./docs/dossier.pdf"},
+  {"title":"Hub Nazionale del Commercio","pdf":"./docs/hub-nazionale-commercio.pdf"},
+  {"title":"DMS & CLUST-ER","pdf":"./docs/dms-cluster-er.pdf"},
+  {"title":"DMS — Riaccendiamo i Mercati","pdf":"./docs/gemello-dms.pdf"},
+  {"title":"Dossier Nazionale","pdf":"./docs/dossier-nazionale.pdf"},
   {"title":"Equilibrio Ecosostenibile","pdf":"./docs/equilibrio-ecosostenibile.pdf"},
-  {"title":"Progetto Nazionale","pdf":"./docs/progetto-nazionale.pdf"},
+  {"title":"Progetto Nazionale","pdf":"./docs/analisi-soluzione-dms.pdf"},
   {"title":"Passaporto EU","pdf":"./docs/passaporto-eu.pdf"},
-  {"title":"Presentazione DMS (Compressa)","pdf":"./docs/presentazione-dms-compressa.pdf"},
-  {"title":"Città Metropolitana di Bologna","pdf":"./docs/citta-metropolitana-bologna.pdf"},
-  {"title":"Modulo 10","pdf":"./docs/modulo-10.pdf"},
-  {"title":"Modulo 11","pdf":"./docs/modulo-11.pdf"},
-  {"title":"Modulo 12","pdf":"./docs/modulo-12.pdf"}
+  {"title":"Presentazione DMS Bologna","pdf":"./docs/presentazione-dms-bologna.pdf"},
+  {"title":"Hub Urbani e Prossimità","pdf":"./docs/hub-urbani-prossimita-er.pdf"},
+  {"title":"Carbon Credit DMS","pdf":"./docs/carbon-credit-dms.pdf"},
+  {"title":"DMS ECC Narrativo","pdf":"./docs/dms-ecc-narrativo.pdf"},
+  {"title":"Scenario Futuro","pdf":"./docs/scenario-futuro.pdf"}
 ]
 
