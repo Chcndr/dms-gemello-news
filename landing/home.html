@@ -291,6 +291,28 @@
     @media (prefers-reduced-motion: reduce){
       .btn{ transition:none; }
     }
+
+    /* Tasti orologio: titolo su 2 righe */
+    .node { white-space: normal; line-height: 1.15; }
+    .node .title { display:block; font-weight:700; }
+    .node .sub   { display:block; font-size:.78em; opacity:.9; margin-top:2px; }
+    /* Mantieni eventuale .tag già presente (es. "PDF") */
+
+    /* Link PDF disattivati con eleganza */
+    a.action[href="#"]{ pointer-events:none; opacity:.45; filter:grayscale(.15); cursor:default; }
+
+    /* Pannello sicuro: più luminoso senza ::after */
+    #panel{
+      background:
+        linear-gradient(180deg, rgba(15,32,36,.88) 0%, rgba(16,35,39,.84) 100%),
+        #0f2024;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 16px 40px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06);
+      color:#e7fbf5;
+    }
+    /* niente ::after finché non abbiamo verificato */
+    #panel h1,#panel h2{color:#f2fffb}
+    #panel p,.meta{color:#d6efe9}
   </style>
 </head>
 <body>
@@ -333,18 +355,18 @@
   <div id="glowLayer" aria-hidden="true"></div>
 
   <!-- 12 pulsanti ore 0..11 -->
-  <button class="node" data-i="0"><span class="tag">PDF</span></button>
-  <button class="node" data-i="1"><span class="tag">PDF</span></button>
-  <button class="node" data-i="2"><span class="tag">PDF</span></button>
-  <button class="node" data-i="3"><span class="tag">PDF</span></button>
-  <button class="node" data-i="4"><span class="tag">PDF</span></button>
-  <button class="node" data-i="5"><span class="tag">PDF</span></button>
-  <button class="node" data-i="6"><span class="tag">PDF</span></button>
-  <button class="node" data-i="7"><span class="tag">PDF</span></button>
-  <button class="node" data-i="8"><span class="tag">PDF</span></button>
-  <button class="node" data-i="9"><span class="tag">PDF</span></button>
-  <button class="node" data-i="10"><span class="tag">PDF</span></button>
-  <button class="node" data-i="11"><span class="tag">PDF</span></button>
+  <button class="node" data-i="0"><span class="title">00 • I tre pilastri DMS</span><span class="sub">Amplia: Q4 2025</span><span class="tag">INFO</span></button>
+  <button class="node" data-i="1"><span class="title">01 • Grosseto — collegamento</span><span class="sub">Amplia: Q1 2026</span><span class="tag">PDF</span></button>
+  <button class="node" data-i="2"><span class="title">02 • ER — Hub pilota</span><span class="sub">Amplia: Q2 2026</span><span class="tag">PDF</span></button>
+  <button class="node" data-i="3"><span class="title">03 • Pagamenti & integrazioni</span><span class="sub">Amplia: Q1 2026</span><span class="tag">INFO</span></button>
+  <button class="node" data-i="4"><span class="title">04 • Passaporto EU (DPP)</span><span class="sub">Amplia: Q4 2026</span><span class="tag">INFO</span></button>
+  <button class="node" data-i="5"><span class="title">05 • ECC — Narrativa</span><span class="sub">Amplia: Q4 2025</span><span class="tag">PDF</span></button>
+  <button class="node" data-i="6"><span class="title">06 • ECC — Tecnica</span><span class="sub">Amplia: Q1 2026</span><span class="tag">INFO</span></button>
+  <button class="node" data-i="7"><span class="title">07 • Carbon Credit (logica)</span><span class="sub">Amplia: Q4 2026</span><span class="tag">INFO</span></button>
+  <button class="node" data-i="8"><span class="title">08 • Ecosistema Costi PA</span><span class="sub">Amplia: Q3 2026</span><span class="tag">INFO</span></button>
+  <button class="node" data-i="9"><span class="title">09 • Analisi & Soluzione DMS</span><span class="sub">Amplia: Q1 2026</span><span class="tag">INFO</span></button>
+  <button class="node" data-i="10"><span class="title">10 • Scenario futuro</span><span class="sub">Amplia: Q1 2027</span><span class="tag">INFO</span></button>
+  <button class="node" data-i="11"><span class="title">11 • Hub Nazionale</span><span class="sub">Amplia: 2027</span><span class="tag">PDF</span></button>
 
   <!-- Puntale lancetta -->
   <div id="handTip" class="hand-tip" aria-hidden="true"></div>
