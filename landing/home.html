@@ -151,96 +151,91 @@
       color:#cfeeea;
     }
 
-    /* ---- PANEL SOLIDO V1 ------------------------------------ */
-    :root{
-      /* dimensioni del video (dalla JS) */
-      --heroW: 720px;
-      --heroH: 405px;
-    }
-
-    /* Il viewport resta il contenitore di video + pannello */
+    /* ---- SUPER CHIRURGIA PANEL FIX ------------------------------------ */
+    /* Viewport resta com'è. Garantiamo però dimensione stabile con aspect-ratio */
     #viewport{
       position: relative;
       display: grid;
       place-items: center;
       z-index: 3;
+      /* NON cambiare width/height esistenti: il panel usa inset:0 */
     }
 
-    /* Pannello: centrato, stessa misura del video, sfondo pieno */
-    #panel{
+    /* Video eroe: pieno del viewport */
+    #hero, #viewport > video{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Pannello: occupa ESATTAMENTE lo spazio del video */
+    #panel.panel{
       position: absolute;
-      width: var(--heroW);
-      height: var(--heroH);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 22px 24px;
-      border-radius: 22px;
-
-      /* tinta = accent del tasto (iniettata via JS in --panel-accent) */
-      --panel-accent: #14b8a6;
-      background:
-        linear-gradient(180deg,
-          color-mix(in oklab, var(--panel-accent) 8%, #0a1717) 0%,
-          color-mix(in oklab, var(--panel-accent) 12%, #0a1717) 100%);
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow:
-        0 18px 40px rgba(0,0,0,.55),
-        inset 0 1px 0 rgba(255,255,255,.06);
-      color: #eaf6f3;
-      overflow: hidden;
+      inset: 0;                   /* stesso rettangolo del video */
+      display: grid;
+      align-content: start;
+      padding: clamp(16px, 3vw, 28px);
+      border-radius: inherit;
+      background: color-mix(in srgb, var(--accent, #14b8a6) 10%, #0b1c20 92%);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
+      opacity: 0;
+      transform: scale(.985);
+      pointer-events: none;
+      transition: opacity .24s ease, transform .24s ease;
+      z-index: 1; /* sopra al video, sotto ai .node perché è dentro il viewport */
+      color: #e9f7f4;
+    }
+    #panel.panel.is-open{
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+    #panel .chip{
+      display:inline-block;
+      padding:.35rem .6rem;
+      font-weight:600;
+      border-radius:999px;
+      background: color-mix(in srgb, var(--accent, #14b8a6) 38%, transparent);
+      color:#cffff7;
+    }
+    #panel .btn{
+      padding:.55rem .9rem;
+      border-radius:.6rem;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color:#e9f7f4;
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    #panel .btn.btn-cta{
+      background: var(--accent, #14b8a6);
+      border-color: color-mix(in srgb, var(--accent, #14b8a6) 80%, #000 20%);
+      color:#012a25;
+      font-weight:700;
+    }
+    #panel .btn.ghost{
+      background: rgba(255,255,255,.04);
     }
 
-    #panel[hidden]{ display:none; }
-
-    .panel-head{ display:flex; align-items:center; justify-content:space-between; }
-    .badge{
-      font: 600 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: color-mix(in oklab, var(--panel-accent) 55%, #0a1717);
-      border: 1px solid color-mix(in oklab, var(--panel-accent) 70%, white 12%);
-      box-shadow: 0 0 0 6px color-mix(in oklab, var(--panel-accent) 20%, transparent);
-    }
-    .panel-close{
-      appearance: none;
-      border: 0;
-      background: rgba(255,255,255,.08);
-      color: #eaf6f3;
-      width: 32px; height: 32px;
-      border-radius: 8px; cursor: pointer;
-    }
-    .panel-title{ font-size: clamp(22px, 3.1vmin, 28px); margin: 4px 0 0; }
-    .panel-desc{ opacity:.9; margin: 0 0 8px; }
-
-    .panel-actions{ display:flex; gap:10px; margin-top:auto; }
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      height: 40px; padding: 0 14px; border-radius: 10px;
-      background: color-mix(in oklab, var(--panel-accent) 75%, #0a1717);
-      color: #071312; font-weight: 700; text-decoration: none; border: 0;
-      box-shadow:
-        0 0 0 3px color-mix(in oklab, var(--panel-accent) 70%, transparent),
-        0 10px 20px rgba(0,0,0,.45);
-    }
-    .btn:hover{ filter: brightness(1.05); }
-    .btn-ghost{
-      height: 40px; padding: 0 12px; border-radius: 10px;
-      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
-      color: #eaf6f3; cursor:pointer;
+    /* Quando il pannello è aperto nascondiamo il video senza collasso */
+    #hero.is-hidden, #viewport > video.is-hidden{ 
+      opacity:0; 
+      pointer-events:none; 
     }
 
-    /* Mentre la scheda è aperta: niente click sui nodi (evita conflitti) */
-    body.panel-open .node{ pointer-events:none; }
+    /* Testo bottoni Spot/Mappa sempre chiaro */
+    .topbar .btn, .nav .btn, .spot-btn, .map-btn{
+      color:#e6fffa !important;
+    }
 
-    /* Alza solo il viewport quando la scheda è aperta (click sicuri) */
-    body.panel-open #viewport{ z-index: 5; }
-
-    /* layering confermato */
+    /* Layering generale (non cambiare z-index esistenti altrove) */
     #glowLayer{ z-index:1; pointer-events:none; }
     #ellipseLayer{ z-index:2; pointer-events:none; }
-    #viewport{ z-index:3; }
-    .node{ z-index:4; }
+    #viewport{ z-index:3; } /* video + panel */
+    .node{ z-index:4; }     /* pulsanti */
   </style>
 </head>
 <body>
@@ -263,21 +258,22 @@
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
       poster="../assets/poster-hero.jpg"></video>
     
-    <!-- Pannello scheda (stessa misura del video) -->
-    <div id="panel" hidden>
-      <div class="panel-head">
-        <span class="badge">PDF</span>
-        <button class="panel-close" type="button" aria-label="Chiudi" data-close>×</button>
-      </div>
+    <!-- PANEL dentro lo stesso viewport del video -->
+    <section id="panel" class="panel" hidden aria-hidden="true">
+      <div class="panel-body">
+        <header class="panel-head">
+          <span class="chip">Percorso</span>
+          <h2 id="panel-title">Titolo modulo</h2>
+        </header>
+        <p id="panel-sub">Sottotitolo / descrizione breve.</p>
 
-      <h2 class="panel-title" data-title>Modulo</h2>
-      <p class="panel-desc" data-desc>Contenuti in arrivo.</p>
-
-      <div class="panel-actions">
-        <a class="btn" data-primary href="#" target="_blank" rel="noopener">Apri PDF</a>
-        <button class="btn-ghost" type="button" data-close>⚑ Torna al video</button>
+        <div class="panel-actions">
+          <a id="panel-cta-0" class="btn btn-cta" href="#" target="_blank" rel="noopener">Apri PDF</a>
+          <!-- altri CTA opzionali -->
+          <button id="panel-close" class="btn ghost">Torna al video</button>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
 
@@ -549,67 +545,71 @@
 
   <script>
 (function(){
-  const root = document.documentElement;
-  const hero = document.getElementById('hero') || document.getElementById('video') || document.querySelector('#viewport video')?.parentElement;
-  const panel = document.getElementById('panel');
+  const vp   = document.getElementById('viewport');
+  const hero = document.getElementById('hero') || vp.querySelector('video');
+  const panel= document.getElementById('panel');
 
-  function syncHeroSize(){
-    if(!hero) return;
-    const r = hero.getBoundingClientRect();
-    root.style.setProperty('--heroW', r.width + 'px');
-    root.style.setProperty('--heroH', r.height + 'px');
+  // Anti-flicker: non cambiare layout; il video resta montato, solo opacity
+  if(hero){
+    hero.preload = hero.preload || 'metadata';
+    if(!hero.poster) hero.poster = './assets/poster-hero.jpg'; // se esiste
+    hero.muted = true; hero.playsInline = true;
   }
 
-  // Call all the times it matters
-  addEventListener('resize', ()=>requestAnimationFrame(syncHeroSize));
-  addEventListener('orientationchange', ()=>setTimeout(syncHeroSize, 50));
-  document.addEventListener('DOMContentLoaded', syncHeroSize);
-  setTimeout(syncHeroSize, 100); // Safari iOS first paint
+  // Apri pannello per indice i e colore accent
+  window.openPanelByIndex = function(i, accent, data){
+    if(!panel) return;
 
-  // Open panel by index (hook sui pulsanti esistenti)
-  window.openPanelByIndex = function(i){
-    syncHeroSize();
+    // Colore accent dal tasto (fallback teal)
+    panel.style.setProperty('--accent', accent || '#14b8a6');
 
-    // Prendi la tinta del tasto (variabile --hc già assegnata ai .node)
-    const node = document.querySelector('.node[data-i="'+i+'"]');
-    const hc = node ? getComputedStyle(node).getPropertyValue('--hc') : '#14b8a6';
-    panel.style.setProperty('--panel-accent', hc.trim() || '#14b8a6');
+    // (Opzionale) riempi contenuti
+    if(data){
+      panel.querySelector('#panel-title').textContent = data.title || ('Modulo ' + i);
+      panel.querySelector('#panel-sub').textContent   = data.sub   || 'Contenuti in arrivo.';
+      if(data.pdf){
+        const a0 = panel.querySelector('#panel-cta-0');
+        a0.href = data.pdf; a0.style.display = '';
+      }
+    } else {
+      // Fallback se non ci sono dati
+      panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
+      panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
+    }
 
-    // Dati modulo se disponibili (fallback testuale)
-    const m = (window.modules && window.modules[i]) || {};
-    panel.querySelector('[data-title]').textContent = m.title || ('Modulo ' + i);
-    panel.querySelector('[data-desc]').textContent  = m.desc  || 'Contenuti in arrivo.';
-    const a = panel.querySelector('[data-primary]');
-    a.href = m.pdf || '#';
-
-    // Mostra pannello, nasconde il video (senza spostarlo)
+    hero && hero.classList.add('is-hidden');
     panel.hidden = false;
-    if (hero) hero.style.visibility = 'hidden';
-    document.body.classList.add('panel-open');
+    panel.classList.add('is-open');
   };
 
+  // Chiudi pannello
   function closePanel(){
-    panel.hidden = true;
-    if (hero) hero.style.visibility = '';
-    document.body.classList.remove('panel-open');
-    // riallinea dimensioni
-    requestAnimationFrame(syncHeroSize);
+    panel.classList.remove('is-open');
+    // piccola attesa per la transizione, poi nascondo
+    setTimeout(()=>{ panel.hidden = true; }, 240);
+    hero && hero.classList.remove('is-hidden');
   }
 
-  // Collega i pulsanti "Torna al video" e la X
-  panel.querySelectorAll('[data-close]').forEach(btn=>{
-    btn.addEventListener('click', closePanel);
+  // Wire del bottone "Torna al video"
+  const btnClose = document.getElementById('panel-close');
+  if(btnClose) btnClose.addEventListener('click', closePanel);
+
+  // Collega i 12 tasti dell'orologio
+  document.querySelectorAll('.node').forEach((el, i) => {
+    el.addEventListener('click', (e) => { 
+      e.preventDefault(); 
+      const accent = getComputedStyle(el).getPropertyValue('--hc').trim() || '#14b8a6';
+      openPanelByIndex(i, accent, null); 
+    }, {passive:false});
   });
 
-  // Se i .node non hanno già un handler, aggancialo
-  document.querySelectorAll('.node').forEach((el)=>{
-    if (el._panelHooked) return;
-    el._panelHooked = true;
-    el.addEventListener('click', ()=>{
-      const i = Number(el.dataset.i || 0);
-      openPanelByIndex(i);
-    });
-  });
+  // Test veloce ?panel=i
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('panel')) { 
+    const i = parseInt(qs.get('panel'),10)||0;
+    const accent = '#14b8a6'; // colore di default per test
+    openPanelByIndex(i, accent, null); 
+  }
 })();
   </script>
 </body>
