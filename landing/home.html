@@ -236,6 +236,107 @@
     #ellipseLayer{ z-index:2; pointer-events:none; }
     #viewport{ z-index:3; } /* video + panel */
     .node{ z-index:4; }     /* pulsanti */
+
+    /* ---- MICRO RITOCCO: PANNELLO RETROILLUMINATO ------------------------------------ */
+    :root{
+      --accent:#14b8a6;
+      --accent-rgb:20,184,166;
+      --panel-bg:#0f2024;
+      --panel-ink:#e7fbf5;
+      --panel-sub:#cfe6df;
+    }
+
+    /* Pannello centrale: stile pieno + retroilluminazione */
+    #panel{
+      position:absolute; inset:0; margin:auto;           /* NON cambiare posizionamento/logica */
+      background:
+        radial-gradient(120% 160% at 50% 0%,
+          rgba(255,255,255,.06) 0%, transparent 55%),
+        linear-gradient(180deg, rgba(5,12,14,.92) 0%, rgba(6,15,17,.90) 100%),
+        var(--panel-bg);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:
+        0 30px 80px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.06),
+        0 0 0 1px rgba(255,255,255,.04);
+      color:var(--panel-ink);
+      overflow:hidden;
+      isolation:isolate;
+    }
+
+    /* Alone morbido dietro il pannello (retroilluminazione) */
+    #panel::after{
+      content:"";
+      position:absolute; inset:-26px; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(60% 70% at 50% 10%,
+          rgba(var(--accent-rgb),.35) 0%, transparent 60%),
+        radial-gradient(80% 80% at 50% 100%,
+          rgba(0,0,0,.25) 0%, transparent 60%);
+      filter:blur(22px);
+      opacity:.55;
+    }
+
+    /* Testi dentro pannello */
+    #panel h1, #panel h2{ color:var(--panel-ink); letter-spacing:.2px; }
+    #panel p, #panel .meta{ color:var(--panel-sub); }
+
+    /* Bottoni stile capsula con glow */
+    .btn{
+      appearance:none; border:0;
+      display:inline-flex; align-items:center; gap:10px;
+      padding:12px 18px; border-radius:12px;
+      background:rgba(255,255,255,.04);
+      color:#e9fdf7; font-weight:600;
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 6px 14px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.06);
+      position:relative; isolation:isolate;
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn:hover{ transform:translateY(-1px); }
+    .btn:active{ transform:translateY(0); }
+
+    /* glow sotto ai bottoni */
+    .btn::after{
+      content:""; position:absolute; inset:-12px; z-index:-1; pointer-events:none;
+      background:radial-gradient(60% 70% at 50% 60%, rgba(255,255,255,.06) 0%, transparent 60%);
+      filter:blur(10px); opacity:.9;
+    }
+
+    /* bottone principale con accent */
+    .btn--accent{
+      background:linear-gradient(180deg, rgba(var(--accent-rgb),.18), rgba(var(--accent-rgb),.14));
+      border-color:rgba(var(--accent-rgb),.45);
+      box-shadow:0 10px 26px rgba(var(--accent-rgb),.20), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .btn--accent::after{
+      background:radial-gradient(60% 70% at 50% 60%, rgba(var(--accent-rgb),.35) 0%, transparent 60%);
+    }
+
+    /* "Torna al video" neutro */
+    .btn--ghost{
+      background:rgba(255,255,255,.06);
+      border-color:rgba(255,255,255,.18);
+      color:#def7f1;
+    }
+
+    /* chip PDF quadrata davanti al testo */
+    .chip{
+      display:inline-grid; place-items:center;
+      width:36px; height:36px; border-radius:8px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+      font:700 11px/1.2 ui-sans-serif, system-ui, -apple-system;
+      color:#eafff9;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    /* sicurezza click: i click restano al pannello, overlay non blocca */
+    #panel, #panel *{ pointer-events:auto; }
+    .click-block{ pointer-events:none; }
   </style>
 </head>
 <body>
@@ -268,9 +369,12 @@
         <p id="panel-sub">Sottotitolo / descrizione breve.</p>
 
         <div class="panel-actions">
-          <a id="panel-cta-0" class="btn btn-cta" href="#" target="_blank" rel="noopener">Apri PDF</a>
+          <a id="panel-cta-0" class="btn btn--accent" href="#" target="_blank" rel="noopener">
+            <span class="chip">PDF</span>
+            Apri PDF
+          </a>
           <!-- altri CTA opzionali -->
-          <button id="panel-close" class="btn ghost">Torna al video</button>
+          <button id="panel-close" class="btn btn--ghost">Torna al video</button>
         </div>
       </div>
     </section>
