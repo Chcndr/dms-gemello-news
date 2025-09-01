@@ -167,6 +167,7 @@
     /* Pannello nel viewport */
     #viewport .panel{
       --panel-accent:#14b8a6;              /* teal mockup */
+      --accent:#14b8a6;                    /* fallback se non impostato da JS */
       position: relative;
       width: min(96vw, 980px);
       max-width: 980px;
@@ -215,19 +216,19 @@
     }
     #viewport .panel .cta::before{                 /* bollino PDF */
       content:"PDF";
-      font: 700 12px/1 ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;
-      padding: 6px 8px;
-      border-radius: 10px;
-      background: rgba(20,184,166,.16);
+      display:inline-grid; place-items:center;
+      width:42px; height:42px; margin-right:.6rem; border-radius:12px;
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      border:1px solid color-mix(in srgb, var(--accent) 34%, transparent);
       color:#c9fffb;
-      border:1px solid rgba(20,184,166,.32);
+      font: 700 12px/1 ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;
     }
     #viewport .panel .cta:hover,
     #viewport .panel .cta:focus-visible{
       transform: translateY(-1px);
-      border-color: color-mix(in srgb, var(--panel-accent) 50%, white 10%);
+      border-color: color-mix(in srgb, var(--accent) 55%, white 10%);
       box-shadow:
-        0 0 0 3px color-mix(in srgb, var(--panel-accent) 65%, transparent), /* anello */
+        0 0 0 3px color-mix(in srgb, var(--accent) 65%, transparent), /* anello */
         0 18px 42px rgba(0,0,0,.45);
     }
 
@@ -239,8 +240,15 @@
     }
     #viewport .panel .back .dot{
       width:10px; height:10px; border-radius:50%;
-      background: var(--panel-accent);
-      box-shadow: 0 0 14px color-mix(in srgb, var(--panel-accent) 60%, transparent);
+      background: var(--accent);
+      box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 60%, transparent);
+    }
+
+    /* Etichetta/"chip" (se presente) */
+    #viewport .panel .chip{
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      border:1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+      color:#c9fffb;
     }
 
     /* Auto-altezza: il pannello cresce fino a un massimo, poi scrolla */
@@ -551,12 +559,23 @@
   </script>
 
   <script>
+// helper: ottiene l'accento dal nodo (--hc) oppure fallback
+function accentFromNode(node){
+  const c = getComputedStyle(node).getPropertyValue('--hc').trim();
+  return c && c !== '' ? c : '#14b8a6';
+}
+
 // mostra pannello 0
 function openPanel0(){
   const vp = document.getElementById('viewport');
   const panel = document.getElementById('panel-0');
   vp.innerHTML = panel.outerHTML; // monta la copia
   vp.querySelector('#panel-0').style.display = 'block';
+  
+  // imposta accento dal tasto 0
+  const node0 = document.querySelector('.node[data-i="0"]');
+  const accent = accentFromNode(node0);
+  vp.querySelector('.panel').style.setProperty('--accent', accent);
   
   // assicura che la lancetta resti sotto
   const hand = document.querySelector('#ellipseLayer');
@@ -579,7 +598,7 @@ function showVideo(){
 document.querySelector('.node[data-i="0"]')?.addEventListener('click', openPanel0);
 
 // Altri pulsanti - usa il sistema esistente delle card colorate
-async function openPanelByIndex(index){
+async function openPanelByIndex(index, nodeEl){
   const viewport = document.getElementById('viewport');
   
   async function getModules(){
@@ -637,9 +656,8 @@ async function openPanelByIndex(index){
     return;
   }
   
-  const node = document.querySelector(`.node[data-i="${index}"]`);
-  const computed = node ? getComputedStyle(node).getPropertyValue('--hc').trim() : '';
-  const accent = mod.accent || (computed || '#14b8a6');
+  // imposta accento = colore del tasto cliccato
+  const accent = nodeEl ? accentFromNode(nodeEl) : (mod.accent || '#14b8a6');
   viewport.appendChild(panelTemplate(mod, accent));
 }
 
@@ -648,7 +666,7 @@ document.querySelectorAll('.node').forEach((btn)=>{
   if(i === 0) return; // già gestito sopra
   
   btn.addEventListener('click', ()=>{
-    openPanelByIndex(i);
+    openPanelByIndex(i, btn); // passa il riferimento del nodo
   }, {passive:true});
 });
   </script>
