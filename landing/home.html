@@ -152,65 +152,83 @@
     }
 
     /* ---- PANEL base ------------------------------------ */
+    /* Variabili panel (accento cambia a runtime) */
+    #viewport{
+      --accent: #14b8a6;        /* default per 0 */
+      --panel-bg: linear-gradient(180deg, rgba(9,34,38,.92), rgba(9,34,38,.96));
+      --ring: color-mix(in srgb, var(--accent) 40%, transparent);
+      position: relative;
+    }
+
+    /* Misura e centratura: il JS imposta --vw/--vh uguali al video */
     #panel{
-      --accent: #14b8a6;                 /* colore dal tasto */
-      --radius: 18px;
-      --shell-w: min( clamp(520px, var(--heroW, 740px)*0.75, 980px), 86vw );
-      --shell-h: auto;                   /* altezza auto, ma non oltre il video */
-      --max-h: calc(var(--heroH, 420px) * 0.78);
-      position:absolute; inset:0; display:grid; place-items:center;
-      z-index: 3;                        /* sotto .node (4), sopra video (3) */
-      pointer-events:none;               /* i click li prende il contenuto */
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;      /* il contenuto riabilita i click */
+      z-index: 2;                /* sopra al video, sotto ai .node esterni */
     }
-    #panel[hidden]{ display:none; }
+    #panel:not([hidden]){ pointer-events: auto; }
 
-    #panel .panel__shell{
-      width: var(--shell-w);
-      max-height: var(--max-h);
-      background: color-mix(in oklab, var(--accent) 12%, #0f1f23);
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: var(--radius);
-      box-shadow:
-        0 30px 60px rgba(0,0,0,.45),
-        0 0 0 1px rgba(255,255,255,.06) inset;
-      padding: 22px 24px 18px;
+    #panel .panel-frame{
+      width: var(--vw, 60vw);
+      height: var(--vh, 33.75vw);             /* 16:9 fallback */
+      max-width: min(92vw, 1100px);
+      max-height: 70vh;
+      background: var(--panel-bg);
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 0 2px var(--ring) inset;
+      padding: clamp(16px, 2.6vw, 28px);
+      overflow: auto;
       color: #e7f5f3;
-      filter: drop-shadow(0 0 24px color-mix(in oklab, var(--accent) 35%, transparent));
-      pointer-events:auto;
     }
 
-    /* tipografia */
-    .panel__badge{
-      display:inline-block; font-weight:700; font-size:.9rem; letter-spacing:.02em;
-      background: color-mix(in oklab, var(--accent) 80%, #0000);
-      color: #041414; padding: 6px 10px; border-radius:999px; margin-bottom:8px;
+    .panel-head{ margin-bottom: clamp(10px, 1.6vw, 16px); }
+    .badge{
+      display:inline-block; margin-bottom:8px;
+      padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px;
+      color:#062d2f; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb,var(--accent) 35%, transparent);
     }
-    .panel__title{ margin: 8px 0 6px; font-size: 1.6rem; line-height:1.25; }
-    .panel__subtitle{ margin: 0 0 10px; opacity:.85 }
-    .panel__body{ margin: 0 0 16px; opacity:.9 }
+    .panel-title{
+      margin:0; line-height:1.1;
+      font-size: clamp(22px, 3.1vw, 42px); font-weight:800;
+    }
+    .panel-sub{ margin: 6px 0 10px; opacity:.85; font-size: clamp(14px,1.5vw,18px);}
+    .panel-desc{ margin: 0 0 clamp(12px,1.8vw,18px); opacity:.78; max-width: 80ch; }
 
-    /* CTA */
-    .panel__cta{ display:flex; flex-wrap:wrap; gap:10px; margin: 6px 0 12px; }
-    .panel__cta .btn{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 14px; border-radius:12px; font-weight:700;
-      border:1px solid color-mix(in oklab, var(--accent) 70%, #fff 0%);
-      background: color-mix(in oklab, var(--accent) 22%, #0d1b1f);
+    .panel-ctas{ display:grid; gap:12px; }
+    .cta{
+      display:flex; align-items:center; gap:12px;
+      padding:14px 18px; border-radius:14px; text-decoration:none;
+      background: rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
+      color: #e7f5f3;
     }
-    .panel__cta .btn:hover{
-      box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 40%, transparent);
-      transform: translateY(-1px);
+    .cta:hover{ box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent); transform: translateY(-1px); }
+    .cta-ic{
+      min-width:40px; height:40px; display:grid; place-items:center;
+      border-radius:12px; font-weight:800; letter-spacing:.4px;
+      color: #062d2f; background: var(--accent);
     }
+    .cta-t{ font-weight:700; }
 
-    /* back */
-    .panel__back{
-      padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.18);
-      background:#0e1c20; color:#e7f5f3; font-weight:700;
+    .panel-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px; margin-top: clamp(14px, 2vw, 20px);
     }
-    .panel__footer{ display:flex; justify-content:flex-end; }
+    .btn-back{
+      padding:10px 14px; border-radius:10px; border:0;
+      background: var(--accent); color:#062d2f; font-weight:700; cursor:pointer;
+    }
+    .panel-step{ opacity:.7; font-weight:600; }
 
-    /* quando il pannello è aperto, disattivo i click sui nodi */
-    body.is-panel-open .node{ pointer-events:none; }
+    /* Accessibilità */
+    @media (prefers-reduced-motion: reduce){
+      .cta:hover{ transform:none; }
+    }
 
     /* layering confermato */
     #glowLayer{ z-index:1; pointer-events:none; }
@@ -239,20 +257,25 @@
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
       poster="../assets/poster-hero.jpg"></video>
     
-    <!-- PANEL: compatto, scala rispetto al video -->
-    <div id="panel" hidden aria-hidden="true">
-      <div class="panel__shell">
-        <div class="panel__badge">Percorso</div>
-        <h2 class="panel__title" id="panelTitle">Titolo</h2>
-        <p class="panel__subtitle" id="panelSub">Sottotitolo</p>
-        <p class="panel__body" id="panelBody">Testo del modulo…</p>
-
-        <div class="panel__cta" id="panelCtas">
-          <!-- CTA principali generati da JS -->
+    <!-- Panel: stessa misura del video, inizialmente nascosto -->
+    <div id="panel" hidden aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="panel-frame">
+        <div class="panel-head">
+          <span class="badge">PDF</span>
+          <h2 class="panel-title" id="panelTitle">DMS — Riaccendiamo il Commercio</h2>
+          <p class="panel-sub" id="panelSub">Visione, gemello nazionale del commercio</p>
+          <p class="panel-desc" id="panelDesc">
+            L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi.
+          </p>
         </div>
 
-        <div class="panel__footer">
-          <button class="panel__back" type="button" id="panelBack">Torna al video</button>
+        <nav class="panel-ctas" id="panelCtas">
+          <!-- CTA popolati da JS -->
+        </nav>
+
+        <div class="panel-foot">
+          <button type="button" class="btn-back" id="btnBack">Torna al video</button>
+          <span class="panel-step" id="panelStep">Percorso 0</span>
         </div>
       </div>
     </div>
@@ -526,85 +549,91 @@
   </script>
 
   <script>
-(() => {
-  const panel = document.getElementById('panel');
-  const shell = panel?.querySelector('.panel__shell');
-  const elTitle = panel?.querySelector('#panelTitle');
-  const elSub   = panel?.querySelector('#panelSub');
-  const elBody  = panel?.querySelector('#panelBody');
-  const elCtas  = panel?.querySelector('#panelCtas');
-  const btnBack = panel?.querySelector('#panelBack');
-  const hero    = document.getElementById('heroVideo') || document.querySelector('#viewport video');
+(function(){
+  const panel   = document.getElementById('panel');
+  const frame   = panel?.querySelector('.panel-frame');
+  const btnBack = document.getElementById('btnBack');
+  const hero    = document.getElementById('heroVideo');              // video element
+  const titleEl = document.getElementById('panelTitle');
+  const subEl   = document.getElementById('panelSub');
+  const descEl  = document.getElementById('panelDesc');
+  const ctasEl  = document.getElementById('panelCtas');
+  const stepEl  = document.getElementById('panelStep');
 
-  // ---- misura video e aggiorna variabili (anche su resize/orientazione)
-  function sizeFromHero(){
-    const r = hero?.getBoundingClientRect?.();
-    const w = Math.round(r?.width || 740);
-    const h = Math.round(r?.height || 420);
-    document.documentElement.style.setProperty('--heroW', w + 'px');
-    document.documentElement.style.setProperty('--heroH', h + 'px');
+  // Palette accenti per tasto 0..11 (uguali ai pulsanti)
+  const ACCENT = ['#e11d48','#f97316','#fb923c','#fbbf24','#eab308','#d9f000','#bde34a','#9bdc4b','#66c653','#36b24a','#22a866','#21c55d'];
+
+  // Dati "modulo" per il pannello 0 (mock "Visione — Riaccendiamo")
+  const MODS = {
+    0:{
+      title:'DMS — Riaccendiamo il Commercio',
+      sub:'Visione, gemello nazionale del commercio',
+      desc:'L'infrastruttura tecnologica per una rivoluzione digitale nei settori del commercio, turismo e servizi.',
+      ctas:[
+        {t:'Apri documento principale (PDF)', href:'./docs/riaccendiamo.pdf'},
+        {t:'Hub Nazionale del Commercio (PDF)', href:'./docs/hub-nazionale.pdf'},
+        {t:'DMS & CLUST-ER (PDF)', href:'./docs/dms-cluster.pdf'},
+        {t:'DMS ECC — Executive (PDF)', href:'./docs/dms-ecc.pdf'}
+      ]
+    }
+  };
+
+  function sizeToHero(){
+    const r = hero?.getBoundingClientRect();
+    if(!r){ return; }
+    // dimensioni esatte del blocco video
+    panel.style.setProperty('--vw', r.width + 'px');
+    panel.style.setProperty('--vh', r.height + 'px');
   }
-  sizeFromHero();
-  addEventListener('resize', sizeFromHero, {passive:true});
-  addEventListener('orientationchange', () => setTimeout(sizeFromHero, 120));
 
-  // ---- carica dati moduli se servono
-  let MODULES = (window.MODULES || window.modules || null);
-  async function ensureModules(){
-    if (MODULES) return MODULES;
-    try{
-      const r = await fetch('./data/modules.json', {cache:'no-store'});
-      MODULES = await r.json();
-      return MODULES;
-    }catch{ return []; }
-  }
-
-  // ---- costruisce CTA PDF
-  function buildCtas(mod){
-    elCtas.innerHTML = '';
-    const makeBtn = (label, href) => {
+  function fillPanel(i){
+    const d = MODS[i] || {title:`Modulo ${i}`, sub:'In sviluppo', desc:'Contenuti in preparazione.', ctas:[]};
+    titleEl.textContent = d.title;
+    subEl.textContent   = d.sub;
+    descEl.textContent  = d.desc;
+    stepEl.textContent  = `Percorso ${i}`;
+    ctasEl.innerHTML = '';
+    d.ctas.forEach(o=>{
       const a = document.createElement('a');
-      a.className = 'btn'; a.textContent = label; a.target = '_blank'; a.rel='noopener';
-      a.href = href;
-      return a;
-    };
-    if (mod.pdf) elCtas.appendChild(makeBtn('Apri documento principale (PDF)', mod.pdf));
-    (mod.more || []).forEach((m, i) => elCtas.appendChild(makeBtn(`Apri allegato ${i+1}`, m)));
+      a.className = 'cta'; a.href = o.href; a.target = '_blank'; a.rel='noopener';
+      a.innerHTML = `<span class="cta-ic">PDF</span><span class="cta-t">${o.t}</span>`;
+      ctasEl.appendChild(a);
+    });
   }
 
-  // ---- apre pannello con indice i
-  async function openPanel(i){
-    const mods = await ensureModules();
-    const mod = Array.isArray(mods) ? mods[i] : mods?.[i];
-    // testo
-    elTitle.textContent = (mod?.title || `Modulo ${i}`);
-    elSub.textContent   = (mod?.when  || 'In sviluppo');
-    elBody.textContent  = (mod?.desc  || mod?.description || 'Contenuti in arrivo.');
-    buildCtas(mod || {});
-    // colore dal tasto
-    const node = document.querySelector(`.node[data-i="${i}"]`) || document.querySelectorAll('.node')[i];
-    const hc = node ? getComputedStyle(node).getPropertyValue('--hc').trim() : '';
-    shell.style.setProperty('--accent', hc || '#14b8a6');
-    // mostra pannello
-    panel.hidden = false; panel.setAttribute('aria-hidden','false');
-    document.body.classList.add('is-panel-open');
+  function setAccent(i){
+    const c = ACCENT[i] || ACCENT[0];
+    document.getElementById('viewport').style.setProperty('--accent', c);
   }
 
-  // ---- chiudi pannello
+  function openPanel(i=0){
+    setAccent(i);
+    fillPanel(i);
+    sizeToHero();
+    panel.hidden = false;
+    panel.setAttribute('aria-hidden','false');
+    window.addEventListener('resize', sizeToHero, {passive:true});
+    document.addEventListener('keydown', onEsc);
+  }
+
   function closePanel(){
-    panel.hidden = true; panel.setAttribute('aria-hidden','true');
-    document.body.classList.remove('is-panel-open');
+    panel.hidden = true;
+    panel.setAttribute('aria-hidden','true');
+    window.removeEventListener('resize', sizeToHero);
+    document.removeEventListener('keydown', onEsc);
   }
-  btnBack?.addEventListener('click', closePanel);
+  function onEsc(e){ if(e.key === 'Escape') closePanel(); }
 
-  // ---- collega i 12 tasti dell'orologio
-  document.querySelectorAll('.node').forEach((el, i) => {
-    el.addEventListener('click', (e) => { e.preventDefault(); openPanel(i); }, {passive:false});
+  // Hook: ogni .node apre il pannello corrispondente
+  document.querySelectorAll('.node').forEach((el, i)=>{
+    el.addEventListener('click', (e)=>{ e.preventDefault(); openPanel(i); }, {passive:false});
   });
 
-  // ---- utilità: test veloce ?panel=i
+  btnBack?.addEventListener('click', closePanel);
+
+  // Test rapido: ?panel=0 apre direttamente
   const qs = new URLSearchParams(location.search);
-  if (qs.has('panel')) { openPanel(parseInt(qs.get('panel'),10)||0); }
+  if(qs.has('panel')) openPanel(parseInt(qs.get('panel'),10)||0);
 })();
   </script>
 </body>
