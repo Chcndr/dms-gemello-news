@@ -390,34 +390,66 @@
   </script>
 
   <script>
-    // Pannello PDF - show/hide nel viewport
-    function openPanel0(){
-      const vp = document.getElementById('viewport');
-      const p0 = document.getElementById('panel-0');
-      if (!vp || !p0) return;
-      vp.querySelector('video')?.setAttribute('hidden','');   // nascondi video
-      p0.hidden = false;
-    }
-    function closePanel0(){
-      const vp = document.getElementById('viewport');
-      const p0 = document.getElementById('panel-0');
-      if (!vp || !p0) return;
-      p0.hidden = true;
-      vp.querySelector('video')?.removeAttribute('hidden');   // mostra video
-    }
+(function(){
+  const root   = document.documentElement;
+  const panel  = document.getElementById('panel');
+  const hero   = document.getElementById('hero');
+  const back   = document.getElementById('panel-back');
 
-    // Collega il click del tasto 0 all'apertura pannello
-    document.querySelector('.node[data-i="0"]')?.addEventListener('click', openPanel0);
-    
-    // Altri pulsanti - fallback scroll al viewport
-    document.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.node');
-      if (!btn) return;
-      const i = +btn.dataset.i || 0;
-      if (i === 0) return; // già gestito sopra
-      
-      const vp = document.getElementById('viewport');
-      vp?.scrollIntoView({behavior:'smooth', block:'center'});
+  function safeHref(u){ try { return encodeURI(u); } catch { return '#'; } }
+
+  function buildLinks(meta){
+    const links = [];
+    if(meta?.pdf) links.push(['Apri documento principale (PDF)', meta.pdf]);
+    (meta?.more||[]).forEach((u,idx)=> links.push([`Apri allegato ${idx+1} (PDF)`, u]));
+    return links.map(([label, href]) =>
+      `<a class="btn" href="${safeHref(href)}" target="_blank" rel="noopener">${label}</a>`
+    ).join(' ');
+  }
+
+  window.__openPanelByIndex = function(i, meta){
+    const node = document.querySelector(`.node[data-i="${i}"]`) || document.querySelectorAll('.node')[i];
+    const c = node ? getComputedStyle(node).getPropertyValue('--hc').trim() : '#14b8a6';
+    root.style.setProperty('--accent', c || '#14b8a6');
+
+    document.getElementById('panel-title').textContent = meta?.title || `Modulo ${i}`;
+    document.getElementById('panel-sub').textContent   = meta?.when || meta?.desc || 'In sviluppo';
+    document.getElementById('panel-body').innerHTML    = buildLinks(meta);
+
+    // misura dal hero e mostra
+    const r = hero.getBoundingClientRect();
+    root.style.setProperty('--vw', r.width + 'px');
+    root.style.setProperty('--vh', r.height + 'px');
+
+    panel.hidden = false;
+    document.body.classList.add('panel-open');
+    hero.style.visibility = 'hidden';
+  };
+
+  function closePanel(){ panel.hidden = true; document.body.classList.remove('panel-open'); hero.style.visibility=''; }
+  back?.addEventListener('click', closePanel);
+
+  addEventListener('resize', ()=>{ if(panel && !panel.hidden){ const r = hero.getBoundingClientRect(); root.style.setProperty('--vw', r.width + 'px'); root.style.setProperty('--vh', r.height + 'px'); } }, {passive:true});
+})();
+
+    // Integrazione click nodi con pannelli
+    document.querySelectorAll('.node').forEach((el, i) => {
+      el.addEventListener('click', () => {
+        // Carica modules.json se non già caricato
+        if (!window.MODULES) {
+          fetch('./data/modules.json')
+            .then(r => r.json())
+            .then(data => {
+              window.MODULES = data;
+              const meta = window.MODULES[i];
+              window.__openPanelByIndex(i, meta);
+            })
+            .catch(() => window.__openPanelByIndex(i, null));
+        } else {
+          const meta = window.MODULES[i];
+          window.__openPanelByIndex(i, meta);
+        }
+      });
     });
   </script>
 
