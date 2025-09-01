@@ -56,9 +56,15 @@
     #hand-shaft { stroke: rgba(255,255,255,.85); stroke-width: 4; stroke-linecap: round; }
     #hand-tip   { fill: rgba(255,255,255,.92); }
 
-    /* Video */
+    /* Viewport: contiene video o pannello, sempre centrati */
     #viewport{
-      display:flex; align-items:center; justify-content:center;
+      position: relative;
+      display: grid;
+      place-items: center;
+      z-index: 3;
+      /* verranno impostate via JS in px */
+      --vw: 800px; /* width video */
+      --vh: 450px; /* height video */
     }
     #viewport > video{
       width:100%; height:100%; object-fit:cover; border-radius:16px;
@@ -151,73 +157,37 @@
       color:#cfeeea;
     }
 
-    /* Card nel viewport: tinta da --accent (presa dal tasto) */
-    #panel{
-      --accent: #14b8a6;                      /* fallback */
-      position: absolute; inset: 0; margin: auto;
-      width: min(880px, 92vw);
-      max-height: 84%;
+    /* Pannello: stessa taglia del video, sfondo pieno nella tinta del tasto */
+    .panel{
+      --accent: #14b8a6;
+      width: var(--vw);
+      height: var(--vh);
       overflow: auto;
-      padding: 28px 28px 22px;
-      border-radius: 18px;
-      background: rgba(12,18,20,.92);         /* quasi opaca: la lancetta NON si vede sotto */
-      border: 1px solid color-mix(in oklab, var(--accent) 28%, rgba(255,255,255,.12));
+      border-radius: 16px;
+      background: color-mix(in oklab, var(--accent) 40%, #06171b 60%);
+      color: #eef8f6;
       box-shadow:
-        0 20px 60px rgba(0,0,0,.5),
-        0 0 0 1px rgba(255,255,255,.06) inset;
-      color: #e9f0ee;
-      z-index: 3;   /* dentro il viewport, NON sopra i .node */
+        0 22px 44px rgba(0,0,0,.45),
+        0 0 0 1px color-mix(in oklab, var(--accent) 28%, rgba(255,255,255,.10));
+      backdrop-filter: none !important;
     }
 
-    /* testata e badge "Percorso" */
-    #panel .head{ margin-bottom: 12px; }
-    #panel .badge{
-      display:inline-block; font:600 12px/1.1 ui-sans-serif,system-ui;
-      padding:6px 10px; border-radius:999px; letter-spacing:.02em;
-      color:#0b1615;
-      background: color-mix(in oklab, var(--accent) 92%, white 6%);
-      box-shadow: 0 0 18px color-mix(in oklab, var(--accent) 45%, transparent);
+    /* CTA dentro il pannello (già presenti, coerenti con la tinta) */
+    .panel .badge{
+      display:inline-block; border-radius:999px; padding:6px 10px;
+      background: color-mix(in oklab, var(--accent) 30%, #0b2327 70%);
+      border:1px solid color-mix(in oklab, var(--accent) 60%, white 10%);
+    }
+    .panel .cta{
+      display:inline-flex; gap:8px; margin:10px 10px 0 0; padding:12px 16px;
+      border-radius:12px; text-decoration:none; color:#eafcfa;
+      background: color-mix(in oklab, var(--accent) 16%, rgba(255,255,255,.03));
+      border: 1px solid color-mix(in oklab, var(--accent) 52%, white 10%);
+      box-shadow: 0 10px 24px color-mix(in oklab, var(--accent) 24%, transparent);
     }
 
-    /* titoli */
-    #panel h2{ font:700 clamp(22px,3.8vw,34px)/1.16 ui-sans-serif,system-ui; margin:10px 0 6px; }
-    #panel p.sub{ opacity:.85; margin:0 0 16px; }
-
-    /* righe di separazione */
-    #panel hr{ border:0; height:1px; margin:14px 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
-    }
-
-    /* CTA list */
-    #panel .cta{
-      display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;
-    }
-    #panel .cta a{
-      display:inline-flex; align-items:center; gap:10px;
-      padding:12px 16px; border-radius:12px; text-decoration:none;
-      font:600 16px/1.1 ui-sans-serif,system-ui;
-      color: #e8fcf7; background: color-mix(in oklab, var(--accent) 18%, rgba(255,255,255,.02));
-      border:1px solid color-mix(in oklab, var(--accent) 55%, rgba(255,255,255,.14));
-      box-shadow: 0 0 22px color-mix(in oklab, var(--accent) 35%, transparent);
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-    #panel .cta a:hover{ transform: translateY(-2px);
-      box-shadow: 0 10px 30px color-mix(in oklab, var(--accent) 45%, transparent);
-    }
-
-    /* link "Torna al video" (neutro ma con contorno accent) */
-    #panel .back{
-      margin-left:auto;
-      color:#cfe5e1; border:1px dashed color-mix(in oklab, var(--accent) 40%, rgba(255,255,255,.16));
-      background: rgba(255,255,255,.03);
-    }
-
-    /* scrollbar sobria */
-    #panel::-webkit-scrollbar{ width:10px; }
-    #panel::-webkit-scrollbar-thumb{
-      background: color-mix(in oklab, var(--accent) 25%, rgba(255,255,255,.12));
-      border-radius:8px;
-    }
+    /* Pulsante fullscreen: pronto ma nascosto (lo abiliteremo dopo) */
+    .panel .expand { display:none; position:absolute; top:10px; right:10px; }
   </style>
 </head>
 <body>
@@ -236,9 +206,11 @@
   <!-- Layers -->
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
-    <video id="hero" src="../videos/video-hero.mp4"
-      muted playsinline webkit-playsinline preload="metadata" autoplay loop
-      poster="../assets/poster-hero.jpg"></video>
+    <div id="hero" class="hero">
+      <video id="heroVideo" src="../videos/video-hero.mp4"
+        muted playsinline webkit-playsinline preload="metadata" autoplay loop
+        poster="../assets/poster-hero.jpg"></video>
+    </div>
     <div id="panel" hidden aria-live="polite"></div>
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
