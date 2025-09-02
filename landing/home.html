@@ -729,7 +729,7 @@ document.addEventListener('click', function(e){
       el.addEventListener('click', () => {
         // Carica modules.json se non già caricato
         if (!window.MODULES) {
-          fetch('/dms-gemello-news//dms-gemello-news/landing/data/modules.json?v=1', {cache:'no-store'})
+          fetch('/dms-gemello-news/landing/data/modules.json?v=2', {cache:'no-store'})
             .then(r => r.json())
             .then(data => {
               window.MODULES = data;

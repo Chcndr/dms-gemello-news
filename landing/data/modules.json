@@ -2,15 +2,15 @@
   {
     "id": 0,
     "title": "00 • Intro politica — Riaccendiamo il Commercio",
-    "sub": "Istituzionale • Amplia: Q4 2025",
+    "when": "Q4 2025",
     "actions": [
-      {"label": "Mappa Ministeri", "href": "/dms-gemello-news/landing/home.html#mappa-ministeri"},
-      {"label": "Copertina", "slug": "hub-nazionale-commercio"},
-      {"label": "Riaccendiamo il Commercio", "slug": "riaccendiamo-il-commercio"},
-      {"label": "Hub Nazionale del Commercio", "slug": "hub-nazionale-commercio"},
-      {"label": "Dossier nazionale", "slug": "dossier-nazionale"},
-      {"label": "DMS & CLUST-ER", "slug": "dms-cluster-er"},
-      {"label": "Riequilibrio (ECC — pilastro)", "slug": "riequilibrio-ecc"}
+      { "label": "Mappa Ministeri",            "href": "/dms-gemello-news/landing/home.html#mappa-ministeri" },
+      { "label": "Copertina",                  "slug": "riaccendiamo-il-commercio" },
+      { "label": "Riaccendiamo il Commercio",  "slug": "riaccendiamo-il-commercio" },
+      { "label": "Hub Nazionale del Commercio","slug": "hub-nazionale-del-commercio" },
+      { "label": "Dossier nazionale",          "slug": "dossier-nazionale" },
+      { "label": "DMS & CLUST-ER",             "slug": "dms-e-clust-er" },
+      { "label": "Riequilibrio (ECC — pilastro)","slug": "riequilibrio-ecc" }
     ]
   },
   {
