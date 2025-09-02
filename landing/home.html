@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <!-- BUILD_TOKEN: HOTFIX_HOME_2025-09-02 -->
-  <meta charset="UTF-8">/>
+  <meta charset="utf-8"/>
   <script>
 /* Kill-switch: qualunque click su <a> che punterebbe a /landing/... viene corretto
    verso la root del repo; le ancore #doc-/#vid- vengono aperte fuori dall'iframe. */
@@ -25,19 +24,6 @@ addEventListener('click', function (e) {
     return;
   }
 }, { capture: true, passive: false });
-</script>
-
-<!-- Loader robusto con Promise globale -->
-<script>
-window.MODULES = [];
-window.MODULES_MAP = new Map();
-window.MODULES_READY = (async () => {
-  const url = '/dms-gemello-news/landing/data/modules.json?v=3';
-  const res = await fetch(url, {cache:'no-store'});
-  const data = await res.json();
-  window.MODULES = Array.isArray(data) ? data : [];
-  window.MODULES_MAP = new Map(window.MODULES.map((m,i)=>[ String(m?.id ?? i), m ]));
-})();
 </script>
   <base href="https://chcndr.github.io/dms-gemello-news/">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
@@ -742,7 +728,7 @@ document.addEventListener('click', function(e){
       el.addEventListener('click', () => {
         // Carica modules.json se non già caricato
         if (!window.MODULES) {
-          fetch('/dms-gemello-news/landing/data/modules.json?v=2', {cache:'no-store'})
+          fetch('/dms-gemello-news/landing/data/modules.json?v=1', {cache:'no-store'})
             .then(r => r.json())
             .then(data => {
               window.MODULES = data;
@@ -786,8 +772,50 @@ document.addEventListener('click', function(e){
     hero.muted = true; hero.playsInline = true;
   }
 
-  // Apri pannello per indice i e colore accent (ora gestito dalla versione async robusta)
-  // window.openPanelByIndex definita più avanti con supporto async
+  // Apri pannello per indice i e colore accent
+  window.openPanelByIndex = function(i, accent, data){
+    if(!panel) return;
+
+    // Colore accent dal tasto (fallback teal)
+    panel.style.setProperty('--accent', accent || '#14b8a6');
+
+    // (Opzionale) riempi contenuti
+    if(data){
+      panel.querySelector('#panel-title').textContent = data.title || ('Modulo ' + i);
+      panel.querySelector('#panel-sub').textContent   = data.sub   || 'Contenuti in arrivo.';
+      
+      // Genera i CTA PDF dinamicamente
+      const actionsDiv = panel.querySelector('#panel-actions');
+      const closeBtn = actionsDiv.querySelector('#panel-close');
+      
+      // Rimuovi tutti i CTA esistenti tranne il bottone close
+      actionsDiv.querySelectorAll('.btn:not(#panel-close)').forEach(btn => btn.remove());
+      
+      // Aggiungi le classi per il fix overlap
+      actionsDiv.classList.add('actions', 'pdf-group');
+      
+      // Aggiungi i nuovi CTA PDF
+      if(data.pdfs && data.pdfs.length > 0) {
+        data.pdfs.forEach((pdf, idx) => {
+          const btn = document.createElement('a');
+          btn.className = 'btn btn--accent action';
+          btn.href = pdf.file;
+          btn.target = '_blank';
+          btn.rel = 'noopener';
+          btn.textContent = pdf.label;
+          actionsDiv.insertBefore(btn, closeBtn);
+        });
+      }
+    } else {
+      // Fallback se non ci sono dati
+      panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
+      panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
+    }
+
+    hero && hero.classList.add('is-hidden');
+    panel.hidden = false;
+    panel.classList.add('is-open');
+  };
 
   // Chiudi pannello
   function closePanel(){
@@ -819,66 +847,6 @@ document.addEventListener('click', function(e){
   }
 })();
   </script>
-
-  <!-- Ancora Mappa Ministeri (placeholder per Step 2) -->
-  <section id="mappa-ministeri" style="padding:48px 0">
-    <div class="map-wrap" style="max-width:1200px;margin:0 auto">
-      <h2 style="margin:0 0 8px">Mappa Ministeri (beta)</h2>
-      <p class="meta" style="opacity:.8">Step 2: mappa radiale interattiva.</p>
-    </div>
-  </section>
-
-  <!-- Renderer robusto con supporto href/slug e caricamento garantito -->
-  <script>
-function renderActions(mod){
-  const wrap = document.querySelector('#panel .actions');
-  if(!wrap){ return; }
-  const list = Array.isArray(mod?.actions) ? mod.actions : [];
-  wrap.innerHTML = '';
-  if(!list.length){
-    wrap.innerHTML = '<span class="meta">Contenuti in arrivo</span>';
-    return;
-  }
-  list.forEach(a=>{
-    const href = a?.href || (a?.slug ? `/dms-gemello-news/#doc-${a.slug}` : '#');
-    const btn  = document.createElement('a');
-    btn.className = 'action spot';
-    btn.href = href; btn.target = '_top';
-    btn.textContent = a?.label || a?.slug || 'Approfondisci';
-    if(!a?.href && !a?.slug){ btn.setAttribute('aria-disabled','true'); btn.classList.add('disabled'); }
-    wrap.appendChild(btn);
-  });
-}
-async function openPanelByIndex(iOrId, accent, data){
-  try{ await window.MODULES_READY; }catch(e){}
-  const byIdx = window.MODULES[+iOrId];
-  const byId  = window.MODULES_MAP.get(String(iOrId));
-  const mod   = byIdx || byId || window.MODULES[0] || {};
-  
-  // Gestione pannello e styling
-  const panel = document.querySelector('#panel');
-  const hero = document.querySelector('#hero');
-  if(panel) {
-    // Colore accent dal tasto (fallback teal)
-    panel.style.setProperty('--accent', accent || '#14b8a6');
-    
-    // header/metadati
-    panel.querySelector('#panel-title')?.replaceChildren(document.createTextNode(mod.title || `Modulo ${iOrId}`));
-    panel.querySelector('#panel-sub')?.replaceChildren(document.createTextNode(mod.when || mod.sub || ''));
-    
-    // Render actions
-    renderActions(mod);
-    
-    // Mostra pannello
-    hero && hero.classList.add('is-hidden');
-    panel.hidden = false;
-    panel.classList.add('is-open');
-  }
-}
-window.openPanelByIndex = openPanelByIndex;
-document.addEventListener('DOMContentLoaded', ()=>{ openPanelByIndex(0) });
-  </script>
-
 </body>
 </html>
 
