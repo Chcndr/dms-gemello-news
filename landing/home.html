@@ -604,7 +604,7 @@
 
   function safeHref(u){ try { return encodeURI(u); } catch { return '#'; } }
 
-  function //buildLinks(meta){
+  function buildLinks(meta){
     const links = [];
     const SPOT_URL = "https://chcndr.github.io/dms-gemello-news/";
     
@@ -617,15 +617,20 @@
       './docs/RIEQUILIBRIO.pdf': 'riequilibrio-ecc',
       './docs/PRESENTAZIONE DMS -compressed.pdf': 'presentazione-dms',
       './docs/DMS SPOT 1.pdf': 'dms-spot-1',
+      './docs/Relazione sui controlli.pdf': 'relazione-controlli',
       './docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf': 'hub-urbani-prossimita-er',
       './docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf': 'once-only-sdg',
+      './docs/DMS SSET.pdf': 'dms-sset',
+      './docs/PDND • DPP.pdf': 'passaporto-eu',
       './docs/DMS ECC.pdf': 'dms-ecc',
+      './docs/EQUILIBRIO ECOSOSTENIBILE.pdf': 'equilibrio-ecosostenibile',
       './docs/CARBON CREDIT DMS.pdf': 'carbon-credit-dms',
       './docs/COSTI PA.pdf': 'costi-pa',
       './docs/ANALISI E SOLUZIONE DMS.pdf': 'analisi-e-soluzione-dms',
       './docs/Analisi.pdf': 'analisi',
       './docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf': 'scenario-futuro',
       './docs/PROGETTO NAZIONALE.pdf': 'progetto-nazionale',
+      './docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf': 'bolkestein-mercati',
       './docs/APP DMS Assistente Personale.pdf': 'app-dms-assistente'
     };
     
@@ -656,7 +661,7 @@
 
     document.getElementById('panel-title').textContent = meta?.title || `Modulo ${i}`;
     document.getElementById('panel-sub').textContent   = meta?.when || meta?.desc || 'In sviluppo';
-    document.getElementById('panel-body').innerHTML    = //buildLinks(meta);
+    document.getElementById('panel-body').innerHTML    = buildLinks(meta);
 
     // misura dal hero e mostra
     const r = hero.getBoundingClientRect();
