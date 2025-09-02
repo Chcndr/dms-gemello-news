@@ -360,6 +360,52 @@
     }
     /* niente tag "PDF/INFO" */
     .node .tag{ display:none; }
+
+    /* ---- Theme ---- */
+    :root{
+      --q1:#5bbcff;   /* Q1: azzurro */
+      --q2:#4ade80;   /* Q2: verde   */
+      --q3:#f59e0b;   /* Q3: arancio */
+      --q4:#a78bfa;   /* Q4: viola   */
+      --dot-plan:#a1a1aa;
+      --dot-pilot:#facc15;
+      --dot-std:#34d399;
+    }
+
+    /* I tasti sono già .node: aggiungo ring per trimestre (inset, non cambia misure) */
+    .node{ position:relative; }
+    .node.q1::after, .node.q2::after, .node.q3::after, .node.q4::after{
+      content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+      box-shadow:0 0 0 2px rgba(255,255,255,.06) inset; /* base */
+    }
+    .node.q1::after{ box-shadow:0 0 0 2px rgba(91,188,255,.35) inset, 0 2px 12px rgba(91,188,255,.10); }
+    .node.q2::after{ box-shadow:0 0 0 2px rgba(74,222,128,.32) inset, 0 2px 12px rgba(74,222,128,.10); }
+    .node.q3::after{ box-shadow:0 0 0 2px rgba(245,158,11,.28) inset, 0 2px 12px rgba(245,158,11,.08); }
+    .node.q4::after{ box-shadow:0 0 0 2px rgba(167,139,250,.35) inset, 0 2px 12px rgba(167,139,250,.10); }
+
+    /* Semaforo stato (pallino in basso a destra); usa classi: .plan .pilot .std */
+    .node::before{
+      content:""; position:absolute; right:10px; bottom:10px;
+      width:8px; height:8px; border-radius:50%;
+      background:var(--state-color,rgba(255,255,255,.28));
+      box-shadow:0 0 0 2px rgba(0,0,0,.25);
+      pointer-events:none;
+    }
+    .node.plan { --state-color: var(--dot-plan); }  /* grigio = pianificato   */
+    .node.pilot{ --state-color: var(--dot-pilot);}  /* giallo = pilota        */
+    .node.std  { --state-color: var(--dot-std);  }  /* verde = standard/prod. */
+
+    /* Micro-hover/focus (rispetta reduce-motion) */
+    @media (prefers-reduced-motion:no-preference){
+      .node{ transition:transform .12s ease-out; }
+      .node:hover, .node:focus-visible{ transform:translateY(-1px); }
+    }
+    .node:focus-visible{ outline:2px solid rgba(20,184,166,.85); outline-offset:2px; }
+
+    /* Pannello: titolo/meta leggibili (nessuna misura cambiata) */
+    #panel h3{ font-size:1.16rem; letter-spacing:.01em; }
+    #panel .meta{ font-size:.98rem; opacity:.92; }
+    #panel .summary{ font-size:.98rem; line-height:1.5; opacity:.96; }
   </style>
 </head>
 <body>
@@ -403,18 +449,18 @@
   <div id="glowLayer" aria-hidden="true"></div>
 
   <!-- 12 pulsanti ore 0..11 -->
-  <!-- BTN-00 START --><button class="node" data-i="0"><span class="title">Intro politica</span><span class="sub">Q4 2025</span></button><!-- BTN-00 END -->
-  <!-- BTN-01 START --><button class="node" data-i="1"><span class="title">Grosseto — Primo collegamento reale</span><span class="sub">Q1 2026</span></button><!-- BTN-01 END -->
-  <!-- BTN-02 START --><button class="node" data-i="2"><span class="title">DMS & CLUST-ER — Pilota HUB ER</span><span class="sub">Q4 2025</span></button><!-- BTN-02 END -->
-  <!-- BTN-03 START --><button class="node" data-i="3"><span class="title">Pagamenti & PDND (Once-Only)</span><span class="sub">Q1 2026</span></button><!-- BTN-03 END -->
-  <!-- BTN-04 START --><button class="node" data-i="4"><span class="title">DPP (ESPR)</span><span class="sub">Q4 2026</span></button><!-- BTN-04 END -->
-  <!-- BTN-05 START --><button class="node" data-i="5"><span class="title">ECC — Narrativa</span><span class="sub">Q2 2026</span></button><!-- BTN-05 END -->
-  <!-- BTN-06 START --><button class="node" data-i="6"><span class="title">ECC — Tecnica</span><span class="sub">Q3 2026</span></button><!-- BTN-06 END -->
-  <!-- BTN-07 START --><button class="node" data-i="7"><span class="title">Costi PA & ROI</span><span class="sub">Q2 2026</span></button><!-- BTN-07 END -->
-  <!-- BTN-08 START --><button class="node" data-i="8"><span class="title">Analisi & Soluzione DMS</span><span class="sub">Q1–Q2 2026</span></button><!-- BTN-08 END -->
-  <!-- BTN-09 START --><button class="node" data-i="9"><span class="title">Scenario & KPI</span><span class="sub">Q1 2027</span></button><!-- BTN-09 END -->
-  <!-- BTN-10 START --><button class="node" data-i="10"><span class="title">Hub Nazionale (gemello)</span><span class="sub">Q4 2026</span></button><!-- BTN-10 END -->
-  <!-- BTN-11 START --><button class="node" data-i="11"><span class="title">App/PWA & Inclusione</span><span class="sub">Q4 2026</span></button><!-- BTN-11 END -->
+  <!-- BTN-00 START --><button class="node q4 std" data-i="0"><span class="title">Intro politica</span><span class="sub">Q4 2025</span></button><!-- BTN-00 END -->
+  <!-- BTN-01 START --><button class="node q1 pilot" data-i="1" style="--node-title-ch:18"><span class="title">Grosseto — Primo collegamento reale</span><span class="sub">Q1 2026</span></button><!-- BTN-01 END -->
+  <!-- BTN-02 START --><button class="node q4 pilot" data-i="2" style="--node-title-ch:19"><span class="title">DMS &amp; CLUST-ER — Pilota HUB ER</span><span class="sub">Q4 2025</span></button><!-- BTN-02 END -->
+  <!-- BTN-03 START --><button class="node q1 plan" data-i="3"><span class="title">Pagamenti &amp; PDND (Once-Only)</span><span class="sub">Q1 2026</span></button><!-- BTN-03 END -->
+  <!-- BTN-04 START --><button class="node q4 plan" data-i="4"><span class="title">DPP (ESPR)</span><span class="sub">Q4 2026</span></button><!-- BTN-04 END -->
+  <!-- BTN-05 START --><button class="node q2 plan" data-i="5"><span class="title">ECC — Narrativa</span><span class="sub">Q2 2026</span></button><!-- BTN-05 END -->
+  <!-- BTN-06 START --><button class="node q3 plan" data-i="6"><span class="title">ECC — Tecnica</span><span class="sub">Q3 2026</span></button><!-- BTN-06 END -->
+  <!-- BTN-07 START --><button class="node q2 plan" data-i="7"><span class="title">Costi PA &amp; ROI</span><span class="sub">Q2 2026</span></button><!-- BTN-07 END -->
+  <!-- BTN-08 START --><button class="node q1 plan" data-i="8"><span class="title">Analisi &amp; Soluzione DMS</span><span class="sub">Q1–Q2 2026</span></button><!-- BTN-08 END -->
+  <!-- BTN-09 START --><button class="node q1 plan" data-i="9"><span class="title">Scenario &amp; KPI</span><span class="sub">Q1 2027</span></button><!-- BTN-09 END -->
+  <!-- BTN-10 START --><button class="node q4 std" data-i="10"><span class="title">Hub Nazionale (gemello)</span><span class="sub">Q4 2026</span></button><!-- BTN-10 END -->
+  <!-- BTN-11 START --><button class="node q4 plan" data-i="11"><span class="title">App/PWA &amp; Inclusione</span><span class="sub">Q4 2026</span></button><!-- BTN-11 END -->
 
   <!-- Puntale lancetta -->
   <div id="handTip" class="hand-tip" aria-hidden="true"></div>
