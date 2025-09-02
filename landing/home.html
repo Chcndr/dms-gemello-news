@@ -349,6 +349,7 @@
       poster="../assets/poster-hero.jpg"></video>
     
     <!-- PANEL dentro lo stesso viewport del video -->
+    <!-- MOD-00 START -->
     <section id="panel" class="panel" hidden aria-hidden="true">
       <div class="panel-body">
         <header class="panel-head">
@@ -357,29 +358,29 @@
         </header>
         <p id="panel-sub">Sottotitolo / descrizione breve.</p>
 
-        <div class="panel-actions">
-          <a id="panel-cta-0" class="btn btn-cta" href="#" target="_blank" rel="noopener">Apri PDF</a>
-          <!-- altri CTA opzionali -->
-          <button id="panel-close" class="btn ghost">Torna al video</button>
+        <div class="panel-actions" id="panel-actions">
+          <!-- I CTA PDF verranno generati dinamicamente dal JavaScript -->
+          <button id="panel-close" class="btn btn--ghost">Torna al video</button>
         </div>
       </div>
     </section>
+    <!-- MOD-00 END -->
   </div>
   <div id="glowLayer" aria-hidden="true"></div>
 
   <!-- 12 pulsanti ore 0..11 -->
-  <button class="node" data-i="0"><span class="title">00 • I tre pilastri DMS</span><span class="sub">Amplia: Q4 2025</span><span class="tag">INFO</span></button>
-  <button class="node" data-i="1"><span class="title">01 • Grosseto — collegamento</span><span class="sub">Amplia: Q1 2026</span><span class="tag">PDF</span></button>
-  <button class="node" data-i="2"><span class="title">02 • ER — Hub pilota</span><span class="sub">Amplia: Q2 2026</span><span class="tag">PDF</span></button>
-  <button class="node" data-i="3"><span class="title">03 • Pagamenti & integrazioni</span><span class="sub">Amplia: Q1 2026</span><span class="tag">INFO</span></button>
-  <button class="node" data-i="4"><span class="title">04 • Passaporto EU (DPP)</span><span class="sub">Amplia: Q4 2026</span><span class="tag">INFO</span></button>
-  <button class="node" data-i="5"><span class="title">05 • ECC — Narrativa</span><span class="sub">Amplia: Q4 2025</span><span class="tag">PDF</span></button>
-  <button class="node" data-i="6"><span class="title">06 • ECC — Tecnica</span><span class="sub">Amplia: Q1 2026</span><span class="tag">INFO</span></button>
-  <button class="node" data-i="7"><span class="title">07 • Carbon Credit (logica)</span><span class="sub">Amplia: Q4 2026</span><span class="tag">INFO</span></button>
-  <button class="node" data-i="8"><span class="title">08 • Ecosistema Costi PA</span><span class="sub">Amplia: Q3 2026</span><span class="tag">INFO</span></button>
-  <button class="node" data-i="9"><span class="title">09 • Analisi & Soluzione DMS</span><span class="sub">Amplia: Q1 2026</span><span class="tag">INFO</span></button>
-  <button class="node" data-i="10"><span class="title">10 • Scenario futuro</span><span class="sub">Amplia: Q1 2027</span><span class="tag">INFO</span></button>
-  <button class="node" data-i="11"><span class="title">11 • Hub Nazionale</span><span class="sub">Amplia: 2027</span><span class="tag">PDF</span></button>
+  <!-- BTN-00 START --><button class="node" data-i="0"><span class="title">00 • Intro politica — Riaccendiamo il Commercio</span><span class="sub">Amplia: Q4 2025</span><span class="tag">PDF</span></button><!-- BTN-00 END -->
+  <!-- BTN-01 START --><button class="node" data-i="1"><span class="title">01 • Grosseto — Primo collegamento reale</span><span class="sub">Amplia: Q1 2026</span><span class="tag">PDF</span></button><!-- BTN-01 END -->
+  <!-- BTN-02 START --><button class="node" data-i="2"><span class="title">02 • DMS & CLUST-ER — Secondo pilota HUB ER</span><span class="sub">Amplia: Q4 2025</span><span class="tag">PDF</span></button><!-- BTN-02 END -->
+  <!-- BTN-03 START --><button class="node" data-i="3"><span class="title">03 • Pagamenti & PDND (Once-Only)</span><span class="sub">Amplia: Q1 2026</span><span class="tag">PDF</span></button><!-- BTN-03 END -->
+  <!-- BTN-04 START --><button class="node" data-i="4"><span class="title">04 • DPP (ESPR)</span><span class="sub">Amplia: Q4 2026</span><span class="tag">INFO</span></button><!-- BTN-04 END -->
+  <!-- BTN-05 START --><button class="node" data-i="5"><span class="title">05 • ECC — Narrativa</span><span class="sub">Amplia: Q2 2026</span><span class="tag">PDF</span></button><!-- BTN-05 END -->
+  <!-- BTN-06 START --><button class="node" data-i="6"><span class="title">06 • ECC — Tecnica</span><span class="sub">Amplia: Q3 2026</span><span class="tag">PDF</span></button><!-- BTN-06 END -->
+  <!-- BTN-07 START --><button class="node" data-i="7"><span class="title">07 • Costi PA & ROI</span><span class="sub">Amplia: Q2 2026</span><span class="tag">PDF</span></button><!-- BTN-07 END -->
+  <!-- BTN-08 START --><button class="node" data-i="8"><span class="title">08 • Analisi & Soluzione</span><span class="sub">Amplia: Q1–Q2 2026</span><span class="tag">PDF</span></button><!-- BTN-08 END -->
+  <!-- BTN-09 START --><button class="node" data-i="9"><span class="title">09 • Scenario & KPI</span><span class="sub">Amplia: Q1 2027</span><span class="tag">PDF</span></button><!-- BTN-09 END -->
+  <!-- BTN-10 START --><button class="node" data-i="10"><span class="title">10 • Hub Nazionale (gemello)</span><span class="sub">Amplia: Q4 2026</span><span class="tag">PDF</span></button><!-- BTN-10 END -->
+  <!-- BTN-11 START --><button class="node" data-i="11"><span class="title">11 • App/PWA & Inclusione</span><span class="sub">Amplia: Q4 2026</span><span class="tag">PDF</span></button><!-- BTN-11 END -->
 
   <!-- Puntale lancetta -->
   <div id="handTip" class="hand-tip" aria-hidden="true"></div>
@@ -612,12 +613,17 @@
             .then(data => {
               window.MODULES = data;
               const meta = window.MODULES[i];
-              window.__openPanelByIndex(i, meta);
+              const accent = getComputedStyle(el).getPropertyValue('--hc').trim() || '#14b8a6';
+              window.openPanelByIndex(i, accent, meta);
             })
-            .catch(() => window.__openPanelByIndex(i, null));
+            .catch(() => {
+              const accent = getComputedStyle(el).getPropertyValue('--hc').trim() || '#14b8a6';
+              window.openPanelByIndex(i, accent, null);
+            });
         } else {
           const meta = window.MODULES[i];
-          window.__openPanelByIndex(i, meta);
+          const accent = getComputedStyle(el).getPropertyValue('--hc').trim() || '#14b8a6';
+          window.openPanelByIndex(i, accent, meta);
         }
       });
     });
@@ -657,9 +663,25 @@
     if(data){
       panel.querySelector('#panel-title').textContent = data.title || ('Modulo ' + i);
       panel.querySelector('#panel-sub').textContent   = data.sub   || 'Contenuti in arrivo.';
-      if(data.pdf){
-        const a0 = panel.querySelector('#panel-cta-0');
-        a0.href = data.pdf; a0.style.display = '';
+      
+      // Genera i CTA PDF dinamicamente
+      const actionsDiv = panel.querySelector('#panel-actions');
+      const closeBtn = actionsDiv.querySelector('#panel-close');
+      
+      // Rimuovi tutti i CTA esistenti tranne il bottone close
+      actionsDiv.querySelectorAll('.btn:not(#panel-close)').forEach(btn => btn.remove());
+      
+      // Aggiungi i nuovi CTA PDF
+      if(data.pdfs && data.pdfs.length > 0) {
+        data.pdfs.forEach((pdf, idx) => {
+          const btn = document.createElement('a');
+          btn.className = 'btn btn--accent';
+          btn.href = pdf.file;
+          btn.target = '_blank';
+          btn.rel = 'noopener';
+          btn.textContent = pdf.label;
+          actionsDiv.insertBefore(btn, closeBtn);
+        });
       }
     } else {
       // Fallback se non ci sono dati
