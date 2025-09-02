@@ -1,0 +1,8 @@
+[
+  {"id":"mef","nome":"MEF • Economia e Finanze","docs":[{"label":"Costi PA","slug":"costi-pa"}]},
+  {"id":"mimit","nome":"MIMIT • Imprese e Made in Italy","docs":[{"label":"Bolkestein – Mercati","slug":"bolkestein-mercati"}]},
+  {"id":"interno","nome":"Ministero dell'Interno","docs":[{"label":"Relazione controlli","slug":"relazione-controlli"}]},
+  {"id":"mase","nome":"MASE • Ambiente","docs":[{"label":"Carbon Credit DMS","slug":"carbon-credit-dms"}]},
+  {"id":"fp","nome":"Funzione Pubblica","docs":[{"label":"Once-Only / SDG","slug":"once-only-sdg"}]}
+]
+

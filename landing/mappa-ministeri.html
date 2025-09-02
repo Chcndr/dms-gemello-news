@@ -1,0 +1,65 @@
+<!doctype html><html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>Mappa Ministeri — sandbox</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" href="/dms-gemello-news/landing/data/ministeri.json" as="fetch" crossorigin>
+  <style>
+    body{margin:0;background:#07181c;color:#e7fbf5;font-family:system-ui,-apple-system,Segoe UI,Roboto}
+    .wrap{max-width:1200px;margin:40px auto;padding:0 16px}
+    #stage{width:100%;height:70vh;border:1px solid #1e2a2e;border-radius:12px;background:radial-gradient(60% 70% at 50% 12%, rgba(20,184,166,.08) 0%, transparent 60%);}
+    .sheet{position:relative;margin-top:16px;padding:16px;border:1px solid #1e2a2e;border-radius:12px;background:#0f2024e6}
+    .sheet h3{margin:0 0 8px}
+    .btn{display:inline-block;margin:6px 6px 0 0;padding:8px 12px;border-radius:999px;border:1px solid #2a3a3f;text-decoration:none;color:#e7fbf5}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Mappa Ministeri (sandbox)</h1>
+    <div id="stage" aria-label="Mappa radiale (placeholder)"></div>
+    <div class="sheet" id="sheet" hidden>
+      <h3 class="ttl"></h3>
+      <p class="meta"></p>
+      <h4>Documenti</h4><div class="docs"></div>
+    </div>
+  </div>
+  <script>
+  // loader dati di prova (estenderemo dopo)
+  (async function(){
+    const res = await fetch('/dms-gemello-news/landing/data/ministeri.json?v=1',{cache:'no-store'}).catch(()=>null);
+    const data = res ? await res.json() : [];
+    // disegna 5 nodi finti cliccabili
+    const stg = document.getElementById('stage');
+    const w = stg.clientWidth, h = stg.clientHeight, cx = w/2, cy = h/2, r = Math.min(w,h)/3;
+    const mk = (x,y,t,i) => {
+      const d = document.createElement('div');
+      d.textContent = t; d.style.position='absolute'; d.style.left=(x-60)+'px'; d.style.top=(y-20)+'px';
+      d.style.width='120px'; d.style.textAlign='center'; d.style.padding='8px'; d.style.border='1px solid #2a3a3f';
+      d.style.borderRadius='12px'; d.style.background='rgba(10,25,28,.6)'; d.style.backdropFilter='blur(6px)';
+      d.style.cursor='pointer';
+      d.onclick = ()=> openSheet(data[i]||{nome:t,docs:[]});
+      stg.appendChild(d);
+    };
+    const names = (data.slice(0,5).map(m=>m.nome)) || ['MEF','MIMIT','Interno','MASE','Funzione Pubblica'];
+    for(let i=0;i<names.length;i++){
+      const ang = (i/names.length)*2*Math.PI - Math.PI/2;
+      mk(cx + r*Math.cos(ang), cy + r*Math.sin(ang), names[i], i);
+    }
+    window.openSheet = function(m){
+      const s = document.getElementById('sheet'); s.hidden = false;
+      s.querySelector('.ttl').textContent = m.nome || '';
+      s.querySelector('.meta').textContent = (m.problema||'') + (m.soluzione? ' — '+m.soluzione : '');
+      const box = s.querySelector('.docs'); box.innerHTML='';
+      (m.docs||[]).forEach(d=>{
+        const a = document.createElement('a');
+        a.className='btn'; a.target='_top';
+        const page = d.page ? `#page=${d.page}` : '';
+        a.href = `/dms-gemello-news/docs/${d.slug}.pdf${page}`;
+        a.textContent = d.label || d.slug;
+        box.appendChild(a);
+      });
+    }
+  })();
+  </script>
+</body></html>
+
