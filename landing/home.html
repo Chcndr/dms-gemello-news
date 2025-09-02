@@ -705,11 +705,14 @@
       // Rimuovi tutti i CTA esistenti tranne il bottone close
       actionsDiv.querySelectorAll('.btn:not(#panel-close)').forEach(btn => btn.remove());
       
+      // Aggiungi le classi per il fix overlap
+      actionsDiv.classList.add('actions', 'pdf-group');
+      
       // Aggiungi i nuovi CTA PDF
       if(data.pdfs && data.pdfs.length > 0) {
         data.pdfs.forEach((pdf, idx) => {
           const btn = document.createElement('a');
-          btn.className = 'btn btn--accent';
+          btn.className = 'btn btn--accent action';
           btn.href = pdf.file;
           btn.target = '_blank';
           btn.rel = 'noopener';
