@@ -604,7 +604,7 @@
 
   function safeHref(u){ try { return encodeURI(u); } catch { return '#'; } }
 
-  function buildLinks(meta){
+  function //buildLinks(meta){
     const links = [];
     const SPOT_URL = "https://chcndr.github.io/dms-gemello-news/";
     
@@ -656,7 +656,7 @@
 
     document.getElementById('panel-title').textContent = meta?.title || `Modulo ${i}`;
     document.getElementById('panel-sub').textContent   = meta?.when || meta?.desc || 'In sviluppo';
-    document.getElementById('panel-body').innerHTML    = buildLinks(meta);
+    document.getElementById('panel-body').innerHTML    = //buildLinks(meta);
 
     // misura dal hero e mostra
     const r = hero.getBoundingClientRect();
