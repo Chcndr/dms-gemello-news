@@ -1,152 +1,153 @@
 [
   {"id":"mef","ring":1,"tag":"Ministero","nome":"MEF • Economia e Finanze",
-   "problema":"riconciliazione, oneri, tracciabilità titoli",
+   "hero":"/dms-gemello-news/landing/img/mef-hero.png",
+   "alt":"Illustrazione flussi cassa e atti",
+   "problema":"Riconciliazione, oneri e tracciabilità dei titoli",
    "soluzione":"DMS + pagoPA + registri auditable",
-   "risultati":"KPI cassa e atti; riduzione errori",
+   "risultati":"KPI cassa/atti, riduzione errori",
+   "punti":[
+     "Automazione riconciliazioni IUV/RT",
+     "Cruscotti di cassa per i Comuni",
+     "Flussi atti/posizioni verso Entrate"
+   ],
    "docs":[
-     {"label":"Costi PA — Apri su Spot","slug":"costi-pa"},
-     {"label":"Analisi & Soluzione — Apri su Spot","slug":"analisi-e-soluzione-dms"}
-   ]},
-
-  {"id":"mimit","ring":1,"tag":"Ministero","nome":"MIMIT • Imprese e Made in Italy",
-   "problema":"riuso modelli, DPP/ESPR, filiere",
-   "soluzione":"Hub Nazionale + DPP",
-   "risultati":"standard riuso, export-ready",
-   "docs":[
-     {"label":"Hub Nazionale — Spot","slug":"hub-nazionale-del-commercio"},
-     {"label":"Passaporto EU — Spot","slug":"passaporto-eu"}
+     {"label":"Costi PA — Spot","slug":"costi-pa"},
+     {"label":"Analisi & Soluzione (pag. 6) — PDF","slug":"analisi-e-soluzione-dms","page":6,"open":"pdf"}
    ]},
 
   {"id":"interno","ring":1,"tag":"Ministero","nome":"Ministero dell'Interno",
-   "problema":"controlli e presenze su area pubblica",
-   "soluzione":"flussi PM + Once-Only",
-   "risultati":"controlli tracciati, tempi giù",
+   "hero":"/dms-gemello-news/landing/img/interno-hero.png",
+   "problema":"Controlli e presenze su area pubblica",
+   "soluzione":"Flussi PM + Once-Only",
+   "risultati":"Controlli tracciati, tempi giù",
+   "punti":[
+     "Presenze live della PM",
+     "Sanzioni e atti con catena di custodia"
+   ],
    "docs":[
      {"label":"Relazione sui controlli — Spot","slug":"relazione-controlli"},
      {"label":"Once-Only / SDG — Spot","slug":"once-only-sdg"}
    ]},
 
+  {"id":"mimit","ring":1,"tag":"Ministero","nome":"MIMIT • Imprese e Made in Italy",
+   "hero":"/dms-gemello-news/landing/img/mimit-hero.png",
+   "problema":"Riuso modelli, DPP/ESPR, filiere",
+   "soluzione":"Hub Nazionale + DPP",
+   "risultati":"Standard riuso, export-ready",
+   "punti":[
+     "Hub Nazionale del Commercio",
+     "Passaporto Digitale Prodotto (DPP)",
+     "Filiere certificate Made in Italy"
+   ],
+   "docs":[
+     {"label":"Hub Nazionale — Spot","slug":"hub-nazionale-del-commercio"},
+     {"label":"Passaporto EU — Spot","slug":"passaporto-eu"}
+   ]},
+
   {"id":"mase","ring":1,"tag":"Ministero","nome":"MASE • Ambiente e Sicurezza Energetica",
+   "hero":"/dms-gemello-news/landing/img/mase-hero.png",
    "problema":"CO₂ logistica e premialità",
    "soluzione":"Carbon Credit a checkout",
-   "risultati":"token CCT, allineamento dogane",
+   "risultati":"Token CCT, allineamento dogane",
+   "punti":[
+     "Carbon Credit Token (CCT)",
+     "Premialità ecosostenibili",
+     "Tracciabilità CO₂ logistica"
+   ],
    "docs":[
      {"label":"Carbon Credit DMS — Spot","slug":"carbon-credit-dms"},
      {"label":"Equilibrio Ecosostenibile — Spot","slug":"equilibrio-ecosostenibile"}
    ]},
 
-  {"id":"lavoro","ring":1,"tag":"Ministero","nome":"Lavoro e Politiche Sociali",
-   "problema":"presenze/turni e conformità",
-   "soluzione":"interfacce standard PM/enti",
-   "risultati":"tracciati condivisi",
-   "docs":[{"label":"Relazione sui controlli — Spot","slug":"relazione-controlli"}]},
+  {"id":"mit","ring":1,"tag":"Ministero","nome":"MIT • Infrastrutture e Trasporti",
+   "problema":"Logistica e intermodalità",
+   "soluzione":"Hub digitali trasporti",
+   "risultati":"Ottimizzazione flussi",
+   "punti":[
+     "Hub intermodali digitali",
+     "Tracciabilità merci",
+     "Ottimizzazione last-mile"
+   ],
+   "docs":[
+     {"label":"Hub Urbani ER — Spot","slug":"hub-urbani-er"}
+   ]},
 
   {"id":"salute","ring":1,"tag":"Ministero","nome":"Salute",
-   "problema":"fiere/mercati alimentari",
-   "soluzione":"autorizzazioni + layout digitali",
-   "risultati":"controlli più rapidi",
-   "docs":[{"label":"DMS SSET (SUAP) — Spot","slug":"dms-sset"}]},
-
-  {"id":"mit","ring":1,"tag":"Ministero","nome":"MIT • Infrastrutture e Trasporti",
-   "problema":"flussi logistica e accessi",
-   "soluzione":"rotte/parcheggi con app DMS",
-   "risultati":"mobilità e tempi servizio",
+   "problema":"Fiere/mercati alimentari",
+   "soluzione":"Autorizzazioni + layout digitali",
+   "risultati":"Controlli più rapidi",
+   "punti":[
+     "Layout digitali mercati",
+     "Autorizzazioni automatizzate",
+     "Controlli sanitari tracciati"
+   ],
    "docs":[
-     {"label":"App DMS — Spot","slug":"app-dms-assistente"},
-     {"label":"DMS All-in-One — Spot","slug":"dms-all-in-one"}
+     {"label":"DMS SSET (SUAP) — Spot","slug":"dms-sset"}
    ]},
 
   {"id":"maeci","ring":1,"tag":"Ministero","nome":"MAECI • Esteri e Cooperazione",
-   "problema":"export, ICS2, filiere",
-   "soluzione":"CCT compatibile EUCDM",
-   "risultati":"dati doganali consistenti",
-   "docs":[{"label":"Carbon Credit DMS — Spot","slug":"carbon-credit-dms"}]},
-
-  {"id":"difesa","ring":1,"tag":"Ministero","nome":"Difesa",
-   "problema":"sicurezza eventi/aree",
-   "soluzione":"telemetria e tracciati",
-   "risultati":"situational awareness",
-   "docs":[{"label":"AI-Ops & Telemetria — Spot","slug":"analisi-e-soluzione-dms"}]},
-
-  {"id":"giustizia","ring":1,"tag":"Ministero","nome":"Giustizia",
-   "problema":"atti e sanzioni tracciate",
-   "soluzione":"registri auditable",
-   "risultati":"catena custodia digitale",
-   "docs":[{"label":"Relazione sui controlli — Spot","slug":"relazione-controlli"}]},
-
-  {"id":"istruzione","ring":1,"tag":"Ministero","nome":"Istruzione e Merito",
-   "problema":"formazione operatori/PMI",
-   "soluzione":"Hub + ECC narrativa/tecnica",
-   "risultati":"adozione e qualità dati",
+   "problema":"Export e certificazioni",
+   "soluzione":"Certificati digitali export",
+   "risultati":"Semplificazione export",
+   "punti":[
+     "Certificati digitali export",
+     "Cooperazione internazionale",
+     "Standard UE compliance"
+   ],
    "docs":[
-     {"label":"ECC — Narrativa — Spot","slug":"dms-ecc"},
-     {"label":"ECC — Tecnica — Spot","slug":"analisi-e-soluzione-dms","page":12}
+     {"label":"Passaporto EU — Spot","slug":"passaporto-eu"}
    ]},
 
-  {"id":"mur","ring":1,"tag":"Ministero","nome":"MUR • Università e Ricerca",
-   "problema":"progetti pilota e metriche",
-   "soluzione":"HUB pilota ER + analytics",
-   "risultati":"dataset pubblici",
-   "docs":[{"label":"HUB ER — Spot","slug":"hub-urbani-prossimita-er"}]},
-
-  {"id":"turismo","ring":1,"tag":"Ministero","nome":"Turismo",
-   "problema":"fiere/mercati come attrattori",
-   "soluzione":"fiere automatiche + calendario",
-   "risultati":"flussi e KPI",
-   "docs":[{"label":"Scenario futuro — Spot","slug":"scenario-futuro"}]},
-
-  {"id":"mic","ring":1,"tag":"Ministero","nome":"MiC • Cultura",
-   "problema":"eventi culturali mercatali",
-   "soluzione":"layout + autorizzazioni",
-   "risultati":"valorizzazione aree",
-   "docs":[{"label":"DMS SSET (SUAP) — Spot","slug":"dms-sset"}]},
-
-  {"id":"fp","ring":1,"tag":"Ministro","nome":"Funzione Pubblica",
-   "problema":"interoperabilità e KPI PA",
-   "soluzione":"Once-Only, PDND",
-   "risultati":"tempi e qualità",
+  {"id":"agid","ring":2,"tag":"Agenzia","nome":"AgID",
+   "problema":"Interoperabilità e standard",
+   "soluzione":"PDND e Once-Only",
+   "risultati":"Ecosistema interoperabile",
+   "punti":[
+     "Piattaforma Digitale Nazionale Dati",
+     "Standard interoperabilità",
+     "Once-Only implementation"
+   ],
    "docs":[
-     {"label":"Once-Only / SDG — Spot","slug":"once-only-sdg"},
+     {"label":"Once-Only / SDG — Spot","slug":"once-only-sdg"}
+   ]},
+
+  {"id":"pagopa","ring":2,"tag":"Società in house","nome":"PagoPA S.p.A.",
+   "problema":"Pagamenti e riconciliazioni",
+   "soluzione":"Ecosistema pagamenti digitali",
+   "risultati":"Automazione completa",
+   "punti":[
+     "Riconciliazioni automatiche",
+     "Ecosistema pagamenti PA",
+     "Integration layer comuni"
+   ],
+   "docs":[
+     {"label":"Costi PA — Spot","slug":"costi-pa"}
+   ]},
+
+  {"id":"ae","ring":2,"tag":"Agenzia","nome":"AE • Agenzia Entrate",
+   "problema":"Flussi fiscali e controlli",
+   "soluzione":"Integrazione DMS-fiscale",
+   "risultati":"Controlli automatizzati",
+   "punti":[
+     "Flussi fiscali automatici",
+     "Controlli incrociati",
+     "Compliance semplificata"
+   ],
+   "docs":[
      {"label":"Analisi & Soluzione — Spot","slug":"analisi-e-soluzione-dms"}
    ]},
 
-  {"id":"affari-ue","ring":1,"tag":"Ministro","nome":"Affari europei / Sud / Coesione / PNRR",
-   "problema":"cofinanziamenti e milestone",
-   "soluzione":"roadmap orologio + KPI",
-   "risultati":"governance chiara",
-   "docs":[{"label":"Dossier nazionale — Spot","slug":"dossier-nazionale"}]},
-
-  {"id":"pcm","ring":1,"tag":"PCM","nome":"PCM • Presidenza (hub nazionale)",
-   "problema":"standard e riuso",
-   "soluzione":"Hub Nazionale del Commercio",
-   "risultati":"scala e uniformità",
-   "docs":[{"label":"Hub Nazionale — Spot","slug":"hub-nazionale-del-commercio"}]},
-
   {"id":"adm","ring":2,"tag":"Agenzia","nome":"ADM • Agenzia Dogane e Monopoli",
-   "docs":[{"label":"Carbon Credit DMS — Spot","slug":"carbon-credit-dms"}]},
-
-  {"id":"ae","ring":2,"tag":"Agenzia","nome":"AE • Agenzia Entrate",
-   "docs":[{"label":"Costi PA — Spot","slug":"costi-pa"}]},
-
-  {"id":"agid","ring":2,"tag":"Agenzia","nome":"AgID",
-   "docs":[{"label":"Once-Only / SDG — Spot","slug":"once-only-sdg"}]},
-
-  {"id":"pagopa","ring":2,"tag":"Società in house","nome":"PagoPA S.p.A.",
-   "docs":[{"label":"DMS All-in-One — Spot","slug":"dms-all-in-one"}]},
-
-  {"id":"regioni","ring":2,"tag":"Ente","nome":"Regioni",
-   "docs":[{"label":"Hub ER — Spot","slug":"hub-urbani-prossimita-er"}]},
-
-  {"id":"province","ring":2,"tag":"Ente","nome":"Province",
-   "docs":[{"label":"Scenario futuro — Spot","slug":"scenario-futuro"}]},
-
-  {"id":"comuni","ring":2,"tag":"Ente","nome":"Comuni",
-   "docs":[{"label":"Relazione controlli — Spot","slug":"relazione-controlli"}]},
-
-  {"id":"camere","ring":2,"tag":"Sistema Camerale","nome":"Camere di Commercio",
-   "docs":[{"label":"Dossier nazionale — Spot","slug":"dossier-nazionale"}]},
-
-  {"id":"associazioni","ring":2,"tag":"Associazioni","nome":"Associazioni di categoria",
-   "docs":[{"label":"ECC — Narrativa — Spot","slug":"dms-ecc"}]}
+   "problema":"Controlli doganali e CCT",
+   "soluzione":"Integrazione Carbon Credit",
+   "risultati":"Controlli ottimizzati",
+   "punti":[
+     "Carbon Credit Token integration",
+     "Controlli doganali automatici",
+     "Tracciabilità import/export"
+   ],
+   "docs":[
+     {"label":"Carbon Credit DMS — Spot","slug":"carbon-credit-dms"}
+   ]}
 ]
 
