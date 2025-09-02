@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8"/>
+  <!-- BUILD_TOKEN: HOTFIX_HOME_2025-09-02 -->
+  <meta charset="UTF-8">/>
   <script>
 /* Kill-switch: qualunque click su <a> che punterebbe a /landing/... viene corretto
    verso la root del repo; le ancore #doc-/#vid- vengono aperte fuori dall'iframe. */
@@ -728,7 +729,7 @@ document.addEventListener('click', function(e){
       el.addEventListener('click', () => {
         // Carica modules.json se non già caricato
         if (!window.MODULES) {
-          fetch('/dms-gemello-news/landing/data/modules.json?v=1', {cache:'no-store'})
+          fetch('/dms-gemello-news//dms-gemello-news/landing/data/modules.json?v=1', {cache:'no-store'})
             .then(r => r.json())
             .then(data => {
               window.MODULES = data;
@@ -772,9 +773,50 @@ document.addEventListener('click', function(e){
     hero.muted = true; hero.playsInline = true;
   }
 
-  // Apri pannello per indice i (versione robusta con aggiornamento titolo/meta/pill)
-  // Sostituita con versione async che gestisce MODULES_READY
-  // Vedi script finale prima di </body>
+  // Apri pannello per indice i e colore accent
+  window.openPanelByIndex = function(i, accent, data){
+    if(!panel) return;
+
+    // Colore accent dal tasto (fallback teal)
+    panel.style.setProperty('--accent', accent || '#14b8a6');
+
+    // (Opzionale) riempi contenuti
+    if(data){
+      panel.querySelector('#panel-title').textContent = data.title || ('Modulo ' + i);
+      panel.querySelector('#panel-sub').textContent   = data.sub   || 'Contenuti in arrivo.';
+      
+      // Genera i CTA PDF dinamicamente
+      const actionsDiv = panel.querySelector('#panel-actions');
+      const closeBtn = actionsDiv.querySelector('#panel-close');
+      
+      // Rimuovi tutti i CTA esistenti tranne il bottone close
+      actionsDiv.querySelectorAll('.btn:not(#panel-close)').forEach(btn => btn.remove());
+      
+      // Aggiungi le classi per il fix overlap
+      actionsDiv.classList.add('actions', 'pdf-group');
+      
+      // Aggiungi i nuovi CTA PDF
+      if(data.pdfs && data.pdfs.length > 0) {
+        data.pdfs.forEach((pdf, idx) => {
+          const btn = document.createElement('a');
+          btn.className = 'btn btn--accent action';
+          btn.href = pdf.file;
+          btn.target = '_blank';
+          btn.rel = 'noopener';
+          btn.textContent = pdf.label;
+          actionsDiv.insertBefore(btn, closeBtn);
+        });
+      }
+    } else {
+      // Fallback se non ci sono dati
+      panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
+      panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
+    }
+
+    hero && hero.classList.add('is-hidden');
+    panel.hidden = false;
+    panel.classList.add('is-open');
+  };
 
   // Chiudi pannello
   function closePanel(){
@@ -807,33 +849,34 @@ document.addEventListener('click', function(e){
 })();
   </script>
 
-  <!-- Funzione robusta openPanelByIndex con aggiornamento titolo/meta/pill -->
-  <script>
-async function openPanelByIndex(i){
-  try { await (window.MODULES_READY || Promise.resolve()); } catch(e){}
-  const list = window.MODULES || [];
-  const mod  = list[+i] || list.find(m => String(m?.id) === String(i)) || {};
-  const h = document.querySelector('#panel h3');
-  const m = document.querySelector('#panel .meta');
-  if (h) h.textContent = mod.title || `Modulo ${i}`;
-  if (m) m.textContent = mod.when || mod.sub || '';
-  if (typeof window.renderActions === 'function') window.renderActions(mod);
-}
-window.openPanelByIndex = openPanelByIndex;
-  </script>
+  <!-- Ancora Mappa Ministeri (placeholder per Step 2) -->
+  <section id="mappa-ministeri" style="padding:48px 0">
+    <div class="map-wrap" style="max-width:1200px;margin:0 auto">
+      <h2 style="margin:0 0 8px">Mappa Ministeri (beta)</h2>
+      <p class="meta" style="opacity:.8">Step 2: mappa radiale interattiva.</p>
+    </div>
+  </section>
 
-  <!-- Delegation: aggiorna pannello su click nodi -->
+  <!-- Renderer actions con supporto href -->
   <script>
-// Delegation: funziona anche se i nodi sono ricreati
-document.addEventListener('click', function(e){
-  const node = e.target.closest('.node');
-  if (!node) return;
-  const i = node.dataset.i || node.getAttribute('data-i');
-  if (i == null) return;
-  e.preventDefault();
-  openPanelByIndex(i);                         // 🔴 aggiorna titolo/meta/pill
-  document.getElementById('panel')?.classList.add('open');
-}, {capture:false});
+(function(){
+  function renderActions(mod){
+    const wrap = document.querySelector('#panel .actions');
+    if(!wrap) return;
+    wrap.innerHTML = '';
+    (mod.actions||[]).forEach(a=>{
+      const href = a && a.href ? a.href : (a && a.slug ? `/dms-gemello-news/#doc-${a.slug}` : '#');
+      const btn = document.createElement('a');
+      btn.className = 'action spot';
+      btn.href = href; btn.target = '_top';
+      btn.textContent = (a && (a.label||a.slug)) || 'Approfondisci';
+      if(!a || (!a.href && !a.slug)){ btn.setAttribute('aria-disabled','true'); btn.classList.add('disabled'); }
+      wrap.appendChild(btn);
+    });
+  }
+  // expose (sovrascrive in modo innocuo il vecchio, se c'è)
+  window.renderActions = renderActions;
+})();
   </script>
 
 </body>
