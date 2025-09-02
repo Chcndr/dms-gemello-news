@@ -2,6 +2,30 @@
 <html lang="it">
 <head>
   <meta charset="utf-8"/>
+  <script>
+/* Kill-switch: qualunque click su <a> che punterebbe a /landing/... viene corretto
+   verso la root del repo; le ancore #doc-/#vid- vengono aperte fuori dall'iframe. */
+addEventListener('click', function (e) {
+  const a = e.target.closest('a');
+  if (!a) return;
+
+  let href = a.getAttribute('href') || '';
+  const isHashDoc = /^#(doc|vid)-/.test(href);
+  const isBadLanding = /^\/landing\//.test(href);
+
+  if (isHashDoc) {
+    e.preventDefault(); e.stopImmediatePropagation();
+    top.location.href = '/dms-gemello-news/' + href.replace(/^#/, '#');
+    return;
+  }
+  if (isBadLanding) {
+    e.preventDefault(); e.stopImmediatePropagation();
+    top.location.href = href.replace(/^\/landing\//, '/dms-gemello-news/landing/');
+    return;
+  }
+}, { capture: true, passive: false });
+</script>
+  <base href="https://chcndr.github.io/dms-gemello-news/">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>DMS • Orologio roadmap</title>
   <link rel="icon" href="data:,">
@@ -365,8 +389,8 @@
 <body>
   <!-- Nav -->
   <nav class="top">
-    <a class="btn" href="../index.html">🎬 Spot</a>
-    <a class="btn" href="../mindmap.html">🧠 Mappa</a>
+    <a class="btn" href="/dms-gemello-news/" target="_top">🎬 Spot</a>
+    <a class="btn" href="/dms-gemello-news/mindmap.html">🧠 Mappa</a>
   </nav>
 
   <!-- Claim -->
@@ -378,9 +402,9 @@
   <!-- Layers -->
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
-    <video id="heroVideo" src="../videos/video-hero.mp4"
+    <video id="heroVideo" src="/dms-gemello-news/videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
-      poster="../assets/poster-hero.jpg"></video>
+      poster="/dms-gemello-news/assets/poster-hero.jpg"></video>
     
     <!-- PANEL dentro lo stesso viewport del video -->
     <!-- MOD-00 START -->
@@ -605,7 +629,7 @@
 
   function buildLinks(meta){
     const links = [];
-    const SPOT_URL = '../index.html'; // URL della pagina Spot
+    const SPOT_URL = "https://chcndr.github.io/dms-gemello-news/";
     
     // Mapping file path to slug
     const pathToSlug = {
@@ -616,15 +640,20 @@
       './docs/RIEQUILIBRIO.pdf': 'riequilibrio-ecc',
       './docs/PRESENTAZIONE DMS -compressed.pdf': 'presentazione-dms',
       './docs/DMS SPOT 1.pdf': 'dms-spot-1',
+      './docs/Relazione sui controlli.pdf': 'relazione-controlli',
       './docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf': 'hub-urbani-prossimita-er',
       './docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf': 'once-only-sdg',
+      './docs/DMS SSET.pdf': 'dms-sset',
+      './docs/PDND • DPP.pdf': 'passaporto-eu',
       './docs/DMS ECC.pdf': 'dms-ecc',
+      './docs/EQUILIBRIO ECOSOSTENIBILE.pdf': 'equilibrio-ecosostenibile',
       './docs/CARBON CREDIT DMS.pdf': 'carbon-credit-dms',
       './docs/COSTI PA.pdf': 'costi-pa',
       './docs/ANALISI E SOLUZIONE DMS.pdf': 'analisi-e-soluzione-dms',
       './docs/Analisi.pdf': 'analisi',
       './docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf': 'scenario-futuro',
       './docs/PROGETTO NAZIONALE.pdf': 'progetto-nazionale',
+      './docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf': 'bolkestein-mercati',
       './docs/APP DMS Assistente Personale.pdf': 'app-dms-assistente'
     };
     
@@ -634,7 +663,7 @@
         if(pdf.file === '#' || !slug) {
           links.push([pdf.label, '#', true]); // placeholder
         } else {
-          links.push([pdf.label, `${SPOT_URL}#doc-${slug}`, false]);
+          links.push([pdf.label, `/dms-gemello-news/#doc-${slug}`, false]);
         }
       });
     }
@@ -643,7 +672,16 @@
       if(isPlaceholder) {
         return `<a class="action" href="#" aria-disabled="true">${label}</a>`;
       } else {
-        return `<a class="action" href="${safeHref(href)}" target="_self" rel="noopener">${label}</a>`;
+        // Test diretto per "Dossier nazionale"
+        if(label === 'Dossier nazionale') {
+          return `<a class="action spot test-direct"
+   href="https://chcndr.github.io/dms-gemello-news/docs/dossier-nazionale.pdf"
+   target="_top" rel="noopener"
+   >
+  Apri PDF (test diretto)
+</a>`;
+        }
+        return `<a class="action spot" href="${safeHref(href)}" target="_top" rel="noopener">${label}</a>`;
       }
     }).join(' ');
   }
@@ -669,11 +707,20 @@
 
   function closePanel(){ panel.hidden = true; document.body.classList.remove('panel-open'); hero.style.visibility=''; }
   back?.addEventListener('click', closePanel);
-
   addEventListener('resize', ()=>{ if(panel && !panel.hidden){ const r = hero.getBoundingClientRect(); root.style.setProperty('--vw', r.width + 'px'); root.style.setProperty('--vh', r.height + 'px'); } }, {passive:true});
 })();
+</script>
 
-    // Integrazione click nodi con pannelli
+<script>
+/* Priorità massima (capture): i click su .test-direct non possono essere "hijackati" */
+document.addEventListener('click', function(e){
+  const a = e.target.closest('a.test-direct');
+  if(!a) return;
+  e.stopImmediatePropagation();   // blocca altri listener
+  e.preventDefault();             // evita qualunque preventDefault altrui
+  window.top.location.href = a.href; // navigazione forzata al PDF
+}, {capture:true});
+</script>Integrazione click nodi con pannelli
     document.querySelectorAll('.node').forEach((el, i) => {
       el.addEventListener('click', () => {
         // Carica modules.json se non già caricato

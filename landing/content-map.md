@@ -1,64 +1,59 @@
-# DMS • Mappa Contenuti Orologio (00-11)
+# Content Map — Schede → SPOT
 
-## 00 • Intro politica — Riaccendiamo il Commercio
-- **Meta**: Istituzionale • Amplia: Q4 2025
-- **PDF**: 6 documenti in ordine
-  1. Copertina → HUB NAZIONALE DEL COMMERCIO.pdf
-  2. Riaccendiamo il Commercio → DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf
-  3. Hub Nazionale del Commercio → HUB NAZIONALE DEL COMMERCIO.pdf
-  4. Dossier nazionale → DOSSIER NAZIONALE.pdf
-  5. DMS & CLUST-ER → DMS E CLUST-ER.pdf
-  6. Riequilibrio (ECC — pilastro) → RIEQUILIBRIO.pdf
+Mappatura finale modulo → slug per collegamenti diretti.
 
-## 01 • Grosseto — Primo collegamento reale
-- **Meta**: Pilota • Amplia: Q1 2026
-- **PDF**: PRESENTAZIONE DMS -compressed.pdf, DMS SPOT 1.pdf, (opz.) Relazione sui controlli.pdf
+## MOD-00 (Intro politica)
+- Copertina → #doc-hub-nazionale-del-commercio
+- Riaccendiamo il Commercio → #doc-riaccendiamo-il-commercio
+- Hub Nazionale del Commercio → #doc-hub-nazionale-del-commercio
+- Dossier nazionale → #doc-dossier-nazionale
+- DMS & CLUST-ER → #doc-dms-e-clust-er
+- Riequilibrio (ECC — pilastro) → #doc-riequilibrio-ecc
 
-## 02 • DMS & CLUST-ER — Secondo pilota HUB ER
-- **Meta**: Pilota HUB • Amplia: Q4 2025
-- **PDF**: DMS E CLUST-ER.pdf, Hub Urbani e di Prossimità in Emilia-Romagna .pdf
+## MOD-01 (Grosseto)
+- Presentazione DMS (executive) → #doc-presentazione-dms
+- DMS SPOT — note di collaudo → #doc-dms-spot-1
+- Relazione sui controlli → #doc-relazione-controlli
 
-## 03 • Pagamenti & PDND (Once-Only)
-- **Meta**: Amplia: Q1 2026
-- **PDF**: DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf, (opz.) DMS SSET.pdf
+## MOD-02 (DMS & CLUST-ER)
+- DMS & CLUST-ER → #doc-dms-e-clust-er
+- Hub Urbani e di Prossimità — ER → #doc-hub-urbani-prossimita-er
 
-## 04 • DPP (ESPR)
-- **Meta**: Amplia: Q4 2026
-- **PDF**: (in arrivo, nessun PDF ora)
+## MOD-03 (Pagamenti & PDND)
+- Once Only / SDG → #doc-once-only-sdg
+- DMS SSET (SUAP) → #doc-dms-sset
 
-## 05 • ECC — Narrativa
-- **Meta**: Amplia: Q2 2026
-- **PDF**: DMS ECC.pdf
+## MOD-04 (DPP/ESPR)
+- Passaporto EU (overview) → #doc-passaporto-eu
 
-## 06 • ECC — Tecnica
-- **Meta**: Amplia: Q3 2026
-- **PDF**: CARBON CREDIT DMS.pdf
+## MOD-05 (ECC — Narrativa)
+- DMS ECC (narrativa) → #doc-dms-ecc
+- Equilibrio Ecosostenibile → #doc-equilibrio-ecosostenibile
 
-## 07 • Costi PA & ROI
-- **Meta**: Amplia: Q2 2026
-- **PDF**: COSTI PA.pdf
+## MOD-06 (ECC — Tecnica)
+- Carbon Credit DMS → #doc-carbon-credit-dms
 
-## 08 • Analisi & Soluzione
-- **Meta**: Amplia: Q1–Q2 2026
-- **PDF**: ANALISI E SOLUZIONE DMS.pdf, Analisi.pdf
+## MOD-07 (Costi PA & ROI)
+- Costi PA → #doc-costi-pa
 
-## 09 • Scenario & KPI
-- **Meta**: Amplia: Q1 2027
-- **PDF**: HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf, PROGETTO NAZIONALE.pdf
+## MOD-08 (Analisi & Soluzione)
+- Analisi & Soluzione DMS → #doc-analisi-e-soluzione-dms
+- Analisi (allegato) → #doc-analisi
 
-## 10 • Hub Nazionale (gemello)
-- **Meta**: Amplia: Q4 2026
-- **PDF**: HUB NAZIONALE DEL COMMERCIO.pdf, (opz.) BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf
+## MOD-09 (Scenario & KPI)
+- Scenario futuro → #doc-scenario-futuro
+- Progetto Nazionale → #doc-progetto-nazionale
 
-## 11 • App/PWA & Inclusione
-- **Meta**: Amplia: Q4 2026
-- **PDF**: APP DMS Assistente Personale.pdf
+## MOD-10 (Hub Nazionale — gemello)
+- Hub Nazionale del Commercio → #doc-hub-nazionale-del-commercio
+- Bolkestein — area pubblica → #doc-bolkestein-mercati
+
+## MOD-11 (App/PWA & Inclusione)
+- App DMS — Assistente Personale → #doc-app-dms-assistente
 
 ---
 
-**Regole generali:**
-- Link PDF da `./docs/` (es. `href="./docs/DOSSIER NAZIONALE.pdf"`)
-- Dove `href="#"` il bottone è spento (CSS già in pagina)
-- Non toccare JS, misure, z-index, Spot/Mappa
-- Puntino di stato nel pannello: lasciare invariato
+**Stato**: 24/24 slug attivi ✅  
+**Tag**: STABLE-20250902-SPOT-ALL  
+**QA**: Home → Schede → SPOT → PDF (stesso tab)
 
