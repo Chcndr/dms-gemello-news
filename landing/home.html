@@ -649,6 +649,15 @@
       if(isPlaceholder) {
         return `<a class="action" href="#" aria-disabled="true">${label}</a>`;
       } else {
+        // Test diretto per "Dossier nazionale"
+        if(label === 'Dossier nazionale') {
+          return `<a class="action spot test-direct"
+   href="https://chcndr.github.io/dms-gemello-news/docs/dossier-nazionale.pdf"
+   target="_top" rel="noopener"
+   onclick="window.top.location.href=this.href; return false;">
+  Apri PDF (test diretto)
+</a>`;
+        }
         return `<a class="action" href="${safeHref(href)}" target="_self" rel="noopener">${label}</a>`;
       }
     }).join(' ');
@@ -675,11 +684,20 @@
 
   function closePanel(){ panel.hidden = true; document.body.classList.remove('panel-open'); hero.style.visibility=''; }
   back?.addEventListener('click', closePanel);
-
   addEventListener('resize', ()=>{ if(panel && !panel.hidden){ const r = hero.getBoundingClientRect(); root.style.setProperty('--vw', r.width + 'px'); root.style.setProperty('--vh', r.height + 'px'); } }, {passive:true});
 })();
+</script>
 
-    // Integrazione click nodi con pannelli
+<script>
+/* Priorità massima (capture): i click su .test-direct non possono essere "hijackati" */
+document.addEventListener('click', function(e){
+  const a = e.target.closest('a.test-direct');
+  if(!a) return;
+  e.stopImmediatePropagation();   // blocca altri listener
+  e.preventDefault();             // evita qualunque preventDefault altrui
+  window.top.location.href = a.href; // navigazione forzata al PDF
+}, {capture:true});
+</script>Integrazione click nodi con pannelli
     document.querySelectorAll('.node').forEach((el, i) => {
       el.addEventListener('click', () => {
         // Carica modules.json se non già caricato
