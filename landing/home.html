@@ -772,50 +772,9 @@ document.addEventListener('click', function(e){
     hero.muted = true; hero.playsInline = true;
   }
 
-  // Apri pannello per indice i e colore accent
-  window.openPanelByIndex = function(i, accent, data){
-    if(!panel) return;
-
-    // Colore accent dal tasto (fallback teal)
-    panel.style.setProperty('--accent', accent || '#14b8a6');
-
-    // (Opzionale) riempi contenuti
-    if(data){
-      panel.querySelector('#panel-title').textContent = data.title || ('Modulo ' + i);
-      panel.querySelector('#panel-sub').textContent   = data.sub   || 'Contenuti in arrivo.';
-      
-      // Genera i CTA PDF dinamicamente
-      const actionsDiv = panel.querySelector('#panel-actions');
-      const closeBtn = actionsDiv.querySelector('#panel-close');
-      
-      // Rimuovi tutti i CTA esistenti tranne il bottone close
-      actionsDiv.querySelectorAll('.btn:not(#panel-close)').forEach(btn => btn.remove());
-      
-      // Aggiungi le classi per il fix overlap
-      actionsDiv.classList.add('actions', 'pdf-group');
-      
-      // Aggiungi i nuovi CTA PDF
-      if(data.pdfs && data.pdfs.length > 0) {
-        data.pdfs.forEach((pdf, idx) => {
-          const btn = document.createElement('a');
-          btn.className = 'btn btn--accent action';
-          btn.href = pdf.file;
-          btn.target = '_blank';
-          btn.rel = 'noopener';
-          btn.textContent = pdf.label;
-          actionsDiv.insertBefore(btn, closeBtn);
-        });
-      }
-    } else {
-      // Fallback se non ci sono dati
-      panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
-      panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
-    }
-
-    hero && hero.classList.add('is-hidden');
-    panel.hidden = false;
-    panel.classList.add('is-open');
-  };
+  // Apri pannello per indice i (versione robusta con aggiornamento titolo/meta/pill)
+  // Sostituita con versione async che gestisce MODULES_READY
+  // Vedi script finale prima di </body>
 
   // Chiudi pannello
   function closePanel(){
@@ -847,6 +806,36 @@ document.addEventListener('click', function(e){
   }
 })();
   </script>
+
+  <!-- Funzione robusta openPanelByIndex con aggiornamento titolo/meta/pill -->
+  <script>
+async function openPanelByIndex(i){
+  try { await (window.MODULES_READY || Promise.resolve()); } catch(e){}
+  const list = window.MODULES || [];
+  const mod  = list[+i] || list.find(m => String(m?.id) === String(i)) || {};
+  const h = document.querySelector('#panel h3');
+  const m = document.querySelector('#panel .meta');
+  if (h) h.textContent = mod.title || `Modulo ${i}`;
+  if (m) m.textContent = mod.when || mod.sub || '';
+  if (typeof window.renderActions === 'function') window.renderActions(mod);
+}
+window.openPanelByIndex = openPanelByIndex;
+  </script>
+
+  <!-- Delegation: aggiorna pannello su click nodi -->
+  <script>
+// Delegation: funziona anche se i nodi sono ricreati
+document.addEventListener('click', function(e){
+  const node = e.target.closest('.node');
+  if (!node) return;
+  const i = node.dataset.i || node.getAttribute('data-i');
+  if (i == null) return;
+  e.preventDefault();
+  openPanelByIndex(i);                         // 🔴 aggiorna titolo/meta/pill
+  document.getElementById('panel')?.classList.add('open');
+}, {capture:false});
+  </script>
+
 </body>
 </html>
 
