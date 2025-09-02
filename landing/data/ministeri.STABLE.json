@@ -1,0 +1,152 @@
+[
+  {"id":"mef","ring":1,"tag":"Ministero","nome":"MEF • Economia e Finanze",
+   "problema":"riconciliazione, oneri, tracciabilità titoli",
+   "soluzione":"DMS + pagoPA + registri auditable",
+   "risultati":"KPI cassa e atti; riduzione errori",
+   "docs":[
+     {"label":"Costi PA — Apri su Spot","slug":"costi-pa"},
+     {"label":"Analisi & Soluzione — Apri su Spot","slug":"analisi-e-soluzione-dms"}
+   ]},
+
+  {"id":"mimit","ring":1,"tag":"Ministero","nome":"MIMIT • Imprese e Made in Italy",
+   "problema":"riuso modelli, DPP/ESPR, filiere",
+   "soluzione":"Hub Nazionale + DPP",
+   "risultati":"standard riuso, export-ready",
+   "docs":[
+     {"label":"Hub Nazionale — Spot","slug":"hub-nazionale-del-commercio"},
+     {"label":"Passaporto EU — Spot","slug":"passaporto-eu"}
+   ]},
+
+  {"id":"interno","ring":1,"tag":"Ministero","nome":"Ministero dell'Interno",
+   "problema":"controlli e presenze su area pubblica",
+   "soluzione":"flussi PM + Once-Only",
+   "risultati":"controlli tracciati, tempi giù",
+   "docs":[
+     {"label":"Relazione sui controlli — Spot","slug":"relazione-controlli"},
+     {"label":"Once-Only / SDG — Spot","slug":"once-only-sdg"}
+   ]},
+
+  {"id":"mase","ring":1,"tag":"Ministero","nome":"MASE • Ambiente e Sicurezza Energetica",
+   "problema":"CO₂ logistica e premialità",
+   "soluzione":"Carbon Credit a checkout",
+   "risultati":"token CCT, allineamento dogane",
+   "docs":[
+     {"label":"Carbon Credit DMS — Spot","slug":"carbon-credit-dms"},
+     {"label":"Equilibrio Ecosostenibile — Spot","slug":"equilibrio-ecosostenibile"}
+   ]},
+
+  {"id":"lavoro","ring":1,"tag":"Ministero","nome":"Lavoro e Politiche Sociali",
+   "problema":"presenze/turni e conformità",
+   "soluzione":"interfacce standard PM/enti",
+   "risultati":"tracciati condivisi",
+   "docs":[{"label":"Relazione sui controlli — Spot","slug":"relazione-controlli"}]},
+
+  {"id":"salute","ring":1,"tag":"Ministero","nome":"Salute",
+   "problema":"fiere/mercati alimentari",
+   "soluzione":"autorizzazioni + layout digitali",
+   "risultati":"controlli più rapidi",
+   "docs":[{"label":"DMS SSET (SUAP) — Spot","slug":"dms-sset"}]},
+
+  {"id":"mit","ring":1,"tag":"Ministero","nome":"MIT • Infrastrutture e Trasporti",
+   "problema":"flussi logistica e accessi",
+   "soluzione":"rotte/parcheggi con app DMS",
+   "risultati":"mobilità e tempi servizio",
+   "docs":[
+     {"label":"App DMS — Spot","slug":"app-dms-assistente"},
+     {"label":"DMS All-in-One — Spot","slug":"dms-all-in-one"}
+   ]},
+
+  {"id":"maeci","ring":1,"tag":"Ministero","nome":"MAECI • Esteri e Cooperazione",
+   "problema":"export, ICS2, filiere",
+   "soluzione":"CCT compatibile EUCDM",
+   "risultati":"dati doganali consistenti",
+   "docs":[{"label":"Carbon Credit DMS — Spot","slug":"carbon-credit-dms"}]},
+
+  {"id":"difesa","ring":1,"tag":"Ministero","nome":"Difesa",
+   "problema":"sicurezza eventi/aree",
+   "soluzione":"telemetria e tracciati",
+   "risultati":"situational awareness",
+   "docs":[{"label":"AI-Ops & Telemetria — Spot","slug":"analisi-e-soluzione-dms"}]},
+
+  {"id":"giustizia","ring":1,"tag":"Ministero","nome":"Giustizia",
+   "problema":"atti e sanzioni tracciate",
+   "soluzione":"registri auditable",
+   "risultati":"catena custodia digitale",
+   "docs":[{"label":"Relazione sui controlli — Spot","slug":"relazione-controlli"}]},
+
+  {"id":"istruzione","ring":1,"tag":"Ministero","nome":"Istruzione e Merito",
+   "problema":"formazione operatori/PMI",
+   "soluzione":"Hub + ECC narrativa/tecnica",
+   "risultati":"adozione e qualità dati",
+   "docs":[
+     {"label":"ECC — Narrativa — Spot","slug":"dms-ecc"},
+     {"label":"ECC — Tecnica — Spot","slug":"analisi-e-soluzione-dms","page":12}
+   ]},
+
+  {"id":"mur","ring":1,"tag":"Ministero","nome":"MUR • Università e Ricerca",
+   "problema":"progetti pilota e metriche",
+   "soluzione":"HUB pilota ER + analytics",
+   "risultati":"dataset pubblici",
+   "docs":[{"label":"HUB ER — Spot","slug":"hub-urbani-prossimita-er"}]},
+
+  {"id":"turismo","ring":1,"tag":"Ministero","nome":"Turismo",
+   "problema":"fiere/mercati come attrattori",
+   "soluzione":"fiere automatiche + calendario",
+   "risultati":"flussi e KPI",
+   "docs":[{"label":"Scenario futuro — Spot","slug":"scenario-futuro"}]},
+
+  {"id":"mic","ring":1,"tag":"Ministero","nome":"MiC • Cultura",
+   "problema":"eventi culturali mercatali",
+   "soluzione":"layout + autorizzazioni",
+   "risultati":"valorizzazione aree",
+   "docs":[{"label":"DMS SSET (SUAP) — Spot","slug":"dms-sset"}]},
+
+  {"id":"fp","ring":1,"tag":"Ministro","nome":"Funzione Pubblica",
+   "problema":"interoperabilità e KPI PA",
+   "soluzione":"Once-Only, PDND",
+   "risultati":"tempi e qualità",
+   "docs":[
+     {"label":"Once-Only / SDG — Spot","slug":"once-only-sdg"},
+     {"label":"Analisi & Soluzione — Spot","slug":"analisi-e-soluzione-dms"}
+   ]},
+
+  {"id":"affari-ue","ring":1,"tag":"Ministro","nome":"Affari europei / Sud / Coesione / PNRR",
+   "problema":"cofinanziamenti e milestone",
+   "soluzione":"roadmap orologio + KPI",
+   "risultati":"governance chiara",
+   "docs":[{"label":"Dossier nazionale — Spot","slug":"dossier-nazionale"}]},
+
+  {"id":"pcm","ring":1,"tag":"PCM","nome":"PCM • Presidenza (hub nazionale)",
+   "problema":"standard e riuso",
+   "soluzione":"Hub Nazionale del Commercio",
+   "risultati":"scala e uniformità",
+   "docs":[{"label":"Hub Nazionale — Spot","slug":"hub-nazionale-del-commercio"}]},
+
+  {"id":"adm","ring":2,"tag":"Agenzia","nome":"ADM • Agenzia Dogane e Monopoli",
+   "docs":[{"label":"Carbon Credit DMS — Spot","slug":"carbon-credit-dms"}]},
+
+  {"id":"ae","ring":2,"tag":"Agenzia","nome":"AE • Agenzia Entrate",
+   "docs":[{"label":"Costi PA — Spot","slug":"costi-pa"}]},
+
+  {"id":"agid","ring":2,"tag":"Agenzia","nome":"AgID",
+   "docs":[{"label":"Once-Only / SDG — Spot","slug":"once-only-sdg"}]},
+
+  {"id":"pagopa","ring":2,"tag":"Società in house","nome":"PagoPA S.p.A.",
+   "docs":[{"label":"DMS All-in-One — Spot","slug":"dms-all-in-one"}]},
+
+  {"id":"regioni","ring":2,"tag":"Ente","nome":"Regioni",
+   "docs":[{"label":"Hub ER — Spot","slug":"hub-urbani-prossimita-er"}]},
+
+  {"id":"province","ring":2,"tag":"Ente","nome":"Province",
+   "docs":[{"label":"Scenario futuro — Spot","slug":"scenario-futuro"}]},
+
+  {"id":"comuni","ring":2,"tag":"Ente","nome":"Comuni",
+   "docs":[{"label":"Relazione controlli — Spot","slug":"relazione-controlli"}]},
+
+  {"id":"camere","ring":2,"tag":"Sistema Camerale","nome":"Camere di Commercio",
+   "docs":[{"label":"Dossier nazionale — Spot","slug":"dossier-nazionale"}]},
+
+  {"id":"associazioni","ring":2,"tag":"Associazioni","nome":"Associazioni di categoria",
+   "docs":[{"label":"ECC — Narrativa — Spot","slug":"dms-ecc"}]}
+]
+
