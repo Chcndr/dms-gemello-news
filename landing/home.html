@@ -720,12 +720,15 @@ document.addEventListener('click', function(e){
   e.preventDefault();             // evita qualunque preventDefault altrui
   window.top.location.href = a.href; // navigazione forzata al PDF
 }, {capture:true});
-</script>Integrazione click nodi con pannelli
+</script>
+
+<script>
+// Integrazione click nodi con pannelli
     document.querySelectorAll('.node').forEach((el, i) => {
       el.addEventListener('click', () => {
         // Carica modules.json se non già caricato
         if (!window.MODULES) {
-          fetch('./data/modules.json')
+          fetch('/dms-gemello-news/landing/data/modules.json?v=1', {cache:'no-store'})
             .then(r => r.json())
             .then(data => {
               window.MODULES = data;
