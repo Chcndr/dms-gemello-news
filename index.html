@@ -38,6 +38,14 @@
   .video-card h3 { margin: 0; font-weight: 800; font-size: 20px; letter-spacing: .2px; }
   .video-card p  { margin: 6px 0 0 0; opacity: .8; font-size: 14px; }
   @media (max-width:900px){ .wrap{grid-template-columns: 1fr} }
+  
+  /* Spot: link sempre cliccabili tranne quando marcati disabled */
+  .doc{ display:block; position:relative; pointer-events:auto; }
+  .doc[data-disabled="1"], .doc[href="#"]{
+    pointer-events:none; opacity:.45; filter:grayscale(.15); cursor:default;
+  }
+  /* Fix tap su Safari dentro contenitori scorrevoli */
+  .doc, .docs-list{ -webkit-transform:translateZ(0); }
 </style>
 <link rel="stylesheet" href="./assets/theme-green.css">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
@@ -129,54 +137,54 @@
 </script>
 
 <script>
-  // Lista PDF completa (24 documenti organizzati per categoria)
+  // Lista PDF completa (24 documenti con path reali)
   const PDFS = [
     // Intro politica / Hub
-    ["Copertina — Hub Nazionale del Commercio","./docs/hub-nazionale-copertina.pdf","Hub • Intro"],
-    ["Riaccendiamo il Commercio","./docs/riaccendiamo-il-commercio.pdf","Narrativa"],
-    ["Hub Nazionale del Commercio (standard)","./docs/hub-nazionale-del-commercio.pdf","Hub • Standard"],
-    ["Dossier Nazionale","./docs/dossier-nazionale.pdf","Governance • Roadmap"],
-    ["DMS & CLUST-ER","./docs/dms-e-clust-er.pdf","Pilota • ER"],
-    ["Riequilibrio (ECC — pilastro)","./docs/riequilibrio-ecc.pdf","Policy • Pillola"],
+    ["Copertina — Hub Nazionale del Commercio","./docs/HUB NAZIONALE DEL COMMERCIO.pdf","Hub • Intro"],
+    ["Riaccendiamo il Commercio","./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf","Narrativa"],
+    ["Hub Nazionale del Commercio (standard)","./docs/HUB NAZIONALE DEL COMMERCIO.pdf","Hub • Standard"],
+    ["Dossier Nazionale","./docs/DOSSIER NAZIONALE.pdf","Governance • Roadmap"],
+    ["DMS & CLUST-ER","./docs/DMS E CLUST-ER.pdf","Pilota • ER"],
+    ["Riequilibrio (ECC — pilastro)","./docs/RIEQUILIBRIO.pdf","Policy • Pillola"],
     
     // Pilota 1 — Grosseto
-    ["Presentazione DMS (executive)","./docs/presentazione-dms.pdf","Pilota"],
-    ["DMS SPOT — note di collaudo","./docs/dms-spot-1.pdf","Pilota"],
-    ["Relazione sui controlli","#","PM • Controlli"],
+    ["Presentazione DMS (executive)","./docs/PRESENTAZIONE DMS -compressed.pdf","Pilota"],
+    ["DMS SPOT — note di collaudo","./docs/DMS SPOT 1.pdf","Pilota"],
+    ["Relazione sui controlli","./docs/Relazione sui controlli.pdf","PM • Controlli"],
     
     // Pilota 2 — ER / HUB
-    ["Hub Urbani e di Prossimità in Emilia-Romagna","./docs/hub-urbani-prossimita-er.pdf","ER • Hub"],
+    ["Hub Urbani e di Prossimità in Emilia-Romagna","./docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf","ER • Hub"],
     
     // Pagamenti & PDND / SUAP
-    ["DMS Once Only / Single Digital Gateway","./docs/once-only-sdg.pdf","PDND • SUAP"],
-    ["DMS SSET (SUAP)","#","SUAP"],
+    ["DMS Once Only / Single Digital Gateway","./docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf","PDND • SUAP"],
+    ["DMS SSET (SUAP)","./docs/DMS SSET.pdf","SUAP"],
     
     // ECC (narrativa/tecnica)
-    ["DMS ECC (narrativa)","./docs/dms-ecc.pdf","ECC • Policy"],
-    ["Carbon Credit DMS (tecnica)","./docs/carbon-credit-dms.pdf","ECC • Tecnica"],
-    ["Equilibrio Ecosostenibile","#","ECC • Background"],
+    ["DMS ECC (narrativa)","./docs/DMS ECC.pdf","ECC • Policy"],
+    ["Carbon Credit DMS (tecnica)","./docs/CARBON CREDIT DMS.pdf","ECC • Tecnica"],
+    ["Equilibrio Ecosostenibile","./docs/EQUILIBRIO ECOSOSTENIBILE.pdf","ECC • Background"],
     
     // Costi / Analisi / Scenario
-    ["Costi PA","./docs/costi-pa.pdf","ROI • Oneri"],
-    ["Analisi & Soluzione DMS","./docs/analisi-e-soluzione-dms.pdf","Libro bianco"],
-    ["Analisi (allegato)","./docs/analisi.pdf","Appendice"],
-    ["Hub DMS — The First Web3-Ready…","./docs/hub-dms-web3-ready.pdf","Scenario • Visione"],
-    ["Progetto Nazionale","./docs/progetto-nazionale.pdf","Scenario • Riuso"],
+    ["Costi PA","./docs/COSTI PA.pdf","ROI • Oneri"],
+    ["Analisi & Soluzione DMS","./docs/ANALISI E SOLUZIONE DMS.pdf","Libro bianco"],
+    ["Analisi (allegato)","./docs/Analisi.pdf","Appendice"],
+    ["Hub DMS — The First Web3-Ready…","./docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf","Scenario • Visione"],
+    ["Progetto Nazionale","./docs/PROGETTO NAZIONALE.pdf","Scenario • Riuso"],
     
     // Normativa / Altri
-    ["Bolkestein — Commercio su area pubblica","#","Normativa"],
-    ["DMS All-in-One","#","Overview tecnica"],
-    ["Usato","#","Filiere • Verticale"],
+    ["Bolkestein — Commercio su area pubblica","./docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf","Normativa"],
+    ["DMS All-in-One","./docs/DMS         ALL-IN-ONE .pdf","Overview tecnica"],
+    ["Usato","./docs/USATO.pdf","Filiere • Verticale"],
     
     // Prodotto
-    ["App DMS — Assistente Personale","./docs/app-dms-assistente.pdf","App/PWA"]
+    ["App DMS — Assistente Personale","./docs/APP DMS Assistente Personale.pdf","App/PWA"]
   ];
   const list = document.getElementById('docs');
   PDFS.forEach(([title,href,tags])=>{
     const a=document.createElement('a');
     a.className='doc'; 
     a.href=href; 
-    if(href === '#') a.classList.add('disabled');
+    if(href === '#') a.setAttribute('data-disabled', '1');
     a.target='_blank'; 
     a.rel='noopener';
     a.innerHTML=`<span class="title">${title}</span><span class="tags">${tags || 'PDF'}</span>`;
