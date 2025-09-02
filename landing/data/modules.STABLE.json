@@ -1,0 +1,111 @@
+[
+  {
+    "id": 0,
+    "title": "00 • Intro politica — Riaccendiamo il Commercio",
+    "sub": "Istituzionale • Amplia: Q4 2025",
+    "pdfs": [
+      {"label": "Copertina", "file": "./docs/HUB NAZIONALE DEL COMMERCIO.pdf"},
+      {"label": "Riaccendiamo il Commercio", "file": "./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf"},
+      {"label": "Hub Nazionale del Commercio", "file": "./docs/HUB NAZIONALE DEL COMMERCIO.pdf"},
+      {"label": "Dossier nazionale", "file": "./docs/DOSSIER NAZIONALE.pdf"},
+      {"label": "DMS & CLUST-ER", "file": "./docs/DMS E CLUST-ER.pdf"},
+      {"label": "Riequilibrio (ECC — pilastro)", "file": "./docs/RIEQUILIBRIO.pdf"}
+    ]
+  },
+  {
+    "id": 1,
+    "title": "01 • Grosseto — Primo collegamento reale",
+    "sub": "Pilota • Amplia: Q1 2026",
+    "pdfs": [
+      {"label": "Presentazione DMS", "file": "./docs/PRESENTAZIONE DMS -compressed.pdf"},
+      {"label": "DMS Spot 1", "file": "./docs/DMS SPOT 1.pdf"},
+      {"label": "Relazione sui controlli", "file": "#"}
+    ]
+  },
+  {
+    "id": 2,
+    "title": "02 • DMS & CLUST-ER — Secondo pilota HUB ER",
+    "sub": "Pilota HUB • Amplia: Q4 2025",
+    "pdfs": [
+      {"label": "DMS E CLUST-ER", "file": "./docs/DMS E CLUST-ER.pdf"},
+      {"label": "Hub Urbani e di Prossimità ER", "file": "./docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf"}
+    ]
+  },
+  {
+    "id": 3,
+    "title": "03 • Pagamenti & PDND (Once-Only)",
+    "sub": "Amplia: Q1 2026",
+    "pdfs": [
+      {"label": "DMS Once Only Single Digital Gateway", "file": "./docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf"},
+      {"label": "DMS SSET", "file": "#"}
+    ]
+  },
+  {
+    "id": 4,
+    "title": "04 • DPP (ESPR)",
+    "sub": "Amplia: Q4 2026",
+    "pdfs": [
+      {"label": "In arrivo", "file": "#"}
+    ]
+  },
+  {
+    "id": 5,
+    "title": "05 • ECC — Narrativa",
+    "sub": "Amplia: Q2 2026",
+    "pdfs": [
+      {"label": "DMS ECC", "file": "./docs/DMS ECC.pdf"}
+    ]
+  },
+  {
+    "id": 6,
+    "title": "06 • ECC — Tecnica",
+    "sub": "Amplia: Q3 2026",
+    "pdfs": [
+      {"label": "Carbon Credit DMS", "file": "./docs/CARBON CREDIT DMS.pdf"}
+    ]
+  },
+  {
+    "id": 7,
+    "title": "07 • Costi PA & ROI",
+    "sub": "Amplia: Q2 2026",
+    "pdfs": [
+      {"label": "Costi PA", "file": "./docs/COSTI PA.pdf"}
+    ]
+  },
+  {
+    "id": 8,
+    "title": "08 • Analisi & Soluzione",
+    "sub": "Amplia: Q1–Q2 2026",
+    "pdfs": [
+      {"label": "Analisi e Soluzione DMS", "file": "./docs/ANALISI E SOLUZIONE DMS.pdf"},
+      {"label": "Analisi", "file": "./docs/Analisi.pdf"}
+    ]
+  },
+  {
+    "id": 9,
+    "title": "09 • Scenario & KPI",
+    "sub": "Amplia: Q1 2027",
+    "pdfs": [
+      {"label": "Hub DMS Web3-Ready Platform", "file": "./docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf"},
+      {"label": "Progetto Nazionale", "file": "./docs/PROGETTO NAZIONALE.pdf"}
+    ]
+  },
+  {
+    "id": 10,
+    "title": "10 • Hub Nazionale (gemello)",
+    "sub": "Amplia: Q4 2026",
+    "pdfs": [
+      {"label": "Hub Nazionale del Commercio", "file": "./docs/HUB NAZIONALE DEL COMMERCIO.pdf"},
+      {"label": "Bolkestein Commercio", "file": "#"}
+    ]
+  },
+  {
+    "id": 11,
+    "title": "11 • App/PWA & Inclusione",
+    "sub": "Amplia: Q4 2026",
+    "pdfs": [
+      {"label": "App DMS Assistente Personale", "file": "./docs/APP DMS Assistente Personale.pdf"}
+    ]
+  }
+]
+
