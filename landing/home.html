@@ -605,11 +605,47 @@
 
   function buildLinks(meta){
     const links = [];
-    if(meta?.pdf) links.push(['Apri documento principale (PDF)', meta.pdf]);
-    (meta?.more||[]).forEach((u,idx)=> links.push([`Apri allegato ${idx+1} (PDF)`, u]));
-    return links.map(([label, href]) =>
-      `<a class="btn" href="${safeHref(href)}" target="_blank" rel="noopener">${label}</a>`
-    ).join(' ');
+    const SPOT_URL = './index.html'; // URL della pagina Spot
+    
+    // Mapping file path to slug
+    const pathToSlug = {
+      './docs/HUB NAZIONALE DEL COMMERCIO.pdf': 'hub-nazionale-del-commercio',
+      './docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf': 'riaccendiamo-il-commercio',
+      './docs/DOSSIER NAZIONALE.pdf': 'dossier-nazionale',
+      './docs/DMS E CLUST-ER.pdf': 'dms-e-clust-er',
+      './docs/RIEQUILIBRIO.pdf': 'riequilibrio-ecc',
+      './docs/PRESENTAZIONE DMS -compressed.pdf': 'presentazione-dms',
+      './docs/DMS SPOT 1.pdf': 'dms-spot-1',
+      './docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf': 'hub-urbani-prossimita-er',
+      './docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf': 'once-only-sdg',
+      './docs/DMS ECC.pdf': 'dms-ecc',
+      './docs/CARBON CREDIT DMS.pdf': 'carbon-credit-dms',
+      './docs/COSTI PA.pdf': 'costi-pa',
+      './docs/ANALISI E SOLUZIONE DMS.pdf': 'analisi-e-soluzione-dms',
+      './docs/Analisi.pdf': 'analisi',
+      './docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf': 'scenario-futuro',
+      './docs/PROGETTO NAZIONALE.pdf': 'progetto-nazionale',
+      './docs/APP DMS Assistente Personale.pdf': 'app-dms-assistente'
+    };
+    
+    if(meta?.pdfs) {
+      meta.pdfs.forEach((pdf, idx) => {
+        const slug = pathToSlug[pdf.file] || null;
+        if(pdf.file === '#' || !slug) {
+          links.push([pdf.label, '#', true]); // placeholder
+        } else {
+          links.push([pdf.label, `${SPOT_URL}#doc-${slug}`, false]);
+        }
+      });
+    }
+    
+    return links.map(([label, href, isPlaceholder]) => {
+      if(isPlaceholder) {
+        return `<a class="action" href="#" aria-disabled="true">${label}</a>`;
+      } else {
+        return `<a class="action" href="${safeHref(href)}" target="_self" rel="noopener">${label}</a>`;
+      }
+    }).join(' ');
   }
 
   window.__openPanelByIndex = function(i, meta){
