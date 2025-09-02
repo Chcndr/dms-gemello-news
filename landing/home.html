@@ -2,6 +2,29 @@
 <html lang="it">
 <head>
   <meta charset="utf-8"/>
+  <script>
+/* Kill-switch: qualunque click su <a> che punterebbe a /landing/... viene corretto
+   verso la root del repo; le ancore #doc-/#vid- vengono aperte fuori dall'iframe. */
+addEventListener('click', function (e) {
+  const a = e.target.closest('a');
+  if (!a) return;
+
+  let href = a.getAttribute('href') || '';
+  const isHashDoc = /^#(doc|vid)-/.test(href);
+  const isBadLanding = /^\/landing\//.test(href);
+
+  if (isHashDoc) {
+    e.preventDefault(); e.stopImmediatePropagation();
+    top.location.href = '/dms-gemello-news/' + href.replace(/^#/, '#');
+    return;
+  }
+  if (isBadLanding) {
+    e.preventDefault(); e.stopImmediatePropagation();
+    top.location.href = href.replace(/^\/landing\//, '/dms-gemello-news/landing/');
+    return;
+  }
+}, { capture: true, passive: false });
+</script>
   <base href="https://chcndr.github.io/dms-gemello-news/">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>DMS • Orologio roadmap</title>
