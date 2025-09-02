@@ -785,7 +785,7 @@ document.addEventListener('click', function(e){
       panel.querySelector('#panel-title').textContent = data.title || ('Modulo ' + i);
       panel.querySelector('#panel-sub').textContent   = data.sub   || 'Contenuti in arrivo.';
       
-      // Genera i CTA PDF dinamicamente
+      // Genera i CTA dinamicamente (supporta sia pdfs che actions)
       const actionsDiv = panel.querySelector('#panel-actions');
       const closeBtn = actionsDiv.querySelector('#panel-close');
       
@@ -795,47 +795,61 @@ document.addEventListener('click', function(e){
       // Aggiungi le classi per il fix overlap
       actionsDiv.classList.add('actions', 'pdf-group');
       
-      // Aggiungi i nuovi CTA PDF
-      if(data.pdfs && data.pdfs.length > 0) {
-        data.pdfs.forEach((pdf, idx) => {
+      // Funzione per renderizzare actions
+      function renderActions(actions) {
+        actions.forEach((action, idx) => {
           const btn = document.createElement('a');
           btn.className = 'btn btn--accent action';
           
-          // Usa la mappatura pathToSlug per puntare a Spot invece che direttamente al PDF
-          const pathToSlug = {
-            './docs/HUB NAZIONALE DEL COMMERCIO.pdf': 'hub-nazionale-commercio',
-            './docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf': 'riaccendiamo-il-commercio',
-            './docs/DOSSIER NAZIONALE.pdf': 'dossier-nazionale',
-            './docs/DMS E CLUST-ER.pdf': 'dms-cluster-er',
-            './docs/RIEQUILIBRIO.pdf': 'riequilibrio-ecc',
-            './docs/PRESENTAZIONE DMS -compressed.pdf': 'presentazione-dms-bologna',
-            './docs/DMS SPOT 1.pdf': 'dms-spot-1',
-            './docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf': 'hub-urbani-prossimita-er',
-            './docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf': 'once-only-sdg',
-            './docs/DMS ECC.pdf': 'dms-ecc-narrativo',
-            './docs/CARBON CREDIT DMS.pdf': 'carbon-credit-dms',
-            './docs/COSTI PA.pdf': 'ecosistema-costi-pa',
-            './docs/ANALISI E SOLUZIONE DMS.pdf': 'analisi-soluzione-dms',
-            './docs/Analisi.pdf': 'analisi',
-            './docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf': 'scenario-futuro',
-            './docs/PROGETTO NAZIONALE.pdf': 'progetto-nazionale',
-            './docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf': 'bolkestein-mercati',
-            './docs/APP DMS Assistente Personale.pdf': 'app-dms-assistente'
-          };
+          // Usa href se presente, altrimenti slug→Spot
+          const href = action?.href || (action?.slug ? `/dms-gemello-news/#doc-${action.slug}` : '#');
+          btn.href = href;
+          btn.target = '_top';
+          btn.textContent = action?.label || action?.slug || 'Approfondisci';
           
-          const slug = pathToSlug[pdf.file] || null;
-          if(pdf.file === '#' || !slug) {
-            btn.href = '#';
+          if(!action?.href && !action?.slug) {
             btn.setAttribute('aria-disabled', 'true');
             btn.classList.add('disabled');
-          } else {
-            btn.href = `/dms-gemello-news/#doc-${slug}`;
-            btn.target = '_top';
           }
           
-          btn.textContent = pdf.label;
           actionsDiv.insertBefore(btn, closeBtn);
         });
+      }
+      
+      // Supporta il nuovo formato "actions" se presente
+      if(data.actions && data.actions.length > 0) {
+        renderActions(data.actions);
+      }
+      // Fallback per il vecchio formato "pdfs" (compatibilità)
+      else if(data.pdfs && data.pdfs.length > 0) {
+        const pathToSlug = {
+          './docs/HUB NAZIONALE DEL COMMERCIO.pdf': 'hub-nazionale-commercio',
+          './docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf': 'riaccendiamo-il-commercio',
+          './docs/DOSSIER NAZIONALE.pdf': 'dossier-nazionale',
+          './docs/DMS E CLUST-ER.pdf': 'dms-cluster-er',
+          './docs/RIEQUILIBRIO.pdf': 'riequilibrio-ecc',
+          './docs/PRESENTAZIONE DMS -compressed.pdf': 'presentazione-dms-bologna',
+          './docs/DMS SPOT 1.pdf': 'dms-spot-1',
+          './docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf': 'hub-urbani-prossimita-er',
+          './docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf': 'once-only-sdg',
+          './docs/DMS ECC.pdf': 'dms-ecc-narrativo',
+          './docs/CARBON CREDIT DMS.pdf': 'carbon-credit-dms',
+          './docs/COSTI PA.pdf': 'ecosistema-costi-pa',
+          './docs/ANALISI E SOLUZIONE DMS.pdf': 'analisi-soluzione-dms',
+          './docs/Analisi.pdf': 'analisi',
+          './docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf': 'scenario-futuro',
+          './docs/PROGETTO NAZIONALE.pdf': 'progetto-nazionale',
+          './docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf': 'bolkestein-mercati',
+          './docs/APP DMS Assistente Personale.pdf': 'app-dms-assistente'
+        };
+        
+        const legacyActions = data.pdfs.map(pdf => ({
+          label: pdf.label,
+          slug: pathToSlug[pdf.file] || null,
+          href: null
+        }));
+        
+        renderActions(legacyActions);
       }
     } else {
       // Fallback se non ci sono dati
@@ -878,6 +892,15 @@ document.addEventListener('click', function(e){
   }
 })();
   </script>
+
+  <!-- Ancora Mappa Ministeri (placeholder per Step 2) -->
+  <section id="mappa-ministeri" style="padding:48px 0">
+    <div class="map-wrap" style="max-width:1200px;margin:0 auto">
+      <h2 style="margin:0 0 8px">Mappa Ministeri (beta)</h2>
+      <p class="meta" style="opacity:.8">Step 2: mappa radiale interattiva con scheda Problema • Soluzione • Risultati • Norme • Documenti.</p>
+    </div>
+  </section>
+
 </body>
 </html>
 

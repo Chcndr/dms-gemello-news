@@ -3,13 +3,14 @@
     "id": 0,
     "title": "00 • Intro politica — Riaccendiamo il Commercio",
     "sub": "Istituzionale • Amplia: Q4 2025",
-    "pdfs": [
-      {"label": "Copertina", "file": "./docs/HUB NAZIONALE DEL COMMERCIO.pdf"},
-      {"label": "Riaccendiamo il Commercio", "file": "./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf"},
-      {"label": "Hub Nazionale del Commercio", "file": "./docs/HUB NAZIONALE DEL COMMERCIO.pdf"},
-      {"label": "Dossier nazionale", "file": "./docs/DOSSIER NAZIONALE.pdf"},
-      {"label": "DMS & CLUST-ER", "file": "./docs/DMS E CLUST-ER.pdf"},
-      {"label": "Riequilibrio (ECC — pilastro)", "file": "./docs/RIEQUILIBRIO.pdf"}
+    "actions": [
+      {"label": "Mappa Ministeri", "href": "/dms-gemello-news/landing/home.html#mappa-ministeri"},
+      {"label": "Copertina", "slug": "hub-nazionale-commercio"},
+      {"label": "Riaccendiamo il Commercio", "slug": "riaccendiamo-il-commercio"},
+      {"label": "Hub Nazionale del Commercio", "slug": "hub-nazionale-commercio"},
+      {"label": "Dossier nazionale", "slug": "dossier-nazionale"},
+      {"label": "DMS & CLUST-ER", "slug": "dms-cluster-er"},
+      {"label": "Riequilibrio (ECC — pilastro)", "slug": "riequilibrio-ecc"}
     ]
   },
   {
