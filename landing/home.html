@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- BUILD_TOKEN: REPORT_FIX_2025-09-02 -->
 <html lang="it">
 <head>
   <meta charset="utf-8"/>
@@ -799,9 +800,39 @@ document.addEventListener('click', function(e){
         data.pdfs.forEach((pdf, idx) => {
           const btn = document.createElement('a');
           btn.className = 'btn btn--accent action';
-          btn.href = pdf.file;
-          btn.target = '_blank';
-          btn.rel = 'noopener';
+          
+          // Usa la mappatura pathToSlug per puntare a Spot invece che direttamente al PDF
+          const pathToSlug = {
+            './docs/HUB NAZIONALE DEL COMMERCIO.pdf': 'hub-nazionale-commercio',
+            './docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf': 'riaccendiamo-il-commercio',
+            './docs/DOSSIER NAZIONALE.pdf': 'dossier-nazionale',
+            './docs/DMS E CLUST-ER.pdf': 'dms-cluster-er',
+            './docs/RIEQUILIBRIO.pdf': 'riequilibrio-ecc',
+            './docs/PRESENTAZIONE DMS -compressed.pdf': 'presentazione-dms-bologna',
+            './docs/DMS SPOT 1.pdf': 'dms-spot-1',
+            './docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf': 'hub-urbani-prossimita-er',
+            './docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf': 'once-only-sdg',
+            './docs/DMS ECC.pdf': 'dms-ecc-narrativo',
+            './docs/CARBON CREDIT DMS.pdf': 'carbon-credit-dms',
+            './docs/COSTI PA.pdf': 'ecosistema-costi-pa',
+            './docs/ANALISI E SOLUZIONE DMS.pdf': 'analisi-soluzione-dms',
+            './docs/Analisi.pdf': 'analisi',
+            './docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf': 'scenario-futuro',
+            './docs/PROGETTO NAZIONALE.pdf': 'progetto-nazionale',
+            './docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf': 'bolkestein-mercati',
+            './docs/APP DMS Assistente Personale.pdf': 'app-dms-assistente'
+          };
+          
+          const slug = pathToSlug[pdf.file] || null;
+          if(pdf.file === '#' || !slug) {
+            btn.href = '#';
+            btn.setAttribute('aria-disabled', 'true');
+            btn.classList.add('disabled');
+          } else {
+            btn.href = `/dms-gemello-news/#doc-${slug}`;
+            btn.target = '_top';
+          }
+          
           btn.textContent = pdf.label;
           actionsDiv.insertBefore(btn, closeBtn);
         });
