@@ -663,7 +663,7 @@ addEventListener('click', function (e) {
         if(pdf.file === '#' || !slug) {
           links.push([pdf.label, '#', true]); // placeholder
         } else {
-          links.push([pdf.label, `${SPOT_URL}#doc-${slug}`, false]);
+          links.push([pdf.label, `/dms-gemello-news/#doc-${slug}`, false]);
         }
       });
     }
@@ -681,7 +681,7 @@ addEventListener('click', function (e) {
   Apri PDF (test diretto)
 </a>`;
         }
-        return `<a class="action" href="${safeHref(href)}" target="_self" rel="noopener">${label}</a>`;
+        return `<a class="action spot" href="${safeHref(href)}" target="_top" rel="noopener">${label}</a>`;
       }
     }).join(' ');
   }
