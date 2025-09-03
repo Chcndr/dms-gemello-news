@@ -670,139 +670,71 @@ function openFull(m){
   loadCardFor(m.id);
 }
 
-/* ===== MAP v2.6.3 — SAFE NAV+CARD, MAPPING, PLACEHOLDER, RESTORE LINES ===== */
-(function bootV263(){
-  const $ = sel => document.querySelector(sel);
-  const $id = id => document.getElementById(id);
-
-  // ——— Normalizzazione ID/nome → ID canonico
-  const IDMAP = {
-    mef:'mef','economia e finanze':'mef',
-    interno:'interno','ministero dell\'interno':'interno',
-    mimit:'mimit','imprese e made in italy':'mimit',
-    mase:'mase','ambiente e sicurezza energetica':'mase',
-    mit:'mit','infrastrutture e trasporti':'mit',
-    salute:'salute','ministero della salute':'salute',
-    mic:'mic','cultura':'mic',
-    turismo:'turismo','ministero del turismo':'turismo',
-    masaf:'masaf','agricoltura':'masaf',
-    mim:'mim','istruzione e merito':'mim',
-    lavoro:'lavoro','ministero del lavoro':'lavoro',
-    maeci:'maeci','esteri e cooperazione':'maeci',
-    agid:'agid',
-    pagopa:'pagopa','pago pa s.p.a.':'pagopa','pagopa s.p.a.':'pagopa',
-    ae:'ae','agenzia entrate':'ae',
-    adm:'adm','dogane':'adm','agenzia dogane e monopoli':'adm'
+/* ===== MAP v2.6.3 — CARD MAP + SAFE NAV/MODAL ===== */
+(function(){
+  const CARD_SRC = {
+    mef:'mef', interno:'interno', mimit:'mimit', mase:'mase', mit:'mit',
+    salute:'salute', mic:'mic', turismo:'turismo', masaf:'masaf',
+    mim:'mim', lavoro:'lavoro',
+    maeci:'maeci', agid:'agid', pagopa:'pagopa', ae:'ae', adm:'adm'
   };
-  function norm(s=''){ return s.normalize('NFD').replace(/\p{Diacritic}/gu,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
-  function canonId(m){
-    if(!m) return null;
-    const cands = [m.id, m.short, m.nome].filter(Boolean).map(norm);
-    for(const c of cands){ if(IDMAP[c]) return IDMAP[c]; }
-    return (m.id||'').toLowerCase();
+  // Ordine/insieme chip interni (16 voci)
+  window.SHOW = ['mef','interno','mimit','mase','mit','salute','mic','turismo','masaf','mim','lavoro','maeci','agid','pagopa','ae','adm'];
+
+  function $id(x){return document.getElementById(x);}
+
+  function ensureFactsInModal(){
+    const card=$id('card'); if(!card) return null;
+    let wrap=$id('factsWrap'), img=$id('factsImg');
+    if(!wrap){ wrap=document.createElement('div'); wrap.id='factsWrap'; wrap.className='facts'; img=document.createElement('img'); img.id='factsImg'; img.alt=''; wrap.appendChild(img); }
+    if(wrap.parentElement!==card){ const panel=card.querySelector('.panel'); card.insertBefore(wrap, panel||card.firstChild); }
+    document.querySelectorAll('body>.facts,#sheet .facts').forEach(n=>{ if(n!==wrap) n.remove(); });
+    return {wrap,img};
   }
 
-  // ——— Pronto?
-  function ready(){
-    return Array.isArray(window.DATA) && typeof window.openFull==='function' && $id('card');
-  }
-
-  // ——— Garantisce facts INSIDE modal
-  function ensureFacts(){
-    const card = $id('card'); if(!card) return {};
-    let factsWrap = $id('factsWrap'); let factsImg = $id('factsImg');
-    if(!factsWrap){
-      factsWrap = document.createElement('div'); factsWrap.id='factsWrap'; factsWrap.className='facts';
-      factsImg = document.createElement('img'); factsImg.id='factsImg'; factsImg.alt='';
-      factsWrap.appendChild(factsImg);
-    }
-    if(factsWrap.parentElement!==card){
-      const firstPanel = card.querySelector('.panel');
-      card.insertBefore(factsWrap, firstPanel||card.firstChild);
-    }
-    document.querySelectorAll('body > .facts, #sheet .facts').forEach(n=>{ if(n!==factsWrap) n.remove(); });
-    return {factsWrap,factsImg};
-  }
-
-  // ——— Placeholder SVG se l'immagine non esiste
-  function placeholderFor(m){
-    const title = (m?.nome||m?.short||m?.id||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
-    const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900">
-        <defs>
-          <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stop-color="#0e2428"/>
-            <stop offset="1" stop-color="#0b1a1d"/>
-          </linearGradient>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#g)"/>
-        <text x="50%" y="46%" font-family="Inter,system-ui,sans-serif" font-size="64" fill="#eaf7ff" text-anchor="middle" font-weight="800">${title}</text>
-        <text x="50%" y="56%" font-family="Inter,system-ui,sans-serif" font-size="28" fill="#9ad8ff" text-anchor="middle">Scheda non trovata — in attesa immagine /landing/cards/</text>
-      </svg>`;
-    return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
-  }
-
-  let seq = 0;
+  let seq=0;
   function loadCardFor(id){
-    const {factsWrap,factsImg} = ensureFacts(); if(!factsWrap||!factsImg) return;
-    factsWrap.hidden = true; factsImg.removeAttribute('src');
-    const mine = ++seq;
-    const exts = ['png','jpg','webp'];
-    let i=0;
-    (function tryNext(){
-      if(mine!==seq) return;
-      if(i>=exts.length){ factsImg.src = placeholderFor((window.DATA||[]).find(x=>canonId(x)===id)); factsWrap.hidden=false; return; }
-      const src = `/dms-gemello-news/landing/cards/${id}.${exts[i++]}`;
-      const probe = new Image();
-      const bust = `?t=${Date.now()}`;
-      probe.onload = ()=>{ if(mine!==seq) return; factsImg.src = src+bust; factsWrap.hidden=false; };
-      probe.onerror = tryNext;
-      probe.src = src+bust;
+    const s=ensureFactsInModal(); if(!s) return;
+    const {wrap,img}=s; wrap.hidden=true; img.removeAttribute('src');
+    const name=CARD_SRC[id]||'generica';
+    const opts=[`${name}.webp`,`${name}.png`,`${name}.jpg`];
+    const my=++seq; let i=0;
+    (function next(){
+      if(my!==seq) return;
+      if(i>=opts.length){ wrap.hidden=true; return; }
+      const src=`/dms-gemello-news/landing/cards/${opts[i++]}`+`?t=${Date.now()}`;
+      const probe=new Image();
+      probe.onload=()=>{ if(my!==seq) return; img.src=src; wrap.hidden=false; };
+      probe.onerror=next; probe.src=src;
     })();
   }
 
   function buildNavMin(currentId){
-    let bar = $id('minLinks');
-    if(!bar){
-      bar = document.createElement('div'); bar.id='minLinks'; bar.className='min-links';
-      ($id('titleRow')||$id('card')||document.body).appendChild(bar);
-    }
+    let bar=$id('minLinks');
+    if(!bar){ bar=document.createElement('div'); bar.id='minLinks'; bar.className='min-links'; ($id('titleRow')||$id('card')||document.body).appendChild(bar); }
     bar.innerHTML='';
-    const order = window.SHOW && window.SHOW.length ? window.SHOW.slice() : (window.DATA||[]).map(x=>canonId(x));
-    const seen = new Set();
-    order.forEach(id=>{
-      if(!id||seen.has(id)) return; seen.add(id);
-      const m = (window.DATA||[]).find(x=>canonId(x)===id); if(!m) return;
-      const b = document.createElement('button');
-      b.className='chip nav'; b.textContent=(m.short||m.nome||id).toUpperCase();
+    window.SHOW.forEach(id=>{
+      const m=(window.DATA||[]).find(x=>x.id===id); if(!m) return;
+      const b=document.createElement('button'); b.className='chip nav'; b.textContent=(m.short||m.nome||id).toUpperCase();
       if(id===currentId) b.disabled=true;
-      b.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); openFull(m); });
+      b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation(); openFull(m);});
       bar.appendChild(b);
     });
   }
 
+  function ready(){ return Array.isArray(window.DATA)&&typeof window.openFull==='function'&&$id('card'); }
+
   function install(){
-    // restore linee/nodi
     document.documentElement.dataset.lines='on';
     (window.redraw||window.draw||function(){})();
-    // wrap openFull
-    const _openFull = window.openFull;
-    window.openFull = function(m){
-      const id = canonId(m);
-      ensureFacts();
-      _openFull(m);
-      buildNavMin(id);
-      loadCardFor(id);
-      const card=$id('card'); if(card) card.scrollTop=0;
-    };
+    const _open=window.openFull;
+    window.openFull=function(m){ ensureFactsInModal(); _open(m); buildNavMin(m.id); loadCardFor(m.id); const c=$id('card'); if(c) c.scrollTop=0; };
   }
 
   if(ready()) install();
-  else{
-    const t0=Date.now(); const tm=setInterval(()=>{
-      if(ready()){ clearInterval(tm); install(); }
-      else if(Date.now()-t0>7000){ clearInterval(tm); }
-    },40);
+  else {
+    const t0=Date.now();
+    const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>6000){clearInterval(tm);} },40);
   }
 })();
 </script>
