@@ -308,8 +308,8 @@ body{overflow:hidden;}
 .min-links{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0; }
 .chip.nav{ opacity:.95; }
 
-/* v2.7 — solo-modal */
-#sheet, body > .facts { display:none !important; }
+/* v2.7.1 — solo-modal, nascondi legacy ovunque */
+#sheet, body > .facts { display: none !important; }
 #card{ max-height:88vh; overflow:auto; }
 #card .facts{ margin:12px 0 10px; }
 #card .facts img{ display:block; width:100%; height:auto; max-height:62vh; object-fit:contain; }
@@ -676,55 +676,48 @@ function openFull(m){
   loadCardFor(m.id);
 }
 
-/* ===== MAP v2.7 — hard reset: solo modal interna, nav stabile, kill legacy ===== */
+/* ===== MAP v2.7.1 — hard reset: solo modal, kill legacy, nav stabile ===== */
 (function(){
-  const IDS = ['mef','interno','mimit','mase','mit','salute','mic','turismo','masaf','mim','lavoro','maeci','agid','pagopa','ae','adm'];
+  const IDS=['mef','interno','mimit','mase','mit','salute','mic','turismo','masaf','mim','lavoro','maeci','agid','pagopa','ae','adm'];
 
-  function $id(x){ return document.getElementById(x); }
-  function ready(){ return Array.isArray(window.DATA) && typeof window.openFull==='function' && $id('card'); }
+  function $id(x){return document.getElementById(x);}
+  function ready(){return Array.isArray(window.DATA)&&typeof window.openFull==='function'&&$id('card');}
 
-  // crea contenitore scheda dentro la modal
   function ensureFacts(){
     const card=$id('card'); if(!card) return null;
     let wrap=$id('factsWrap'), img=$id('factsImg');
     if(!wrap){
       wrap=document.createElement('div'); wrap.id='factsWrap'; wrap.className='facts';
-      img=document.createElement('img'); img.id='factsImg'; img.alt='';
-      wrap.appendChild(img);
+      img=document.createElement('img'); img.id='factsImg'; img.alt=''; wrap.appendChild(img);
       const first=card.querySelector('.panel'); card.insertBefore(wrap, first||card.firstChild);
     }
     return {wrap,img};
   }
 
-  // elimina TUTTO il legacy fuori dalla modal (definitivo)
   function nukeLegacy(){
     document.querySelectorAll('#sheet, body > .facts').forEach(n=>n.remove());
   }
 
-  // loader immagini scheda: prova webp→png→jpg, poi fallback "generica"
   let seq=0;
   function loadCard(id){
     const slot=ensureFacts(); if(!slot) return;
     const {wrap,img}=slot; wrap.hidden=true; img.removeAttribute('src');
-    const base=id; const c=[`${base}.webp`,`${base}.png`,`${base}.jpg`,`generica.webp`,`generica.png`,`generica.jpg`];
+    const cand=[`${id}.webp`,`${id}.png`,`${id}.jpg`,'generica.webp','generica.png','generica.jpg'];
     const me=++seq; let i=0;
     (function next(){
       if(me!==seq) return;
-      if(i>=c.length){ wrap.hidden=true; return; }
-      const src=`/dms-gemello-news/landing/cards/${c[i++]}`+`?t=${Date.now()}`;
-      const probe=new Image();
-      probe.onload=()=>{ if(me!==seq) return; img.src=src; wrap.hidden=false; };
-      probe.onerror=next; probe.src=src;
+      if(i>=cand.length){wrap.hidden=true;return;}
+      const src=`/dms-gemello-news/landing/cards/${cand[i++]}`+`?t=${Date.now()}`;
+      const p=new Image(); p.onload=()=>{if(me!==seq)return; img.src=src; wrap.hidden=false;}; p.onerror=next; p.src=src;
     })();
   }
 
-  // barra chip interna
   function buildNav(currentId){
     let bar=$id('minLinks');
     if(!bar){ bar=document.createElement('div'); bar.id='minLinks'; bar.className='min-links'; ($id('titleRow')||$id('card')||document.body).appendChild(bar); }
     bar.innerHTML='';
     IDS.forEach(id=>{
-      const m=(window.DATA||[]).find(x=>x.id===id); if(!m) return;
+      const m=(window.DATA||[]).find(x=>x.id===id); if(!m)return;
       const b=document.createElement('button'); b.className='chip nav'; b.textContent=(m.short||m.nome||id).toUpperCase();
       if(id===currentId) b.disabled=true;
       b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation(); openFull(m);});
@@ -732,38 +725,28 @@ function openFull(m){
     });
   }
 
-  // hook persistente: se qualcuno sovrascrive openFull, lo re-hookiamo
-  function hookOpenFull(){
-    const _open = window.openFull;
-    if(_open.__v27) return; // già hookato
+  function hook(){
+    const base=window.openFull; if(base && base.__v271) return;
     function wrapped(m){
       nukeLegacy();
       ensureFacts();
-      _open(m);
+      base(m);
       buildNav(m.id);
       loadCard(m.id);
       const c=$id('card'); if(c) c.scrollTop=0;
     }
-    wrapped.__v27 = true;
-    window.openFull = wrapped;
+    wrapped.__v271=true; window.openFull=wrapped;
   }
 
   function install(){
-    document.documentElement.dataset.lines='on';
-    (window.redraw||window.draw||function(){})();
-    nukeLegacy(); ensureFacts(); hookOpenFull();
-
-    // se openFull cambia in futuro, re-hooka
-    const guard=setInterval(()=>{ if(typeof window.openFull==='function' && !window.openFull.__v27) hookOpenFull(); }, 120);
-
-    // rimuovi qualunque inserimento futuro di legacy facts/sheet
+    document.documentElement.dataset.lines='on'; (window.redraw||window.draw||function(){})();
+    nukeLegacy(); ensureFacts(); hook();
+    setInterval(()=>{ if(typeof window.openFull==='function' && !window.openFull.__v271) hook(); }, 120);
     new MutationObserver(()=>{ nukeLegacy(); }).observe(document.body,{childList:true,subtree:true});
   }
 
   if(ready()) install();
-  else {
-    const t0=Date.now(); const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>15000){clearInterval(tm);} }, 40);
-  }
+  else { const t0=Date.now(); const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>15000){clearInterval(tm);} },40); }
 })();
 </script>
 </body>
