@@ -662,84 +662,112 @@ function openFull(m){
   loadCardFor(m.id);
 }
 
-/* ===== MAP v2.6.1 — NAV & CARD FIX ===== */
-const cardEl   = document.getElementById('card');
-let factsWrap  = document.getElementById('factsWrap');
-let factsImg   = document.getElementById('factsImg');
+/* ===== MAP v2.6.2 — SAFE NAV & CARD PATCH (no crash) ===== */
+(function bootV262(){
+  function $id(x){ return document.getElementById(x); }
 
-/* 1) Garantisce che la card viva SEMPRE dentro la modal */
-function ensureFactsInModal(){
-  if(!factsWrap){
-    factsWrap = document.createElement('div');
-    factsWrap.id = 'factsWrap';
-    factsWrap.className = 'facts';
-    factsWrap.hidden = true;
-    factsImg = document.createElement('img');
-    factsImg.id = 'factsImg';
-    factsImg.alt = '';
-    factsWrap.appendChild(factsImg);
+  function ready(){
+    // serve: DATA, openFull, #card esistente
+    return Array.isArray(window.DATA) &&
+           typeof window.openFull === 'function' &&
+           !!$id('card');
   }
-  if(cardEl && factsWrap.parentElement !== cardEl){
-    // inserisci in alto dentro #card (prima del primo .panel se presente)
-    const firstPanel = cardEl.querySelector('.panel');
-    cardEl.insertBefore(factsWrap, firstPanel || cardEl.firstChild);
-  }
-  // rimuovi eventuali facts "legacy" fuori modal
-  document.querySelectorAll('body > .facts, #sheet .facts').forEach(n=>{
-    if(n !== factsWrap) n.remove();
-  });
-}
-ensureFactsInModal();
 
-/* 2) Loader robusto: niente fallback su card sbagliate, annulla caricamenti vecchi */
-let loadSeq = 0;
-function loadCardFor(id){
-  ensureFactsInModal();
-  factsWrap.hidden = true;
-  factsImg.removeAttribute('src');
-  const seq = ++loadSeq;
-  const exts = ['png','jpg','webp'];
-  let i = 0;
-  (function tryNext(){
-    if(seq !== loadSeq) return;                  // navigazione nuova → abort
-    if(i >= exts.length){ factsWrap.hidden = true; return; }
-    const src = `/dms-gemello-news/landing/cards/${id}.${exts[i++]}`;
-    const probe = new Image();
-    probe.onload  = ()=>{ if(seq!==loadSeq) return; factsImg.src = src; factsWrap.hidden = false; };
-    probe.onerror = tryNext;
-    probe.src = src + `?t=${Date.now()}`;        // cache-buster
-  })();
-}
-
-/* 3) Chips di navigazione: sempre e solo openFull(id) corretto */
-function buildNavMin(currentId){
-  const bar = document.getElementById('minLinks');
-  if(!bar) return;
-  bar.innerHTML = '';
-  (window.SHOW || []).forEach(id=>{
-    const btn = document.createElement('button');
-    btn.className = 'chip nav';
-    const label = (window.DATA||[]).find(x=>x.id===id)?.short || id;
-    btn.textContent = label.toUpperCase();
-    if(id === currentId) btn.disabled = true;
-    btn.addEventListener('click', (e)=>{
-      e.preventDefault(); e.stopPropagation();
-      const m = (window.DATA||[]).find(x=>x.id===id);
-      if(m) openFull(m);
+  function ensureFactsInModal(){
+    const card = $id('card');
+    if(!card) return;
+    let factsWrap = $id('factsWrap');
+    let factsImg  = $id('factsImg');
+    if(!factsWrap){
+      factsWrap = document.createElement('div');
+      factsWrap.id = 'factsWrap';
+      factsWrap.className = 'facts';
+      factsImg = document.createElement('img');
+      factsImg.id = 'factsImg';
+      factsImg.alt = '';
+      factsWrap.appendChild(factsImg);
+    }
+    if(factsWrap.parentElement !== card){
+      const firstPanel = card.querySelector('.panel');
+      card.insertBefore(factsWrap, firstPanel || card.firstChild);
+    }
+    // rimuovi eventuali facts legacy fuori dalla modal
+    document.querySelectorAll('body > .facts, #sheet .facts').forEach(n=>{
+      if(n !== factsWrap) n.remove();
     });
-    bar.appendChild(btn);
-  });
-}
+    return {factsWrap, factsImg};
+  }
 
-/* 4) Hook: patcha openFull per forzare card+nav giusti e scroll top */
-const _openFull = openFull;
-openFull = function(m){
-  ensureFactsInModal();
-  _openFull(m);            // render contenuti standard (titolo, meta, bullets, docs)
-  buildNavMin(m.id);       // rigenera nav corretta
-  loadCardFor(m.id);       // carica SOLO la card del ministero selezionato
-  cardEl.scrollTop = 0;    // porta la modal in cima
-};
+  let loadSeq = 0;
+  function loadCardFor(id){
+    const {factsWrap, factsImg} = ensureFactsInModal() || {};
+    if(!factsWrap || !factsImg) return;
+    factsWrap.hidden = true;
+    factsImg.removeAttribute('src');
+    const seq = ++loadSeq;
+    const exts = ['png','jpg','webp'];
+    let i = 0;
+    (function tryNext(){
+      if(seq !== loadSeq) return;
+      if(i >= exts.length){ factsWrap.hidden = true; return; }
+      const src = `/dms-gemello-news/landing/cards/${id}.${exts[i++]}`;
+      const probe = new Image();
+      probe.onload  = ()=>{ if(seq!==loadSeq) return; factsImg.src = src + `?t=${Date.now()}`; factsWrap.hidden = false; };
+      probe.onerror = tryNext;
+      probe.src = src + `?t=${Date.now()}`;
+    })();
+  }
+
+  function buildNavMin(currentId){
+    let bar = $id('minLinks');
+    if(!bar){
+      // crea la barra se manca (compat)
+      bar = document.createElement('div');
+      bar.id = 'minLinks';
+      bar.className = 'min-links';
+      const titleRow = $id('titleRow') || $id('card'); // posizionamento conservativo
+      (titleRow || document.body).appendChild(bar);
+    }
+    bar.innerHTML = '';
+    const ids = (window.SHOW && window.SHOW.length ? window.SHOW
+                : (window.DATA || []).map(x=>x.id)); // fallback: tutti
+    ids.forEach(id=>{
+      const m = (window.DATA||[]).find(x=>x.id===id);
+      if(!m) return;
+      const btn = document.createElement('button');
+      btn.className = 'chip nav';
+      btn.textContent = (m.short || m.nome || id).toUpperCase();
+      if(id === currentId) btn.disabled = true;
+      btn.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openFull(m); });
+      bar.appendChild(btn);
+    });
+  }
+
+  function install(){
+    // 1) forza linee ON e ridisegna
+    document.documentElement.dataset.lines = 'on';
+    (window.redraw || window.draw || function(){})();
+    // 2) patch openFull in modo sicuro
+    const _openFull = window.openFull;
+    window.openFull = function(m){
+      ensureFactsInModal();
+      _openFull(m);
+      buildNavMin(m.id);
+      loadCardFor(m.id);
+      const card = $id('card'); if(card) card.scrollTop = 0;
+    };
+  }
+
+  // esecuzione sicura: attende core pronto senza crashare lo script
+  if(ready()){ install(); }
+  else {
+    const t0 = Date.now();
+    const timer = setInterval(()=>{
+      if(ready()){ clearInterval(timer); install(); }
+      else if(Date.now() - t0 > 6000){ clearInterval(timer); /* rinuncia silenziosa */ }
+    }, 40);
+  }
+})();
 </script>
 </body>
 </html>
