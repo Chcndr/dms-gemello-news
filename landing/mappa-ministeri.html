@@ -537,6 +537,13 @@ document.getElementById('btn-auto')?.addEventListener('change', e => {
 });
 
 // --- Scheda fullscreen ---
+// --- NAV estesa in ordine preferito ---
+const NAV_IDS = [
+  'mef','interno','mimit','mase','mit','salute',
+  'maeci','agid','pagopa','ae','adm',
+  'mic','turismo','masaf','mim','lavoro'
+];
+
 const modal   = document.getElementById('modal');
 const head    = document.getElementById('sheetHead');
 const body    = document.getElementById('sheetBody');
@@ -555,32 +562,48 @@ const factsImg  = document.getElementById('factsImg');
 document.getElementById('close').onclick = () => modal.style.display = 'none';
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.style.display='none'; });
 
+// loader scheda: cerca prima PNG poi JPG
 function tryLoadFacts(id){
-  // carica immagine scheda se esiste: /landing/cards/<id>.png | .jpg
-  const candidates = [
-    `/dms-gemello-news/landing/cards/${id}.png`,
-    `/dms-gemello-news/landing/cards/${id}.jpg`
-  ];
-  let i=0;
-  const loadNext = () => {
-    if(i>=candidates.length){ factsWrap.hidden = true; return; }
-    factsImg.onload = () => { factsWrap.hidden = false; };
-    factsImg.onerror = () => { i++; loadNext(); };
-    factsImg.src = candidates[i];
-  };
-  loadNext();
+  const box = document.getElementById('factsWrap');
+  const img = document.getElementById('factsImg');
+  if(!box || !img) return;
+  const base = `/dms-gemello-news/landing/cards/${id}`;
+  // tenta png -> jpg
+  const test = (src) => new Promise(r => {
+    const i = new Image();
+    i.onload = () => r(src);
+    i.onerror = () => r(null);
+    i.src = src + (src.includes('?')?'':'') ;
+  });
+  (async ()=>{
+    const png = await test(base + '.png');
+    const jpg = png ? png : await test(base + '.jpg');
+    if(png || jpg){
+      img.src = png || jpg;
+      img.alt = id.toUpperCase();
+      box.hidden = false;
+    }else{
+      box.hidden = true;
+    }
+  })();
 }
 
+// nav chips dinamiche
 function buildNavMin(currentId){
-  navMin.innerHTML='';
-  const others = (window.DATA||[]).filter(x=>x.id!==currentId).slice(0,8);
-  others.forEach(m=>{
-    const b = document.createElement('button');
-    b.className = 'chip nav';
-    b.textContent = (m.nome||m.id).split('•')[0].trim();
-    b.onclick = () => openFull(m);
-    navMin.appendChild(b);
-  });
+  const box = document.getElementById('minLinks');
+  if(!box || !window.DATA) return;
+  box.innerHTML = '';
+  NAV_IDS
+    .filter(id => id !== currentId && window.DATA.some(d=>d.id===id))
+    .slice(0, 12)
+    .forEach(id=>{
+      const d = window.DATA.find(x=>x.id===id);
+      const b = document.createElement('button');
+      b.className = 'chip nav';
+      b.textContent = (d?.nome_short || d?.nome || id).replace(/\s+/g,' ').trim();
+      b.onclick = ()=>{ const m = window.DATA.find(x=>x.id===id); if(m) openFull(m); };
+      box.appendChild(b);
+    });
 }
 
 function openFull(m){
