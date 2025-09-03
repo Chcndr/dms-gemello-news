@@ -1,23 +1,19 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="utf-8" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="build" content="STABLE-20250903-MAP-LIVE">
 <title>Mappa Ministeri — sandbox</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="build" content="STABLE-20250903-MAP-LIVE" />
 <style>
   :root{
-    --ink:#e6ecee; --bg:#030a0c;
-    --stroke:#1e2a2e; --glass:#0f2024ee; --chip:#0b1d20; --accent:#14b8a6;
-    /* tile reattiva: da 148px a 220px */
-    --node: clamp(148px, 10.5vw, 220px);
-    --radius: 16px;
+    --ink: #e6ecee; --muted: #8fa3a8; --stroke: rgba(255,255,255,.08); --glass: rgba(15,32,36,.42); --chip: rgba(15,32,36,.68);
+    --node: clamp(148px, 10vw, 220px); --radius: 50%;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0;background:radial-gradient(60% 70% at 50% 12%, rgba(20,184,166,.10) 0%, transparent 60%), var(--bg); color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font:400 16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#0a1a1e;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
-  .nav{position:sticky;top:0;z-index:10;display:flex;gap:8px;align-items:center;padding:12px 16px;background:linear-gradient(180deg, rgba(7,24,28,.85) 0%, rgba(7,24,28,.35) 100%)}
+  .nav{position:sticky;top:0;z-index:1000;display:flex;gap:8px;align-items:center;padding:12px 16px;background:rgba(10,26,30,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--stroke)}
   .btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip);box-shadow:0 6px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06)}
   .btn:hover{outline:1px solid rgba(255,255,255,.06)}
   .title{margin-left:auto;margin-right:auto;font-weight:700;letter-spacing:.3px}
@@ -135,58 +131,39 @@
 <script>
 (async function(){
   // --- 1) Dati --------------------------------------------------------------
-  const DATA_URL = '/dms-gemello-news/landing/data/ministeri.json?v=2';
-  let DATA = [];
-  try{
-    const r = await fetch(DATA_URL, {cache:'no-store'}); DATA = await r.json();
-  }catch(e){ console.error('ministeri.json', e); }
+  // URL assoluto per evitare 404 su Pages
+  const JSON_URL = '/dms-gemello-news/landing/data/ministeri.json?v=4';
 
-  // mostriamo SOLO questi id (PDF pilastro)
-  const SHOW = ['pcm','mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm'];
-
-  // --- 2) Layout radiale ----------------------------------------------------
+  let DATA = [];                  // inizializzato, così i guard funzionano
+  let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
+  let phase=0, speed=0.0016, scale=1, rotating=true;
+  const SHOW = ['pcm','mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm']; // pilastro
   const stage = document.getElementById('stage');
-  const svg = document.getElementById('svg');
-  const W = stage.clientWidth, H = stage.clientHeight;
-  const cx = W/2, cy = H/2;
-  const R1 = Math.min(W,H)*0.30;   // raggio anello Ministeri
-  const R2 = Math.min(W,H)*0.42;   // raggio anello Enti/PA
-  const rings = [0,R1,R2];
 
-  // SVG rings + edges
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  const sNS = 'http://www.w3.org/2000/svg';
-  const g = document.createElementNS(sNS,'g');
-  [R1,R2].forEach(r=>{
-    const c = document.createElementNS(sNS,'circle');
-    c.setAttribute('class','ring'); c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r);
-    g.appendChild(c);
-  });
-  svg.appendChild(g);
+  // --- 2) Utilità sicure ----------------------------------------------------
+  function place(el,x,y){
+    // niente transform cumulativo: usiamo left/top + translate(-50%, -50%)
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+    el.style.transform = 'translate(-50%,-50%)';
+  }
+  function ellipseXY(rx,ry,a){ return [cx + rx*Math.cos(a), cy + ry*Math.sin(a)]; }
+  function jitter(i){ return (i%2? +0.06 : -0.06); }
 
-  // center node
-  const center = mkNode({id:'pcm', nome:'PCM · Presidenza del Consiglio', ring:0, tag:'Hub'});
-  place(center, cx, cy); center.classList.add('center'); stage.appendChild(center);
-
-  // filtra i ministeri in base alla whitelist
-  const ALL = DATA.filter(m => SHOW.includes(m.id));
-  const ring1 = ALL.filter(d => (d.ring||1) === 1);
-  const ring2 = ALL.filter(d => (d.ring||2) === 2);
-
-  distribute(ring1, R1, 'ring1');
-  distribute(ring2, R2, 'ring2');
-
-  function distribute(items, R, klass){
-    const n = items.length;
-    items.forEach((m, i)=>{
-      const ang = (i/n)*2*Math.PI - Math.PI/2;
-      const x = cx + R*Math.cos(ang), y = cy + R*Math.sin(ang);
-      const el = mkNode(m); el.classList.add(klass);
-      place(el, x, y); stage.appendChild(el);
-      drawEdge(cx, cy, x, y, m);
-    });
+  // --- 3) Layout ovale con fallback -----------------------------------------
+  function layout(){
+    const rect = stage.getBoundingClientRect();
+    cx = rect.width/2; cy = rect.height/2;
+    const S = Math.min(rect.width, rect.height);
+    // fallback sicuro su valori minimi
+    Rx1 = Math.max(60, S*0.36*scale);
+    Ry1 = Math.max(40, rect.height*0.28*scale);
+    Rx2 = Math.max(80, S*0.46*scale);
+    Ry2 = Math.max(50, rect.height*0.36*scale);
+    redraw();
   }
 
+  // --- 4) Distribuzione + redraw con guard ----------------------------------
   function mkNode(m){
     const el = document.createElement('div');
     el.className = 'node';
@@ -195,16 +172,78 @@
     el.addEventListener('click', ()=> openFull(m));
     return el;
   }
-  function place(el,x,y){ el.style.left=x+'px'; el.style.top=y+'px'; }
-  function drawEdge(x1,y1,x2,y2,m){
-    const line = document.createElementNS(sNS,'line');
-    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
-    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
-    line.setAttribute('class','edge'); line.dataset.id=m.id;
-    svg.appendChild(line);
+
+  function distribute(items, rx, ry, klass){
+    const n = items.length || 1;
+    items.forEach((m,i)=>{
+      const a = (i/n)*2*Math.PI + phase + jitter(i) - Math.PI/2;
+      const [x,y] = ellipseXY(rx, ry, a);
+      let el = document.querySelector(`.node[data-id="${m.id}"]`);
+      if(!el){ el = mkNode(m); stage.appendChild(el); }
+      el.classList.add(klass);
+      place(el, x, y);
+    });
   }
 
-  // --- 3) Scheda fullscreen -------------------------------------------------
+  function redraw(){
+    if(!Array.isArray(DATA) || DATA.length===0) return; // << guard anti-vuoto
+    const ALL = DATA.filter(m => SHOW.includes(m.id));
+    const ring1 = ALL.filter(d => (d.ring||1)===1);
+    const ring2 = ALL.filter(d => (d.ring||2)===2);
+    distribute(ring1, Rx1, Ry1, 'r1');
+    distribute(ring2, Rx2, Ry2, 'r2');
+  }
+
+  // --- 5) Animazione + interazioni ------------------------------------------
+  let raf;
+  function tick(){ if(rotating) phase += speed; redraw(); raf = requestAnimationFrame(tick); }
+
+  let dragging=false, lastX=0;
+  stage.addEventListener('pointerdown', e=>{ dragging=true; lastX=e.clientX; rotating=false; stage.setPointerCapture(e.pointerId); });
+  stage.addEventListener('pointermove', e=>{ if(!dragging) return; const dx=e.clientX-lastX; lastX=e.clientX; phase += dx/300; redraw(); });
+  stage.addEventListener('pointerup',   ()=>{ dragging=false; rotating=true; });
+  stage.addEventListener('wheel', e=>{ e.preventDefault(); scale = Math.min(1.6, Math.max(0.8, scale + (e.deltaY<0? 0.05:-0.05))); layout(); }, {passive:false});
+  window.addEventListener('resize', layout, {passive:true});
+
+  // --- 6) Bootstrap asincrono -----------------------------------------------
+  async function bootstrap(){
+    try{
+      const res = await fetch(JSON_URL, {cache:'no-store'});
+      DATA = await res.json();
+    }catch(err){
+      console.error('Errore caricamento ministeri.json', err);
+      DATA = [];
+    }
+    layout();                  // calcola ovali
+    cancelAnimationFrame(raf); // reset eventuali
+    tick();                    // avvia animazione
+
+    // deep-link dopo il caricamento
+    const id = new URLSearchParams(location.search).get('id');
+    if(id){
+      const m0 = DATA.find(m => m.id === id);
+      if(m0) setTimeout(()=>openFull(m0), 0);
+    }
+
+    // ricerca live
+    document.getElementById('q')?.addEventListener('input', e=>{
+      const v = e.target.value.toLowerCase().trim();
+      const hit = DATA.find(m => (m.nome||'').toLowerCase().includes(v) || m.id===v);
+      if(v && hit) openFull(hit);
+    });
+
+    // toggle controls
+    document.getElementById('auto')?.addEventListener('change', e => {
+      rotating = e.target.checked;
+    });
+
+    document.getElementById('lines')?.addEventListener('change', e => {
+      document.getElementById('svg').style.opacity = e.target.checked ? '1' : '0';
+    });
+  }
+  document.addEventListener('DOMContentLoaded', bootstrap);
+
+  // --- 7) Scheda fullscreen -------------------------------------------------
   const modal = document.getElementById('modal');
   const imgHero = modal.querySelector('.hero');
   const ttl = modal.querySelector('.ttl');
@@ -247,132 +286,6 @@
     });
   }
 
-  // --- 4) Sheet legacy (mantenuto per compatibilità) ----------------------
-  const sheet = document.getElementById('sheet');
-  function openSheet(m){
-    sheet.hidden = false;
-    sheet.querySelector('.ttl').textContent = m.nome || '';
-    sheet.querySelector('.meta').textContent = [
-      m.problema ? `Problema: ${m.problema}` : null,
-      m.soluzione? `Soluzione: ${m.soluzione}`: null,
-      m.risultati? `Risultati: ${m.risultati}`: null,
-      m.norme?    `Norme: ${m.norme}`: null
-    ].filter(Boolean).join(' • ');
-
-    // chips collegamenti
-    const chips = sheet.querySelector('.chips');
-    chips.innerHTML = '';
-    (m.collegamenti||[]).forEach(c=>{
-      const span = document.createElement('span');
-      span.className='chip';
-      span.innerHTML = `<span class="k">↗︎</span>${c}`;
-      chips.appendChild(span);
-    });
-
-    // documenti
-    const box = sheet.querySelector('.docs');
-    box.innerHTML='';
-    (m.docs||[]).forEach(d=>{
-      const a = document.createElement('a');
-      a.className='doc'; a.target='_top';
-      const spot = `/dms-gemello-news/#doc-${d.slug}`;
-      const pdf  = `/dms-gemello-news/docs/${d.slug}.pdf${d.page?`#page=${d.page}`:''}`;
-      if(d.open==='pdf'){ a.href = pdf; a.textContent = d.label || 'Apri PDF'; }
-      else { a.href = spot; a.textContent = d.label || 'Apri su Spot'; a.title='Apri scheda su Spot'; }
-      if(d.page && d.open!=='pdf'){ const s = document.createElement('small'); s.textContent = ` · pag ${d.page}`; a.appendChild(s); }
-      box.appendChild(a);
-    });
-  }
-
-  // ---- stato globale
-  let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
-  let phase=0, speed=0.0016;   // rad/frame
-  let scale=1, rotating=true;
-  const SHOW = ['pcm','mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm']; // solo pilastro PDF
-
-  // ---- util
-  function place(el,x,y){ el.style.transform=`translate(${x}px,${y}px)`; }
-  function ellipseXY(rx, ry, a){ return [cx + rx*Math.cos(a), cy + ry*Math.sin(a)]; }
-  function jitter(i){ return (i%2? +0.06 : -0.06); } // ~3.4° alternati
-
-  // ---- layout reattivo (ovale)
-  function layout(){
-    const rect = document.getElementById('stage').getBoundingClientRect();
-    cx=rect.width/2; cy=rect.height/2;
-    const S = Math.min(rect.width, rect.height);
-    Rx1 = S*0.36*scale;  Ry1 = rect.height*0.28*scale;   // anello interno
-    Rx2 = S*0.46*scale;  Ry2 = rect.height*0.36*scale;   // esterno
-    redraw();
-  }
-
-  // ---- posizionamento su ovale
-  function distribute(items, rx, ry, klass){
-    const n=items.length;
-    items.forEach((m,i)=>{
-      const a = (i/n)*2*Math.PI + phase + jitter(i) - Math.PI/2;
-      const [x,y] = ellipseXY(rx, ry, a);
-      const el = document.querySelector(`.node[data-id="${m.id}"]`) || mkNode(m);
-      el.classList.add(klass);
-      place(el, x, y);
-      if(!el.parentNode) stage.appendChild(el);
-    });
-  }
-
-  function redraw(){
-    const ALL = DATA.filter(m => SHOW.includes(m.id));
-    const ring1 = ALL.filter(d => (d.ring||1)===1);
-    const ring2 = ALL.filter(d => (d.ring||2)===2);
-    distribute(ring1, Rx1, Ry1, 'r1');
-    distribute(ring2, Rx2, Ry2, 'r2');
-  }
-
-  // ---- animazione
-  let raf;
-  function tick(){
-    if(rotating) phase += speed;
-    redraw();
-    raf = requestAnimationFrame(tick);
-  }
-
-  // ---- interazioni: drag rotate + wheel zoom
-  const stage = document.getElementById('stage');
-  let dragging=false, lastX=0;
-  stage.addEventListener('pointerdown', e=>{ dragging=true; lastX=e.clientX; rotating=false; stage.setPointerCapture(e.pointerId); });
-  stage.addEventListener('pointermove', e=>{ if(!dragging) return; const dx=e.clientX-lastX; lastX=e.clientX; phase += dx/300; redraw(); });
-  stage.addEventListener('pointerup',   ()=>{ dragging=false; rotating=true; });
-
-  stage.addEventListener('wheel', e=>{
-    e.preventDefault();
-    scale = Math.min(1.6, Math.max(0.8, scale + (e.deltaY<0? 0.05:-0.05)));
-    layout();
-  }, {passive:false});
-
-  // ---- deep-link all'avvio (?id=mef) e ricerca
-  const params = new URLSearchParams(location.search);
-  const startId = params.get('id');
-  if (startId) {
-    const m0 = DATA.find(m => m.id===startId);
-    if (m0) openFull(m0);
-  }
-  document.getElementById('q')?.addEventListener('input', e=>{
-    const v = e.target.value.toLowerCase().trim();
-    const hit = DATA.find(m => (m.nome||'').toLowerCase().includes(v) || m.id===v);
-    if(v && hit) openFull(hit);
-  });
-
-  // ---- boot
-  window.addEventListener('resize', layout, {passive:true});
-  layout();
-  cancelAnimationFrame(raf); tick();
-
-  // ---- toggle controls
-  document.getElementById('auto')?.addEventListener('change', e => {
-    rotating = e.target.checked;
-  });
-
-  document.getElementById('lines')?.addEventListener('change', e => {
-    document.getElementById('svg').style.opacity = e.target.checked ? '1' : '0';
-  });
 })();
 </script>
 </body>
