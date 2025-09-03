@@ -245,6 +245,42 @@ body{overflow:hidden;}
 /* Linee ON/OFF */
 :root[data-lines='off'] #links{opacity:0; transition:.3s}
 :root[data-lines='on']  #links{opacity:1; transition:.3s}
+
+/* tema esistente */
+:root { --ink:#e7fbf5; --chip:rgba(15,32,36,.84); --stroke:rgba(255,255,255,.12); }
+
+/* header "slot": colore come prima (chip scuro) */
+.sheet-head{
+  background:var(--chip);
+  color:var(--ink);
+  border:1px solid var(--stroke);
+  border-radius:14px 14px 0 0;
+  padding:12px 14px; display:flex; gap:12px; align-items:center;
+  box-shadow:0 10px 24px rgba(0,0,0,.28);
+}
+.sheet-head .ttl{margin:0; font:800 20px/1.2 system-ui;}
+.sheet-head .actions{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
+.min-links{display:flex; gap:6px; flex-wrap:wrap;}
+
+/* chip navigazione ministeri */
+.chip.nav{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border:1px dashed var(--stroke);
+  border-radius:999px; background:rgba(15,32,36,.62); color:var(--ink); opacity:.92;
+}
+
+/* body: contorno uguale, scheda "bianca" opzionale */
+.sheet-body{
+  border:1px solid var(--stroke); border-top:0;
+  border-radius:0 0 14px 14px;
+  background:#0f2024ee;  /* se preferisci bianca: #fff e color:#0b1416 */
+  color:var(--ink); padding:16px;
+  box-shadow:0 20px 48px rgba(0,0,0,.35);
+}
+
+/* sezione SCHEDA */
+.facts{margin:10px 0 12px;}
+.facts img{width:100%; height:auto; border-radius:12px; display:block;}
 </style>
 </head>
 <body>
@@ -288,6 +324,7 @@ body{overflow:hidden;}
         <div class="actions">
           <!-- btn dinamici SPOT/PDF -->
         </div>
+        <div id="minLinks" class="min-links"></div>
         <button id="close" class="btn x">✕</button>
       </div>
 
@@ -295,6 +332,11 @@ body{overflow:hidden;}
         <img class="hero" alt="" />
         <p class="meta"></p>
         <ul class="bullets"></ul>
+
+        <!-- SCHEDA ministeriale (auto) -->
+        <div id="factsWrap" class="facts" hidden>
+          <img id="factsImg" alt="" />
+        </div>
 
         <h4 style="margin:16px 0 6px">Documenti</h4>
         <div class="docs"></div>
@@ -483,6 +525,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* bootstrap */
 async function bootstrap(){
   try{ const r = await fetch(JSON_URL,{cache:'no-store'}); DATA = await r.json(); }catch(e){ DATA=[]; }
+  window.DATA = DATA; // rendi accessibile globalmente
   layout(); cancelAnimationFrame(raf); tick();
 }
 document.addEventListener('DOMContentLoaded', bootstrap);
@@ -499,20 +542,52 @@ const head    = document.getElementById('sheetHead');
 const body    = document.getElementById('sheetBody');
 const ttl     = head.querySelector('.ttl');
 const actions = head.querySelector('.actions');
+const navMin  = document.getElementById('minLinks');
+
 const imgHero = body.querySelector('.hero');
 const meta    = body.querySelector('.meta');
 const bullets = body.querySelector('.bullets');
 const docsBox = body.querySelector('.docs');
 
+const factsWrap = document.getElementById('factsWrap');
+const factsImg  = document.getElementById('factsImg');
+
 document.getElementById('close').onclick = () => modal.style.display = 'none';
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.style.display='none'; });
 
+function tryLoadFacts(id){
+  // carica immagine scheda se esiste: /landing/cards/<id>.png | .jpg
+  const candidates = [
+    `/dms-gemello-news/landing/cards/${id}.png`,
+    `/dms-gemello-news/landing/cards/${id}.jpg`
+  ];
+  let i=0;
+  const loadNext = () => {
+    if(i>=candidates.length){ factsWrap.hidden = true; return; }
+    factsImg.onload = () => { factsWrap.hidden = false; };
+    factsImg.onerror = () => { i++; loadNext(); };
+    factsImg.src = candidates[i];
+  };
+  loadNext();
+}
+
+function buildNavMin(currentId){
+  navMin.innerHTML='';
+  const others = (window.DATA||[]).filter(x=>x.id!==currentId).slice(0,8);
+  others.forEach(m=>{
+    const b = document.createElement('button');
+    b.className = 'chip nav';
+    b.textContent = (m.nome||m.id).split('•')[0].trim();
+    b.onclick = () => openFull(m);
+    navMin.appendChild(b);
+  });
+}
+
 function openFull(m){
   modal.style.display = 'flex';
-
   ttl.textContent = m.nome || '';
 
-  // Bottoni azione nello "slot" (SPOT/PDF)
+  // bottoni SPOT/PDF nello slot
   actions.innerHTML = '';
   (m.docs||[]).forEach(d=>{
     const a = document.createElement('a');
@@ -521,11 +596,11 @@ function openFull(m){
     const spot = `/dms-gemello-news/#doc-${d.slug}`;
     const pdf  = `/dms-gemello-news/docs/${d.slug}.pdf${d.page?`#page=${d.page}`:''}`;
     a.href = d.open==='pdf' ? pdf : spot;
-    a.textContent = d.label || (d.open==='pdf'?'Apri PDF':'Apri su Spot');
+    a.textContent = d.label || (d.open==='pdf' ? 'Apri PDF' : 'Apri su Spot');
     actions.appendChild(a);
   });
 
-  // Meta + bullets
+  // meta + bullets
   meta.textContent = [
     m.problema && `Problema: ${m.problema}`,
     m.soluzione && `Soluzione: ${m.soluzione}`,
@@ -536,9 +611,15 @@ function openFull(m){
   bullets.innerHTML = '';
   (m.punti||[]).forEach(t=>{ const li=document.createElement('li'); li.textContent=t; bullets.appendChild(li); });
 
-  // Hero (opzionale)
+  // hero opzionale
   if(m.hero){ imgHero.src=m.hero; imgHero.alt=m.alt||''; imgHero.style.display='block'; }
   else { imgHero.style.display='none'; }
+
+  // SCHEDA auto (se presente in /landing/cards/)
+  tryLoadFacts(m.id);
+
+  // bottoni altri ministeri
+  buildNavMin(m.id);
 }
 </script>
 </body>
