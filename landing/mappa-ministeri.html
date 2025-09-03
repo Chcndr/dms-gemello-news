@@ -289,6 +289,19 @@ body{overflow:hidden;}
   border:1px solid var(--stroke); border-radius:12px;
   background:#0f2024; /* tema esistente, NO verde */
 }
+
+/* v2.6.1: card sempre leggibile dentro modal */
+#card{ max-height:88vh; overflow:auto; }
+#card .facts{ margin:12px 0 10px; }
+#card .facts img{
+  display:block;
+  width:100%; height:auto;
+  max-height:62vh;          /* evita tagli su iPad */
+  object-fit:contain;
+  border:1px solid var(--stroke);
+  border-radius:12px;
+  background:#0f2024;       /* colore tema esistente */
+}
 </style>
 </head>
 <body>
@@ -648,6 +661,85 @@ function openFull(m){
   buildNavMin(m.id);
   loadCardFor(m.id);
 }
+
+/* ===== MAP v2.6.1 — NAV & CARD FIX ===== */
+const cardEl   = document.getElementById('card');
+let factsWrap  = document.getElementById('factsWrap');
+let factsImg   = document.getElementById('factsImg');
+
+/* 1) Garantisce che la card viva SEMPRE dentro la modal */
+function ensureFactsInModal(){
+  if(!factsWrap){
+    factsWrap = document.createElement('div');
+    factsWrap.id = 'factsWrap';
+    factsWrap.className = 'facts';
+    factsWrap.hidden = true;
+    factsImg = document.createElement('img');
+    factsImg.id = 'factsImg';
+    factsImg.alt = '';
+    factsWrap.appendChild(factsImg);
+  }
+  if(cardEl && factsWrap.parentElement !== cardEl){
+    // inserisci in alto dentro #card (prima del primo .panel se presente)
+    const firstPanel = cardEl.querySelector('.panel');
+    cardEl.insertBefore(factsWrap, firstPanel || cardEl.firstChild);
+  }
+  // rimuovi eventuali facts "legacy" fuori modal
+  document.querySelectorAll('body > .facts, #sheet .facts').forEach(n=>{
+    if(n !== factsWrap) n.remove();
+  });
+}
+ensureFactsInModal();
+
+/* 2) Loader robusto: niente fallback su card sbagliate, annulla caricamenti vecchi */
+let loadSeq = 0;
+function loadCardFor(id){
+  ensureFactsInModal();
+  factsWrap.hidden = true;
+  factsImg.removeAttribute('src');
+  const seq = ++loadSeq;
+  const exts = ['png','jpg','webp'];
+  let i = 0;
+  (function tryNext(){
+    if(seq !== loadSeq) return;                  // navigazione nuova → abort
+    if(i >= exts.length){ factsWrap.hidden = true; return; }
+    const src = `/dms-gemello-news/landing/cards/${id}.${exts[i++]}`;
+    const probe = new Image();
+    probe.onload  = ()=>{ if(seq!==loadSeq) return; factsImg.src = src; factsWrap.hidden = false; };
+    probe.onerror = tryNext;
+    probe.src = src + `?t=${Date.now()}`;        // cache-buster
+  })();
+}
+
+/* 3) Chips di navigazione: sempre e solo openFull(id) corretto */
+function buildNavMin(currentId){
+  const bar = document.getElementById('minLinks');
+  if(!bar) return;
+  bar.innerHTML = '';
+  (window.SHOW || []).forEach(id=>{
+    const btn = document.createElement('button');
+    btn.className = 'chip nav';
+    const label = (window.DATA||[]).find(x=>x.id===id)?.short || id;
+    btn.textContent = label.toUpperCase();
+    if(id === currentId) btn.disabled = true;
+    btn.addEventListener('click', (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      const m = (window.DATA||[]).find(x=>x.id===id);
+      if(m) openFull(m);
+    });
+    bar.appendChild(btn);
+  });
+}
+
+/* 4) Hook: patcha openFull per forzare card+nav giusti e scroll top */
+const _openFull = openFull;
+openFull = function(m){
+  ensureFactsInModal();
+  _openFull(m);            // render contenuti standard (titolo, meta, bullets, docs)
+  buildNavMin(m.id);       // rigenera nav corretta
+  loadCardFor(m.id);       // carica SOLO la card del ministero selezionato
+  cardEl.scrollTop = 0;    // porta la modal in cima
+};
 </script>
 </body>
 </html>
