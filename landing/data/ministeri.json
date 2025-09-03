@@ -148,6 +148,12 @@
    ],
    "docs":[
      {"label":"Carbon Credit DMS — Spot","slug":"carbon-credit-dms"}
-   ]}
+   ]},
+
+  {"id":"mic","nome":"MiC • Cultura","ring":2},
+  {"id":"turismo","nome":"Turismo","ring":2},
+  {"id":"masaf","nome":"MASAF • Agricoltura","ring":2},
+  {"id":"mim","nome":"MIM • Istruzione e Merito","ring":2},
+  {"id":"lavoro","nome":"Ministero del Lavoro","ring":2}
 ]
 
