@@ -281,6 +281,14 @@ body{overflow:hidden;}
 /* sezione SCHEDA */
 .facts{margin:10px 0 12px;}
 .facts img{width:100%; height:auto; border-radius:12px; display:block;}
+
+/* Scheda ministeriale integrata nella modal */
+#card .facts{ margin:12px 0 10px; padding:0; }
+#card .facts img{
+  display:block; width:100%; height:auto;
+  border:1px solid var(--stroke); border-radius:12px;
+  background:#0f2024; /* tema esistente, NO verde */
+}
 </style>
 </head>
 <body>
@@ -350,7 +358,7 @@ const JSON_URL = '/dms-gemello-news/landing/data/ministeri.json?v=7';
 let DATA = [];
 let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
 let phase=0, speed=0.0016, rotating=true;
-const SHOW = ['pcm','mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm'];
+const SHOW = ['mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm','mic','turismo','masaf','mim','lavoro'];
 
 // selettori viewport/stage/world
 const viewport=document.getElementById('viewport');
@@ -559,51 +567,49 @@ const docsBox = body.querySelector('.docs');
 const factsWrap = document.getElementById('factsWrap');
 const factsImg  = document.getElementById('factsImg');
 
+// Spostamento sicuro (se l'HTML avesse #factsWrap fuori)
+const cardEl = document.getElementById('card');
+if (cardEl && factsWrap && factsWrap.parentElement !== cardEl) {
+  cardEl.appendChild(factsWrap);
+}
+
 document.getElementById('close').onclick = () => modal.style.display = 'none';
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.style.display='none'; });
 
-// loader scheda: cerca prima PNG poi JPG
-function tryLoadFacts(id){
-  const box = document.getElementById('factsWrap');
-  const img = document.getElementById('factsImg');
-  if(!box || !img) return;
-  const base = `/dms-gemello-news/landing/cards/${id}`;
-  // tenta png -> jpg
-  const test = (src) => new Promise(r => {
-    const i = new Image();
-    i.onload = () => r(src);
-    i.onerror = () => r(null);
-    i.src = src + (src.includes('?')?'':'') ;
-  });
-  (async ()=>{
-    const png = await test(base + '.png');
-    const jpg = png ? png : await test(base + '.jpg');
-    if(png || jpg){
-      img.src = png || jpg;
-      img.alt = id.toUpperCase();
-      box.hidden = false;
-    }else{
-      box.hidden = true;
+// Loader immagine 1:1 (senza fallback errati)
+function loadCardFor(id){
+  if(!factsWrap || !factsImg){ return; }
+  const exts = ['png','jpg','webp'];
+  let i = 0, loaded = false;
+  function tryNext(){
+    if(i>=exts.length){
+      factsWrap.hidden = true; factsImg.removeAttribute('src'); return;
     }
-  })();
+    const src = `/dms-gemello-news/landing/cards/${id}.${exts[i++]}`;
+    const probe = new Image();
+    probe.onload = ()=>{ factsImg.src = src; factsWrap.hidden = false; };
+    probe.onerror = tryNext;
+    probe.src = src + `?t=${Date.now()}`; // cache-buster
+  }
+  tryNext();
 }
 
 // nav chips dinamiche
 function buildNavMin(currentId){
-  const box = document.getElementById('minLinks');
-  if(!box || !window.DATA) return;
-  box.innerHTML = '';
-  NAV_IDS
-    .filter(id => id !== currentId && window.DATA.some(d=>d.id===id))
-    .slice(0, 12)
-    .forEach(id=>{
-      const d = window.DATA.find(x=>x.id===id);
-      const b = document.createElement('button');
-      b.className = 'chip nav';
-      b.textContent = (d?.nome_short || d?.nome || id).replace(/\s+/g,' ').trim();
-      b.onclick = ()=>{ const m = window.DATA.find(x=>x.id===id); if(m) openFull(m); };
-      box.appendChild(b);
-    });
+  const bar = document.getElementById('minLinks');
+  if(!bar){ return; }
+  bar.innerHTML = '';
+  SHOW.forEach(id=>{
+    const btn = document.createElement('button');
+    btn.className = 'chip nav';
+    btn.textContent = id.toUpperCase();
+    if(id===currentId){ btn.disabled = true; }
+    btn.onclick = ()=>{
+      const m = (window.DATA||[]).find(x=>x.id===id);
+      if(m) openFull(m);
+    };
+    bar.appendChild(btn);
+  });
 }
 
 function openFull(m){
@@ -638,11 +644,9 @@ function openFull(m){
   if(m.hero){ imgHero.src=m.hero; imgHero.alt=m.alt||''; imgHero.style.display='block'; }
   else { imgHero.style.display='none'; }
 
-  // SCHEDA auto (se presente in /landing/cards/)
-  tryLoadFacts(m.id);
-
-  // bottoni altri ministeri
+  // Hook in openFull(m) - alla fine della funzione
   buildNavMin(m.id);
+  loadCardFor(m.id);
 }
 </script>
 </body>
