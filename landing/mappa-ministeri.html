@@ -314,8 +314,94 @@ body{overflow:hidden;}
 #card .facts{ margin:12px 0 10px; }
 #card .facts img{ display:block; width:100%; height:auto; max-height:62vh; object-fit:contain; }
 </style>
+
+<style id="v281-kill-css">
+/* v2.8.1 — forza SOLO modal, nascondi ogni legacy subito */
+#sheet, body > .facts, .modal-legacy { display:none !important; visibility:hidden !important; pointer-events:none !important; }
+#card{ max-height:88vh; overflow:auto; }
+#card .facts{ margin:12px 0 10px; }
+#card .facts img{ max-height:62vh; width:100%; height:auto; object-fit:contain; border-radius:12px; }
+</style>
 </head>
 <body>
+
+<script id="v281-boot">
+/* ===== MAP v2.8.1 — SOLO MODAL + NAV FIX + KILL LEGACY ===== */
+(()=>{ if (window.__MAP_V281) return; window.__MAP_V281 = true;
+
+  const IDS = ["mef","interno","mimit","mase","mit","salute","mic","turismo","masaf","mim","lavoro","maeci","agid","pagopa","ae","adm"];
+  const CARD_SRC = {}; // se nome file ≠ id, imposta qui es: CARD_SRC.adm="dogane-carbon"
+
+  const $ = (s, r=document)=>r.querySelector(s), $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+  const id = (x)=>document.getElementById(x);
+
+  /** rimuove subito ogni finestra/scheda legacy, anche se viene reinserita */
+  function nukeLegacy(){
+    $$("#sheet, body > .facts, .modal-legacy").forEach(n=>n.remove());
+  }
+  nukeLegacy();
+  new MutationObserver(nukeLegacy).observe(document.documentElement,{childList:true,subtree:true});
+
+  /** garantisce contenitore facts nell'unica modal #card */
+  function ensureFacts(){
+    const card = id("card"); if(!card) return null;
+    let wrap = id("factsWrap"), img = id("factsImg");
+    if(!wrap){ wrap = document.createElement("div"); wrap.id="factsWrap"; wrap.className="facts";
+      img = document.createElement("img"); img.id="factsImg"; img.alt=""; wrap.appendChild(img);
+    }
+    if(wrap.parentElement!==card){ const first = card.querySelector(".panel"); card.insertBefore(wrap, first||card.firstChild); }
+    return {wrap, img};
+  }
+
+  let seq=0;
+  function loadCard(mid){
+    const h = ensureFacts(); if(!h) return; const {wrap,img}=h; wrap.hidden=true; img.removeAttribute("src"); const me=++seq;
+    const base = (CARD_SRC[mid]||mid); const tries=[`${base}.webp`,`${base}.png`,`${base}.jpg`,"generica.webp","generica.png","generica.jpg"];
+    (function next(){ if(me!==seq) return; const f=tries.shift(); if(!f){ wrap.hidden=true; return; }
+      const src=`/dms-gemello-news/landing/cards/${f}?t=${Date.now()}`;
+      const p=new Image(); p.onload=()=>{ if(me!==seq) return; img.src=src; wrap.hidden=false; };
+      p.onerror=next; p.src=src;
+    })();
+  }
+
+  function buildNav(current){
+    let bar = id("minLinks");
+    if(!bar){ bar=document.createElement("div"); bar.id="minLinks"; bar.className="min-links"; id("card")?.prepend(bar); }
+    bar.innerHTML="";
+    (window.DATA||[]).forEach(m=>{
+      if(!IDS.includes(m.id)) return;
+      const b=document.createElement("button"); b.className="chip nav"; b.textContent=(m.short||m.nome||m.id).toUpperCase();
+      if(m.id===current) b.disabled=true;
+      b.onclick=(e)=>{ e.preventDefault(); e.stopPropagation(); window.openFull(m); };
+      bar.appendChild(b);
+    });
+  }
+
+  /** hook persistente su openFull: sempre ultimo, sempre attivo */
+  function hook(){
+    if(typeof window.openFull!=="function" || !Array.isArray(window.DATA) || !id("card")) return false;
+    const orig = window.openFull; if(orig.__v281) return true;
+    window.openFull = function(m){
+      nukeLegacy(); ensureFacts();
+      orig(m);
+      buildNav(m.id);
+      loadCard(m.id);
+      id("card")?.scrollTo({top:0,behavior:"instant"});
+      document.documentElement.dataset.lines="on";
+      (window.redraw||window.draw||function(){})();
+    };
+    window.openFull.__v281=true;
+    return true;
+  }
+
+  // tenta per 15s finché il core non è pronto (no errori, no blocchi)
+  const t0=Date.now(); const timer=setInterval(()=>{ if(hook()) clearInterval(timer); else if(Date.now()-t0>15000) clearInterval(timer); }, 60);
+
+  // ripristina visibilità linee/tasti comunque
+  document.documentElement.dataset.lines="on";
+})();
+</script>
+
   <div class="nav">
     <a class="btn" href="/dms-gemello-news/landing/home.html" target="_top">← Home</a>
     <a class="btn" href="/dms-gemello-news/" target="_top">📚 Spot</a>
