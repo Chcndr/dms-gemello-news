@@ -670,50 +670,77 @@ function openFull(m){
   loadCardFor(m.id);
 }
 
-/* ===== MAP v2.6.3 — CARD MAP + SAFE NAV/MODAL ===== */
+/* ===== MAP v2.6.5 — FORCE FACTS IN-MODAL + STABLE NAV + LINES ON ===== */
 (function(){
-  const CARD_SRC = {
-    mef:'mef', interno:'interno', mimit:'mimit', mase:'mase', mit:'mit',
-    salute:'salute', mic:'mic', turismo:'turismo', masaf:'masaf',
-    mim:'mim', lavoro:'lavoro',
-    maeci:'maeci', agid:'agid', pagopa:'pagopa', ae:'ae', adm:'adm'
-  };
-  // Ordine/insieme chip interni (16 voci)
-  window.SHOW = ['mef','interno','mimit','mase','mit','salute','mic','turismo','masaf','mim','lavoro','maeci','agid','pagopa','ae','adm'];
+  const IDS = ['mef','interno','mimit','mase','mit','salute','mic','turismo','masaf','mim','lavoro','maeci','agid','pagopa','ae','adm'];
 
-  function $id(x){return document.getElementById(x);}
+  function $id(x){ return document.getElementById(x); }
+  function ready(){ return Array.isArray(window.DATA) && typeof window.openFull==='function'; }
 
+  // crea/assicura contenitore scheda DENTRO la modal
   function ensureFactsInModal(){
     const card=$id('card'); if(!card) return null;
     let wrap=$id('factsWrap'), img=$id('factsImg');
-    if(!wrap){ wrap=document.createElement('div'); wrap.id='factsWrap'; wrap.className='facts'; img=document.createElement('img'); img.id='factsImg'; img.alt=''; wrap.appendChild(img); }
-    if(wrap.parentElement!==card){ const panel=card.querySelector('.panel'); card.insertBefore(wrap, panel||card.firstChild); }
-    document.querySelectorAll('body>.facts,#sheet .facts').forEach(n=>{ if(n!==wrap) n.remove(); });
+    if(!wrap){
+      wrap=document.createElement('div'); wrap.id='factsWrap'; wrap.className='facts';
+      img=document.createElement('img'); img.id='factsImg'; img.alt='';
+      wrap.appendChild(img);
+    }
+    if(wrap.parentElement!==card){
+      const first=card.querySelector('.panel'); card.insertBefore(wrap, first||card.firstChild);
+    }
     return {wrap,img};
   }
 
+  // sposta QUALSIASI scheda legacy (immagine sotto la finestra) dentro la modal
+  function moveLegacyCardIntoModal(){
+    const slot=ensureFactsInModal(); if(!slot) return;
+    const {wrap,img}=slot;
+
+    // candidati: immagini fuori dalla modal con path /landing/cards/
+    const cand=[...document.querySelectorAll('img[src*="/landing/cards/"]')].filter(n=>!wrap.contains(n));
+
+    // se non trovate, cerca figure/div che contengono un'immagine grande
+    const extra=[...document.querySelectorAll('body > .facts img, #sheet .facts img')].filter(n=>!wrap.contains(n));
+    const all=[...cand, ...extra];
+    if(!all.length) return;
+
+    // prendi la prima visibile
+    const vis=all.find(n=>n.offsetParent!==null) || all[0];
+    img.src=vis.src; wrap.hidden=false;
+
+    // rimuovi contenitori legacy che tenevano l'immagine
+    let p=vis; for(let k=0;k<3;k++){ if(p && (p.classList?.contains('facts') || p.tagName==='SECTION' || p.tagName==='DIV')) p=p.parentElement; }
+    all.forEach(n=>{ const root=n.closest('.facts, section, div'); if(root && !root.closest('#card')) root.remove(); else if(n!==img) n.remove(); });
+  }
+
+  // loader opzionale da file (se presenti): prova webp→png→jpg
   let seq=0;
-  function loadCardFor(id){
-    const s=ensureFactsInModal(); if(!s) return;
-    const {wrap,img}=s; wrap.hidden=true; img.removeAttribute('src');
-    const name=CARD_SRC[id]||'generica';
-    const opts=[`${name}.webp`,`${name}.png`,`${name}.jpg`];
+  function tryLoadById(id){
+    const slot=ensureFactsInModal(); if(!slot) return;
+    const {wrap,img}=slot; wrap.hidden=true; img.removeAttribute('src');
+    const base=id; const cand=[`${base}.webp`,`${base}.png`,`${base}.jpg`];
     const my=++seq; let i=0;
     (function next(){
       if(my!==seq) return;
-      if(i>=opts.length){ wrap.hidden=true; return; }
-      const src=`/dms-gemello-news/landing/cards/${opts[i++]}`+`?t=${Date.now()}`;
+      if(i>=cand.length){ moveLegacyCardIntoModal(); return; }
+      const src=`/dms-gemello-news/landing/cards/${cand[i++]}`+`?t=${Date.now()}`;
       const probe=new Image();
-      probe.onload=()=>{ if(my!==seq) return; img.src=src; wrap.hidden=false; };
+      probe.onload=()=>{ if(my!==seq) return; img.src=src; wrap.hidden=false; cleanupLegacyOutside(); };
       probe.onerror=next; probe.src=src;
     })();
   }
 
+  function cleanupLegacyOutside(){
+    document.querySelectorAll('body>.facts, #sheet .facts').forEach(n=>n.remove());
+  }
+
+  // barra chip interna stabile
   function buildNavMin(currentId){
     let bar=$id('minLinks');
     if(!bar){ bar=document.createElement('div'); bar.id='minLinks'; bar.className='min-links'; ($id('titleRow')||$id('card')||document.body).appendChild(bar); }
     bar.innerHTML='';
-    window.SHOW.forEach(id=>{
+    IDS.forEach(id=>{
       const m=(window.DATA||[]).find(x=>x.id===id); if(!m) return;
       const b=document.createElement('button'); b.className='chip nav'; b.textContent=(m.short||m.nome||id).toUpperCase();
       if(id===currentId) b.disabled=true;
@@ -722,20 +749,36 @@ function openFull(m){
     });
   }
 
-  function ready(){ return Array.isArray(window.DATA)&&typeof window.openFull==='function'&&$id('card'); }
-
   function install(){
+    // ripristina linee
     document.documentElement.dataset.lines='on';
     (window.redraw||window.draw||function(){})();
+
+    // wrap openFull: scheda SEMPRE in-modal + chip corretti + scroll top
     const _open=window.openFull;
-    window.openFull=function(m){ ensureFactsInModal(); _open(m); buildNavMin(m.id); loadCardFor(m.id); const c=$id('card'); if(c) c.scrollTop=0; };
+    window.openFull=function(m){
+      ensureFactsInModal();
+      _open(m);
+      buildNavMin(m.id);
+      // doppio pass: prima prova assets, poi forza move legacy
+      tryLoadById(m.id);
+      setTimeout(moveLegacyCardIntoModal, 120);
+      const c=$id('card'); if(c) c.scrollTop=0;
+    };
+
+    // auto-fix se la modal viene ricreata dopo
+    new MutationObserver(()=>{ ensureFactsInModal(); cleanupLegacyOutside(); })
+      .observe(document.body,{childList:true,subtree:true});
   }
 
-  if(ready()) install();
-  else {
-    const t0=Date.now();
-    const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>6000){clearInterval(tm);} },40);
+  function boot(){
+    if(ready()) install();
+    else {
+      const t0=Date.now();
+      const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>15000){clearInterval(tm);} }, 40);
+    }
   }
+  boot();
 })();
 </script>
 </body>
