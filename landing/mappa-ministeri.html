@@ -76,16 +76,60 @@ a{color:inherit;text-decoration:none}
 :root[data-lines='off'] #links{ opacity:0; }
 
 /* foglio/scheda fullscreen */
-#modal{position:fixed; inset:0; background:rgba(3,10,12,.72); backdrop-filter:blur(6px);
-  display:none; align-items:center; justify-content:center; z-index:9999;}
-#card{width:min(1080px,92vw); max-height:88vh; overflow:auto;
-  background:#0f2024ee; border:1px solid var(--stroke); border-radius:18px; padding:18px;}
-#card .hero{width:100%; max-height:320px; object-fit:cover; border-radius:12px; margin-bottom:12px;}
-#card h2{margin:6px 0 8px}
-#card .grid{display:grid; grid-template-columns: 1.4fr 1fr; gap:16px;}
-#card .docs{display:flex; flex-wrap:wrap; gap:8px;}
-#close{position:sticky; top:0; float:right; margin:-6px -6px 6px 6px}
-@media (max-width: 900px){ #card .grid{grid-template-columns:1fr} }
+:root{
+  --slot:#22c55e;           /* verde slot */
+  --slot-ink:#072814;       /* testo su slot */
+  --sheet-brd:#22c55e;      /* stesso colore del contorno */
+}
+
+#modal{
+  position:fixed; inset:0; display:none;
+  align-items:flex-start;  /* spinge in alto */
+  justify-content:center;  z-index:9999;
+  padding:72px 16px 24px;  /* distanza top */
+  background:rgba(3,10,12,.72); backdrop-filter:blur(6px);
+}
+
+.sheet{width:min(1080px,92vw); background:transparent; border:0;}
+
+.sheet-head{
+  display:flex; gap:12px; align-items:center;
+  padding:12px 14px; border:1px solid var(--sheet-brd);
+  border-radius:14px 14px 0 0;
+  background:linear-gradient(180deg, rgba(34,197,94,.95), rgba(34,197,94,.90));
+  color:var(--slot-ink);
+  box-shadow:0 10px 24px rgba(0,0,0,.28);
+}
+.sheet-head .ttl{margin:0; font-size:20px; font-weight:800;}
+.sheet-head .actions{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
+.btn.cta{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:999px; border:1px solid rgba(0,0,0,.10);
+  background:#ffffff; color:#0b1416;
+}
+.btn.cta[href*="pdf"]::before{content:"📄";}
+.btn.cta[href*="#doc-"]::before{content:"🔗";}
+.btn.x{margin-left:8px; border:1px solid rgba(0,0,0,.2); background:rgba(255,255,255,.8); border-radius:999px; padding:6px 10px;}
+
+.sheet-body{
+  border:1px solid var(--sheet-brd); border-top:0;
+  border-radius:0 0 14px 14px;
+  background:#0f2024ee;            /* bianco se preferisci: #fff */
+  color:#e6f7ff;                    /* #0b1416 se sfondo bianco */
+  padding:16px; box-shadow:0 20px 48px rgba(0,0,0,.35);
+}
+.sheet-body .hero{
+  width:100%; max-height:320px; object-fit:cover; border-radius:12px; margin-bottom:12px; display:none;
+}
+.sheet-body .meta{opacity:.85; font-size:14px; margin:4px 0 12px;}
+.sheet-body .bullets{margin:0 0 12px 18px;}
+.sheet-body .docs{display:flex; flex-wrap:wrap; gap:8px;}
+.doc{display:inline-flex; padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06);}
+
+@media (max-width: 900px){
+  .sheet-head{flex-wrap:wrap;}
+  .sheet-head .actions{width:100%; justify-content:flex-start;}
+}
 
 .panel{margin-top:16px; padding:16px; border:1px solid var(--stroke); border-radius:12px; background:rgba(15,32,36,.42)}
 .panel h3{margin:0 0 8px}
@@ -238,19 +282,22 @@ body{overflow:hidden;}
 
   <!-- Fullscreen Sheet -->
   <div id="modal" aria-hidden="true">
-    <div id="card">
-      <button id="close" class="btn">✕ Chiudi</button>
-      <img class="hero" alt="" />
-      <h2 class="ttl"></h2>
-      <div class="grid">
-        <div>
-          <p class="meta"></p>
-          <ul class="bullets"></ul>
+    <div id="card" class="sheet">
+      <div id="sheetHead" class="sheet-head">
+        <h2 class="ttl">Titolo</h2>
+        <div class="actions">
+          <!-- btn dinamici SPOT/PDF -->
         </div>
-        <div>
-          <h4>Documenti</h4>
-          <div class="docs"></div>
-        </div>
+        <button id="close" class="btn x">✕</button>
+      </div>
+
+      <div id="sheetBody" class="sheet-body">
+        <img class="hero" alt="" />
+        <p class="meta"></p>
+        <ul class="bullets"></ul>
+
+        <h4 style="margin:16px 0 6px">Documenti</h4>
+        <div class="docs"></div>
       </div>
     </div>
   </div>
@@ -447,46 +494,51 @@ document.getElementById('btn-auto')?.addEventListener('change', e => {
 });
 
 // --- Scheda fullscreen ---
-const modal = document.getElementById('modal');
-const imgHero = modal.querySelector('.hero');
-const ttl = modal.querySelector('.ttl');
-const meta = modal.querySelector('.meta');
-const bullets = modal.querySelector('.bullets');
-const docsBox = modal.querySelector('.docs');
-document.getElementById('close').onclick = ()=> modal.style.display='none';
+const modal   = document.getElementById('modal');
+const head    = document.getElementById('sheetHead');
+const body    = document.getElementById('sheetBody');
+const ttl     = head.querySelector('.ttl');
+const actions = head.querySelector('.actions');
+const imgHero = body.querySelector('.hero');
+const meta    = body.querySelector('.meta');
+const bullets = body.querySelector('.bullets');
+const docsBox = body.querySelector('.docs');
+
+document.getElementById('close').onclick = () => modal.style.display = 'none';
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.style.display='none'; });
 
 function openFull(m){
   modal.style.display = 'flex';
+
   ttl.textContent = m.nome || '';
 
-  // breve linea descrittiva
-  meta.textContent = [
-    m.problema && `Problema: ${m.problema}`,
-    m.soluzione && `Soluzione: ${m.soluzione}`,
-    m.risultati && `Risultati: ${m.risultati}`
-  ].filter(Boolean).join(' • ');
-
-  // punti elenco (narrativa/valore)
-  bullets.innerHTML = '';
-  (m.punti||[]).forEach(t => {
-    const li = document.createElement('li'); li.textContent = t; bullets.appendChild(li);
-  });
-
-  // hero illustrata (se manca, nascondi)
-  if(m.hero){ imgHero.src = m.hero; imgHero.alt = m.alt || ''; imgHero.style.display='block'; }
-  else { imgHero.style.display='none'; }
-
-  // documenti (Spot o PDF diretto con #page)
-  docsBox.innerHTML='';
+  // Bottoni azione nello "slot" (SPOT/PDF)
+  actions.innerHTML = '';
   (m.docs||[]).forEach(d=>{
-    const a = document.createElement('a'); a.className='doc'; a.target='_top';
+    const a = document.createElement('a');
+    a.className = 'btn cta';
+    a.target = '_top';
     const spot = `/dms-gemello-news/#doc-${d.slug}`;
     const pdf  = `/dms-gemello-news/docs/${d.slug}.pdf${d.page?`#page=${d.page}`:''}`;
     a.href = d.open==='pdf' ? pdf : spot;
-    a.textContent = d.label || (d.open==='pdf' ? 'Apri PDF' : 'Apri su Spot');
-    if(d.page && d.open!=='pdf'){ const s=document.createElement('small'); s.textContent=` · pag ${d.page}`; a.appendChild(s); }
-    docsBox.appendChild(a);
+    a.textContent = d.label || (d.open==='pdf'?'Apri PDF':'Apri su Spot');
+    actions.appendChild(a);
   });
+
+  // Meta + bullets
+  meta.textContent = [
+    m.problema && `Problema: ${m.problema}`,
+    m.soluzione && `Soluzione: ${m.soluzione}`,
+    m.risultati && `Risultati: ${m.risultati}`,
+    m.ecosistema && `Ecosistema: ${m.ecosistema}`
+  ].filter(Boolean).join(' • ');
+
+  bullets.innerHTML = '';
+  (m.punti||[]).forEach(t=>{ const li=document.createElement('li'); li.textContent=t; bullets.appendChild(li); });
+
+  // Hero (opzionale)
+  if(m.hero){ imgHero.src=m.hero; imgHero.alt=m.alt||''; imgHero.style.display='block'; }
+  else { imgHero.style.display='none'; }
 }
 </script>
 </body>
