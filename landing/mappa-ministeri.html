@@ -15,7 +15,7 @@
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
-body{font:400 16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#0a1a1e;overflow-x:hidden}
+body{font:400 16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#0a1a1e;overflow-x:hidden;touch-action:manipulation}
 a{color:inherit;text-decoration:none}
 .nav{position:sticky;top:0;z-index:1000;display:flex;gap:8px;align-items:center;padding:12px 16px;background:rgba(10,26,30,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--stroke)}
 .btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip);box-shadow:0 6px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06)}
@@ -23,8 +23,10 @@ a{color:inherit;text-decoration:none}
 .title{margin-left:auto;margin-right:auto;font-weight:700;letter-spacing:.3px}
 .wrap{max-width:1280px;margin:0 auto;padding:0 16px 48px}
 
-#stageWrap{ height: 74vh; position:relative;border:1px solid var(--stroke);border-radius:16px;padding:12px;background:radial-gradient(60% 70% at 50% 12%, rgba(20,184,166,.08) 0%, transparent 60%); }
-#stage{ position: relative; height:100%; min-height:520px; border-radius:12px; overflow:hidden}
+#stageWrap{ height: 74vh; position:relative;border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:12px;background:radial-gradient(60% 70% at 50% 12%, rgba(20,184,166,.08) 0%, transparent 60%); }
+#stage{ position: relative; height:100%; min-height:520px; border-radius:12px; overflow:hidden; touch-action: none; }
+#viewport{ position: absolute; inset: 0; }
+#world{ position: absolute; inset: 0; transform-origin: center center; transition: transform 0.1s ease-out; }
 
 /* TILE QUADRATI allineati come Home */
 .node{
@@ -40,8 +42,8 @@ a{color:inherit;text-decoration:none}
 }
 .node .label{
   font-weight:800; line-height:1.15; letter-spacing:.2px;
-  font-size: clamp(13px,1.05vw,18px);
-  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+  font-size: clamp(15px,1.25vw,20px);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
   overflow:hidden; text-wrap:balance;
 }
 /* rimuoviamo la sottoscritta "Agenzia/Ministero" */
@@ -72,8 +74,9 @@ a{color:inherit;text-decoration:none}
 }
 
 /* LINEE su canvas: visibilità */
-#links{position:absolute; inset:0; pointer-events:none;}
-:root[data-lines='off'] #links{ opacity:0; }
+#links{position:absolute; inset:0; pointer-events:none; will-change: transform;}
+:root[data-lines='off'] #links{ opacity:0; transition: opacity 0.3s ease; }
+:root[data-lines='on'] #links{ opacity:1; transition: opacity 0.3s ease; }
 
 /* foglio/scheda fullscreen */
 #modal{position:fixed; inset:0; background:rgba(3,10,12,.72); backdrop-filter:blur(6px);
@@ -120,7 +123,11 @@ a{color:inherit;text-decoration:none}
   <div class="wrap">
     <div id="stageWrap">
       <div id="stage" aria-label="Mappa radiale interattiva">
-        <canvas id="links"></canvas>
+        <div id="viewport">
+          <div id="world">
+            <canvas id="links"></canvas>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -195,13 +202,13 @@ function mkNode(m){
   return el;
 }
 
-function distribute(items, rx, ry, klass){
-  const n = items.length || 1;
-  items.forEach((m,i)=>{
+function distribute(all, rx, ry, klass){
+  const n = all.length; if(!n) return;
+  all.forEach((m,i)=>{
     const a = (i/n)*2*Math.PI + phase + jitter(i) - Math.PI/2;
     const [x,y] = ellipseXY(rx, ry, a);
     let el = document.querySelector(`.node[data-id="${m.id}"]`);
-    if(!el){ el = mkNode(m); stage.appendChild(el); }
+    if(!el){ el = mkNode(m); world.appendChild(el); }
     el.classList.add(klass);
     place(el, x, y);
   });
@@ -231,7 +238,7 @@ function redraw(){
   distribute(r2, Rx2, Ry2, 'r2');
   // centro
   let C = document.querySelector('.node.center');
-  if(!C){ C = document.createElement('div'); C.className='node center'; stage.appendChild(C); }
+  if(!C){ C = document.createElement('div'); C.className='node center'; world.appendChild(C); }
   place(C, cx, cy);
 
   drawLines(ALL);
@@ -241,28 +248,97 @@ function redraw(){
 let raf;
 function tick(){ if(rotating) phase += speed; redraw(); raf = requestAnimationFrame(tick); }
 
-/* drag + pinch-to-zoom */
-let dragging=false, lastX=0; const touches=new Map();
-stage.addEventListener('pointerdown', e=>{ touches.set(e.pointerId, e); stage.setPointerCapture(e.pointerId); if(touches.size===1){ dragging=true; lastX=e.clientX; rotating=false; }});
-stage.addEventListener('pointermove', e=>{
-  const prev = touches.get(e.pointerId); touches.set(e.pointerId, e);
-  if(touches.size===2){
-    const [a,b] = [...touches.values()];
-    const d0 = Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY);
-    if(!stage._d0){ stage._d0=d0; stage._s0=scale; }
-    scale = Math.min(1.8, Math.max(0.7, stage._s0 * (d0/stage._d0)));
-    layout(); return;
+/* variabili per zoom e pan */
+let scale = 1, translateX = 0, translateY = 0;
+const world = document.getElementById('world');
+
+function updateTransform() {
+  if (world) {
+    world.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
   }
-  if(dragging){ const dx=e.clientX-lastX; lastX=e.clientX; phase += dx/300; redraw(); }
+}
+
+/* drag + pinch-to-zoom migliorato per iPad */
+let dragging=false, lastX=0, lastY=0; 
+const touches=new Map();
+let initialDistance = 0, initialScale = 1;
+let initialTranslateX = 0, initialTranslateY = 0;
+
+stage.addEventListener('pointerdown', e=>{
+  e.preventDefault();
+  touches.set(e.pointerId, {x: e.clientX, y: e.clientY});
+  stage.setPointerCapture(e.pointerId);
+  
+  if(touches.size === 1){
+    dragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    rotating = false;
+    initialTranslateX = translateX;
+    initialTranslateY = translateY;
+  } else if(touches.size === 2) {
+    const touchArray = [...touches.values()];
+    initialDistance = Math.hypot(
+      touchArray[0].x - touchArray[1].x,
+      touchArray[0].y - touchArray[1].y
+    );
+    initialScale = scale;
+    dragging = false;
+  }
 });
-stage.addEventListener('pointerup', e=>{ touches.delete(e.pointerId); if(touches.size<2){ stage._d0=null; } dragging=false; rotating=true; });
+
+stage.addEventListener('pointermove', e=>{
+  e.preventDefault();
+  const prevTouch = touches.get(e.pointerId);
+  touches.set(e.pointerId, {x: e.clientX, y: e.clientY});
+  
+  if(touches.size === 2){
+    // Pinch-to-zoom
+    const touchArray = [...touches.values()];
+    const currentDistance = Math.hypot(
+      touchArray[0].x - touchArray[1].x,
+      touchArray[0].y - touchArray[1].y
+    );
+    
+    if(initialDistance > 0) {
+      const scaleChange = currentDistance / initialDistance;
+      scale = Math.min(2.5, Math.max(0.5, initialScale * scaleChange));
+      updateTransform();
+    }
+  } else if(dragging && touches.size === 1){
+    // Pan
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    translateX = initialTranslateX + dx;
+    translateY = initialTranslateY + dy;
+    updateTransform();
+    
+    // Rotazione per compatibilità
+    phase += dx / 300;
+    redraw();
+  }
+});
+
+stage.addEventListener('pointerup', e=>{
+  touches.delete(e.pointerId);
+  if(touches.size < 2){
+    initialDistance = 0;
+  }
+  if(touches.size === 0) {
+    dragging = false;
+    rotating = true;
+  }
+});
 
 /* toggle Linee (bottone con id="btn-lines") */
-document.getElementById('btn-lines')?.addEventListener('click', ()=>{
-  const on = document.documentElement.dataset.lines !== 'off';
-  document.documentElement.dataset.lines = on ? 'off' : 'on';
+document.getElementById('btn-lines')?.addEventListener('change', (e)=>{
+  const isChecked = e.target.checked;
+  document.documentElement.dataset.lines = isChecked ? 'on' : 'off';
   redraw();
 });
+
+// Inizializzazione stato linee
+document.documentElement.dataset.lines = 'on';
 
 /* toggle Auto-rotate */
 document.getElementById('btn-auto')?.addEventListener('change', e => {
@@ -296,7 +372,21 @@ q?.addEventListener('keydown', e=>{
 /* bootstrap */
 async function bootstrap(){
   try{ const r = await fetch(JSON_URL,{cache:'no-store'}); DATA = await r.json(); }catch(e){ DATA=[]; }
-  layout(); cancelAnimationFrame(raf); tick();
+  
+  // Inizializzazione elementi
+  const stage = document.getElementById('stage');
+  const world = document.getElementById('world');
+  const links = document.getElementById('links');
+  
+  if (!world || !stage || !links) {
+    console.error('Elementi mancanti per l\'inizializzazione');
+    return;
+  }
+  
+  layout(); 
+  cancelAnimationFrame(raf); 
+  tick();
+  
   const id = new URLSearchParams(location.search).get('id');
   if(id){ const m0 = DATA.find(m=>m.id===id); if(m0) setTimeout(()=>openFull(m0),0); }
 }
