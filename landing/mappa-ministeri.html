@@ -3,95 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build" content="STABLE-20250903-MAP-LIVE">
+<meta name="build" content="MAP-FIX-V2">
 <title>Mappa Ministeri — sandbox</title>
 <style>
-  :root{
-    --ink: #e6ecee; --muted: #8fa3a8; --stroke: rgba(255,255,255,.08); --glass: rgba(15,32,36,.42); --chip: rgba(15,32,36,.68);
-    --node: clamp(168px, 12vw, 240px); --radius: 18px;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font:400 16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#0a1a1e;overflow-x:hidden}
-  a{color:inherit;text-decoration:none}
-  .nav{position:sticky;top:0;z-index:1000;display:flex;gap:8px;align-items:center;padding:12px 16px;background:rgba(10,26,30,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--stroke)}
-  .btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip);box-shadow:0 6px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06)}
-  .btn:hover{outline:1px solid rgba(255,255,255,.06)}
-  .title{margin-left:auto;margin-right:auto;font-weight:700;letter-spacing:.3px}
-  .wrap{max-width:1280px;margin:0 auto;padding:0 16px 48px}
-  #stageWrap{position:relative;border:1px solid var(--stroke);border-radius:16px;padding:12px;background:radial-gradient(60% 70% at 50% 12%, rgba(20,184,166,.08) 0%, transparent 60%); height: 74vh;}
-  #stage{position:relative; height:100%; min-height:520px; border-radius:12px; overflow:hidden}
-  
-  /* tile ovale */
-  .node{
-    position:absolute; transform:translate(-50%,-50%);
-    width:var(--node); height:var(--node);
-    display:flex; align-items:center; justify-content:center; text-align:center;
-    padding:14px; border-radius:var(--radius);
-    background:rgba(15,32,36,.72); border:1px solid var(--stroke);
-    box-shadow:0 6px 18px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.06) inset;
-    cursor:pointer; user-select:none; will-change: transform;
-  }
-  .node:hover{ box-shadow:0 8px 22px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.10) inset; }
-  .node .label{font-weight:700; line-height:1.2}
-  .node .tag{display:block;margin-top:6px;opacity:.8}
-  
-  /* centro: icona palazzo con retro-illuminazione blu */
-  .node.center{
-    width: clamp(200px, 14vw, 280px);
-    height: clamp(200px, 14vw, 280px);
-    border:1px solid rgba(30,144,255,.35);
-    background:
-       radial-gradient(60% 70% at 50% 35%, rgba(30,144,255,.18) 0%, transparent 70%),
-       rgba(15,32,36,.80);
-    box-shadow:
-       0 0 0 1px rgba(255,255,255,.06) inset,
-       0 0 40px rgba(30,144,255,.25),
-       0 24px 60px rgba(0,0,0,.40);
-  }
-  .node.center .label, .node.center .tag{ display:none; }
-  .node.center::before{
-    content:""; position:absolute; inset:20%;
-    background:url('../img/ministero-center.png') center/contain no-repeat;
-    filter: drop-shadow(0 0 18px rgba(30,144,255,.45));
-    opacity:.95;
-  }
-  .node.center::after{
-    content:""; position:absolute; inset:-26%; border-radius:40%;
-    background:radial-gradient(60% 70% at 50% 35%, rgba(30,144,255,.22) 0%, transparent 65%);
-    filter: blur(16px); pointer-events:none;
-  }
-  
-  /* foglio/scheda fullscreen */
-  #modal{position:fixed; inset:0; background:rgba(3,10,12,.72); backdrop-filter:blur(6px);
-    display:none; align-items:center; justify-content:center; z-index:9999;}
-  #card{width:min(1080px,92vw); max-height:88vh; overflow:auto;
-    background:#0f2024ee; border:1px solid var(--stroke); border-radius:18px; padding:18px;}
-  #card .hero{width:100%; max-height:320px; object-fit:cover; border-radius:12px; margin-bottom:12px;}
-  #card h2{margin:6px 0 8px}
-  #card .grid{display:grid; grid-template-columns: 1.4fr 1fr; gap:16px;}
-  #card .docs{display:flex; flex-wrap:wrap; gap:8px;}
-  #close{position:sticky; top:0; float:right; margin:-6px -6px 6px 6px}
-  @media (max-width: 900px){ #card .grid{grid-template-columns:1fr} }
-  
-  #svg{position:absolute; inset:0; pointer-events:none}
-  .ring{fill:none; stroke:rgba(255,255,255,.06)}
-  .edge{stroke:rgba(20,184,166,.18); stroke-width:1}
-  .panel{margin-top:16px; padding:16px; border:1px solid var(--stroke); border-radius:12px; background:var(--glass)}
-  .panel h3{margin:0 0 8px}
-  .meta{color:var(--muted); font-size:14px; margin:2px 0 12px}
-  .chips{display:flex; flex-wrap:wrap; gap:8px}
-  .chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip)}
-  .chip .k{opacity:.65}
-  .docs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-  .doc{display:inline-flex;padding:8px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--chip)}
-  .doc small{opacity:.7;margin-left:6px}
-  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
-  .switch{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px dashed var(--stroke);border-radius:999px;opacity:.9}
-  .legend{margin-top:8px; font-size:13px; color:var(--muted)}
-  @media (max-width:720px){
-    .node{width:calc(var(--node) * 0.8); height:calc(var(--node) * 0.8)}
-    #stage{height:64vh; min-height:480px}
-  }
+:root{
+  --node: clamp(176px, 12.5vw, 256px);
+  --radius: 18px;
+  --ink: #e7fbf5;
+  --chip: rgba(15,32,36,.76);
+  --stroke: rgba(255,255,255,.10);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:400 16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#0a1a1e;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.nav{position:sticky;top:0;z-index:1000;display:flex;gap:8px;align-items:center;padding:12px 16px;background:rgba(10,26,30,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--stroke)}
+.btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip);box-shadow:0 6px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06)}
+.btn:hover{outline:1px solid rgba(255,255,255,.06)}
+.title{margin-left:auto;margin-right:auto;font-weight:700;letter-spacing:.3px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px 48px}
+
+#stageWrap{ height: 74vh; position:relative;border:1px solid var(--stroke);border-radius:16px;padding:12px;background:radial-gradient(60% 70% at 50% 12%, rgba(20,184,166,.08) 0%, transparent 60%); }
+#stage{ position: relative; height:100%; min-height:520px; border-radius:12px; overflow:hidden}
+
+/* TILE QUADRATI allineati come Home */
+.node{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:var(--node); height:var(--node);
+  padding:16px; border-radius:var(--radius);
+  background: var(--chip);
+  border:1px solid var(--stroke);
+  box-shadow:0 6px 18px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.06) inset;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; color:var(--ink);
+  user-select:none;
+}
+.node .label{
+  font-weight:800; line-height:1.15; letter-spacing:.2px;
+  font-size: clamp(13px,1.05vw,18px);
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+  overflow:hidden; text-wrap:balance;
+}
+/* rimuoviamo la sottoscritta "Agenzia/Ministero" */
+.node .tag{ display:none !important; }
+
+/* NODO CENTRALE: logo con glow blu, niente quadro sopra */
+.node.center{
+  width: clamp(220px, 15vw, 300px);
+  height: clamp(220px, 15vw, 300px);
+  background: rgba(15,32,36,.84);
+  border:1px solid rgba(30,144,255,.35);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.06) inset,
+    0 0 40px rgba(30,144,255,.22),
+    0 24px 60px rgba(0,0,0,.40);
+}
+.node.center .label,.node.center .tag{ display:none; }
+.node.center::before{
+  content:""; position:absolute; inset:18%;
+  background:url('../img/ministero-center.png') center/contain no-repeat;
+  z-index:1; filter:brightness(1.1) drop-shadow(0 0 18px rgba(30,144,255,.45));
+  opacity:.96;
+}
+.node.center::after{
+  content:""; position:absolute; inset:-26%; border-radius:40%;
+  background:radial-gradient(60% 70% at 50% 40%, rgba(30,144,255,.22) 0%, transparent 65%);
+  filter:blur(16px); pointer-events:none;
+}
+
+/* LINEE su canvas: visibilità */
+#links{position:absolute; inset:0; pointer-events:none;}
+:root[data-lines='off'] #links{ opacity:0; }
+
+/* foglio/scheda fullscreen */
+#modal{position:fixed; inset:0; background:rgba(3,10,12,.72); backdrop-filter:blur(6px);
+  display:none; align-items:center; justify-content:center; z-index:9999;}
+#card{width:min(1080px,92vw); max-height:88vh; overflow:auto;
+  background:#0f2024ee; border:1px solid var(--stroke); border-radius:18px; padding:18px;}
+#card .hero{width:100%; max-height:320px; object-fit:cover; border-radius:12px; margin-bottom:12px;}
+#card h2{margin:6px 0 8px}
+#card .grid{display:grid; grid-template-columns: 1.4fr 1fr; gap:16px;}
+#card .docs{display:flex; flex-wrap:wrap; gap:8px;}
+#close{position:sticky; top:0; float:right; margin:-6px -6px 6px 6px}
+@media (max-width: 900px){ #card .grid{grid-template-columns:1fr} }
+
+.panel{margin-top:16px; padding:16px; border:1px solid var(--stroke); border-radius:12px; background:rgba(15,32,36,.42)}
+.panel h3{margin:0 0 8px}
+.meta{color:#8fa3a8; font-size:14px; margin:2px 0 12px}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip)}
+.chip .k{opacity:.65}
+.docs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.doc{display:inline-flex;padding:8px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--chip)}
+.doc small{opacity:.7;margin-left:6px}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.switch{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px dashed var(--stroke);border-radius:999px;opacity:.9}
+.legend{margin-top:8px; font-size:13px; color:#8fa3a8}
+@media (max-width:720px){
+  .node{width:calc(var(--node) * 0.8); height:calc(var(--node) * 0.8)}
+  #stage{height:64vh; min-height:480px}
+}
 </style>
 </head>
 <body>
@@ -99,8 +110,8 @@
     <a class="btn" href="/dms-gemello-news/landing/home.html" target="_top">← Home</a>
     <a class="btn" href="/dms-gemello-news/" target="_top">📚 Spot</a>
     <div class="controls">
-      <label class="switch"><input id="auto" type="checkbox" checked> Auto-rotate</label>
-      <label class="switch"><input id="lines" type="checkbox" checked> Linee</label>
+      <label class="switch"><input id="btn-auto" type="checkbox" checked> Auto-rotate</label>
+      <label class="switch"><input id="btn-lines" type="checkbox" checked> Linee</label>
       <input id="q" placeholder="Cerca ministero…" style="margin-left:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--chip);color:var(--ink);">
     </div>
     <div class="title">Mappa Ministeri (sandbox)</div>
@@ -108,8 +119,9 @@
 
   <div class="wrap">
     <div id="stageWrap">
-      <svg id="svg" viewBox="0 0 1000 680" preserveAspectRatio="none" aria-hidden="true"></svg>
-      <div id="stage" aria-label="Mappa radiale interattiva"></div>
+      <div id="stage" aria-label="Mappa radiale interattiva">
+        <canvas id="links"></canvas>
+      </div>
     </div>
 
     <div id="sheet" class="panel" hidden>
@@ -142,169 +154,197 @@
   </div>
 
 <script>
-(async function(){
-  // --- 1) Dati --------------------------------------------------------------
-  // URL assoluto per evitare 404 su Pages
-  const JSON_URL = '/dms-gemello-news/landing/data/ministeri.json?v=4';
+/* Config & stato */
+const JSON_URL = '/dms-gemello-news/landing/data/ministeri.json?v=6';
+let DATA = [];
+let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
+let phase=0, speed=0.0016, scale=1, rotating=true;
+const SHOW = ['pcm','mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm'];
+const stage = document.getElementById('stage');
+const links = document.getElementById('links');
+document.documentElement.dataset.lines = 'on';
 
-  let DATA = [];                  // inizializzato, così i guard funzionano
-  let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
-  let phase=0, speed=0.0016, scale=1, rotating=true;
-  const SHOW = ['pcm','mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm']; // pilastro
-  const stage = document.getElementById('stage');
+/* utilità */
+function place(el,x,y){ el.style.left=x+'px'; el.style.top=y+'px'; el.style.transform='translate(-50%,-50%)'; }
+function ellipseXY(rx,ry,a){ return [cx + rx*Math.cos(a), cy + ry*Math.sin(a)]; }
+function jitter(i){ return (i%2 ? +0.06 : -0.06); }
 
-  // --- 2) Utilità sicure ----------------------------------------------------
-  function place(el,x,y){
-    // niente transform cumulativo: usiamo left/top + translate(-50%, -50%)
-    el.style.left = x + 'px';
-    el.style.top  = y + 'px';
-    el.style.transform = 'translate(-50%,-50%)';
+/* layout */
+function layout(){
+  const rect = stage.getBoundingClientRect();
+  cx = rect.width/2; cy = rect.height/2;
+  const S = Math.min(rect.width, rect.height);
+  Rx1 = Math.max(60, S*0.36*scale);
+  Ry1 = Math.max(40, rect.height*0.28*scale);
+  Rx2 = Math.max(80, S*0.46*scale);
+  Ry2 = Math.max(50, rect.height*0.36*scale);
+
+  // ridimensiona canvas linee
+  links.width = rect.width; links.height = rect.height;
+
+  redraw();
+}
+
+/* nodo base: SOLO etichetta (niente tag) */
+function mkNode(m){
+  const el = document.createElement('div');
+  el.className = 'node';
+  el.dataset.id = m.id;
+  el.innerHTML = `<div class="label">${m.nome}</div>`;
+  el.addEventListener('click', ()=> openFull(m));
+  return el;
+}
+
+function distribute(items, rx, ry, klass){
+  const n = items.length || 1;
+  items.forEach((m,i)=>{
+    const a = (i/n)*2*Math.PI + phase + jitter(i) - Math.PI/2;
+    const [x,y] = ellipseXY(rx, ry, a);
+    let el = document.querySelector(`.node[data-id="${m.id}"]`);
+    if(!el){ el = mkNode(m); stage.appendChild(el); }
+    el.classList.add(klass);
+    place(el, x, y);
+  });
+}
+
+/* disegno linee */
+function drawLines(all){
+  const ctx = links.getContext('2d');
+  ctx.clearRect(0,0,links.width,links.height);
+  if(document.documentElement.dataset.lines === 'off') return;
+  ctx.strokeStyle = 'rgba(134,239,172,.22)';
+  ctx.lineWidth = 1.2;
+  all.forEach(m=>{
+    const el = document.querySelector(`.node[data-id="${m.id}"]`);
+    if(!el) return;
+    const x = parseFloat(el.style.left), y = parseFloat(el.style.top);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke();
+  });
+}
+
+function redraw(){
+  if(!DATA.length) return;
+  const ALL = DATA.filter(m => SHOW.includes(m.id));
+  const r1 = ALL.filter(d => (d.ring||1)==1);
+  const r2 = ALL.filter(d => (d.ring||2)==2);
+  distribute(r1, Rx1, Ry1, 'r1');
+  distribute(r2, Rx2, Ry2, 'r2');
+  // centro
+  let C = document.querySelector('.node.center');
+  if(!C){ C = document.createElement('div'); C.className='node center'; stage.appendChild(C); }
+  place(C, cx, cy);
+
+  drawLines(ALL);
+}
+
+/* animazione */
+let raf;
+function tick(){ if(rotating) phase += speed; redraw(); raf = requestAnimationFrame(tick); }
+
+/* drag + pinch-to-zoom */
+let dragging=false, lastX=0; const touches=new Map();
+stage.addEventListener('pointerdown', e=>{ touches.set(e.pointerId, e); stage.setPointerCapture(e.pointerId); if(touches.size===1){ dragging=true; lastX=e.clientX; rotating=false; }});
+stage.addEventListener('pointermove', e=>{
+  const prev = touches.get(e.pointerId); touches.set(e.pointerId, e);
+  if(touches.size===2){
+    const [a,b] = [...touches.values()];
+    const d0 = Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY);
+    if(!stage._d0){ stage._d0=d0; stage._s0=scale; }
+    scale = Math.min(1.8, Math.max(0.7, stage._s0 * (d0/stage._d0)));
+    layout(); return;
   }
-  function ellipseXY(rx,ry,a){ return [cx + rx*Math.cos(a), cy + ry*Math.sin(a)]; }
-  function jitter(i){ return (i%2? +0.06 : -0.06); }
+  if(dragging){ const dx=e.clientX-lastX; lastX=e.clientX; phase += dx/300; redraw(); }
+});
+stage.addEventListener('pointerup', e=>{ touches.delete(e.pointerId); if(touches.size<2){ stage._d0=null; } dragging=false; rotating=true; });
 
-  // --- 3) Layout ovale con fallback -----------------------------------------
-  function layout(){
-    const rect = stage.getBoundingClientRect();
-    cx = rect.width/2; cy = rect.height/2;
-    const S = Math.min(rect.width, rect.height);
-    // fallback sicuro su valori minimi
-    Rx1 = Math.max(60, S*0.36*scale);
-    Ry1 = Math.max(40, rect.height*0.28*scale);
-    Rx2 = Math.max(80, S*0.46*scale);
-    Ry2 = Math.max(50, rect.height*0.36*scale);
-    redraw();
-  }
+/* toggle Linee (bottone con id="btn-lines") */
+document.getElementById('btn-lines')?.addEventListener('click', ()=>{
+  const on = document.documentElement.dataset.lines !== 'off';
+  document.documentElement.dataset.lines = on ? 'off' : 'on';
+  redraw();
+});
 
-  // --- 4) Distribuzione + redraw con guard ----------------------------------
-  function mkNode(m){
-    const el = document.createElement('div');
-    el.className = 'node';
-    el.dataset.id = m.id;
-    el.innerHTML = `<div class="label">${m.nome}</div>${m.tag?`<span class="tag">${m.tag}</span>`:''}`;
-    el.addEventListener('click', ()=> openFull(m));
-    return el;
-  }
+/* toggle Auto-rotate */
+document.getElementById('btn-auto')?.addEventListener('change', e => {
+  rotating = e.target.checked;
+});
 
-  function distribute(items, rx, ry, klass){
-    const n = items.length || 1;
-    items.forEach((m,i)=>{
-      const a = (i/n)*2*Math.PI + phase + jitter(i) - Math.PI/2;
-      const [x,y] = ellipseXY(rx, ry, a);
-      let el = document.querySelector(`.node[data-id="${m.id}"]`);
-      if(!el){ el = mkNode(m); stage.appendChild(el); }
-      el.classList.add(klass);
-      place(el, x, y);
-    });
-  }
-
-  function redraw(){
-    if(!Array.isArray(DATA) || DATA.length===0) return; // << guard anti-vuoto
-    const ALL = DATA.filter(m => SHOW.includes(m.id));
-    const ring1 = ALL.filter(d => (d.ring||1)===1);
-    const ring2 = ALL.filter(d => (d.ring||2)===2);
-    distribute(ring1, Rx1, Ry1, 'r1');
-    distribute(ring2, Rx2, Ry2, 'r2');
-
-    // centro: palazzo fisso
-    let C = document.querySelector('.node.center');
-    if(!C){ C = document.createElement('div'); C.className='node center'; stage.appendChild(C); }
-    place(C, cx, cy);
-  }
-
-  // --- 5) Animazione + interazioni ------------------------------------------
-  let raf;
-  function tick(){ if(rotating) phase += speed; redraw(); raf = requestAnimationFrame(tick); }
-
-  let dragging=false, lastX=0;
-  stage.addEventListener('pointerdown', e=>{ dragging=true; lastX=e.clientX; rotating=false; stage.setPointerCapture(e.pointerId); });
-  stage.addEventListener('pointermove', e=>{ if(!dragging) return; const dx=e.clientX-lastX; lastX=e.clientX; phase += dx/300; redraw(); });
-  stage.addEventListener('pointerup',   ()=>{ dragging=false; rotating=true; });
-  stage.addEventListener('wheel', e=>{ e.preventDefault(); scale = Math.min(1.6, Math.max(0.8, scale + (e.deltaY<0? 0.05:-0.05))); layout(); }, {passive:false});
-  window.addEventListener('resize', layout, {passive:true});
-
-  // --- 6) Bootstrap asincrono -----------------------------------------------
-  async function bootstrap(){
-    try{
-      const res = await fetch(JSON_URL, {cache:'no-store'});
-      DATA = await res.json();
-    }catch(err){
-      console.error('Errore caricamento ministeri.json', err);
-      DATA = [];
+/* ricerca soft (input id="q"): filtra, non apre la scheda finché non premi Invio */
+const q = document.getElementById('q');
+q?.addEventListener('input', ()=>{
+  const v = q.value.trim().toLowerCase();
+  document.querySelectorAll('.node').forEach(n=>{
+    if(n.classList.contains('center')) return;
+    const hit = n.querySelector('.label').textContent.toLowerCase().includes(v);
+    n.style.opacity = v ? (hit?1:.18) : 1;
+    n.style.filter  = v && hit ? 'drop-shadow(0 0 16px rgba(30,144,255,.35))' : '';
+  });
+});
+q?.addEventListener('keydown', e=>{
+  if(e.key==='Enter'){
+    const v = q.value.trim().toLowerCase();
+    const hit = [...document.querySelectorAll('.node')]
+      .find(n=>!n.classList.contains('center') && n.querySelector('.label').textContent.toLowerCase().includes(v));
+    if(hit){
+      const id = hit.dataset.id;
+      const m = DATA.find(x=>x.id===id);
+      if(m) openFull(m);
     }
-    layout();                  // calcola ovali
-    cancelAnimationFrame(raf); // reset eventuali
-    tick();                    // avvia animazione
-
-    // deep-link dopo il caricamento
-    const id = new URLSearchParams(location.search).get('id');
-    if(id){
-      const m0 = DATA.find(m => m.id === id);
-      if(m0) setTimeout(()=>openFull(m0), 0);
-    }
-
-    // ricerca live
-    document.getElementById('q')?.addEventListener('input', e=>{
-      const v = e.target.value.toLowerCase().trim();
-      const hit = DATA.find(m => (m.nome||'').toLowerCase().includes(v) || m.id===v);
-      if(v && hit) openFull(hit);
-    });
-
-    // toggle controls
-    document.getElementById('auto')?.addEventListener('change', e => {
-      rotating = e.target.checked;
-    });
-
-    document.getElementById('lines')?.addEventListener('change', e => {
-      document.getElementById('svg').style.opacity = e.target.checked ? '1' : '0';
-    });
   }
-  document.addEventListener('DOMContentLoaded', bootstrap);
+});
 
-  // --- 7) Scheda fullscreen -------------------------------------------------
-  const modal = document.getElementById('modal');
-  const imgHero = modal.querySelector('.hero');
-  const ttl = modal.querySelector('.ttl');
-  const meta = modal.querySelector('.meta');
-  const bullets = modal.querySelector('.bullets');
-  const docsBox = modal.querySelector('.docs');
-  document.getElementById('close').onclick = ()=> modal.style.display='none';
+/* bootstrap */
+async function bootstrap(){
+  try{ const r = await fetch(JSON_URL,{cache:'no-store'}); DATA = await r.json(); }catch(e){ DATA=[]; }
+  layout(); cancelAnimationFrame(raf); tick();
+  const id = new URLSearchParams(location.search).get('id');
+  if(id){ const m0 = DATA.find(m=>m.id===id); if(m0) setTimeout(()=>openFull(m0),0); }
+}
+document.addEventListener('DOMContentLoaded', bootstrap);
+window.addEventListener('resize', layout, {passive:true});
 
-  function openFull(m){
-    modal.style.display = 'flex';
-    ttl.textContent = m.nome || '';
+// --- Scheda fullscreen ---
+const modal = document.getElementById('modal');
+const imgHero = modal.querySelector('.hero');
+const ttl = modal.querySelector('.ttl');
+const meta = modal.querySelector('.meta');
+const bullets = modal.querySelector('.bullets');
+const docsBox = modal.querySelector('.docs');
+document.getElementById('close').onclick = ()=> modal.style.display='none';
 
-    // breve linea descrittiva
-    meta.textContent = [
-      m.problema && `Problema: ${m.problema}`,
-      m.soluzione && `Soluzione: ${m.soluzione}`,
-      m.risultati && `Risultati: ${m.risultati}`
-    ].filter(Boolean).join(' • ');
+function openFull(m){
+  modal.style.display = 'flex';
+  ttl.textContent = m.nome || '';
 
-    // punti elenco (narrativa/valore)
-    bullets.innerHTML = '';
-    (m.punti||[]).forEach(t => {
-      const li = document.createElement('li'); li.textContent = t; bullets.appendChild(li);
-    });
+  // breve linea descrittiva
+  meta.textContent = [
+    m.problema && `Problema: ${m.problema}`,
+    m.soluzione && `Soluzione: ${m.soluzione}`,
+    m.risultati && `Risultati: ${m.risultati}`
+  ].filter(Boolean).join(' • ');
 
-    // hero illustrata (se manca, nascondi)
-    if(m.hero){ imgHero.src = m.hero; imgHero.alt = m.alt || ''; imgHero.style.display='block'; }
-    else { imgHero.style.display='none'; }
+  // punti elenco (narrativa/valore)
+  bullets.innerHTML = '';
+  (m.punti||[]).forEach(t => {
+    const li = document.createElement('li'); li.textContent = t; bullets.appendChild(li);
+  });
 
-    // documenti (Spot o PDF diretto con #page)
-    docsBox.innerHTML='';
-    (m.docs||[]).forEach(d=>{
-      const a = document.createElement('a'); a.className='doc'; a.target='_top';
-      const spot = `/dms-gemello-news/#doc-${d.slug}`;
-      const pdf  = `/dms-gemello-news/docs/${d.slug}.pdf${d.page?`#page=${d.page}`:''}`;
-      a.href = d.open==='pdf' ? pdf : spot;
-      a.textContent = d.label || (d.open==='pdf' ? 'Apri PDF' : 'Apri su Spot');
-      if(d.page && d.open!=='pdf'){ const s=document.createElement('small'); s.textContent=` · pag ${d.page}`; a.appendChild(s); }
-      docsBox.appendChild(a);
-    });
-  }
+  // hero illustrata (se manca, nascondi)
+  if(m.hero){ imgHero.src = m.hero; imgHero.alt = m.alt || ''; imgHero.style.display='block'; }
+  else { imgHero.style.display='none'; }
 
-})();
+  // documenti (Spot o PDF diretto con #page)
+  docsBox.innerHTML='';
+  (m.docs||[]).forEach(d=>{
+    const a = document.createElement('a'); a.className='doc'; a.target='_top';
+    const spot = `/dms-gemello-news/#doc-${d.slug}`;
+    const pdf  = `/dms-gemello-news/docs/${d.slug}.pdf${d.page?`#page=${d.page}`:''}`;
+    a.href = d.open==='pdf' ? pdf : spot;
+    a.textContent = d.label || (d.open==='pdf' ? 'Apri PDF' : 'Apri su Spot');
+    if(d.page && d.open!=='pdf'){ const s=document.createElement('small'); s.textContent=` · pag ${d.page}`; a.appendChild(s); }
+    docsBox.appendChild(a);
+  });
+}
 </script>
 </body>
 </html>
