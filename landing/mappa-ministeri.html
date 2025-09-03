@@ -8,7 +8,7 @@
 <style>
   :root{
     --ink: #e6ecee; --muted: #8fa3a8; --stroke: rgba(255,255,255,.08); --glass: rgba(15,32,36,.42); --chip: rgba(15,32,36,.68);
-    --node: clamp(148px, 10vw, 220px); --radius: 50%;
+    --node: clamp(168px, 12vw, 240px); --radius: 18px;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{font:400 16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#0a1a1e;overflow-x:hidden}
@@ -35,17 +35,30 @@
   .node .label{font-weight:700; line-height:1.2}
   .node .tag{display:block;margin-top:6px;opacity:.8}
   
-  /* centro: icona ministero con glow blu PA */
+  /* centro: icona palazzo con retro-illuminazione blu */
   .node.center{
-    border:1px solid rgba(20,184,166,.35);
-    background: radial-gradient(60% 70% at 50% 12%, rgba(30,144,255,.18) 0%, transparent 70%),
-                rgba(15,32,36,.78);
+    width: clamp(200px, 14vw, 280px);
+    height: clamp(200px, 14vw, 280px);
+    border:1px solid rgba(30,144,255,.35);
+    background:
+       radial-gradient(60% 70% at 50% 35%, rgba(30,144,255,.18) 0%, transparent 70%),
+       rgba(15,32,36,.80);
+    box-shadow:
+       0 0 0 1px rgba(255,255,255,.06) inset,
+       0 0 40px rgba(30,144,255,.25),
+       0 24px 60px rgba(0,0,0,.40);
   }
+  .node.center .label, .node.center .tag{ display:none; }
   .node.center::before{
-    content:""; position:absolute; inset:22% 22%;
-    background:url('/dms-gemello-news/landing/img/ministero.svg') center/contain no-repeat;
-    filter: drop-shadow(0 0 18px rgba(30,144,255,.35));
+    content:""; position:absolute; inset:20%;
+    background:url('../img/ministero-center.png') center/contain no-repeat;
+    filter: drop-shadow(0 0 18px rgba(30,144,255,.45));
     opacity:.95;
+  }
+  .node.center::after{
+    content:""; position:absolute; inset:-26%; border-radius:40%;
+    background:radial-gradient(60% 70% at 50% 35%, rgba(30,144,255,.22) 0%, transparent 65%);
+    filter: blur(16px); pointer-events:none;
   }
   
   /* foglio/scheda fullscreen */
@@ -192,6 +205,11 @@
     const ring2 = ALL.filter(d => (d.ring||2)===2);
     distribute(ring1, Rx1, Ry1, 'r1');
     distribute(ring2, Rx2, Ry2, 'r2');
+
+    // centro: palazzo fisso
+    let C = document.querySelector('.node.center');
+    if(!C){ C = document.createElement('div'); C.className='node center'; stage.appendChild(C); }
+    place(C, cx, cy);
   }
 
   // --- 5) Animazione + interazioni ------------------------------------------
