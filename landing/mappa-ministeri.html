@@ -382,9 +382,9 @@ body.modal-open { overflow: hidden; }
 </head>
 <body>
   <div class="nav">
-    <a class="btn" href="home.html" target="_top">Home</a>
-    <a class="btn" href="mappa-ministeri.html" target="_top">Mappa</a>
-    <a class="btn" href="spot.html" target="_top">Spot</a>
+    <a class="btn" href="./home.html" target="_top">Home</a>
+    <a class="btn" href="./mappa-ministeri.html" target="_top">Mappa</a>
+    <a class="btn" href="./spot.html" target="_top">Spot</a>
     <div class="controls">
       <label class="switch"><input id="btn-auto" type="checkbox" checked> Auto-rotate</label>
       <label class="switch"><input id="btn-lines" type="checkbox" checked> Linee</label>
@@ -465,7 +465,6 @@ window.DOC_MAP_FALLBACK = [
   {id:'adm', nome:'ADM · Agenzia Dogane', ring:2, tag:'Ente'}
 ];
 
-const JSON_URL = '/dms-gemello-news/landing/data/ministeri.json?v=7';
 let DATA = [];
 let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
 let phase=0, speed=0.0016, rotating=true;
@@ -646,13 +645,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 /* bootstrap */
 async function bootstrap(){
-  try{ 
-    const r = await fetch(JSON_URL,{cache:'no-store'}); 
-    DATA = await r.json(); 
-  }catch(e){ 
-    console.error('ministeri.json fallito, uso fallback inline', e);
-    DATA = window.DOC_MAP_FALLBACK || [];
-  }
+  // Uso direttamente il fallback inline sicuro
+  DATA = window.DOC_MAP_FALLBACK || [];
   window.DATA = DATA; // rendi accessibile globalmente
   layout(); cancelAnimationFrame(raf); tick();
 }
@@ -858,7 +852,7 @@ const ALIASES = {
 // Fallback mapping completo come da istruzioni
 const MAPPING_FALLBACK={"MEF":["mef-1.png","mef-2.png"],"Interno":["interno-1.png"],"AgID":["agid-1.png","agid-2.png"],"ADM":["adm-1.png"],"AE":["ae-1.png"],"MASE":["mase-1.png"],"MIT":["mit-1.png"],"Salute":["salute-1.png"],"MIC":["mic-1.png"],"Turismo":["turismo-1.png"],"MASAF":["masaf-1.png"],"MIM":["mim-1.png"],"Lavoro":["lavoro-1.png"],"MAECI":["maeci-1.png"],"MIMIT":["mimit-1.png"],"PagoPA S.p.A.":["pagopa-1.png"]};
 
-async function loadMapping(){
+window.loadMapping = async function(){
   try{const r=await fetch('cards/_mapping.json',{cache:'no-store'}); if(!r.ok) throw 0; return await r.json();}
   catch{ return MAPPING_FALLBACK; }
 }
@@ -882,7 +876,7 @@ const DOC_MAP = {
   interno: ['ministero-interno'],
 };
 
-function renderSpotButtons(minKey){
+window.renderSpotButtons = function(minKey){
   const c = document.querySelector('#spotBtns'); 
   if(!c) return;
   c.innerHTML='';
@@ -894,19 +888,19 @@ function renderSpotButtons(minKey){
   });
 }
 
-function setupModalHeader(title, alias){
+window.setupModalHeader = function(title, alias){
   const titleEl = document.getElementById('modalTitle');
   if(titleEl) titleEl.textContent = title || alias.toUpperCase();
-  renderSpotButtons(alias);
+  window.renderSpotButtons(alias);
 }
 
 window.openFull = async function(aliasRaw, titleDisplay){
   // 1) normalizza alias
   const a = (ALIASES[(aliasRaw||'').toLowerCase()] || aliasRaw || '').toLowerCase();
   // 2) header
-  setupModalHeader(titleDisplay || aliasRaw, a);
+  window.setupModalHeader(titleDisplay || aliasRaw, a);
   // 3) immagini
-  const mapping = await loadMapping();
+  const mapping = await window.loadMapping();
   let imgs = (mapping[a] || []).map(x => `./cards/${x}`);
   if(!imgs.length) imgs = ['./cards/generic.png'];
 
