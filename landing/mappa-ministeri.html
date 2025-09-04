@@ -835,6 +835,150 @@ function openFull(m){
   else { const t0=Date.now(); const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>15000){clearInterval(tm);} },40); }
 })();
 </script>
+<!-- ===== MAP v3.1 — single patch (solo-modal, nav corretta, move legacy) ===== -->
+<style id="map-v3-1-css">
+  :root[data-lines='off'] #links{opacity:0;transition:.24s}
+  :root[data-lines='on']  #links{opacity:1;transition:.24s}
+  #card{max-height:88vh;overflow:auto}
+  #card .facts{margin:12px 0 10px}
+  #card .facts img{display:block;width:100%;height:auto;max-height:62vh;object-fit:contain}
+  /* STOP: non nascondo #sheet; prendo solo facts fuori posto */
+  body > .facts{display:none}
+</style>
+
+<script id="map-v3-1-js">
+(function(){
+  if (window.__MAP_V31__) return; window.__MAP_V31__ = true;
+
+  // Ordine nav fisso (16)
+  const IDS = ["mef","interno","mimit","mase","mit","salute","mic","turismo","masaf","mim","lavoro","maeci","agid","pagopa","ae","adm"];
+  // Alias -> asset (copre eventuali ID inconsueti)
+  const CARD_SRC = {
+    mef:"mef", interno:"interno", mimit:"mimit", mase:"mase", mit:"mit", salute:"salute",
+    mic:"mic", turismo:"turismo", masaf:"masaf", mim:"mim", lavoro:"lavoro",
+    maeci:"maeci", agid:"agid", pagopa:"pagopa", ae:"ae", adm:"adm",
+    // alias di sicurezza
+    "ministero dell'interno":"interno","ministero del lavoro":"lavoro","ministero delle infrastrutture e trasporti":"mit"
+  };
+  const EXTS = ["webp","png","jpg"];
+
+  const $ = s=>document.querySelector(s);
+  const id = s=>document.getElementById(s);
+
+  function ensureModal(){
+    const card = id("card"); if(!card) return null;
+    let wrap = id("factsWrap"), img = id("factsImg");
+    if(!wrap){
+      wrap = document.createElement("div");
+      wrap.id="factsWrap"; wrap.className="facts";
+      img = document.createElement("img"); img.id="factsImg"; img.alt="";
+      wrap.appendChild(img);
+      card.insertBefore(wrap, card.firstChild);
+    } else if (wrap.parentElement!==card){
+      card.insertBefore(wrap, card.firstChild);
+    }
+    return {card,wrap,img};
+  }
+
+  // Sposta dentro #card qualsiasi facts legacy apparsa fuori (e elimina i duplicati)
+  function moveLegacyFacts(){
+    const h = ensureModal(); if(!h) return;
+    const {card,wrap} = h;
+    document.querySelectorAll(".facts").forEach(el=>{
+      if(el===wrap) return;
+      if(!card.contains(el)){
+        // Porta il PRIMO contenuto utile dentro wrap, poi rimuovi il resto
+        const pic = el.querySelector("img,canvas,svg");
+        if (pic && !wrap.querySelector("img[src],canvas,svg")){
+          // Clona l'immagine per sicurezza
+          const clone = pic.cloneNode(true);
+          clone.removeAttribute("width");clone.removeAttribute("height");
+          while (wrap.firstChild) wrap.removeChild(wrap.firstChild);
+          const holder = document.createElement("img"); holder.id="factsImg"; holder.alt="";
+          wrap.appendChild(holder);
+          if (clone.tagName==="IMG") holder.src = clone.src;
+        }
+        el.remove();
+      }
+    });
+  }
+
+  // Nav chips in testa alla finestra
+  function buildNav(currentId){
+    const h = ensureModal(); if(!h) return;
+    const {card} = h;
+    let bar = id("minLinks");
+    if(!bar){
+      bar = document.createElement("div");
+      bar.id="minLinks"; bar.className="min-links";
+      card.insertBefore(bar, card.firstChild);
+    }
+    bar.innerHTML="";
+    IDS.forEach(mid=>{
+      const m = (window.DATA||[]).find(x=>x.id===mid) || {id:mid, nome:mid, short:mid.toUpperCase()};
+      const b = document.createElement("button");
+      b.className="chip nav"; b.textContent=(m.short||m.nome||mid).toUpperCase();
+      if(mid===currentId) b.disabled=true;
+      b.addEventListener("click", e=>{e.preventDefault();e.stopPropagation(); openFull(m);});
+      bar.appendChild(b);
+    });
+  }
+
+  let seq = 0;
+  function loadCard(mid){
+    const h = ensureModal(); if(!h) return;
+    const {wrap} = h; let img = id("factsImg");
+    if(!img){ img=document.createElement("img"); img.id="factsImg"; img.alt=""; wrap.appendChild(img); }
+    wrap.hidden = true; img.removeAttribute("src");
+    const base = CARD_SRC[mid] || "generica";
+    const me = ++seq;
+    (function tryExt(i){
+      if(me!==seq) return;
+      if(i>=EXTS.length){ wrap.hidden=true; return; }
+      const src = `/dms-gemello-news/landing/cards/${base}.${EXTS[i]}`+`?t=${Date.now()}`;
+      const probe = new Image();
+      probe.onload = ()=>{ if(me!==seq) return; img.src = src; wrap.hidden = false; };
+      probe.onerror = ()=> tryExt(i+1);
+      probe.src = src;
+    })(0);
+  }
+
+  function install(){
+    document.documentElement.dataset.lines = 'on';
+    (window.redraw||window.draw||function(){})();
+    const base = window.openFull; if (typeof base!=="function") return;
+    if (base.__MAP_V31__) return;
+
+    function wrapped(m){
+      const mm = m && m.id ? m : (window.DATA||[]).find(x=>x.id===m) || m;
+      ensureModal();             // assicura contenitore
+      base(m);                   // esegue finestra originale
+      moveLegacyFacts();         // sposta/bonifica eventuali facts old
+      buildNav(mm.id);           // nav 16 chip
+      loadCard(mm.id);           // immagine corretta
+      id("card")?.scrollTo(0,0); // top
+    }
+    wrapped.__MAP_V31__ = true;
+    window.openFull = wrapped;
+
+    // Guard: se altri patch sovrascrivono, ripristino il nostro
+    setInterval(()=>{
+      if(typeof window.openFull!=="function" || !window.openFull.__MAP_V31__){
+        window.openFull = wrapped;
+      }
+      moveLegacyFacts();
+    }, 180);
+  }
+
+  // Avvio sicuro: attendo DATA + openFull fino a 10s
+  const t0 = Date.now();
+  (function wait(){
+    if (Array.isArray(window.DATA) && typeof window.openFull==="function"){ install(); }
+    else if (Date.now()-t0 < 10000){ setTimeout(wait, 60); }
+  })();
+})();
+</script>
+<!-- ===== END MAP v3.1 ===== -->
 </body>
 </html>
 
