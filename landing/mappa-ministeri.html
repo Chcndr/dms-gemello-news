@@ -838,3 +838,117 @@ function openFull(m){
 </body>
 </html>
 
+
+<!-- ===== MAP v3.0 — single patch (solo-modal, nav corretta, kill legacy) ===== -->
+<style id="map-v3-css">
+  :root[data-lines='off'] #links{opacity:0;transition:.24s}
+  :root[data-lines='on']  #links{opacity:1;transition:.24s}
+  #card{max-height:88vh;overflow:auto}
+  #card .facts{margin:12px 0 10px}
+  #card .facts img{display:block;width:100%;height:auto;max-height:62vh;object-fit:contain}
+  /* nascondi/neutralizza qualsiasi finestra legacy residua */
+  #sheet, .sheet, body>.facts{display:none !important}
+</style>
+
+<script id="map-v3-js">
+(function(){
+  if (window.__MAP_V3_INSTALLED__) return; window.__MAP_V3_INSTALLED__=true;
+
+  const IDS = ["mef","interno","mimit","mase","mit","salute","mic","turismo","masaf","mim","lavoro","maeci","agid","pagopa","ae","adm"];
+  const CARD_SRC = Object.fromEntries(IDS.map(id=>[id,id]));
+  const exts = ["webp","png","jpg"];
+
+  function id(x){ return document.getElementById(x); }
+
+  function nukeLegacy(){
+    document.querySelectorAll("#sheet,.sheet,body>.facts").forEach(n=>n.remove());
+  }
+  function ensureFacts(){
+    const card = id("card");
+    if(!card) return null;
+    let wrap = id("factsWrap"), img = id("factsImg");
+    if(!wrap){
+      wrap = document.createElement("div");
+      wrap.id="factsWrap"; wrap.className="facts";
+      img = document.createElement("img"); img.id="factsImg"; img.alt="";
+      wrap.appendChild(img);
+      card.insertBefore(wrap, card.firstChild);
+    } else if (wrap.parentElement!==card){
+      card.insertBefore(wrap, card.firstChild);
+    }
+    return {card,wrap,img};
+  }
+  function buildNav(currentId){
+    const {card} = ensureFacts()||{};
+    if(!card) return;
+    let bar = id("minLinks");
+    if(!bar){
+      bar = document.createElement("div");
+      bar.id="minLinks"; bar.className="min-links";
+      card.insertBefore(bar, card.firstChild);
+    }
+    bar.innerHTML="";
+    IDS.forEach(mid=>{
+      const m = (window.DATA||[]).find(x=>x.id===mid) || {id:mid, nome:mid, short:mid.toUpperCase()};
+      const b = document.createElement("button");
+      b.className="chip nav"; b.textContent=(m.short||m.nome||mid).toUpperCase();
+      if(mid===currentId) b.disabled=true;
+      b.addEventListener("click", e=>{e.preventDefault();e.stopPropagation(); openFull(m);});
+      bar.appendChild(b);
+    });
+  }
+  let seq=0;
+  function loadCard(mid){
+    const h = ensureFacts(); if(!h) return;
+    const {wrap,img} = h;
+    wrap.hidden=true; img.removeAttribute("src");
+    const base = CARD_SRC[mid] || "generica";
+    const me = ++seq;
+    (function tryExt(i){
+      if (me!==seq) return;
+      if (i>=exts.length){ wrap.hidden=true; return; }
+      const src = `/dms-gemello-news/landing/cards/${base}.${exts[i]}`+`?t=${Date.now()}`;
+      const probe = new Image();
+      probe.onload = ()=>{ if(me!==seq) return; img.src=src; wrap.hidden=false; };
+      probe.onerror = ()=> tryExt(i+1);
+      probe.src = src;
+    })(0);
+  }
+
+  function install(){
+    document.documentElement.dataset.lines = 'on';
+    (window.redraw||window.draw||function(){})();
+    const base = window.openFull;
+    if (typeof base!=="function") return;
+    if (base.__MAP_V3__) return;
+    function wrapped(m){
+      nukeLegacy();
+      const h=ensureFacts();
+      base(m);
+      buildNav(m.id);
+      loadCard(m.id);
+      (h?.card||id("card"))?.scrollTo(0,0);
+    }
+    wrapped.__MAP_V3__=true;
+    window.openFull = wrapped;
+    // guardia: se qualcun altro prova a sovrascrivere, ripristina
+    setInterval(()=>{
+      if (typeof window.openFull!=="function" || !window.openFull.__MAP_V3__){
+        window.openFull = wrapped;
+      }
+      nukeLegacy();
+    }, 180);
+  }
+
+  // avvio sicuro: aspetta DATA+openFull fino a 10s
+  const t0=Date.now();
+  (function wait(){
+    if (Array.isArray(window.DATA) && typeof window.openFull==="function"){
+      install();
+    } else if (Date.now()-t0<10000){
+      setTimeout(wait,60);
+    }
+  })();
+})();
+</script>
+<!-- ===== END MAP v3.0 ===== -->
