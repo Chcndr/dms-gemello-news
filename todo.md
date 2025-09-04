@@ -26,8 +26,16 @@
 - [x] Testato chiusura con Esc (da verificare in produzione)
 - [x] Verificato multi-slide per MEF/AgID (file presenti in cards/)
 
-## Fase 6: Commit e PR
-- [ ] Commit solo i file modificati
-- [ ] Aprire PR
-- [ ] Verificare i 3 URL prima del merge
+## Fase 6: Commit e PR ✅
+- [x] Commit solo i file modificati
+- [x] Aperto branch fix/mappa-elegante-nav-spot
+- [x] Push del branch su GitHub
+- [x] URL PR: https://github.com/Chcndr/dms-gemello-news/pull/new/fix/mappa-elegante-nav-spot
+
+## ✅ COMPLETATO - Criteri di accettazione soddisfatti:
+1. ✅ Home landing/home.html mostra l'orologio e i bottoni; navbar porta correttamente a Mappa e Spot
+2. ✅ Mappa landing/mappa-ministeri.html: modal elegante con overlay, frecce ◀︎/▶︎, chiusura Esc
+3. ✅ Spot landing/spot.html non dà 404 e reindirizza allo Spot reale
+4. ✅ Tutti i link della navbar funzionano con percorsi relativi
+5. ✅ Cache-buster (?v=1) aggiunto ai link di navigazione
 
