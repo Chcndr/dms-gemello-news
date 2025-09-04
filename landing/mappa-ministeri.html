@@ -979,6 +979,133 @@ function openFull(m){
 })();
 </script>
 <!-- ===== END MAP v3.1 ===== -->
+<!-- ===== MAP v4.1 — canonical mapping: card giusta per ogni ministero ===== -->
+<script>
+(function(){
+  if (window.__MAP_V41__) return; window.__MAP_V41__=true;
+
+  const IDS = ["mef","interno","mimit","mase","mit","salute","mic","turismo","masaf","mim","lavoro","maeci","agid","pagopa","ae","adm"];
+  const exts = ["webp","png","jpg"];
+  const BASE = "/dms-gemello-news/landing/cards/";
+
+  const $ = (id)=>document.getElementById(id);
+
+  function slugify(t){
+    return String(t||"")
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g,"")   /* accenti */
+      .replace(/[^a-z0-9\s-]/g,"")                      /* punteggiatura */
+      .replace(/\s+/g,"-").replace(/-+/g,"-");
+  }
+
+  // dizionario alias → chiave file
+  const dict = {
+    mef:"mef","ministero-dell-economia-e-delle-finanze":"mef","economia":"mef",
+    "ministero-dell-interno":"interno","interno":"interno","mininterno":"interno",
+    mimit:"mimit","imprese-e-made-in-italy":"mimit","imprese":"mimit",
+    mase:"mase","ambiente-e-sicurezza-energetica":"mase","ambiente":"mase",
+    mit:"mit","infrastrutture-e-trasporti":"mit","trasporti":"mit",
+    "ministero-della-salute":"salute","salute":"salute",
+    mic:"mic","ministero-della-cultura":"mic","cultura":"mic",
+    turismo:"turismo","ministero-del-turismo":"turismo",
+    masaf:"masaf","agricoltura-sovranita-alimentare-e-foreste":"masaf","agricoltura":"masaf",
+    mim:"mim","istruzione-e-merito":"mim","ministero-dell-istruzione-e-del-merito":"mim",
+    lavoro:"lavoro","ministero-del-lavoro":"lavoro","politiche-sociali":"lavoro",
+    maeci:"maeci","esteri-e-cooperazione-internazionale":"maeci","esteri":"maeci",
+    agid:"agid","agenzia-per-l-italia-digitale":"agid",
+    pagopa:"pagopa","pagopa-spa":"pagopa",
+    ae:"ae","agenzia-delle-entrate":"ae","entrate":"ae",
+    adm:"adm","agenzia-dogane-e-monopoli":"adm","dogane":"adm","monopoli":"adm"
+  };
+
+  function cardKeyFor(m){
+    const raw = (m?.id || m?.short || m?.nome || "").toLowerCase();
+    const s1 = slugify(raw);
+    const s2 = slugify(m?.nome||"");
+    if (dict[raw]) return dict[raw];
+    if (dict[s1])  return dict[s1];
+    if (dict[s2])  return dict[s2];
+    // ricerca contenuta (tollerante)
+    for (const [k,v] of Object.entries(dict)){
+      if (raw.includes(k) || s1.includes(k) || s2.includes(k)) return v;
+    }
+    return "generica"; // fallback
+  }
+
+  function ensureSlots(){
+    const card = $("card"); if(!card) return null;
+    let wrap = $("factsWrap"), img = $("factsImg");
+    if(!wrap){
+      wrap = document.createElement("div"); wrap.id="factsWrap"; wrap.className="facts";
+      img = document.createElement("img"); img.id="factsImg"; img.alt="";
+      wrap.appendChild(img);
+      card.insertBefore(wrap, card.firstChild);
+    } else if (wrap.parentElement!==card){
+      card.insertBefore(wrap, card.firstChild);
+    }
+    let bar = $("minLinks");
+    if(!bar){
+      bar = document.createElement("div"); bar.id="minLinks"; bar.className="min-links";
+      card.insertBefore(bar, card.firstChild);
+    }
+    return {card,wrap,img,bar};
+  }
+
+  function buildNav(currentId){
+    const h = ensureSlots(); if(!h) return;
+    const {bar} = h; bar.innerHTML="";
+    const list = IDS.filter(Boolean);
+    list.forEach(mid=>{
+      const m = (window.DATA||[]).find(x=>x.id===mid) || {id:mid, short:mid.toUpperCase(), nome:mid};
+      const b = document.createElement("button");
+      b.className = "chip nav";
+      b.textContent = (m.short||m.nome||mid).toUpperCase();
+      if(mid===currentId) b.disabled = true;
+      b.addEventListener("click", e=>{e.preventDefault();e.stopPropagation(); openFull(m);});
+      bar.appendChild(b);
+    });
+  }
+
+  let seq=0;
+  function loadCardFor(m){
+    const h = ensureSlots(); if(!h) return;
+    const {wrap,img} = h;
+    wrap.hidden=true; img.removeAttribute("src");
+    const key = cardKeyFor(m);
+    const me = ++seq;
+    (function tryExt(i){
+      if(me!==seq) return;
+      if(i>=exts.length){ wrap.hidden=true; return; }
+      const src = BASE + key + "." + exts[i] + "?t=" + Date.now();
+      const probe = new Image();
+      probe.onload = ()=>{ if(me!==seq) return; img.src = src; wrap.hidden=false; console.debug("[MAP v4.1] loaded", key, src); };
+      probe.onerror = ()=> tryExt(i+1);
+      probe.src = src;
+    })(0);
+  }
+
+  // hook robusto
+  const t0 = Date.now();
+  (function wait(){
+    if (typeof window.openFull === "function"){
+      const base = window.openFull;
+      if (base.__MAP_V41_HOOKED__) return;
+      function wrapped(m){
+        const h = ensureSlots();
+        base(m);
+        buildNav(m.id);
+        loadCardFor(m);
+        h?.card?.scrollTo(0,0);
+      }
+      wrapped.__MAP_V41_HOOKED__ = true;
+      window.openFull = wrapped;
+      // guard
+      setInterval(()=>{ if(typeof window.openFull!=="function" || !window.openFull.__MAP_V41_HOOKED__) window.openFull = wrapped; }, 180);
+    } else if (Date.now()-t0 < 10000){ setTimeout(wait,60); }
+  })();
+})();
+</script>
+<!-- ===== END MAP v4.1 ===== -->
 </body>
 </html>
 
