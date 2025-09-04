@@ -1,48 +1,52 @@
 {
-  "mic": [
-    "mic-1.png"
+  "MEF · Economia e Finanze": [
+    "mef-1.png",
+    "mef-2.png"
   ],
-  "mit": [
-    "mit-1.png"
-  ],
-  "mim": [
-    "mim-1.png"
-  ],
-  "interno": [
+  "Ministero dell'Interno": [
     "interno-1.png"
   ],
-  "mef": [
-    "mef-1.png"
-  ],
-  "turismo": [
-    "turismo-1.png"
-  ],
-  "mase": [
-    "mase-1.png"
-  ],
-  "masaf": [
-    "masaf-1.png"
-  ],
-  "lavoro": [
-    "lavoro-1.png"
-  ],
-  "mimit": [
+  "MIMIT · Imprese e Made in Italy": [
     "mimit-1.png"
   ],
-  "adm": [
-    "adm-1.png"
+  "MASE · Ambiente e Sicurezza Energetica": [
+    "mase-1.png"
   ],
-  "ae": [
-    "ae-1.png"
+  "MIT · Infrastrutture e Trasporti": [
+    "mit-1.png"
   ],
-  "pagopa": [
-    "pagopa-1.png"
+  "Salute": [
+    "salute-1.png"
   ],
-  "agid": [
+  "MiC · Cultura": [
+    "mic-1.png"
+  ],
+  "Turismo": [
+    "turismo-1.png"
+  ],
+  "MASAF · Agricoltura": [
+    "masaf-1.png"
+  ],
+  "MIM · Istruzione e Merito": [
+    "mim-1.png"
+  ],
+  "Ministero del Lavoro": [
+    "lavoro-1.png"
+  ],
+  "MAECI · Esteri e Cooperazione": [
+    "maeci-1.png"
+  ],
+  "AgID": [
     "agid-1.png",
     "agid-2.png"
   ],
-  "maeci": [
-    "maeci-1.png"
+  "PagoPA S.p.A.": [
+    "pagopa-1.png"
+  ],
+  "AE · Agenzia Entrate": [
+    "ae-1.png"
+  ],
+  "ADM · Agenzia Dogane e Monopoli": [
+    "adm-1.png"
   ]
 }
