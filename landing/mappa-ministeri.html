@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mappa Ministeri – DMS</title>
+<style>
+  :root { --bg:#0f1418; --panel:#19222b; --ink:#cfe7ff; --chip:#253342; --chipOn:#2f94ff; }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:#eaf2fa;font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),rgba(15,20,24,.8));padding:12px 12px 8px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid #344455;background:var(--chip);color:#eaf2fa;border-radius:999px;padding:.45rem .8rem;cursor:pointer;user-select:none}
+  .chip[aria-pressed="true"]{background:var(--chipOn);border-color:transparent}
+  main{padding:0;max-width:1400px;margin:0 auto}
+  .stage{background:var(--panel);border:1px solid #25313c; border-radius:10px; margin:10px 12px 24px; overflow:hidden}
+  figure{margin:0}
+  img.slide{display:block;width:100%;height:auto}
+  .nav{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;background:#0c1319;border-top:1px solid #1e2a35}
+  .nav button{all:unset;background:#1f2d3a;padding:.45rem .8rem;border-radius:6px;cursor:pointer}
+  .meta{opacity:.8;font-size:.9rem}
+  .hint{opacity:.65;font-size:.85rem;margin-left:8px}
+
+  /* Modal compatta */
+  :root { --modal-w: 1080px; --modal-pad: 16px; --overlay: rgba(8,12,18,.68); }
+  body.dim { overflow: hidden; }
+
+  /* oscuramento mappa */
+  #map-overlay{
+    position:fixed; inset:0; background:var(--overlay);
+    backdrop-filter:saturate(140%) blur(2px);
+    opacity:0; transition:opacity .18s ease-out; z-index: 9998;
+  }
+  body.dim #map-overlay{ opacity:1; }
+
+  /* finestra compatta */
+  #map-modal{
+    position:fixed; left:50%; top:5vh; transform:translateX(-50%);
+    width:min(var(--modal-w), 96vw);
+    max-height:90vh; display:flex; flex-direction:column;
+    background:#0c1117; border:1px solid #273142; border-radius:14px;
+    box-shadow:0 35px 90px rgba(0,0,0,.55);
+    padding: var(--modal-pad);
+    opacity:0; transition:opacity .18s ease-out; z-index: 9999;
+  }
+  body.dim #map-modal{ opacity:1; }
+
+  #map-modal .bar{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  #map-modal .bar .spacer{ flex:1; }
+  #map-modal .ghost{
+    background:transparent; border:1px solid #344152; color:#d6e2f0;
+    padding:6px 10px; border-radius:10px; cursor:pointer;
+  }
+  #map-modal .ghost:hover{ border-color:#4a5a71; }
+
+  #map-counter{ opacity:.8; font-size:13px; }
+
+  #map-slidewrap{
+    overflow:auto; /* permette scroll verticale se l'immagine è lunga */
+    max-height: calc(90vh - 62px); /* barra + padding */
+  }
+  #map-slide{ display:block; width:100%; height:auto; }
+
+  #map-modal .nav{
+    display:flex; gap:8px; justify-content:flex-end; margin-top:10px;
+  }
+
+  /* breakpoint mobile: finestra leggermente più bassa */
+  @media (max-width: 640px){
+    #map-modal{ top:2vh; max-height:96vh; }
+    #map-slidewrap{ max-height: calc(96vh - 62px); }
+  }
+</style>
+</head>
+<body>
+  <!-- Overlay + Modal viewer -->
+  <div id="map-overlay" hidden></div>
+
+  <div id="map-modal" hidden aria-modal="true" role="dialog">
+    <div class="bar">
+      <button id="map-close" class="ghost">← Torna alla mappa</button>
+      <div id="map-counter"></div>
+      <div class="spacer"></div>
+    </div>
+
+    <div id="map-slidewrap">
+      <img id="map-slide" alt="documento ministero">
+    </div>
+
+    <div class="nav">
+      <button id="map-prev" class="ghost">◀︎</button>
+      <button id="map-next" class="ghost">▶︎</button>
+    </div>
+  </div>
+
+  <header>
+    <div class="chips" id="chips"></div>
+    <div class="hint">Suggerimento: usa ⬅︎ / ➜ per cambiare slide.</div>
+  </header>
+  <main>
+    <section class="stage">
+      <figure><img id="slide" class="slide" alt="Scheda ministeriale" src=""></figure>
+      <div class="nav">
+        <button id="prev" aria-label="precedente">◀︎</button>
+        <div class="meta"><span id="label">—</span> · <span id="pos">0</span>/<span id="len">0</span></div>
+        <button id="next" aria-label="successiva">▶︎</button>
+      </div>
+    </section>
+  </main>
+
+<script>
+(async () => {
+  // Base paths (relative, safe for Project Pages)
+  const CARDS_DIR = "cards";
+  const mapUrl = CARDS_DIR + "/_mapping.json";
+
+  // Helpers
+  const el = (q) => document.querySelector(q);
+  const img = el("#slide");
+  const chips = el("#chips");
+  const label = el("#label");
+  const pos = el("#pos");
+  const len = el("#len");
+
+  // Modal elements
+  const overlay = document.getElementById('map-overlay');
+  const modal   = document.getElementById('map-modal');
+  const closeBt = document.getElementById('map-close');
+  const slideEl = document.getElementById('map-slide');
+  const wrapEl  = document.getElementById('map-slidewrap');
+  const prevBt  = document.getElementById('map-prev');
+  const nextBt  = document.getElementById('map-next');
+  const counter = document.getElementById('map-counter');
+
+  // State
+  const M = await fetch(mapUrl).then(r => r.json()).catch(() => ({}));
+  const keys = Object.keys(M);
+  let current = keys[0] || "";
+  let i = 0;
+
+  // Modal state
+  let slides = [];
+  let idx = 0;
+
+  // UI: build chips
+  keys.forEach((k, idx) => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = k;
+    b.setAttribute("aria-pressed", idx === 0 ? "true" : "false");
+    b.addEventListener("click", () => openModal(k));
+    chips.appendChild(b);
+  });
+
+  function select(k) {
+    current = k;
+    i = 0;
+    chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c.textContent === k ? "true" : "false"));
+    render();
+  }
+
+  function srcFor(k, idx) {
+    const list = M[k] || [];
+    const name = list[idx] || "generic.png";
+    return CARDS_DIR + "/" + name;
+  }
+
+  function render() {
+    const list = M[current] || [];
+    len.textContent = list.length || 1;
+    label.textContent = current || "—";
+    pos.textContent = (i + 1);
+    const src = srcFor(current, i);
+    img.src = src;
+    img.onerror = () => { img.src = CARDS_DIR + "/generic.png"; };
+  }
+
+  // Modal functions
+  function renderModal(){
+    slideEl.src = CARDS_DIR + '/' + slides[idx];
+    counter.textContent = (slides.length > 1) ? `${idx+1}/${slides.length}` : '';
+    // scroll top ad ogni cambio slide
+    wrapEl.scrollTo({top:0, behavior:'instant'});
+  }
+
+  function openModal(mid){
+    slides = (M[mid] && M[mid].length) ? M[mid] : ['generic.png'];
+    idx = 0;
+    renderModal();
+    document.body.classList.add('dim');
+    overlay.hidden = false; 
+    modal.hidden = false;
+    // Update chip selection
+    chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c.textContent === mid ? "true" : "false"));
+  }
+
+  function closeModal(){
+    document.body.classList.remove('dim');
+    overlay.hidden = true; 
+    modal.hidden = true;
+    slideEl.removeAttribute('src');
+  }
+
+  function prevModal(){ 
+    if(!slides.length) return; 
+    idx = (idx-1+slides.length)%slides.length; 
+    renderModal(); 
+  }
+  
+  function nextModal(){ 
+    if(!slides.length) return; 
+    idx = (idx+1)%slides.length; 
+    renderModal(); 
+  }
+
+  // Modal event handlers
+  overlay.addEventListener('click', closeModal);
+  closeBt.addEventListener('click', closeModal);
+  prevBt.addEventListener('click', prevModal);
+  nextBt.addEventListener('click', nextModal);
+
+  // Keyboard navigation
+  window.addEventListener('keydown', (e)=>{
+    if(document.body.classList.contains('dim')) {
+      if(e.key === 'Escape') closeModal();
+      if(e.key === 'ArrowLeft') prevModal();
+      if(e.key === 'ArrowRight') nextModal();
+    } else {
+      // Old navigation for main viewer (fallback)
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    }
+  });
+
+  function next() {
+    const L = (M[current] || []).length || 1;
+    i = (i + 1) % L;
+    render();
+  }
+  function prev() {
+    const L = (M[current] || []).length || 1;
+    i = (i - 1 + L) % L;
+    render();
+  }
+
+  // Old navigation (fallback)
+  el("#next").addEventListener("click", next);
+  el("#prev").addEventListener("click", prev);
+
+  // Export for external use
+  window.openModal = openModal;
+  window.MAP = M;
+
+  // Boot
+  render();
+})();
+</script>
+</body>
+</html>
