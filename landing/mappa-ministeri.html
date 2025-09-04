@@ -378,6 +378,15 @@ body.modal-open { overflow: hidden; }
 #backToMap{ background:rgba(255,255,255,.12); border:0; padding:8px 12px; border-radius:8px; color:#fff; }
 #modalTitle{ text-align:center; font-weight:600; letter-spacing:.2px; }
 #spotBtns a{ display:inline-block; margin-left:8px; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,.12); color:#fff; text-decoration:none; }
+
+/* CSS anti-interferenze per bottoni SPOT */
+#modalHeader, #modalHeader * { pointer-events: auto; }
+.btn-spot { cursor: pointer; display: inline-block; margin-left: .5rem; }
+
+/* livelli e dimensioni coerenti */
+#modalOverlay { z-index: 1000; }
+#modalCard { z-index: 1100; max-width: min(1140px, 92vw); }
+#modalCard img { max-width: 100%; height: auto; }
 </style>
 </head>
 <body>
@@ -436,7 +445,9 @@ body.modal-open { overflow: hidden; }
       <div class="modal-head dms-head" id="dmsHead">
         <button class="btn back" id="btnBackToMap">← Torna alla mappa</button>
         <h3 class="title" id="modalTitle">—</h3>
-        <div class="spot-actions" id="spotActions"></div>
+        <div class="spot-actions" id="spotActions">
+          <div id="spotBtns" class="spot-btns"></div>
+        </div>
       </div>
 
       <div id="modalBody" class="dms-modal-body"><!-- qui inietti l'IMG --></div>
@@ -884,6 +895,8 @@ window.openFull = async function(aliasRaw, titleDisplay){
   const a = (ALIASES[(aliasRaw||'').toLowerCase()] || aliasRaw || '').toLowerCase();
   // 2) header
   window.setupModalHeader(titleDisplay || aliasRaw, a);
+  // 2.1) bottoni SPOT
+  renderSpotButtons(a);
   // 3) immagini
   const mapping = await window.loadMapping();
   let imgs = (mapping[a] || []).map(x => `./cards/${x}`);
@@ -946,6 +959,25 @@ function nextSlide(){ if(window._currentSlide){ renderSlide(window._currentSlide
 function closeModal(){ 
   document.getElementById('modal').style.display = 'none';
   document.body.classList.remove('modal-open'); 
+}
+
+// Funzione per popolare i bottoni SPOT
+function renderSpotButtons(minKey) {
+  const mount = document.getElementById('spotBtns');
+  if (!mount) return;
+  mount.innerHTML = '';
+  const items = (window.DOC_MAP && window.DOC_MAP[minKey]) || [];
+  items.forEach(({ slug, label }) => {
+    const a = document.createElement('a');
+    a.className = 'btn btn-spot';
+    a.href = `./spot.html#${slug}`;
+    a.textContent = label || 'Apri in SPOT';
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = a.href;
+    });
+    mount.appendChild(a);
+  });
 }
 
 // Collega il pulsante back
