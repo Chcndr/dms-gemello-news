@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="build" content="MAP-FIX-V2">
+<title>Mappa Ministeri — sandbox</title>
+<style>
+:root{
+  --node: clamp(176px, 12.5vw, 256px);
+  --radius: 18px;
+  --ink: #e7fbf5;
+  --chip: rgba(15,32,36,.76);
+  --stroke: rgba(255,255,255,.10);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:400 16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#0a1a1e;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.nav{position:sticky;top:0;z-index:1000;display:flex;gap:8px;align-items:center;padding:12px 16px;background:rgba(10,26,30,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--stroke)}
+.btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip);box-shadow:0 6px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06)}
+.btn:hover{outline:1px solid rgba(255,255,255,.06)}
+.title{margin-left:auto;margin-right:auto;font-weight:700;letter-spacing:.3px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px 48px}
+
+#stageWrap{ height: 74vh; position:relative;border:1px solid var(--stroke);border-radius:16px;padding:12px;background:radial-gradient(60% 70% at 50% 12%, rgba(20,184,166,.08) 0%, transparent 60%); }
+#stage{ position: relative; height:100%; min-height:520px; border-radius:12px; overflow:hidden}
+
+/* TILE QUADRATI allineati come Home */
+.node{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:var(--node); height:var(--node);
+  padding:16px; border-radius:var(--radius);
+  background: var(--chip);
+  border:1px solid var(--stroke);
+  box-shadow:0 6px 18px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.06) inset;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; color:var(--ink);
+  user-select:none;
+}
+.node .label{
+  font-weight:800; line-height:1.15; letter-spacing:.2px;
+  font-size: clamp(13px,1.05vw,18px);
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+  overflow:hidden; text-wrap:balance;
+}
+/* rimuoviamo la sottoscritta "Agenzia/Ministero" */
+.node .tag{ display:none !important; }
+
+/* NODO CENTRALE: logo con glow blu, niente quadro sopra */
+.node.center{
+  width: clamp(220px, 15vw, 300px);
+  height: clamp(220px, 15vw, 300px);
+  background: rgba(15,32,36,.84);
+  border:1px solid rgba(30,144,255,.35);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.06) inset,
+    0 0 40px rgba(30,144,255,.22),
+    0 24px 60px rgba(0,0,0,.40);
+}
+.node.center .label,.node.center .tag{ display:none; }
+.node.center::before{
+  content:""; position:absolute; inset:18%;
+  background:url('../img/ministero-center.png') center/contain no-repeat;
+  z-index:1; filter:brightness(1.1) drop-shadow(0 0 18px rgba(30,144,255,.45));
+  opacity:.96;
+}
+.node.center::after{
+  content:""; position:absolute; inset:-26%; border-radius:40%;
+  background:radial-gradient(60% 70% at 50% 40%, rgba(30,144,255,.22) 0%, transparent 65%);
+  filter:blur(16px); pointer-events:none;
+}
+
+/* LINEE su canvas: visibilità */
+#links{position:absolute; inset:0; pointer-events:none;}
+:root[data-lines='off'] #links{ opacity:0; }
+
+/* foglio/scheda fullscreen */
+:root{
+  --slot:#22c55e;           /* verde slot */
+  --slot-ink:#072814;       /* testo su slot */
+  --sheet-brd:#22c55e;      /* stesso colore del contorno */
+}
+
+#modal{
+  position:fixed; inset:0; display:none;
+  align-items:flex-start;  /* spinge in alto */
+  justify-content:center;  z-index:9999;
+  padding:72px 16px 24px;  /* distanza top */
+  background:rgba(3,10,12,.72); backdrop-filter:blur(6px);
+}
+
+.sheet{width:min(1080px,92vw); background:transparent; border:0;}
+
+/* Modal compatto - stili aggiornati */
+.mm-head{
+  display:flex; gap:12px; align-items:center;
+  padding:12px 14px; border:1px solid var(--sheet-brd);
+  border-radius:14px 14px 0 0;
+  background:linear-gradient(180deg, rgba(34,197,94,.95), rgba(34,197,94,.90));
+  color:var(--slot-ink);
+  box-shadow:0 10px 24px rgba(0,0,0,.28);
+}
+
+.mm-back{
+  all:unset; cursor:pointer; padding:6px 12px;
+  border:1px solid rgba(255,255,255,.2); border-radius:8px;
+  background:rgba(255,255,255,.1); color:inherit;
+  font-size:14px; font-weight:600;
+}
+
+.mm-back:hover{
+  background:rgba(255,255,255,.2);
+}
+
+.mm-spacer{
+  flex:1;
+}
+
+.mm-body{
+  background:#0c1117; border:1px solid var(--sheet-brd);
+  border-top:0; border-radius:0 0 14px 14px;
+  padding:0; overflow:auto;
+  max-height:calc(86vh - 60px);
+}
+
+.mm-nav{
+  position:absolute; top:50%; transform:translateY(-50%);
+  background:rgba(0,0,0,.7); color:#fff; border:none;
+  width:40px; height:40px; border-radius:50%;
+  cursor:pointer; font-size:18px; font-weight:bold;
+  display:flex; align-items:center; justify-content:center;
+  z-index:10001;
+}
+
+.mm-nav:hover{
+  background:rgba(0,0,0,.9);
+}
+
+.mm-prev{
+  left:10px;
+}
+
+.mm-next{
+  right:10px;
+}
+
+.sheet-head{
+  display:flex; gap:12px; align-items:center;
+  padding:12px 14px; border:1px solid var(--sheet-brd);
+  border-radius:14px 14px 0 0;
+  background:linear-gradient(180deg, rgba(34,197,94,.95), rgba(34,197,94,.90));
+  color:var(--slot-ink);
+  box-shadow:0 10px 24px rgba(0,0,0,.28);
+}
+.sheet-head .ttl{margin:0; font-size:20px; font-weight:800;}
+.sheet-head .actions{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
+.btn.cta{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:999px; border:1px solid rgba(0,0,0,.10);
+  background:#ffffff; color:#0b1416;
+}
+.btn.cta[href*="pdf"]::before{content:"📄";}
+.btn.cta[href*="#doc-"]::before{content:"🔗";}
+.btn.x{margin-left:8px; border:1px solid rgba(0,0,0,.2); background:rgba(255,255,255,.8); border-radius:999px; padding:6px 10px;}
+
+.sheet-body{
+  border:1px solid var(--sheet-brd); border-top:0;
+  border-radius:0 0 14px 14px;
+  background:#0f2024ee;            /* bianco se preferisci: #fff */
+  color:#e6f7ff;                    /* #0b1416 se sfondo bianco */
+  padding:16px; box-shadow:0 20px 48px rgba(0,0,0,.35);
+}
+.sheet-body .hero{
+  width:100%; max-height:320px; object-fit:cover; border-radius:12px; margin-bottom:12px; display:none;
+}
+.sheet-body .meta{opacity:.85; font-size:14px; margin:4px 0 12px;}
+.sheet-body .bullets{margin:0 0 12px 18px;}
+.sheet-body .docs{display:flex; flex-wrap:wrap; gap:8px;}
+.doc{display:inline-flex; padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06);}
+
+@media (max-width: 900px){
+  .sheet-head{flex-wrap:wrap;}
+  .sheet-head .actions{width:100%; justify-content:flex-start;}
+}
+
+.panel{margin-top:16px; padding:16px; border:1px solid var(--stroke); border-radius:12px; background:rgba(15,32,36,.42)}
+.panel h3{margin:0 0 8px}
+.meta{color:#8fa3a8; font-size:14px; margin:2px 0 12px}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip)}
+.chip .k{opacity:.65}
+.docs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.doc{display:inline-flex;padding:8px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--chip)}
+.doc small{opacity:.7;margin-left:6px}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.switch{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px dashed var(--stroke);border-radius:999px;opacity:.9}
+.legend{margin-top:8px; font-size:13px; color:#8fa3a8}
+@media (max-width:720px){
+  .node{width:calc(var(--node) * 0.8); height:calc(var(--node) * 0.8)}
+  #stage{height:64vh; min-height:480px}
+}
+
+.frame{
+  position:relative;
+  height:min(82vh, calc(100dvh - 88px));
+  min-height:600px;
+  margin:12px 20px 20px;
+  border:1px solid rgba(255,255,255,.26);   /* più chiaro */
+  border-radius:16px;
+  background:
+    radial-gradient(60% 70% at 50% 12%, rgba(56,189,248,.12) 0%, transparent 62%),
+    radial-gradient(40% 50% at 50% 82%, rgba(56,189,248,.08) 0%, transparent 60%);
+}
+#world{
+  position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%) scale(1);
+  transform-origin:50% 50%;
+  will-change:transform;
+}
+#stage{ position:absolute; inset:0; overflow:hidden; touch-action:none; }
+
+/* Logo palazzo (simmetrico, glow) */
+#hubIcon{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:160px; height:160px; pointer-events:none; filter:drop-shadow(0 0 22px rgba(56,189,248,.45)); }
+#hubIcon::before{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.22), transparent 60%),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%23e6f7ff" stroke="%2300b3ff" stroke-width="12" stroke-linejoin="round"><path d="M32 196 L256 80 L480 196 Z"/><rect x="72"  y="220" width="64" height="200"/><rect x="168" y="220" width="64" height="200"/><rect x="264" y="220" width="64" height="200"/><rect x="360" y="220" width="64" height="200"/><rect x="48" y="424" width="416" height="24"/></svg>') center/72% no-repeat;
+  opacity:.96;
+}
+.node{width:200px;height:140px;padding:16px;border-radius:18px;background:rgba(15,32,36,.76);border:1px solid rgba(255,255,255,.10);box-shadow:0 6px 18px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.06) inset;display:flex;align-items:center;justify-content:center;text-align:center;}
+.node .tag{display:none!important;}
+.node .label{font-weight:800;line-height:1.16;letter-spacing:.2px;font-size:clamp(15px,1.25vw,20px);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance;}
+:root[data-lines='off'] #links{opacity:0;transition:.3s}
+:root[data-lines='on']  #links{opacity:1;transition:.3s}
+
+/* Pagina fissa + cornice più chiara */
+html,body{height:100%; overscroll-behavior:none;}
+body{overflow:hidden;}
+.frame{
+  position:relative; margin:12px 20px 20px;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:16px;
+  background: radial-gradient(60% 70% at 50% 14%, rgba(56,189,248,.10) 0%, transparent 60%);
+}
+
+/* Shell zoomabile */
+#stage{position:absolute; inset:0; overflow:hidden; touch-action:none;}
+#world{
+  position:absolute; left:50%; top:50%;
+  transform: translate(-50%,-50%) scale(1);
+  transform-origin:50% 50%; will-change:transform;
+}
+
+/* Logo palazzo (simmetrico, senza riquadro) */
+#hubIcon{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:168px; height:168px; pointer-events:none;
+  filter: drop-shadow(0 0 26px rgba(56,189,248,.45));
+}
+#hubIcon::before{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.24), transparent 60%),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%23e6f7ff" stroke="%2300b3ff" stroke-width="12"><path d="M24 196h464L256 72 24 196zM64 224h64v208H64V224zm96 0h64v208h-64V224zm128 0h64v208h-64V224zm96 0h64v208h-64V224zM48 448h416v24H48z"/></svg>') center/72% no-repeat;
+  opacity:.96;
+}
+
+/* Tile: retroilluminazione leggera + incremento su match */
+:root{ --glow-off:12px; --glow-on:28px; }
+.node{
+  width:200px; height:140px; padding:16px; border-radius:18px;
+  background: rgba(18,40,44,.78);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.28),
+    0 0 0 1px rgba(255,255,255,.06) inset,
+    0 0 var(--glow-off) rgba(56,189,248,.20);
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  transition: box-shadow .25s ease, border-color .25s ease, background .25s ease;
+}
+.node .tag{display:none!important;}
+.node .label{
+  font-weight:800; line-height:1.16; letter-spacing:.2px;
+  font-size:clamp(15px,1.25vw,20px);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-wrap:balance;
+}
+/* Evidenza quando la ricerca trova un match */
+.node.hit{
+  border-color: rgba(56,189,248,.38);
+  box-shadow:
+    0 16px 34px rgba(0,0,0,.32),
+    0 0 0 1px rgba(255,255,255,.08) inset,
+    0 0 var(--glow-on) rgba(56,189,248,.45);
+}
+
+/* Linee ON/OFF */
+:root[data-lines='off'] #links{opacity:0; transition:.3s}
+:root[data-lines='on']  #links{opacity:1; transition:.3s}
+
+/* tema esistente */
+:root { --ink:#e7fbf5; --chip:rgba(15,32,36,.84); --stroke:rgba(255,255,255,.12); }
+
+/* header "slot": colore come prima (chip scuro) */
+.sheet-head{
+  background:var(--chip);
+  color:var(--ink);
+  border:1px solid var(--stroke);
+  border-radius:14px 14px 0 0;
+  padding:12px 14px; display:flex; gap:12px; align-items:center;
+  box-shadow:0 10px 24px rgba(0,0,0,.28);
+}
+.sheet-head .ttl{margin:0; font:800 20px/1.2 system-ui;}
+.sheet-head .actions{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
+.min-links{display:flex; gap:6px; flex-wrap:wrap;}
+
+/* chip navigazione ministeri */
+.chip.nav{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border:1px dashed var(--stroke);
+  border-radius:999px; background:rgba(15,32,36,.62); color:var(--ink); opacity:.92;
+}
+
+/* body: contorno uguale, scheda "bianca" opzionale */
+.sheet-body{
+  border:1px solid var(--stroke); border-top:0;
+  border-radius:0 0 14px 14px;
+  background:#0f2024ee;  /* se preferisci bianca: #fff e color:#0b1416 */
+  color:var(--ink); padding:16px;
+  box-shadow:0 20px 48px rgba(0,0,0,.35);
+}
+
+/* sezione SCHEDA */
+.facts{margin:10px 0 12px;}
+.facts img{width:100%; height:auto; border-radius:12px; display:block;}
+</style>
+</head>
+<body>
+  <div class="nav">
+    <a class="btn" href="/dms-gemello-news/landing/home.html" target="_top">← Home</a>
+    <a class="btn" href="/dms-gemello-news/" target="_top">📚 Spot</a>
+    <div class="controls">
+      <label class="switch"><input id="btn-auto" type="checkbox" checked> Auto-rotate</label>
+      <label class="switch"><input id="btn-lines" type="checkbox" checked> Linee</label>
+      <input id="q" placeholder="Cerca ministero…" style="margin-left:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--chip);color:var(--ink);">
+    </div>
+    <div class="title">Mappa Ministeri (sandbox)</div>
+  </div>
+
+  <div class="wrap">
+    <main id="map">
+      <div id="viewport" class="frame">
+        <div id="stage" aria-label="Mappa radiale interattiva">
+          <canvas id="links"></canvas>
+          <div id="world"><!-- qui append .node --></div>
+          <div id="hubIcon" aria-hidden="true"></div>
+        </div>
+      </div>
+    </main>
+
+    <div id="sheet" class="panel" hidden>
+      <h3 class="ttl"></h3>
+      <p class="meta"></p>
+      <div class="chips"></div>
+      <h4 style="margin:16px 0 6px">Documenti</h4>
+      <div class="docs"></div>
+      <p class="legend">Suggerimento: i link "Apri su Spot" evidenziano la card nella libreria; "Apri PDF" apre direttamente il documento (eventuale pagina prefissata).</p>
+    </div>
+  </div>
+
+  <!-- Fullscreen Sheet -->
+  <div id="modal" aria-hidden="true">
+    <div id="card" class="sheet">
+      <div id="sheetHead" class="sheet-head">
+        <h2 class="ttl">Titolo</h2>
+        <div class="actions">
+          <!-- btn dinamici SPOT/PDF -->
+        </div>
+        <div id="minLinks" class="min-links"></div>
+        <button id="close" class="btn x">✕</button>
+      </div>
+
+      <div id="sheetBody" class="sheet-body">
+        <img class="hero" alt="" />
+        <p class="meta"></p>
+        <ul class="bullets"></ul>
+
+        <!-- SCHEDA ministeriale (auto) -->
+        <div id="factsWrap" class="facts" hidden>
+          <img id="factsImg" alt="" />
+        </div>
+
+        <h4 style="margin:16px 0 6px">Documenti</h4>
+        <div class="docs"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* HOTFIX v2.4: viewport/stage/world + pinch-zoom + glow ricerca + deeplink */
+const MAP_PATH = 'cards/_mapping.json';
+const IMG_DIR = 'cards/';
+const FALLBACK = 'generic.png';
+let MAP = {};
+let DATA = [];
+
+// alias minimi per i label corti dei nodi
+const ALIAS = {
+  'MEF'                       : 'MEF · Economia e Finanze',
+  'AgID'                      : 'AgID',
+  'AE'                        : 'AE · Agenzia Entrate',
+  'ADM'                       : 'ADM · Agenzia Dogane e Monopoli',
+  'MIT'                       : 'MIT · Infrastrutture e Trasporti',
+  'MASE'                      : 'MASE · Ambiente e Sicurezza Energetica',
+  'MIMIT'                     : 'MIMIT · Imprese e Made in Italy',
+  'MiC'                       : 'MiC · Cultura',
+  'MASAF'                     : 'MASAF · Agricoltura',
+  'MIM'                       : 'MIM · Istruzione e Merito',
+  'Ministero del Lavoro'      : 'Ministero del Lavoro',
+  'MAECI'                     : 'MAECI · Esteri e Cooperazione',
+  'PagoPA S.p.A.'             : 'PagoPA S.p.A.',
+  'Salute'                    : 'Salute',
+  'Turismo'                   : 'Turismo',
+  'Ministero dell\'Interno'   : 'Ministero dell\'Interno'
+};
+
+// risoluzione chiave dal testo del nodo
+function resolveKey(nodeLabel) {
+  const clean = nodeLabel.replace(/\s+•.*/,'').trim(); // taglia eventuale " • …"
+  if (MAP[nodeLabel]) return nodeLabel;
+  if (ALIAS[clean] && MAP[ALIAS[clean]]) return ALIAS[clean];
+  // fuzzy: prima chiave che inizia con il testo pulito
+  const k = Object.keys(MAP).find(k => k.toLowerCase().startsWith(clean.toLowerCase()));
+  return k || null;
+}
+let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
+let phase=0, speed=0.0016, rotating=true;
+const SHOW = ['pcm','mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm'];
+
+// selettori viewport/stage/world
+const viewport=document.getElementById('viewport');
+const stage=document.getElementById('stage');
+const world=document.getElementById('world');
+const links=document.getElementById('links');
+
+// trasformazioni globali per pinch-zoom
+let scale=1, panX=0, panY=0, lastDist=null;
+function apply(){
+  // mantieni SEMPRE il baseline di centratura
+  world.style.transform = `translate(-50%,-50%) translate(${panX}px,${panY}px) scale(${scale})`;
+}
+
+// layout: centro calcolato sempre sullo stage
+function layout(){
+  const rect = stage.getBoundingClientRect();
+  cx = rect.width/2; cy = rect.height/2;
+  const S = Math.min(rect.width, rect.height);
+  Rx1 = Math.max(60, S*0.36);
+  Ry1 = Math.max(40, rect.height*0.28);
+  Rx2 = Math.max(80, S*0.46);
+  Ry2 = Math.max(50, rect.height*0.36);
+  links.width = rect.width; links.height = rect.height;
+  redraw();
+}
+
+// posiziona i nodi RELATIVI al centro (cx,cy) perché #world è già centrato
+function place(el, xStage, yStage){
+  el.style.left = (xStage - cx) + 'px';   // sottraggo il centro
+  el.style.top  = (yStage - cy) + 'px';
+  el.style.transform = 'translate(-50%,-50%)';
+}
+function ellipseXY(rx,ry,a){ return [cx + rx*Math.cos(a), cy + ry*Math.sin(a)]; }
+function jitter(i){ return (i%2 ? +0.06 : -0.06); }
+
+/* i tile DEVONO nascere in #world */
+function mkNode(m){
+  const el=document.createElement('div');
+  el.className='node';
+  el.dataset.id=m.id;
+  el.innerHTML=`<div class="label">${m.nome}</div>`;
+  el.onclick=()=>openCard(m.nome);  // usa openCard invece di openFull
+  return el;
+}
+
+function distribute(items, rx, ry, klass){
+  const n = items.length || 1;
+  items.forEach((m,i)=>{
+    const a = (i/n)*2*Math.PI + phase + jitter(i) - Math.PI/2;
+    const [x,y] = ellipseXY(rx, ry, a);
+    let el = document.querySelector(`.node[data-id="${m.id}"]`);
+    if(!el){ el = mkNode(m); world.appendChild(el); }
+    el.classList.add(klass);
+    place(el, x, y);
+  });
+}
+
+// linee: ricalcola endpoint sommando il centro
+function drawLines(all){
+  const ctx = links.getContext('2d');
+  ctx.clearRect(0,0,links.width,links.height);
+  if(document.documentElement.dataset.lines==='off') return;
+  ctx.strokeStyle = 'rgba(134,239,172,.22)';
+  ctx.lineWidth = 1.2;
+  all.forEach(m=>{
+    const el = document.querySelector(`.node[data-id="${m.id}"]`);
+    if(!el) return;
+    const x = cx + parseFloat(el.style.left || 0);
+    const y = cy + parseFloat(el.style.top  || 0);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke();
+  });
+}
+
+function redraw(){
+  if(!DATA.length) return;
+  const ALL = DATA.filter(m => SHOW.includes(m.id));
+  const r1 = ALL.filter(d => (d.ring||1)==1);
+  const r2 = ALL.filter(d => (d.ring||2)==2);
+  distribute(r1, Rx1, Ry1, 'r1');
+  distribute(r2, Rx2, Ry2, 'r2');
+  drawLines(ALL);
+}
+
+/* animazione */
+let raf;
+function tick(){ if(rotating) phase += speed; redraw(); raf = requestAnimationFrame(tick); }
+
+// toggle linee
+document.documentElement.dataset.lines='on';
+document.getElementById('btn-lines')?.addEventListener('change',e=>{
+  document.documentElement.dataset.lines=e.target.checked?'on':'off';
+  redraw();
+});
+
+// ricerca soft con glow interattivo
+const q=document.getElementById('q');
+q?.addEventListener('input',()=>{
+  const v=q.value.trim().toLowerCase();
+  document.querySelectorAll('.node').forEach(n=>{
+    if(n.classList.contains('center'))return;
+    const hit=n.querySelector('.label').textContent.toLowerCase().includes(v);
+    n.classList.toggle('hit', v && hit);
+    n.style.opacity=v?(hit?1:.18):1;
+  });
+});
+q?.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const v=q.value.trim().toLowerCase();
+    const hit=[...document.querySelectorAll('.node')].find(n=>
+      !n.classList.contains('center') && 
+      n.querySelector('.label').textContent.toLowerCase().includes(v)
+    );
+    if(hit){
+      const m=DATA.find(x=>x.id===hit.dataset.id);
+      if(m)openFull(m);
+    }
+  }
+});
+
+// pinch-zoom + pan (iPad/desktop)
+let isDragging=false, startX=0, startY=0;
+
+stage.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  scale = Math.max(0.5, Math.min(2.5, scale * delta));
+  apply();
+}, {passive:false});
+
+stage.addEventListener('mousedown', e => {
+  isDragging=true; startX=e.clientX-panX; startY=e.clientY-panY;
+});
+stage.addEventListener('mousemove', e => {
+  if(!isDragging) return;
+  panX=e.clientX-startX; panY=e.clientY-startY; apply();
+});
+stage.addEventListener('mouseup', () => isDragging=false);
+
+// touch pinch-zoom
+stage.addEventListener('touchstart', e => {
+  if(e.touches.length===2){
+    const [t1,t2]=e.touches;
+    lastDist=Math.hypot(t1.clientX-t2.clientX, t1.clientY-t2.clientY);
+  } else if(e.touches.length===1){
+    isDragging=true;
+    startX=e.touches[0].clientX-panX; startY=e.touches[0].clientY-panY;
+  }
+});
+stage.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if(e.touches.length===2 && lastDist){
+    const [t1,t2]=e.touches;
+    const dist=Math.hypot(t1.clientX-t2.clientX, t1.clientY-t2.clientY);
+    scale=Math.max(0.5, Math.min(2.5, scale*(dist/lastDist)));
+    lastDist=dist; apply();
+  } else if(e.touches.length===1 && isDragging){
+    panX=e.touches[0].clientX-startX; panY=e.touches[0].clientY-startY; apply();
+  }
+}, {passive:false});
+stage.addEventListener('touchend', () => {isDragging=false; lastDist=null;});
+
+// deep-link
+document.addEventListener('DOMContentLoaded',()=>{
+  const id=new URLSearchParams(location.search).get('id');
+  if(id){
+    const m=DATA.find(x=>x.id===id);
+    if(m)setTimeout(()=>openFull(m),100);
+  }
+});
+
+// Modal compatto per le schede
+let currentSlides = [];
+let currentSlideIndex = 0;
+
+// apertura scheda (modal compatto)
+function openCard(nodeLabel){
+  const key  = resolveKey(nodeLabel);
+  const imgs = (key && MAP[key]) ? MAP[key] : [FALLBACK];
+  showModal(key || nodeLabel, imgs);
+}
+
+// mostra modal con dimensioni compatte
+function showModal(title, imgs){
+  currentSlides = imgs;
+  currentSlideIndex = 0;
+  
+  const modal = document.getElementById('modal');
+  const card = document.getElementById('card');
+  
+  // blocca scroll del body
+  document.body.style.overflow = 'hidden';
+  
+  // aggiorna contenuto
+  card.innerHTML = renderSlide(imgs, 0);
+  
+  // mostra modal
+  modal.style.display = 'flex';
+}
+
+// rendering immagine + frecce (multi-slide solo se serve)
+function renderSlide(imgs, idx){
+  const src = IMG_DIR + (imgs[idx] || FALLBACK);
+  return `
+    <div class="mm-head">
+      <button class="mm-back" onclick="closeModal()">← Torna alla mappa</button>
+      <div class="mm-spacer"></div>
+    </div>
+    <div class="mm-body">
+      <img src="${src}" onerror="this.src='${IMG_DIR}${FALLBACK}'" style="width:100%;height:auto;">
+    </div>
+    ${imgs.length>1 ? `
+      <button class="mm-nav mm-prev" onclick="navSlide(-1)">◀︎</button>
+      <button class="mm-nav mm-next" onclick="navSlide(1)">▶︎</button>` : ``}
+  `;
+}
+
+// navigazione slide
+function navSlide(direction){
+  if(currentSlides.length <= 1) return;
+  
+  currentSlideIndex += direction;
+  if(currentSlideIndex < 0) currentSlideIndex = currentSlides.length - 1;
+  if(currentSlideIndex >= currentSlides.length) currentSlideIndex = 0;
+  
+  const card = document.getElementById('card');
+  card.innerHTML = renderSlide(currentSlides, currentSlideIndex);
+}
+
+// chiusura modal
+function closeModal(){
+  const modal = document.getElementById('modal');
+  modal.style.display = 'none';
+  
+  // ripristina scroll del body
+  document.body.style.overflow = '';
+}
+
+// gestione tastiera
+document.addEventListener('keydown', (e) => {
+  const modal = document.getElementById('modal');
+  if(modal.style.display === 'flex') {
+    if(e.key === 'Escape') closeModal();
+    if(e.key === 'ArrowLeft') navSlide(-1);
+    if(e.key === 'ArrowRight') navSlide(1);
+  }
+});
+
+// click su overlay per chiudere
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('modal');
+  if(e.target === modal) closeModal();
+});
+
+/* bootstrap */
+async function bootstrap(){
+  try{ 
+    const r = await fetch(MAP_PATH,{cache:'no-store'}); 
+    MAP = await r.json(); 
+    
+    // Creo dati fittizi per i nodi basandomi sui ministeri da mostrare
+    DATA = [
+      {id:'mef', nome:'MEF'},
+      {id:'interno', nome:'Ministero dell\'Interno'},
+      {id:'mimit', nome:'MIMIT'},
+      {id:'mase', nome:'MASE'},
+      {id:'mit', nome:'MIT'},
+      {id:'salute', nome:'Salute'},
+      {id:'maeci', nome:'MAECI'},
+      {id:'agid', nome:'AgID'},
+      {id:'pagopa', nome:'PagoPA S.p.A.'},
+      {id:'ae', nome:'AE'},
+      {id:'adm', nome:'ADM'}
+    ];
+  }catch(e){ 
+    MAP={}; DATA=[]; 
+  }
+  window.DATA = DATA; // rendi accessibile globalmente
+  window.MAP = MAP;   // rendi accessibile il mapping
+  layout(); cancelAnimationFrame(raf); tick();
+}
+document.addEventListener('DOMContentLoaded', bootstrap);
+window.addEventListener('resize', layout);
+
+// toggle Auto-rotate
+document.getElementById('btn-auto')?.addEventListener('change', e => {
+  rotating = e.target.checked;
+});
+
+// --- Scheda fullscreen ---
+// --- NAV estesa in ordine preferito ---
+const NAV_IDS = [
+  'mef','interno','mimit','mase','mit','salute',
+  'maeci','agid','pagopa','ae','adm',
+  'mic','turismo','masaf','mim','lavoro'
+];
+
+const modal   = document.getElementById('modal');
+const head    = document.getElementById('sheetHead');
+const body    = document.getElementById('sheetBody');
+const ttl     = head.querySelector('.ttl');
+const actions = head.querySelector('.actions');
+const navMin  = document.getElementById('minLinks');
+
+const imgHero = body.querySelector('.hero');
+const meta    = body.querySelector('.meta');
+const bullets = body.querySelector('.bullets');
+const docsBox = body.querySelector('.docs');
+
+const factsWrap = document.getElementById('factsWrap');
+const factsImg  = document.getElementById('factsImg');
+
+document.getElementById('close').onclick = () => modal.style.display = 'none';
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.style.display='none'; });
+
+// loader scheda: cerca prima PNG poi JPG
+function tryLoadFacts(id){
+  const box = document.getElementById('factsWrap');
+  const img = document.getElementById('factsImg');
+  if(!box || !img) return;
+  const base = `/dms-gemello-news/landing/cards/${id}`;
+  // tenta png -> jpg
+  const test = (src) => new Promise(r => {
+    const i = new Image();
+    i.onload = () => r(src);
+    i.onerror = () => r(null);
+    i.src = src + (src.includes('?')?'':'') ;
+  });
+  (async ()=>{
+    const png = await test(base + '.png');
+    const jpg = png ? png : await test(base + '.jpg');
+    if(png || jpg){
+      img.src = png || jpg;
+      img.alt = id.toUpperCase();
+      box.hidden = false;
+    }else{
+      box.hidden = true;
+    }
+  })();
+}
+
+// nav chips dinamiche
+function buildNavMin(currentId){
+  const box = document.getElementById('minLinks');
+  if(!box || !window.DATA) return;
+  box.innerHTML = '';
+  NAV_IDS
+    .filter(id => id !== currentId && window.DATA.some(d=>d.id===id))
+    .slice(0, 12)
+    .forEach(id=>{
+      const d = window.DATA.find(x=>x.id===id);
+      const b = document.createElement('button');
+      b.className = 'chip nav';
+      b.textContent = (d?.nome_short || d?.nome || id).replace(/\s+/g,' ').trim();
+      b.onclick = ()=>{ const m = window.DATA.find(x=>x.id===id); if(m) openFull(m); };
+      box.appendChild(b);
+    });
+}
+
+function openFull(m){
+  modal.style.display = 'flex';
+  ttl.textContent = m.nome || '';
+
+  // bottoni SPOT/PDF nello slot
+  actions.innerHTML = '';
+  (m.docs||[]).forEach(d=>{
+    const a = document.createElement('a');
+    a.className = 'btn cta';
+    a.target = '_top';
+    const spot = `/dms-gemello-news/#doc-${d.slug}`;
+    const pdf  = `/dms-gemello-news/docs/${d.slug}.pdf${d.page?`#page=${d.page}`:''}`;
+    a.href = d.open==='pdf' ? pdf : spot;
+    a.textContent = d.label || (d.open==='pdf' ? 'Apri PDF' : 'Apri su Spot');
+    actions.appendChild(a);
+  });
+
+  // meta + bullets
+  meta.textContent = [
+    m.problema && `Problema: ${m.problema}`,
+    m.soluzione && `Soluzione: ${m.soluzione}`,
+    m.risultati && `Risultati: ${m.risultati}`,
+    m.ecosistema && `Ecosistema: ${m.ecosistema}`
+  ].filter(Boolean).join(' • ');
+
+  bullets.innerHTML = '';
+  (m.punti||[]).forEach(t=>{ const li=document.createElement('li'); li.textContent=t; bullets.appendChild(li); });
+
+  // hero opzionale
+  if(m.hero){ imgHero.src=m.hero; imgHero.alt=m.alt||''; imgHero.style.display='block'; }
+  else { imgHero.style.display='none'; }
+
+  // SCHEDA auto (se presente in /landing/cards/)
+  tryLoadFacts(m.id);
+
+  // bottoni altri ministeri
+  buildNavMin(m.id);
+}
+</script>
+</body>
+</html>
+
