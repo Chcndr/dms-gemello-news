@@ -2,100 +2,116 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mappa Ministeri — DMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mappa Ministeri – DMS</title>
 <style>
-  :root{--bg:#0e141b;--fg:#e8f0f7;--chip:#1b2a38;--chipfg:#b7c7d6}
-  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu}
-  .wrap{max-width:1200px;margin:20px auto;padding:0 16px}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
-  .chip{background:var(--chip);color:var(--chipfg);padding:8px 12px;border-radius:999px;cursor:pointer;font-size:14px;user-select:none}
-  .chip.active{outline:2px solid #4db3ff;color:#fff}
-  .stage{background:#081018;border-radius:12px;padding:8px;min-height:60vh;display:flex;align-items:center;justify-content:center;position:relative}
-  img.slide{width:100%;height:auto;border-radius:10px;display:block}
-  .nav{position:absolute;right:8px;bottom:8px;display:flex;gap:6px}
-  .nav button{background:#12202d;color:#cfe7ff;border:0;border-radius:6px;padding:8px 10px;cursor:pointer}
-  .empty{width:100%}
-  .hint{position:absolute;left:12px;top:12px;font-size:12px;color:#9bb3c9}
+  :root { --bg:#0f1418; --panel:#19222b; --ink:#cfe7ff; --chip:#253342; --chipOn:#2f94ff; }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:#eaf2fa;font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg),rgba(15,20,24,.8));padding:12px 12px 8px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid #344455;background:var(--chip);color:#eaf2fa;border-radius:999px;padding:.45rem .8rem;cursor:pointer;user-select:none}
+  .chip[aria-pressed="true"]{background:var(--chipOn);border-color:transparent}
+  main{padding:0;max-width:1400px;margin:0 auto}
+  .stage{background:var(--panel);border:1px solid #25313c; border-radius:10px; margin:10px 12px 24px; overflow:hidden}
+  figure{margin:0}
+  img.slide{display:block;width:100%;height:auto}
+  .nav{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;background:#0c1319;border-top:1px solid #1e2a35}
+  .nav button{all:unset;background:#1f2d3a;padding:.45rem .8rem;border-radius:6px;cursor:pointer}
+  .meta{opacity:.8;font-size:.9rem}
+  .hint{opacity:.65;font-size:.85rem;margin-left:8px}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="chips" id="chips"></div>
-  <div class="stage">
-    <div class="hint" id="hint">Seleziona un ministero…</div>
-    <img class="slide" id="slide" src="" alt="" style="display:none">
-    <img class="slide empty" id="empty" src="landing/cards/generic.png" alt="">
-    <div class="nav">
-      <button id="prev" aria-label="Precedente">◀︎</button>
-      <button id="next" aria-label="Successiva">▶︎</button>
-    </div>
-  </div>
-</div>
+  <header>
+    <div class="chips" id="chips"></div>
+    <div class="hint">Suggerimento: usa ⬅︎ / ➜ per cambiare slide.</div>
+  </header>
+  <main>
+    <section class="stage">
+      <figure><img id="slide" class="slide" alt="Scheda ministeriale" src=""></figure>
+      <div class="nav">
+        <button id="prev" aria-label="precedente">◀︎</button>
+        <div class="meta"><span id="label">—</span> · <span id="pos">0</span>/<span id="len">0</span></div>
+        <button id="next" aria-label="successiva">▶︎</button>
+      </div>
+    </section>
+  </main>
+
 <script>
-const MINISTERI = [
-  ["mef","MEF • Economia e Finanze"],
-  ["interno","Ministero dell’Interno"],
-  ["mimit","MIMIT • Imprese e Made in Italy"],
-  ["mase","MASE • Ambiente e Sicurezza Energetica"],
-  ["mit","MIT • Infrastrutture e Trasporti"],
-  ["salute","Salute"],
-  ["mic","MiC • Cultura"],
-  ["turismo","Turismo"],
-  ["masaf","MASAF • Agricoltura"],
-  ["mim","MIM • Istruzione e Merito"],
-  ["lavoro","Ministero del Lavoro"],
-  ["maeci","MAECI • Esteri e Cooperazione"],
-  ["agid","AgID"],
-  ["pagopa","PagoPA S.p.A."],
-  ["ae","AE • Agenzia Entrate"],
-  ["adm","ADM • Agenzia Dogane e Monopoli"]
-];
-let mapping = {}, curKey=null, curIdx=0;
-const chipsEl = document.getElementById('chips');
-const slideEl = document.getElementById('slide');
-const emptyEl = document.getElementById('empty');
-const hintEl = document.getElementById('hint');
+(async () => {
+  // Base paths (relative, safe for Project Pages)
+  const CARDS_DIR = "cards";
+  const mapUrl = CARDS_DIR + "/_mapping.json";
 
-fetch('landing/cards/_mapping.json?_=' + Date.now())
-  .then(r=>r.json()).then(m=>{ mapping=m; init(); })
-  .catch(()=>{ mapping={}; init(); });
+  // Helpers
+  const el = (q) => document.querySelector(q);
+  const img = el("#slide");
+  const chips = el("#chips");
+  const label = el("#label");
+  const pos = el("#pos");
+  const len = el("#len");
 
-function init(){
-  chipsEl.innerHTML = '';
-  MINISTERI.forEach(([key,label])=>{
-    const b=document.createElement('button');
-    b.textContent=label;
-    b.className='chip';
-    b.onclick=()=>select(key);
-    b.dataset.key=key;
-    chipsEl.appendChild(b);
+  // State
+  const M = await fetch(mapUrl).then(r => r.json()).catch(() => ({}));
+  const keys = Object.keys(M);
+  let current = keys[0] || "";
+  let i = 0;
+
+  // UI: build chips
+  keys.forEach((k, idx) => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = k;
+    b.setAttribute("aria-pressed", idx === 0 ? "true" : "false");
+    b.addEventListener("click", () => select(k));
+    chips.appendChild(b);
   });
-  select('mef');
-}
-function select(key){
-  curKey=key; curIdx=0;
-  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c.dataset.key===key));
-  render();
-}
-function filesForKey(key){
-  return (mapping[key]||[]).map(f=>'landing/cards/'+f);
-}
-function render(){
-  const arr = filesForKey(curKey);
-  if(arr.length===0){
-    slideEl.style.display='none';
-    emptyEl.style.display='block';
-    hintEl.textContent = "Nessuna immagine per '"+curKey+"'. Aggiungi file in /landing/cards e aggiorna _mapping.json";
-  }else{
-    slideEl.src = arr[curIdx % arr.length] + '?_=' + Date.now();
-    slideEl.style.display='block';
-    emptyEl.style.display='none';
-    hintEl.textContent = (arr.length>1? (curIdx+1)+'/'+arr.length+' — ' : '') + curKey;
+
+  function select(k) {
+    current = k;
+    i = 0;
+    chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c.textContent === k ? "true" : "false"));
+    render();
   }
-}
-document.getElementById('prev').onclick=()=>{ if(!curKey)return; curIdx = (curIdx-1+999)%999; render(); };
-document.getElementById('next').onclick=()=>{ if(!curKey)return; curIdx = (curIdx+1)%999; render(); };
+
+  function srcFor(k, idx) {
+    const list = M[k] || [];
+    const name = list[idx] || "generic.png";
+    return CARDS_DIR + "/" + name;
+  }
+
+  function render() {
+    const list = M[current] || [];
+    len.textContent = list.length || 1;
+    label.textContent = current || "—";
+    pos.textContent = (i + 1);
+    const src = srcFor(current, i);
+    img.src = src;
+    img.onerror = () => { img.src = CARDS_DIR + "/generic.png"; };
+  }
+
+  function next() {
+    const L = (M[current] || []).length || 1;
+    i = (i + 1) % L;
+    render();
+  }
+  function prev() {
+    const L = (M[current] || []).length || 1;
+    i = (i - 1 + L) % L;
+    render();
+  }
+
+  el("#next").addEventListener("click", next);
+  el("#prev").addEventListener("click", prev);
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") next();
+    if (e.key === "ArrowLeft") prev();
+  });
+
+  // Boot
+  render();
+})();
 </script>
 </body>
 </html>
