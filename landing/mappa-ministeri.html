@@ -1218,6 +1218,43 @@ function openFull(m){
   }
 })();
 </script>
+<!-- ===== MAP v4.2.1 — prune: tieni SOLO nav + facts, elimina ogni altro blocco ===== -->
+<script>
+(function(){
+  const KEEP = new Set(["minLinks","factsWrap"]);
+
+  function pruneCard(){
+    const card = document.getElementById("card");
+    if(!card) return;
+
+    // 1) lascia solo i nostri due elementi (nav e facts)
+    [...card.children].forEach(n=>{
+      if(!KEEP.has(n.id)) n.remove();
+    });
+
+    // 2) se qualcuno inietta IMG/IFRAME/OBJECT dentro altri wrapper, rimuovili comunque
+    [...card.querySelectorAll("img,iframe,object,embed,canvas,video")]
+      .forEach(el=>{ if(!el.closest("#factsWrap")) el.remove(); });
+
+    // 3) elimina eventuali intestazioni/box "Documenti"
+    [...card.querySelectorAll("*")].forEach(n=>{
+      if(n.closest("#factsWrap")) return;
+      const t=(n.textContent||"").trim().toLowerCase();
+      if(t==="documenti" || t.startsWith("documenti")) n.remove();
+    });
+  }
+
+  // prima pulizia + guardia continua (blocchi che compaiono dopo)
+  const t0 = setInterval(pruneCard,150);
+  setTimeout(()=>clearInterval(t0),10000);
+  const card = document.getElementById("card");
+  if(card){
+    new MutationObserver(pruneCard).observe(card,{childList:true,subtree:true});
+  }
+  pruneCard();
+})();
+</script>
+<!-- ===== END v4.2.1 ===== -->
 </body>
 </html>
 
