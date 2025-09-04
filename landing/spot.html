@@ -1,327 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DMS • SPOT - Documenti</title>
-  <style>
-    :root {
-      --bg: #0d1117;
-      --card: #161b22;
-      --fg: #c9d1d9;
-      --ac: #58a6ff;
-      --border: #30363d;
-      --hover: #21262d;
-    }
-    
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font: 16px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial;
-    }
-    
-    .header {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      background: #0b1320;
-      position: sticky;
-      top: 0;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .nav a {
-      color: var(--fg);
-      text-decoration: none;
-      margin-right: 14px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      transition: background 0.2s;
-    }
-    
-    .nav a:hover, .nav a.active {
-      background: #202938;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 32px 20px;
-    }
-    
-    .title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 8px;
-      color: var(--ac);
-    }
-    
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.8;
-      margin-bottom: 48px;
-    }
-    
-    .pdf-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-    }
-    
-    .pdf-item {
-      display: block;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      text-decoration: none;
-      color: var(--fg);
-      transition: all 0.3s ease;
-      position: relative;
-    }
-    
-    .pdf-item:hover {
-      background: var(--hover);
-      border-color: var(--ac);
-      transform: translateY(-2px);
-    }
-    
-    .pdf-item h3 {
-      color: var(--ac);
-      font-size: 1.2rem;
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-    
-    .pdf-item p {
-      opacity: 0.8;
-      font-size: 0.95rem;
-      line-height: 1.4;
-    }
-    
-    .pdf-tag {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: var(--ac);
-      color: #001027;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    
-    /* Evidenziazione attiva */
-    .is-active {
-      outline: 2px solid #16a34a;
-      background: rgba(22, 163, 74, 0.08);
-    }
-    
-    /* Video section */
-    .video-section {
-      margin-top: 64px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-    
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-      margin-top: 24px;
-    }
-    
-    .video-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    
-    .video-item video {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-    }
-    
-    .video-info {
-      padding: 16px;
-    }
-    
-    .video-info h4 {
-      color: var(--ac);
-      margin-bottom: 8px;
-    }
-    
-    @media (max-width: 768px) {
-      .title {
-        font-size: 2rem;
-      }
-      
-      .pdf-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DMS · Gemello Digitale — Spot & Documenti</title>
+<meta name="color-scheme" content="dark">
+<style>
+  :root{ --bgA:#0e2d38; --bgB:#155268; --ink:#dde2e4; --accent:#46a0bd; --r:14px; }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink);
+    background: radial-gradient(1000px 700px at 60% 18%, #1a566b 0%, transparent 60%),
+                linear-gradient(180deg, var(--bgB), var(--bgA));
+    font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  }
+  .top{display:flex; gap:10px; padding:18px}
+  .btn{
+    appearance:none; border:2px solid rgba(255,255,255,.2);
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    color:var(--ink); padding:.55rem .9rem; border-radius:12px; font-weight:700;
+    backdrop-filter:blur(6px); text-decoration:none; cursor:pointer;
+  }
+  .wrap{display:grid; grid-template-columns: minmax(260px, 520px) 1fr; gap:18px; padding:0 18px 28px}
+  .panel{background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:14px}
+  h2{margin:6px 6px 12px 6px}
+  .doc{display:flex; align-items:center; justify-content:space-between; gap:8px;
+       border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:.7rem 1rem;
+       margin:10px 6px; background:rgba(255,255,255,.05); text-decoration:none; color:var(--ink)}
+  .doc:hover{background:rgba(255,255,255,.08)}
+  .videos{display:flex; flex-direction:column; gap:14px}
+  video{width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.18); display:block}
+  @media (max-width:900px){ .wrap{grid-template-columns: 1fr} }
+</style>
+<link rel="stylesheet" href="./assets/theme-green.css">
+<!-- THEME GREEN OVERRIDE (safe, removable) -->
+<style id="theme-green">
+  :root{
+    /* Fondo: verde scuro elegante */
+    --bg-a:#071a1d;
+    --bg-b:#0b2730;
+    /* Testi */
+    --ink:#e8fbff;
+    --muted:#9bd6de;
+    /* Pannelli e bordi */
+    --panel:rgba(7,26,29,.78);
+    --stroke:rgba(173,234,240,.18);
+    /* Accenti */
+    --accent:#14b8a6;
+    --accent2:#0b5fff;
+  }
+  /* Forziamo lo sfondo a usare le variabili sopra */
+  body{
+    background:
+      radial-gradient(1200px 800px at 20% -10%, rgba(20,184,166,.08), transparent 60%),
+      linear-gradient(180deg, var(--bg-b), var(--bg-a)) !important;
+  }
+</style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div style="font-weight:800">DMS • SPOT</div>
-    <nav class="nav">
-      <a href="../index.html">Home</a>
-      <a href="./mappa-ministeri.html">Mappa</a>
-      <a href="./spot.html" class="active">Spot</a>
-    </nav>
-  </header>
-
-  <!-- Container -->
-  <div class="container">
-    <h1 class="title">📚 SPOT DMS</h1>
-    <p class="subtitle">Documenti e analisi del Digital Management System</p>
-
-    <!-- PDF Grid -->
-    <div class="pdf-grid">
-      <!-- Documenti principali -->
-      <a class="pdf-item" data-doc="analisi-soluzione-dms" href="../docs/ANALISI E SOLUZIONE DMS.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Analisi & Soluzione DMS</h3>
-        <p>Analisi completa e soluzioni proposte per l'implementazione del Digital Management System.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="app-assistente-personale" href="../docs/APP DMS Assistente Personale.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>App DMS – Assistente</h3>
-        <p>Applicazione mobile e assistente digitale personale per cittadini e imprese.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="bolkestein-mercati" href="../docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Bolkestein (area pubblica)</h3>
-        <p>Gestione delle concessioni e commercio su area pubblica secondo la direttiva Bolkestein.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="carbon-credit-dms" href="../docs/CARBON CREDIT DMS.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Carbon Credit DMS</h3>
-        <p>Sistema di gestione crediti di carbonio integrato nel Digital Management System.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="costi-pa-roi" href="../docs/COSTI PA.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Costi PA & ROI</h3>
-        <p>Analisi costi-benefici e ritorno sull'investimento per la Pubblica Amministrazione.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="presentazione-dms" href="../docs/DMS         ALL-IN-ONE .pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Presentazione DMS</h3>
-        <p>Presentazione generale e panoramica completa del Digital Management System.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="riaccendiamo-mercati" href="../docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Riaccendiamo i Mercati</h3>
-        <p>Strategia per rivitalizzare i mercati e le città attraverso la digitalizzazione.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="dms-clust-er" href="../docs/DMS E CLUST-ER.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>DMS & CLUST-ER</h3>
-        <p>Integrazione del DMS con il sistema CLUST-ER per l'innovazione regionale.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="riequilibrio-ecc" href="../docs/DMS ECC.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Riequilibrio (ECC)</h3>
-        <p>Riequilibrio fiscale e ambientale possibile attraverso il DMS.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="once-only-sdg" href="../docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Once-Only / SDG</h3>
-        <p>Principio "Once Only" e Single Digital Gateway per la digitalizzazione della PA.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="dms-spot" href="../docs/DMS SPOT 1.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>DMS SPOT – Note</h3>
-        <p>Note tecniche e documentazione del sistema SPOT DMS.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="dms-sset" href="../docs/DMS SSET.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>DMS SSET (SUAP)</h3>
-        <p>Sistema di Supporto per Sportello Unico Attività Produttive.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="dossier-nazionale" href="../docs/DOSSIER NAZIONALE.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Dossier Nazionale</h3>
-        <p>Dossier nazionale per l'implementazione del DMS a livello paese.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="equilibrio-ecosostenibile" href="../docs/EQUILIBRIO ECOSOSTENIBILE.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Equilibrio ecosostenibile</h3>
-        <p>Sostenibilità ambientale e equilibrio ecologico nel Digital Management System.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="hub-nazionale-del-commercio" href="../docs/HUB NAZIONALE DEL COMMERCIO.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Hub Nazionale del Commercio</h3>
-        <p>Progetto per la creazione dell'Hub Nazionale del Commercio digitale.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="citta-metropolitana" href="../docs/LA CITTÀ METROPOLITANA.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Città Metropolitana</h3>
-        <p>Applicazione del DMS nelle aree metropolitane e gestione urbana integrata.</p>
-      </a>
-
-      <a class="pdf-item" data-doc="relazione-controlli" href="../docs/RELAZIONE SUI CONTROLLI.pdf" target="_blank">
-        <div class="pdf-tag">PDF</div>
-        <h3>Relazione sui Controlli</h3>
-        <p>Relazione dettagliata sui sistemi di controllo e monitoraggio del DMS.</p>
-      </a>
-    </div>
-
-    <!-- Video Section -->
-    <div class="video-section">
-      <h2 style="color: var(--ac); font-size: 1.8rem; margin-bottom: 16px;">🎬 Video</h2>
-      <div class="video-grid">
-        <div class="video-item">
-          <video controls>
-            <source src="../videos/spot-dms.mp4" type="video/mp4">
-            Il tuo browser non supporta il tag video.
-          </video>
-          <div class="video-info">
-            <h4>SPOT DMS - Presentazione</h4>
-            <p>Video introduttivo al sistema SPOT del Digital Management System.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="top">
+    <a class="btn" href="./home.html">← Home</a>
+    <a class="btn" href="./mappa-ministeri.html">🗺️ Mappa</a>
   </div>
 
-  <!-- Script per evidenziazione hash -->
-  <script>
-    (function () {
-      const h = location.hash.replace(/^#/, '');
-      const p = new URLSearchParams(h);
-      const slug = p.get('doc');
-      if (!slug) return;
-      const el = document.querySelector(`[data-doc="${slug}"]`);
-      if (el) {
-        el.classList.add('is-active');
-        el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      }
-    })();
-  </script>
+  <div class="wrap">
+    <section class="panel">
+      <h2>Documenti (PDF)</h2>
+      <div id="docs"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Video</h2>
+      <div class="videos">
+        <video controls playsinline muted preload="metadata" poster="./assets/poster-hub.jpg">
+          <source src="./videos/teaser-hub-dms.mp4" type="video/mp4">
+        </video>
+        <video controls playsinline muted preload="metadata" poster="./assets/poster-hub.jpg">
+          <source src="./videos/teaser-hub-dms.mp4" type="video/mp4">
+        </video>
+        <video controls playsinline muted preload="metadata" poster="./assets/poster-riaccendiamo.jpg">
+          <source src="./videos/teaser-riaccendiamo.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+  </div>
+
+<script>
+  // Lista PDF ordinata (solo file esistenti, nessun 404)
+  const PDFS = [
+    ["Hub Nazionale del Commercio","./docs/hub-nazionale-commercio.pdf"],
+    ["DMS & CLUST-ER","./docs/dms-cluster-er.pdf"],
+    ["Dossier Nazionale","./docs/dossier-nazionale.pdf"],
+    ["Equilibrio Ecosostenibile","./docs/equilibrio-ecosostenibile.pdf"],
+    ["Passaporto EU","./docs/passaporto-eu.pdf"],
+    ["Presentazione DMS (Bologna)","./docs/presentazione-dms-bologna.pdf"],
+    ["Hub Urbani e di Prossimità in Emilia-Romagna","./docs/hub-urbani-prossimita-er.pdf"],
+    ["Gemello DMS","./docs/gemello-dms.pdf"],
+    ["DMS ECC (narrativo)","./docs/dms-ecc-narrativo.pdf"],
+    ["DMS ECC (tecnico)","./docs/dms-ecc-tecnico.pdf"],
+    ["Carbon Credit – Logica","./docs/carbon-credit-logica.pdf"],
+    ["Carbon Credit DMS","./docs/carbon-credit-dms.pdf"],
+    ["Ecosistema Costi PA","./docs/ecosistema-costi-pa.pdf"],
+    ["Analisi & Soluzione DMS","./docs/analisi-soluzione-dms.pdf"],
+    ["Scenario Futuro","./docs/scenario-futuro.pdf"]
+  ];
+  const list = document.getElementById('docs');
+  PDFS.forEach(([title,href])=>{
+    const a=document.createElement('a');
+    a.className='doc'; a.href=href; a.target='_blank'; a.rel='noopener';
+    a.innerHTML=`<span>${title}</span><span>Apri ⤴</span>`;
+    list.appendChild(a);
+  });
+</script>
 </body>
 </html>
 

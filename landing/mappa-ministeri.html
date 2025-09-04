@@ -145,123 +145,6 @@ a{color:inherit;text-decoration:none}
   right:10px;
 }
 
-/* === PATCH: Barra verde + layout finestra === */
-:root{
-  /* usa il verde del sito se esiste, altrimenti fallback */
-  --brand-green: var(--accent, #19c37d);
-  --sheet-radius: 14px;
-}
-
-/* contenitore modale esistente: aggiungo solo header e rifiniture */
-.sheet {
-  border-radius: var(--sheet-radius);
-  overflow: hidden;
-  background: #0b1220;
-  box-shadow: 0 20px 60px rgba(0,0,0,.45);
-  width: min(1080px, 92vw);
-  max-height: calc(86vh - 60px);
-  display:flex;
-  flex-direction:column;
-}
-
-.sheet__header{
-  display:flex; align-items:center; gap:12px;
-  padding:14px 18px;
-  min-height:64px;
-  background: linear-gradient(0deg,var(--brand-green),var(--brand-green));
-  color:#fff; font-weight:600; letter-spacing:.2px;
-}
-.sheet__title{ flex:1; font-size:18px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.sheet__btn{
-  appearance:none; border:0; cursor:pointer;
-  padding:9px 12px; border-radius:10px; font-weight:600;
-}
-.sheet__btn--ghost{ background:rgba(255,255,255,.14); color:#fff; }
-.sheet__btn--light{ background:#fff; color:#0b1220; }
-
-.sheet__body{ overflow:auto; padding:0; background:#101826; }
-.sheet__nav{
-  position:absolute; inset:auto 14px 14px auto; display:flex; gap:6px;
-}
-.sheet__nav .arrow{
-  width:38px; height:38px; border-radius:10px; 
-  background:rgba(255,255,255,.1); color:#fff; border:0; cursor:pointer;
-}
-
-/* === TESTATA VERDE MODAL === */
-:root{
-  --brand-green: #16a34a;
-  --brand-green-dark:#0e7a36;
-}
-
-.card-modal__header{
-  position: sticky; top: 0;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: .75rem;
-  padding: .75rem .9rem;
-  background: linear-gradient(0deg,var(--brand-green),var(--brand-green));
-  color:#fff;
-  border-radius:12px 12px 0 0;
-  box-shadow: 0 8px 24px rgba(0,0,0,.18);
-  min-height: 56px;
-}
-
-.card-modal__title{
-  text-align:center;
-  font-weight:700;
-  letter-spacing:.2px;
-  text-shadow: 0 1px 0 rgba(0,0,0,.25);
-}
-
-.btn--ghost{
-  background: rgba(255,255,255,.12);
-  color:#fff; border:1px solid rgba(255,255,255,.2);
-  padding:.45rem .75rem; border-radius:10px;
-  cursor: pointer;
-}
-.btn--ghost:hover{ background: rgba(255,255,255,.18); }
-
-.actions .btn--spot{
-  background:#fff; color:#083b2b;
-  border:none; padding:.45rem .65rem; border-radius:10px;
-  margin-left:.4rem; font-weight:600;
-  text-decoration: none; cursor: pointer;
-}
-.actions .btn--spot:hover{ filter:brightness(.95) }
-
-/* immagini slide già full-width: mi assicuro che restino responsive */
-.sheet img{ width:100%; height:auto; display:block; }
-
-/* === NUOVO HEADER VERDE + BOTTONI SPOT === */
-:root{ --brand-green:#18c964; --brand-green-2:#14b85a; --radius-xl:14px; }
-
-.sheet-header{
-  min-height:64px; display:flex; align-items:center; gap:12px;
-  padding:10px 14px;
-  background:linear-gradient(0deg,var(--brand-green),var(--brand-green-2));
-  color:#042312; border-top-left-radius:var(--radius-xl); border-top-right-radius:var(--radius-xl);
-}
-.sheet-header .title{ font-weight:800; letter-spacing:.2px; }
-.sheet-header .spacer{ flex:1; }
-
-.sheet-header .btn{
-  border:0; border-radius:999px; padding:8px 14px; font-weight:700;
-  background:rgba(255,255,255,.92); color:#0b1d10; cursor:pointer;
-}
-
-.doc-btns{ display:flex; gap:8px; flex-wrap:wrap; }
-.doc-btns .doc-btn{
-  border:0; border-radius:999px; padding:8px 12px; font-weight:700;
-  background:rgba(255,255,255,.92); color:#0b1d10; cursor:pointer;
-  white-space:nowrap;
-}
-.doc-btns .doc-btn:hover{ filter:brightness(.95); }
-
-/* facoltativo: evidenza del bottone attivo in SPOT */
-.is-active{ outline:2px solid var(--brand-green); outline-offset:2px; }
-
 .sheet-head{
   display:flex; gap:12px; align-items:center;
   padding:12px 14px; border:1px solid var(--sheet-brd);
@@ -455,9 +338,8 @@ body{overflow:hidden;}
 </head>
 <body>
   <div class="nav">
-    <a class="btn" href="../index.html">Home</a>
-    <a class="btn" href="./mappa-ministeri.html">Mappa</a>
-    <a class="btn" href="./spot.html">Spot</a>
+    <a class="btn" href="/dms-gemello-news/landing/home.html" target="_top">← Home</a>
+    <a class="btn" href="/dms-gemello-news/" target="_top">📚 Spot</a>
     <div class="controls">
       <label class="switch"><input id="btn-auto" type="checkbox" checked> Auto-rotate</label>
       <label class="switch"><input id="btn-lines" type="checkbox" checked> Linee</label>
@@ -490,10 +372,13 @@ body{overflow:hidden;}
   <!-- Fullscreen Sheet -->
   <div id="modal" aria-hidden="true">
     <div id="card" class="sheet">
-      <div class="card-modal__header">
-        <button class="btn--ghost" id="backToMap">← Torna alla mappa</button>
-        <div class="card-modal__title" id="modalMinistryTitle">Ministero</div>
-        <div class="actions" id="spotButtons"></div>
+      <div id="sheetHead" class="sheet-head">
+        <h2 class="ttl">Titolo</h2>
+        <div class="actions">
+          <!-- btn dinamici SPOT/PDF -->
+        </div>
+        <div id="minLinks" class="min-links"></div>
+        <button id="close" class="btn x">✕</button>
       </div>
 
       <div id="sheetBody" class="sheet-body">
@@ -514,43 +399,30 @@ body{overflow:hidden;}
 
 <script>
 /* HOTFIX v2.4: viewport/stage/world + pinch-zoom + glow ricerca + deeplink */
-const MAP_PATH = './cards/_mapping.json';
+const MAP_PATH = 'cards/_mapping.json';
 const IMG_DIR = 'cards/';
 const FALLBACK = 'generic.png';
 let MAP = {};
 let DATA = [];
 
-// Loader con fallback per CORS
-async function loadMapping() {
-  try {
-    const r = await fetch(MAP_PATH, {cache:'no-store'});
-    if (!r.ok) throw new Error(r.status);
-    return await r.json();
-  } catch (e) {
-    // Fallback quando si apre via file:// o il JSON non è raggiungibile
-    const el = document.getElementById('DOC_MAP');
-    return el ? JSON.parse(el.textContent) : {};
-  }
-}
-
 // alias minimi per i label corti dei nodi
 const ALIAS = {
-  'MEF'                       : 'MEF • Economia e Finanze',
+  'MEF'                       : 'MEF · Economia e Finanze',
   'AgID'                      : 'AgID',
-  'AE'                        : 'AE • Agenzia Entrate',
-  'ADM'                       : 'ADM • Agenzia Dogane e Monopoli',
-  'MIT'                       : 'MIT • Infrastrutture e Trasporti',
-  'MASE'                      : 'MASE • Ambiente e Sicurezza Energetica',
-  'MIMIT'                     : 'MIMIT • Imprese e Made in Italy',
-  'MiC'                       : 'MiC • Cultura',
-  'MASAF'                     : 'MASAF • Agricoltura',
-  'MIM'                       : 'MIM • Istruzione e Merito',
-  'Interno'                   : 'Ministero dell\'Interno',
+  'AE'                        : 'AE · Agenzia Entrate',
+  'ADM'                       : 'ADM · Agenzia Dogane e Monopoli',
+  'MIT'                       : 'MIT · Infrastrutture e Trasporti',
+  'MASE'                      : 'MASE · Ambiente e Sicurezza Energetica',
+  'MIMIT'                     : 'MIMIT · Imprese e Made in Italy',
+  'MiC'                       : 'MiC · Cultura',
+  'MASAF'                     : 'MASAF · Agricoltura',
+  'MIM'                       : 'MIM · Istruzione e Merito',
+  'Ministero del Lavoro'      : 'Ministero del Lavoro',
+  'MAECI'                     : 'MAECI · Esteri e Cooperazione',
+  'PagoPA S.p.A.'             : 'PagoPA S.p.A.',
   'Salute'                    : 'Salute',
-  'Lavoro'                    : 'Ministero del Lavoro',
-  'MAECI'                     : 'MAECI • Esteri e Cooperazione',
-  'PagoPA'                    : 'PagoPA S.p.A.',
-  'Turismo'                   : 'Turismo'
+  'Turismo'                   : 'Turismo',
+  'Ministero dell\'Interno'   : 'Ministero dell\'Interno'
 };
 
 // risoluzione chiave dal testo del nodo
@@ -822,28 +694,26 @@ document.addEventListener('click', (e) => {
 /* bootstrap */
 async function bootstrap(){
   try{ 
-    MAP = await loadMapping(); 
+    const r = await fetch(MAP_PATH,{cache:'no-store'}); 
+    MAP = await r.json(); 
     
     // Creo dati fittizi per i nodi basandomi sui ministeri da mostrare
     DATA = [
       {id:'mef', nome:'MEF'},
-      {id:'interno', nome:'Interno'},
-      {id:'mit', nome:'MIT'},
-      {id:'mase', nome:'MASE'},
-      {id:'salute', nome:'Salute'},
+      {id:'interno', nome:'Ministero dell\'Interno'},
       {id:'mimit', nome:'MIMIT'},
-      {id:'lavoro', nome:'Lavoro'},
-      {id:'mic', nome:'MiC'},
-      {id:'mim', nome:'MIM'},
-      {id:'turismo', nome:'Turismo'},
-      {id:'ae', nome:'AE'},
-      {id:'adm', nome:'ADM'},
+      {id:'mase', nome:'MASE'},
+      {id:'mit', nome:'MIT'},
+      {id:'salute', nome:'Salute'},
+      {id:'maeci', nome:'MAECI'},
       {id:'agid', nome:'AgID'},
-      {id:'pagopa', nome:'PagoPA'},
-      {id:'masaf', nome:'MASAF'},
-      {id:'maeci', nome:'MAECI'}
+      {id:'pagopa', nome:'PagoPA S.p.A.'},
+      {id:'ae', nome:'AE'},
+      {id:'adm', nome:'ADM'}
     ];
-  }catch(e){ console.error('Errore caricamento:', e); }
+  }catch(e){ 
+    MAP={}; DATA=[]; 
+  }
   window.DATA = DATA; // rendi accessibile globalmente
   window.MAP = MAP;   // rendi accessibile il mapping
   layout(); cancelAnimationFrame(raf); tick();
@@ -964,99 +834,6 @@ function openFull(m){
   // bottoni altri ministeri
   buildNavMin(m.id);
 }
-
-/* === FALLBACK MAPPING INLINE === */
-<script id="DOC_MAP" type="application/json">
-{
-  "MEF • Economia e Finanze": ["mef-1.png","mef-2.png"],
-  "Ministero dell'Interno": ["interno-1.png"],
-  "AgID": ["agid-1.png","agid-2.png"],
-  "MiC • Cultura": ["mic-1.png"],
-  "MIMIT • Imprese e Made in Italy": ["mimit-1.png"],
-  "MIT • Infrastrutture e Trasporti": ["mit-1.png"],
-  "MASE • Ambiente e Sicurezza Energetica": ["mase-1.png"],
-  "MIM • Istruzione e Merito": ["mim-1.png"],
-  "Ministero del Lavoro": ["lavoro-1.png"],
-  "MAECI • Esteri e Cooperazione": ["maeci-1.png"],
-  "AE • Agenzia Entrate": ["ae-1.png"],
-  "ADM • Agenzia Dogane e Monopoli": ["adm-1.png"],
-  "PagoPA S.p.A.": ["pagopa-1.png"],
-  "Salute": ["salute-1.png"]
-}
-</script>
-
-/* === TESTATA VERDE + BOTTONI SPOT === */
-// Mapping ministero → PDF per bottoni SPOT
-const DOC_MAP = {
-  mef: ["dossier-nazionale","costi-pa-roi","ecc-pillola"],
-  agid:["once-only-sdg","dms-sset","pdnd-once-only"],
-  adm:["carbon-credit-dms"],
-  ae:["riequilibrio-ecc"],
-  mit:["progetto-nazionale"],
-  mic:["citta-metropolitana","presentazione-dms"],
-  mase:["equilibrio-ecosostenibile"],
-  interno:["relazione-controlli"],
-  salute:["dms-sset"],
-  mimit:["presentazione-dms"],
-  lavoro:["analisi-soluzione-dms"],
-  mim:["app-dms-assistente"],
-  turismo:["presentazione-dms"],
-  pagopa:["analisi-soluzione-dms"],
-  masaf:["bolkestein-mercati"],
-  maeci:["passaporto-eu"]
-};
-
-// Alias label → key
-const ALIAS = {
-  "MEF": "mef",
-  "Ministero dell'Interno":"interno",
-  "MIT":"mit",
-  "MASE":"mase",
-  "Salute":"salute",
-  "MIMIT":"mimit",
-  "Ministero del Lavoro":"lavoro",
-  "MiC":"mic",
-  "MIC":"mic",
-  "MIM":"mim",
-  "Turismo":"turismo",
-  "AE":"ae",
-  "ADM":"adm",
-  "AgID":"agid",
-  "PagoPA S.p.A.":"pagopa",
-  "MASAF":"masaf",
-  "MAECI":"maeci"
-};
-
-function renderSpotButtons(minKey){
-  const box = document.getElementById('spotButtons');
-  if(!box) return;
-  const slugs = DOC_MAP[minKey] || [];
-  box.innerHTML = slugs.map(slug => 
-    `<a class="btn--spot" href="./spot.html#doc=${slug}">PDF • ${slug.replace(/-/g,' ')}</a>`
-  ).join('');
-}
-
-function openCardModal(minLabel, slides){
-  const key = ALIAS[minLabel] || minLabel.toLowerCase();
-  
-  // Aggiorna titolo
-  const titleEl = document.getElementById('modalMinistryTitle');
-  if(titleEl) titleEl.textContent = minLabel || "Scheda";
-  
-  // Render bottoni SPOT
-  renderSpotButtons(key);
-  
-  // Gestione chiusura
-  const backBtn = document.getElementById('backToMap');
-  if(backBtn) backBtn.onclick = closeModal;
-}
-
-// Modifica la funzione showModal esistente per integrare la nuova testata
-const originalShowModal = showModal;
-showModal = function(title, imgs){
-  originalShowModal(title, imgs);
-  openCardModal(title, imgs);
-};
 </script>
 </body>
 </html>
