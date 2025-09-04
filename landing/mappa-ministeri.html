@@ -514,30 +514,43 @@ body{overflow:hidden;}
 
 <script>
 /* HOTFIX v2.4: viewport/stage/world + pinch-zoom + glow ricerca + deeplink */
-const MAP_PATH = 'cards/_mapping.json';
+const MAP_PATH = './cards/_mapping.json';
 const IMG_DIR = 'cards/';
 const FALLBACK = 'generic.png';
 let MAP = {};
 let DATA = [];
 
+// Loader con fallback per CORS
+async function loadMapping() {
+  try {
+    const r = await fetch(MAP_PATH, {cache:'no-store'});
+    if (!r.ok) throw new Error(r.status);
+    return await r.json();
+  } catch (e) {
+    // Fallback quando si apre via file:// o il JSON non è raggiungibile
+    const el = document.getElementById('DOC_MAP');
+    return el ? JSON.parse(el.textContent) : {};
+  }
+}
+
 // alias minimi per i label corti dei nodi
 const ALIAS = {
-  'MEF'                       : 'MEF · Economia e Finanze',
+  'MEF'                       : 'MEF • Economia e Finanze',
   'AgID'                      : 'AgID',
-  'AE'                        : 'AE · Agenzia Entrate',
-  'ADM'                       : 'ADM · Agenzia Dogane e Monopoli',
-  'MIT'                       : 'MIT · Infrastrutture e Trasporti',
-  'MASE'                      : 'MASE · Ambiente e Sicurezza Energetica',
-  'MIMIT'                     : 'MIMIT · Imprese e Made in Italy',
-  'MiC'                       : 'MiC · Cultura',
-  'MASAF'                     : 'MASAF · Agricoltura',
-  'MIM'                       : 'MIM · Istruzione e Merito',
-  'Ministero del Lavoro'      : 'Ministero del Lavoro',
-  'MAECI'                     : 'MAECI · Esteri e Cooperazione',
-  'PagoPA S.p.A.'             : 'PagoPA S.p.A.',
+  'AE'                        : 'AE • Agenzia Entrate',
+  'ADM'                       : 'ADM • Agenzia Dogane e Monopoli',
+  'MIT'                       : 'MIT • Infrastrutture e Trasporti',
+  'MASE'                      : 'MASE • Ambiente e Sicurezza Energetica',
+  'MIMIT'                     : 'MIMIT • Imprese e Made in Italy',
+  'MiC'                       : 'MiC • Cultura',
+  'MASAF'                     : 'MASAF • Agricoltura',
+  'MIM'                       : 'MIM • Istruzione e Merito',
+  'Interno'                   : 'Ministero dell\'Interno',
   'Salute'                    : 'Salute',
-  'Turismo'                   : 'Turismo',
-  'Ministero dell\'Interno'   : 'Ministero dell\'Interno'
+  'Lavoro'                    : 'Ministero del Lavoro',
+  'MAECI'                     : 'MAECI • Esteri e Cooperazione',
+  'PagoPA'                    : 'PagoPA S.p.A.',
+  'Turismo'                   : 'Turismo'
 };
 
 // risoluzione chiave dal testo del nodo
@@ -809,26 +822,28 @@ document.addEventListener('click', (e) => {
 /* bootstrap */
 async function bootstrap(){
   try{ 
-    const r = await fetch(MAP_PATH,{cache:'no-store'}); 
-    MAP = await r.json(); 
+    MAP = await loadMapping(); 
     
     // Creo dati fittizi per i nodi basandomi sui ministeri da mostrare
     DATA = [
       {id:'mef', nome:'MEF'},
-      {id:'interno', nome:'Ministero dell\'Interno'},
-      {id:'mimit', nome:'MIMIT'},
-      {id:'mase', nome:'MASE'},
+      {id:'interno', nome:'Interno'},
       {id:'mit', nome:'MIT'},
+      {id:'mase', nome:'MASE'},
       {id:'salute', nome:'Salute'},
-      {id:'maeci', nome:'MAECI'},
-      {id:'agid', nome:'AgID'},
-      {id:'pagopa', nome:'PagoPA S.p.A.'},
+      {id:'mimit', nome:'MIMIT'},
+      {id:'lavoro', nome:'Lavoro'},
+      {id:'mic', nome:'MiC'},
+      {id:'mim', nome:'MIM'},
+      {id:'turismo', nome:'Turismo'},
       {id:'ae', nome:'AE'},
-      {id:'adm', nome:'ADM'}
+      {id:'adm', nome:'ADM'},
+      {id:'agid', nome:'AgID'},
+      {id:'pagopa', nome:'PagoPA'},
+      {id:'masaf', nome:'MASAF'},
+      {id:'maeci', nome:'MAECI'}
     ];
-  }catch(e){ 
-    MAP={}; DATA=[]; 
-  }
+  }catch(e){ console.error('Errore caricamento:', e); }
   window.DATA = DATA; // rendi accessibile globalmente
   window.MAP = MAP;   // rendi accessibile il mapping
   layout(); cancelAnimationFrame(raf); tick();
@@ -949,6 +964,26 @@ function openFull(m){
   // bottoni altri ministeri
   buildNavMin(m.id);
 }
+
+/* === FALLBACK MAPPING INLINE === */
+<script id="DOC_MAP" type="application/json">
+{
+  "MEF • Economia e Finanze": ["mef-1.png","mef-2.png"],
+  "Ministero dell'Interno": ["interno-1.png"],
+  "AgID": ["agid-1.png","agid-2.png"],
+  "MiC • Cultura": ["mic-1.png"],
+  "MIMIT • Imprese e Made in Italy": ["mimit-1.png"],
+  "MIT • Infrastrutture e Trasporti": ["mit-1.png"],
+  "MASE • Ambiente e Sicurezza Energetica": ["mase-1.png"],
+  "MIM • Istruzione e Merito": ["mim-1.png"],
+  "Ministero del Lavoro": ["lavoro-1.png"],
+  "MAECI • Esteri e Cooperazione": ["maeci-1.png"],
+  "AE • Agenzia Entrate": ["ae-1.png"],
+  "ADM • Agenzia Dogane e Monopoli": ["adm-1.png"],
+  "PagoPA S.p.A.": ["pagopa-1.png"],
+  "Salute": ["salute-1.png"]
+}
+</script>
 
 /* === TESTATA VERDE + BOTTONI SPOT === */
 // Mapping ministero → PDF per bottoni SPOT
