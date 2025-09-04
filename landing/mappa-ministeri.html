@@ -1190,6 +1190,34 @@ function openFull(m){
   })();
 })();
 </script>
+<!-- Hook pagine doppie (MEF, AgID) -->
+<script>
+(function(){
+  // append eventuale seconda pagina: <id>-2.png
+  window.__APPEND_SECOND__ = function(mid){
+    const wrap = document.getElementById('factsWrap');
+    if(!wrap) return;
+    const img2 = new Image();
+    img2.onload = ()=>{ wrap.appendChild(img2); };
+    img2.onerror = ()=>{}; // silently fail if no second page
+    img2.src = `/dms-gemello-news/landing/cards/${mid}-2.png?t=`+Date.now();
+  };
+  
+  // auto-append per MEF e AgID
+  const originalOpenFull = window.openFull;
+  if(typeof originalOpenFull === 'function' && !originalOpenFull.__DOUBLE_PAGE__){
+    window.openFull = function(m){
+      originalOpenFull(m);
+      setTimeout(()=>{
+        if(m.id === 'mef' || m.id === 'agid'){
+          __APPEND_SECOND__(m.id);
+        }
+      }, 100);
+    };
+    window.openFull.__DOUBLE_PAGE__ = true;
+  }
+})();
+</script>
 </body>
 </html>
 
