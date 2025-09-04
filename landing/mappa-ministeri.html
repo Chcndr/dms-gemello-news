@@ -788,9 +788,7 @@ function buildNavMin(currentId){
   if(ready()) install();
   else { const t0=Date.now(); const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>15000){clearInterval(tm);} },40); }
 })();
-</script>
 
-<script>
 /* ---- Alias nomi → id canonico ---- */
 const ALIAS = {
   agid: ['agid', "agenziadigitale", "agid • agenzia per l'italia digitale"],
@@ -818,21 +816,7 @@ function canon(id){
 }
 
 /* ---- Map ministero → PDF (slug in SPOT) ---- */
-const DOC_MAP = {
-  agid : [{slug:'doc-once-only-sdg',label:'Once-Only / SDG'},{slug:'doc-dms-sset',label:'SSET (SUAP)'}],
-  mef  : [{slug:'doc-costi-pa',label:'Costi PA & ROI'},{slug:'doc-carbon-credit',label:'Carbon Credit'}],
-  interno:[{slug:'doc-controlli',label:'Controlli'},{slug:'doc-analisi',label:'Analisi'}],
-  mase : [{slug:'doc-ecc',label:'Equilibrio ecosostenibile'}],
-  mit  : [{slug:'doc-infrastrutture',label:'Infrastrutture'}],
-  mic  : [{slug:'doc-citta-metropolitana',label:'Città Metropolitana'}],
-  masaf: [{slug:'doc-progetto-nazionale',label:'Progetto Nazionale'}],
-  mim  : [{slug:'doc-presentazione',label:'Presentazione DMS'}],
-  lavoro: [{slug:'doc-dossier-nazionale',label:'Dossier Nazionale'}],
-  ae   : [{slug:'doc-passaporto-eu',label:'Passaporto EU'}],
-  adm  : [{slug:'doc-bolkestein',label:'Bolkestein'}],
-  pagopa:[{slug:'doc-all-in-one',label:'All-in-One'}]
-  // gli altri a seguire; vanno bene anche vuoti: []
-};
+// Rimossa dichiarazione duplicata, uso quella completa sotto
 
 /* ---- Caricamento mapping immagini ---- */
 let CARD_MAP = {};
