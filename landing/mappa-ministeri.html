@@ -191,6 +191,34 @@ a{color:inherit;text-decoration:none}
 /* immagini slide già full-width: mi assicuro che restino responsive */
 .sheet img{ width:100%; height:auto; display:block; }
 
+/* === NUOVO HEADER VERDE + BOTTONI SPOT === */
+:root{ --brand-green:#18c964; --brand-green-2:#14b85a; --radius-xl:14px; }
+
+.sheet-header{
+  min-height:64px; display:flex; align-items:center; gap:12px;
+  padding:10px 14px;
+  background:linear-gradient(0deg,var(--brand-green),var(--brand-green-2));
+  color:#042312; border-top-left-radius:var(--radius-xl); border-top-right-radius:var(--radius-xl);
+}
+.sheet-header .title{ font-weight:800; letter-spacing:.2px; }
+.sheet-header .spacer{ flex:1; }
+
+.sheet-header .btn{
+  border:0; border-radius:999px; padding:8px 14px; font-weight:700;
+  background:rgba(255,255,255,.92); color:#0b1d10; cursor:pointer;
+}
+
+.doc-btns{ display:flex; gap:8px; flex-wrap:wrap; }
+.doc-btns .doc-btn{
+  border:0; border-radius:999px; padding:8px 12px; font-weight:700;
+  background:rgba(255,255,255,.92); color:#0b1d10; cursor:pointer;
+  white-space:nowrap;
+}
+.doc-btns .doc-btn:hover{ filter:brightness(.95); }
+
+/* facoltativo: evidenza del bottone attivo in SPOT */
+.is-active{ outline:2px solid var(--brand-green); outline-offset:2px; }
+
 .sheet-head{
   display:flex; gap:12px; align-items:center;
   padding:12px 14px; border:1px solid var(--sheet-brd);
@@ -418,13 +446,11 @@ body{overflow:hidden;}
   <!-- Fullscreen Sheet -->
   <div id="modal" aria-hidden="true">
     <div id="card" class="sheet">
-      <div id="sheetHead" class="sheet-head">
-        <h2 class="ttl">Titolo</h2>
-        <div class="actions">
-          <!-- btn dinamici SPOT/PDF -->
-        </div>
-        <div id="minLinks" class="min-links"></div>
-        <button id="close" class="btn x">✕</button>
+      <div id="sheetHead" class="sheet-header">
+        <button class="btn" id="btnBack">← Torna alla mappa</button>
+        <div class="title" id="sheetTitle">Ministero</div>
+        <div class="spacer"></div>
+        <div id="docBtns" class="doc-btns"></div>
       </div>
 
       <div id="sheetBody" class="sheet-body">
@@ -882,87 +908,44 @@ function openFull(m){
 }
 
 /* === PATCH: Titolo dinamico + pulsante "Apri in SPOT" === */
-/* === alias ministeri → chiave breve (coerente con _mapping.json / cards/*.png) === */
-const MIN_ALIAS = {
-  "MEF" : "mef",
-  "AE" : "ae",
-  "ADM": "adm",
-  "AgID": "agid",
-  "MIT" : "mit",
-  "MIMIT": "mimit",
-  "MASE": "mase",
-  "MAECI": "maeci",
-  "MIC" : "mic",
-  "MIM" : "mim",
-  "MASAF": "masaf",
-  "Salute": "salute",
-  "Turismo": "turismo",
-  "PagoPA S.p.A.": "pagopa",
-  "Ministero dell'Interno": "interno"
-};
+let CARDS = {}, DOCS = {};
 
-/* === mapping PDF per lo SPOT (slug dell'ancora #doc-… sulla pagina Spot) === */
-/* Compila liberamente: ho impostato scelte sensate + fallback "presentazione-dms" */
-const SPOT_PDF = {
-  "mef":   {slug:"equilibrio-ecosostenibile", label:"Riequilibrio fiscale & ambientale"},
-  "ae":    {slug:"equilibrio-ecosostenibile", label:"Riequilibrio fiscale & ambientale"},
-  "agid":  {slug:"once-only-sdg",             label:"Once-Only / SDG"},
-  "adm":   {slug:"carbon-credit-dms",         label:"Carbon Credit DMS"},
-  "mase":  {slug:"equilibrio-ecosostenibile", label:"Equilibrio ecosostenibile"},
-  "mit":   {slug:"presentazione-dms",         label:"Presentazione DMS"},
-  "mimit": {slug:"presentazione-dms",         label:"Presentazione DMS"},
-  "maeci": {slug:"passaporto-eu",             label:"Passaporto EU / export"},
-  "mic":   {slug:"dossier-nazionale",         label:"Dossier Nazionale / Cultura"},
-  "mim":   {slug:"dossier-nazionale",         label:"Formazione / Inclusione"},
-  "masaf": {slug:"bolkestein-mercati",        label:"Bolkestein & Mercati"},
-  "salute":{slug:"sset-dms",                  label:"DMS SSET (SUAP/Sanitario)"},
-  "turismo":{slug:"presentazione-dms",        label:"Presentazione DMS"},
-  "pagopa":{slug:"analisi-e-soluzione-dms",   label:"Analisi & Soluzione DMS"},
-  "interno":{slug:"relazione-controlli",      label:"Relazione sui Controlli"}
-};
+// Carica entrambi i mapping
+Promise.all([
+  fetch('cards/_mapping.json').then(r=>r.json()),
+  fetch('cards/_docs.json').then(r=>r.json())
+]).then(([cards, docs]) => { 
+  CARDS = cards; 
+  DOCS = docs; 
+});
 
-/* === utility: apre la modale con titolo + bottoni coerenti === */
-function openSheetFor(ministryDisplayName, slides){
-  const key = (MIN_ALIAS[ministryDisplayName] || ministryDisplayName || "").toLowerCase();
-  const spot = SPOT_PDF[key] || {slug:"presentazione-dms", label:"Apri in SPOT"};
+const modal   = document.getElementById('modal');
+const titleEl = document.getElementById('sheetTitle');
+const btnBack = document.getElementById('btnBack');
+const docBtns = document.getElementById('docBtns');
 
-  // crea/sincronizza struttura header se non esiste
-  let sheet = document.querySelector('.sheet');
-  if(!sheet) return;
-  let header = sheet.querySelector('.sheet__header');
-  if(!header){
-    header = document.createElement('div');
-    header.className = 'sheet__header';
-    header.innerHTML = `
-      <button class="sheet__btn sheet__btn--ghost" id="btnBackToMap">← Torna alla mappa</button>
-      <div class="sheet__title" id="sheetTitle"></div>
-      <a class="sheet__btn sheet__btn--light" id="btnOpenSpot" target="_self" rel="noopener">Apri in SPOT</a>
-    `;
-    sheet.prepend(header);
-    // chiusura/ritorno
-    header.querySelector('#btnBackToMap').addEventListener('click', closeModal);
-  }
+let currentKey=null, slide=0;
 
-  // titolo
-  header.querySelector('#sheetTitle').textContent = ministryDisplayName || "Scheda";
-
-  // link SPOT coerente (#doc-<slug>)
-  const href = `./spot.html#doc-${encodeURIComponent(spot.slug)}`;
-  const a = header.querySelector('#btnOpenSpot');
-  a.href = href;
-  a.textContent = `Apri in SPOT — ${spot.label}`;
-
-  // (opzionale) salva il ministero corrente per usare frecce ◀ ▶ tra più slide
-  window.__currentMinistryKey = key;
+function renderDocButtons(minKey){
+  docBtns.innerHTML = '';
+  const list = (DOCS[minKey] || DOCS['GENERICA'] || []);
+  list.forEach(d => {
+    const b = document.createElement('button');
+    b.className = 'doc-btn';
+    b.textContent = d.label;
+    b.addEventListener('click', () => {
+      // Vai a SPOT e SOLO evidenzia il PDF (non aprire)
+      location.href = `spot.html#${encodeURIComponent(d.key)}`;
+    });
+    docBtns.appendChild(b);
+  });
 }
 
-/* === agganciati al tuo flusso attuale ===
-   Chiama openSheetFor(nome, slides) nel punto in cui già apri la modale.
-   Esempio: nel tuo handler di click nodo/ministero, dopo aver calcolato le slide:
-*/
-window.__wireElegantMap = function(ministryName, slides){
-  try { openSheetFor(ministryName, slides); } catch(e){}
-};
+function openSheetFor(ministryDisplayName, slides){
+  currentKey = ministryDisplayName;
+  titleEl.textContent = ministryDisplayName || "Scheda";
+  renderDocButtons(ministryDisplayName);
+}
 
 // Modifica la funzione showModal per integrare la nuova barra
 const originalShowModal = showModal;
@@ -970,6 +953,11 @@ showModal = function(title, imgs){
   originalShowModal(title, imgs);
   openSheetFor(title, imgs);
 };
+
+// Gestione chiusura modal
+btnBack.addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if(e.target===modal) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 </script>
 </body>
 </html>
