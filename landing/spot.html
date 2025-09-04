@@ -59,8 +59,9 @@
 </head>
 <body>
   <div class="top">
-    <a class="btn" href="./home.html">← Home</a>
-    <a class="btn" href="./mappa-ministeri.html">🗺️ Mappa</a>
+    <a class="btn" href="home.html">Home</a>
+    <a class="btn" href="mappa-ministeri.html">Mappa</a>
+    <a class="btn" href="spot.html">Spot</a>
   </div>
 
   <div class="wrap">
@@ -108,10 +109,32 @@
   PDFS.forEach(([title,href])=>{
     const a=document.createElement('a');
     a.className='doc'; a.href=href; a.target='_blank'; a.rel='noopener';
+    // Aggiungo data-doc per evidenziazione hash
+    const slug = title.toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]/g,'');
+    a.setAttribute('data-doc', slug);
     a.innerHTML=`<span>${title}</span><span>Apri ⤴</span>`;
     list.appendChild(a);
   });
+
+  // Evidenziazione hash-based
+  (function(){
+    const h = (location.hash||'').replace('#','');
+    if(!h) return;
+    const btn = document.querySelector(`[data-doc="${h}"]`);
+    if(btn){
+      btn.classList.add('is-active');
+      btn.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  })();
 </script>
+
+<style>
+.is-active { 
+  outline:2px solid #0F7A4C; 
+  outline-offset:2px; 
+  background: rgba(15, 122, 76, 0.1);
+}
+</style>
 </body>
 </html>
 

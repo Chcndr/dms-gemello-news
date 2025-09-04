@@ -92,59 +92,6 @@ a{color:inherit;text-decoration:none}
 
 .sheet{width:min(1080px,92vw); background:transparent; border:0;}
 
-/* Modal compatto - stili aggiornati */
-.mm-head{
-  display:flex; gap:12px; align-items:center;
-  padding:12px 14px; border:1px solid var(--sheet-brd);
-  border-radius:14px 14px 0 0;
-  background:linear-gradient(180deg, rgba(34,197,94,.95), rgba(34,197,94,.90));
-  color:var(--slot-ink);
-  box-shadow:0 10px 24px rgba(0,0,0,.28);
-}
-
-.mm-back{
-  all:unset; cursor:pointer; padding:6px 12px;
-  border:1px solid rgba(255,255,255,.2); border-radius:8px;
-  background:rgba(255,255,255,.1); color:inherit;
-  font-size:14px; font-weight:600;
-}
-
-.mm-back:hover{
-  background:rgba(255,255,255,.2);
-}
-
-.mm-spacer{
-  flex:1;
-}
-
-.mm-body{
-  background:#0c1117; border:1px solid var(--sheet-brd);
-  border-top:0; border-radius:0 0 14px 14px;
-  padding:0; overflow:auto;
-  max-height:calc(86vh - 60px);
-}
-
-.mm-nav{
-  position:absolute; top:50%; transform:translateY(-50%);
-  background:rgba(0,0,0,.7); color:#fff; border:none;
-  width:40px; height:40px; border-radius:50%;
-  cursor:pointer; font-size:18px; font-weight:bold;
-  display:flex; align-items:center; justify-content:center;
-  z-index:10001;
-}
-
-.mm-nav:hover{
-  background:rgba(0,0,0,.9);
-}
-
-.mm-prev{
-  left:10px;
-}
-
-.mm-next{
-  right:10px;
-}
-
 .sheet-head{
   display:flex; gap:12px; align-items:center;
   padding:12px 14px; border:1px solid var(--sheet-brd);
@@ -334,12 +281,110 @@ body{overflow:hidden;}
 /* sezione SCHEDA */
 .facts{margin:10px 0 12px;}
 .facts img{width:100%; height:auto; border-radius:12px; display:block;}
+
+/* Scheda ministeriale integrata nella modal */
+#card .facts{ margin:12px 0 10px; padding:0; }
+#card .facts img{
+  display:block; width:100%; height:auto;
+  border:1px solid var(--stroke); border-radius:12px;
+  background:#0f2024; /* tema esistente, NO verde */
+}
+
+/* v2.6.1: card sempre leggibile dentro modal */
+#card{ max-height:88vh; overflow:auto; }
+#card .facts{ margin:12px 0 10px; }
+#card .facts img{
+  display:block;
+  width:100%; height:auto;
+  max-height:62vh;          /* evita tagli su iPad */
+  object-fit:contain;
+  border:1px solid var(--stroke);
+  border-radius:12px;
+  background:#0f2024;       /* colore tema esistente */
+}
+
+/* v2.6.3: CSS aggiuntivi per card e nav */
+#card .facts img{ display:block; max-width:100%; max-height:62vh; margin:8px auto 0; object-fit:contain; border-radius:12px; }
+.min-links{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0; }
+.chip.nav{ opacity:.95; }
+
+/* v2.7.1 — solo-modal, nascondi legacy ovunque */
+#sheet, body > .facts { display: none !important; }
+#card{ max-height:88vh; overflow:auto; }
+#card .facts{ margin:12px 0 10px; }
+#card .facts img{ display:block; width:100%; height:auto; max-height:62vh; object-fit:contain; }
+
+/* Modal header verde sito */
+.dms-head{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:.75rem;
+  padding:.65rem .9rem;
+  background:#0F7A4C;          /* verde scuro sito */
+  color:#fff;
+  border-radius:10px 10px 0 0;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+}
+.dms-head .title{
+  margin:0; text-align:center; font-weight:700; font-size:1rem; letter-spacing:.2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.dms-head .btn{
+  background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.2);
+  padding:.45rem .65rem; border-radius:8px; font-weight:600; cursor:pointer;
+  backdrop-filter:saturate(120%) blur(2px);
+}
+.dms-head .btn:hover{ background:rgba(255,255,255,.18); }
+.spot-actions{ display:flex; gap:.4rem; }
+
+/* CSS header modal come richiesto nelle istruzioni */
+/* overlay centrato */
+#modalOverlay {
+  position: fixed; inset: 0;
+  background: rgba(6,16,14,.55);
+  backdrop-filter: blur(2px);
+  display: none; z-index: 1100;
+  align-items: center; justify-content: center;
+}
+#modalOverlay.is-open { display: flex; }
+body.modal-open { overflow: hidden; }
+
+/* card del modal */
+#modalCard {
+  width: min(1080px, 92vw);
+  max-height: 86vh;
+  background: #0b1a20; /* scuro del sito */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0,0,0,.5);
+}
+
+/* header verde in alto, NON sticky/fixed */
+#modalHeader {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px; align-items: center;
+  height: 56px; padding: 8px 12px;
+  background: #0F7A4C; color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  position: static; /* importante */
+}
+
+/* assicurati di rimuovere/annullare queste regole se presenti */
+#modalHeader.sticky, #modalHeader.fixed { position: static !important; }
+#modalHeader { bottom: auto !important; top: auto !important; }
+
+#backToMap{ background:rgba(255,255,255,.12); border:0; padding:8px 12px; border-radius:8px; color:#fff; }
+#modalTitle{ text-align:center; font-weight:600; letter-spacing:.2px; }
+#spotBtns a{ display:inline-block; margin-left:8px; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,.12); color:#fff; text-decoration:none; }
 </style>
 </head>
 <body>
   <div class="nav">
-    <a class="btn" href="/dms-gemello-news/landing/home.html" target="_top">← Home</a>
-    <a class="btn" href="/dms-gemello-news/" target="_top">📚 Spot</a>
+    <a class="btn" href="home.html" target="_top">Home</a>
+    <a class="btn" href="mappa-ministeri.html" target="_top">Mappa</a>
+    <a class="btn" href="spot.html" target="_top">Spot</a>
     <div class="controls">
       <label class="switch"><input id="btn-auto" type="checkbox" checked> Auto-rotate</label>
       <label class="switch"><input id="btn-lines" type="checkbox" checked> Linee</label>
@@ -369,74 +414,65 @@ body{overflow:hidden;}
     </div>
   </div>
 
-  <!-- Fullscreen Sheet -->
+  <!-- Modal -->
+  <div id="modalOverlay" class="modal-overlay">
+    <div id="modalCard">
+      <div id="modalHeader" class="modal-header">
+        <button id="backToMap" class="btn-back">← Torna alla mappa</button>
+        <div id="modalTitle" class="modal-title">-</div>
+        <div id="spotBtns" class="spot-btns"></div>
+      </div>
+      <div class="modal-body">
+        <button id="prev" class="nav prev">◀</button>
+        <img id="modalImage" alt="" />
+        <button id="next" class="nav next">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fallback modal esistente -->
   <div id="modal" aria-hidden="true">
     <div id="card" class="sheet">
-      <div id="sheetHead" class="sheet-head">
-        <h2 class="ttl">Titolo</h2>
-        <div class="actions">
-          <!-- btn dinamici SPOT/PDF -->
-        </div>
-        <div id="minLinks" class="min-links"></div>
-        <button id="close" class="btn x">✕</button>
+      <div class="modal-head dms-head" id="dmsHead">
+        <button class="btn back" id="btnBackToMap">← Torna alla mappa</button>
+        <h3 class="title" id="modalTitle">—</h3>
+        <div class="spot-actions" id="spotActions"></div>
       </div>
 
-      <div id="sheetBody" class="sheet-body">
-        <img class="hero" alt="" />
-        <p class="meta"></p>
-        <ul class="bullets"></ul>
-
-        <!-- SCHEDA ministeriale (auto) -->
-        <div id="factsWrap" class="facts" hidden>
-          <img id="factsImg" alt="" />
-        </div>
-
-        <h4 style="margin:16px 0 6px">Documenti</h4>
-        <div class="docs"></div>
-      </div>
+      <div id="modalBody" class="dms-modal-body"><!-- qui inietti l'IMG --></div>
     </div>
   </div>
 
 <script>
 /* HOTFIX v2.4: viewport/stage/world + pinch-zoom + glow ricerca + deeplink */
-const MAP_PATH = 'cards/_mapping.json';
-const IMG_DIR = 'cards/';
-const FALLBACK = 'generic.png';
-let MAP = {};
+// Fallback inline completo con 16 ministeri
+window.DOC_MAP_FALLBACK = [
+  {id:'mef', nome:'MEF · Economia e Finanze', ring:1, tag:'Ministero'},
+  {id:'interno', nome:'Ministero dell\'Interno', ring:1, tag:'Ministero'},
+  {id:'mimit', nome:'MIMIT · Imprese e Made in Italy', ring:1, tag:'Ministero'},
+  {id:'mase', nome:'MASE · Ambiente e Sicurezza Energetica', ring:1, tag:'Ministero'},
+  {id:'mit', nome:'MIT · Infrastrutture e Trasporti', ring:1, tag:'Ministero'},
+  {id:'salute', nome:'Ministero della Salute', ring:1, tag:'Ministero'},
+  {id:'mic', nome:'MIC · Cultura', ring:1, tag:'Ministero'},
+  {id:'turismo', nome:'Ministero del Turismo', ring:1, tag:'Ministero'},
+  {id:'masaf', nome:'MASAF · Agricoltura', ring:1, tag:'Ministero'},
+  {id:'mim', nome:'MIM · Istruzione e Merito', ring:1, tag:'Ministero'},
+  {id:'lavoro', nome:'Ministero del Lavoro', ring:1, tag:'Ministero'},
+  {id:'maeci', nome:'MAECI · Affari Esteri', ring:1, tag:'Ministero'},
+  {id:'agid', nome:'AgID', ring:2, tag:'Ente'},
+  {id:'pagopa', nome:'PagoPA S.p.A.', ring:2, tag:'Ente'},
+  {id:'ae', nome:'AE · Agenzia Entrate', ring:2, tag:'Ente'},
+  {id:'adm', nome:'ADM · Agenzia Dogane', ring:2, tag:'Ente'}
+];
+
+const JSON_URL = '/dms-gemello-news/landing/data/ministeri.json?v=7';
 let DATA = [];
-
-// alias minimi per i label corti dei nodi
-const ALIAS = {
-  'MEF'                       : 'MEF · Economia e Finanze',
-  'AgID'                      : 'AgID',
-  'AE'                        : 'AE · Agenzia Entrate',
-  'ADM'                       : 'ADM · Agenzia Dogane e Monopoli',
-  'MIT'                       : 'MIT · Infrastrutture e Trasporti',
-  'MASE'                      : 'MASE · Ambiente e Sicurezza Energetica',
-  'MIMIT'                     : 'MIMIT · Imprese e Made in Italy',
-  'MiC'                       : 'MiC · Cultura',
-  'MASAF'                     : 'MASAF · Agricoltura',
-  'MIM'                       : 'MIM · Istruzione e Merito',
-  'Ministero del Lavoro'      : 'Ministero del Lavoro',
-  'MAECI'                     : 'MAECI · Esteri e Cooperazione',
-  'PagoPA S.p.A.'             : 'PagoPA S.p.A.',
-  'Salute'                    : 'Salute',
-  'Turismo'                   : 'Turismo',
-  'Ministero dell\'Interno'   : 'Ministero dell\'Interno'
-};
-
-// risoluzione chiave dal testo del nodo
-function resolveKey(nodeLabel) {
-  const clean = nodeLabel.replace(/\s+•.*/,'').trim(); // taglia eventuale " • …"
-  if (MAP[nodeLabel]) return nodeLabel;
-  if (ALIAS[clean] && MAP[ALIAS[clean]]) return ALIAS[clean];
-  // fuzzy: prima chiave che inizia con il testo pulito
-  const k = Object.keys(MAP).find(k => k.toLowerCase().startsWith(clean.toLowerCase()));
-  return k || null;
-}
 let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
 let phase=0, speed=0.0016, rotating=true;
-const SHOW = ['pcm','mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm'];
+const SHOW = ['mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm','mic','turismo','masaf','mim','lavoro'];
+
+// STEP 3: Ordine/whitelist ministeri mostrati
+window.SHOW = ["mef","interno","mimit","mase","mit","salute","mic","turismo","masaf","mim","lavoro","maeci","agid","pagopa","ae","adm"];
 
 // selettori viewport/stage/world
 const viewport=document.getElementById('viewport');
@@ -479,7 +515,7 @@ function mkNode(m){
   el.className='node';
   el.dataset.id=m.id;
   el.innerHTML=`<div class="label">${m.nome}</div>`;
-  el.onclick=()=>openCard(m.nome);  // usa openCard invece di openFull
+  el.onclick=()=>openFull(m);
   return el;
 }
 
@@ -608,114 +644,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 });
 
-// Modal compatto per le schede
-let currentSlides = [];
-let currentSlideIndex = 0;
-
-// apertura scheda (modal compatto)
-function openCard(nodeLabel){
-  const key  = resolveKey(nodeLabel);
-  const imgs = (key && MAP[key]) ? MAP[key] : [FALLBACK];
-  showModal(key || nodeLabel, imgs);
-}
-
-// mostra modal con dimensioni compatte
-function showModal(title, imgs){
-  currentSlides = imgs;
-  currentSlideIndex = 0;
-  
-  const modal = document.getElementById('modal');
-  const card = document.getElementById('card');
-  
-  // blocca scroll del body
-  document.body.style.overflow = 'hidden';
-  
-  // aggiorna contenuto
-  card.innerHTML = renderSlide(imgs, 0);
-  
-  // mostra modal
-  modal.style.display = 'flex';
-}
-
-// rendering immagine + frecce (multi-slide solo se serve)
-function renderSlide(imgs, idx){
-  const src = IMG_DIR + (imgs[idx] || FALLBACK);
-  return `
-    <div class="mm-head">
-      <button class="mm-back" onclick="closeModal()">← Torna alla mappa</button>
-      <div class="mm-spacer"></div>
-    </div>
-    <div class="mm-body">
-      <img src="${src}" onerror="this.src='${IMG_DIR}${FALLBACK}'" style="width:100%;height:auto;">
-    </div>
-    ${imgs.length>1 ? `
-      <button class="mm-nav mm-prev" onclick="navSlide(-1)">◀︎</button>
-      <button class="mm-nav mm-next" onclick="navSlide(1)">▶︎</button>` : ``}
-  `;
-}
-
-// navigazione slide
-function navSlide(direction){
-  if(currentSlides.length <= 1) return;
-  
-  currentSlideIndex += direction;
-  if(currentSlideIndex < 0) currentSlideIndex = currentSlides.length - 1;
-  if(currentSlideIndex >= currentSlides.length) currentSlideIndex = 0;
-  
-  const card = document.getElementById('card');
-  card.innerHTML = renderSlide(currentSlides, currentSlideIndex);
-}
-
-// chiusura modal
-function closeModal(){
-  const modal = document.getElementById('modal');
-  modal.style.display = 'none';
-  
-  // ripristina scroll del body
-  document.body.style.overflow = '';
-}
-
-// gestione tastiera
-document.addEventListener('keydown', (e) => {
-  const modal = document.getElementById('modal');
-  if(modal.style.display === 'flex') {
-    if(e.key === 'Escape') closeModal();
-    if(e.key === 'ArrowLeft') navSlide(-1);
-    if(e.key === 'ArrowRight') navSlide(1);
-  }
-});
-
-// click su overlay per chiudere
-document.addEventListener('click', (e) => {
-  const modal = document.getElementById('modal');
-  if(e.target === modal) closeModal();
-});
-
 /* bootstrap */
 async function bootstrap(){
   try{ 
-    const r = await fetch(MAP_PATH,{cache:'no-store'}); 
-    MAP = await r.json(); 
-    
-    // Creo dati fittizi per i nodi basandomi sui ministeri da mostrare
-    DATA = [
-      {id:'mef', nome:'MEF'},
-      {id:'interno', nome:'Ministero dell\'Interno'},
-      {id:'mimit', nome:'MIMIT'},
-      {id:'mase', nome:'MASE'},
-      {id:'mit', nome:'MIT'},
-      {id:'salute', nome:'Salute'},
-      {id:'maeci', nome:'MAECI'},
-      {id:'agid', nome:'AgID'},
-      {id:'pagopa', nome:'PagoPA S.p.A.'},
-      {id:'ae', nome:'AE'},
-      {id:'adm', nome:'ADM'}
-    ];
+    const r = await fetch(JSON_URL,{cache:'no-store'}); 
+    DATA = await r.json(); 
   }catch(e){ 
-    MAP={}; DATA=[]; 
+    console.error('ministeri.json fallito, uso fallback inline', e);
+    DATA = window.DOC_MAP_FALLBACK || [];
   }
   window.DATA = DATA; // rendi accessibile globalmente
-  window.MAP = MAP;   // rendi accessibile il mapping
   layout(); cancelAnimationFrame(raf); tick();
 }
 document.addEventListener('DOMContentLoaded', bootstrap);
@@ -749,91 +687,295 @@ const docsBox = body.querySelector('.docs');
 const factsWrap = document.getElementById('factsWrap');
 const factsImg  = document.getElementById('factsImg');
 
+// Spostamento sicuro (se l'HTML avesse #factsWrap fuori)
+const cardEl = document.getElementById('card');
+if (cardEl && factsWrap && factsWrap.parentElement !== cardEl) {
+  cardEl.appendChild(factsWrap);
+}
+
 document.getElementById('close').onclick = () => modal.style.display = 'none';
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.style.display='none'; });
 
-// loader scheda: cerca prima PNG poi JPG
-function tryLoadFacts(id){
-  const box = document.getElementById('factsWrap');
-  const img = document.getElementById('factsImg');
-  if(!box || !img) return;
-  const base = `/dms-gemello-news/landing/cards/${id}`;
-  // tenta png -> jpg
-  const test = (src) => new Promise(r => {
-    const i = new Image();
-    i.onload = () => r(src);
-    i.onerror = () => r(null);
-    i.src = src + (src.includes('?')?'':'') ;
-  });
-  (async ()=>{
-    const png = await test(base + '.png');
-    const jpg = png ? png : await test(base + '.jpg');
-    if(png || jpg){
-      img.src = png || jpg;
-      img.alt = id.toUpperCase();
-      box.hidden = false;
-    }else{
-      box.hidden = true;
+// Loader immagine 1:1 (senza fallback errati)
+function loadCardFor(id){
+  if(!factsWrap || !factsImg){ return; }
+  const exts = ['png','jpg','webp'];
+  let i = 0, loaded = false;
+  function tryNext(){
+    if(i>=exts.length){
+      factsWrap.hidden = true; factsImg.removeAttribute('src'); return;
     }
-  })();
+    const src = `/dms-gemello-news/landing/cards/${id}.${exts[i++]}`;
+    const probe = new Image();
+    probe.onload = ()=>{ factsImg.src = src; factsWrap.hidden = false; };
+    probe.onerror = tryNext;
+    probe.src = src + `?t=${Date.now()}`; // cache-buster
+  }
+  tryNext();
 }
 
 // nav chips dinamiche
 function buildNavMin(currentId){
-  const box = document.getElementById('minLinks');
-  if(!box || !window.DATA) return;
-  box.innerHTML = '';
-  NAV_IDS
-    .filter(id => id !== currentId && window.DATA.some(d=>d.id===id))
-    .slice(0, 12)
-    .forEach(id=>{
-      const d = window.DATA.find(x=>x.id===id);
-      const b = document.createElement('button');
-      b.className = 'chip nav';
-      b.textContent = (d?.nome_short || d?.nome || id).replace(/\s+/g,' ').trim();
-      b.onclick = ()=>{ const m = window.DATA.find(x=>x.id===id); if(m) openFull(m); };
-      box.appendChild(b);
-    });
-}
-
-function openFull(m){
-  modal.style.display = 'flex';
-  ttl.textContent = m.nome || '';
-
-  // bottoni SPOT/PDF nello slot
-  actions.innerHTML = '';
-  (m.docs||[]).forEach(d=>{
-    const a = document.createElement('a');
-    a.className = 'btn cta';
-    a.target = '_top';
-    const spot = `/dms-gemello-news/#doc-${d.slug}`;
-    const pdf  = `/dms-gemello-news/docs/${d.slug}.pdf${d.page?`#page=${d.page}`:''}`;
-    a.href = d.open==='pdf' ? pdf : spot;
-    a.textContent = d.label || (d.open==='pdf' ? 'Apri PDF' : 'Apri su Spot');
-    actions.appendChild(a);
+  const bar = document.getElementById('minLinks');
+  if(!bar){ return; }
+  bar.innerHTML = '';
+  SHOW.forEach(id=>{
+    const btn = document.createElement('button');
+    btn.className = 'chip nav';
+    btn.textContent = id.toUpperCase();
+    if(id===currentId){ btn.disabled = true; }
+    btn.onclick = ()=>{
+      const m = (window.DATA||[]).find(x=>x.id===id);
+      if(m) openFull(m);
+    };
+    bar.appendChild(btn);
   });
-
-  // meta + bullets
-  meta.textContent = [
-    m.problema && `Problema: ${m.problema}`,
-    m.soluzione && `Soluzione: ${m.soluzione}`,
-    m.risultati && `Risultati: ${m.risultati}`,
-    m.ecosistema && `Ecosistema: ${m.ecosistema}`
-  ].filter(Boolean).join(' • ');
-
-  bullets.innerHTML = '';
-  (m.punti||[]).forEach(t=>{ const li=document.createElement('li'); li.textContent=t; bullets.appendChild(li); });
-
-  // hero opzionale
-  if(m.hero){ imgHero.src=m.hero; imgHero.alt=m.alt||''; imgHero.style.display='block'; }
-  else { imgHero.style.display='none'; }
-
-  // SCHEDA auto (se presente in /landing/cards/)
-  tryLoadFacts(m.id);
-
-  // bottoni altri ministeri
-  buildNavMin(m.id);
 }
+
+/* ===== MAP v2.7.1 — hard reset: solo modal, kill legacy, nav stabile ===== */
+(function(){
+  const IDS=['mef','interno','mimit','mase','mit','salute','mic','turismo','masaf','mim','lavoro','maeci','agid','pagopa','ae','adm'];
+
+  function $id(x){return document.getElementById(x);}
+  function ready(){return Array.isArray(window.DATA)&&typeof window.openFull==='function'&&$id('card');}
+
+  function ensureFacts(){
+    const card=$id('card'); if(!card) return null;
+    let wrap=$id('factsWrap'), img=$id('factsImg');
+    if(!wrap){
+      wrap=document.createElement('div'); wrap.id='factsWrap'; wrap.className='facts';
+      img=document.createElement('img'); img.id='factsImg'; img.alt=''; wrap.appendChild(img);
+      const first=card.querySelector('.panel'); card.insertBefore(wrap, first||card.firstChild);
+    }
+    return {wrap,img};
+  }
+
+  function nukeLegacy(){
+    document.querySelectorAll('#sheet, body > .facts').forEach(n=>n.remove());
+  }
+
+  let seq=0;
+  function loadCard(id){
+    const slot=ensureFacts(); if(!slot) return;
+    const {wrap,img}=slot; wrap.hidden=true; img.removeAttribute('src');
+    const cand=[`${id}.webp`,`${id}.png`,`${id}.jpg`,'generica.webp','generica.png','generica.jpg'];
+    const me=++seq; let i=0;
+    (function next(){
+      if(me!==seq) return;
+      if(i>=cand.length){wrap.hidden=true;return;}
+      const src=`/dms-gemello-news/landing/cards/${cand[i++]}`+`?t=${Date.now()}`;
+      const p=new Image(); p.onload=()=>{if(me!==seq)return; img.src=src; wrap.hidden=false;}; p.onerror=next; p.src=src;
+    })();
+  }
+
+  function buildNav(currentId){
+    let bar=$id('minLinks');
+    if(!bar){ bar=document.createElement('div'); bar.id='minLinks'; bar.className='min-links'; ($id('titleRow')||$id('card')||document.body).appendChild(bar); }
+    bar.innerHTML='';
+    IDS.forEach(id=>{
+      const m=(window.DATA||[]).find(x=>x.id===id); if(!m)return;
+      const b=document.createElement('button'); b.className='chip nav'; b.textContent=(m.short||m.nome||id).toUpperCase();
+      if(id===currentId) b.disabled=true;
+      b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation(); openFull(m);});
+      bar.appendChild(b);
+    });
+  }
+
+  function hook(){
+    // Hook rimosso - usa solo la definizione openFull principale
+  }
+
+  function install(){
+    document.documentElement.dataset.lines='on'; (window.redraw||window.draw||function(){})();
+    nukeLegacy(); ensureFacts();
+    new MutationObserver(()=>{ nukeLegacy(); }).observe(document.body,{childList:true,subtree:true});
+  }
+
+  if(ready()) install();
+  else { const t0=Date.now(); const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>15000){clearInterval(tm);} },40); }
+})();
+</script>
+
+<script>
+/* ---- Alias nomi → id canonico ---- */
+const ALIAS = {
+  agid: ['agid', "agenziadigitale", "agid • agenzia per l'italia digitale"],
+  mef:  ['mef', 'economia', 'economia e finanze'],
+  interno: ['interno', 'ministero dell\'interno'],
+  mimit: ['mimit', 'imprese e made in italy'],
+  mase: ['mase', 'ambiente'],
+  mit: ['mit', 'infrastrutture'],
+  salute: ['salute', 'ministero della salute'],
+  mic: ['mic', 'cultura'],
+  turismo: ['turismo'],
+  masaf: ['masaf', 'agricoltura'],
+  mim: ['mim', 'istruzione'],
+  lavoro: ['lavoro', 'ministero del lavoro'],
+  maeci: ['maeci', 'esteri'],
+  ae: ['ae', 'agenzia entrate'],
+  adm: ['adm', 'dogane'],
+  pagopa: ['pagopa', 'pagopa s.p.a.']
+};
+function norm(s){ return (s||'').toLowerCase().replace(/[^\w]/g,''); }
+function canon(id){
+  const n = norm(id);
+  for (const k in ALIAS){ if (ALIAS[k].some(x=>norm(x)===n)) return k; }
+  return n;
+}
+
+/* ---- Map ministero → PDF (slug in SPOT) ---- */
+const DOC_MAP = {
+  agid : [{slug:'doc-once-only-sdg',label:'Once-Only / SDG'},{slug:'doc-dms-sset',label:'SSET (SUAP)'}],
+  mef  : [{slug:'doc-costi-pa',label:'Costi PA & ROI'},{slug:'doc-carbon-credit',label:'Carbon Credit'}],
+  interno:[{slug:'doc-controlli',label:'Controlli'},{slug:'doc-analisi',label:'Analisi'}],
+  mase : [{slug:'doc-ecc',label:'Equilibrio ecosostenibile'}],
+  mit  : [{slug:'doc-infrastrutture',label:'Infrastrutture'}],
+  mic  : [{slug:'doc-citta-metropolitana',label:'Città Metropolitana'}],
+  masaf: [{slug:'doc-progetto-nazionale',label:'Progetto Nazionale'}],
+  mim  : [{slug:'doc-presentazione',label:'Presentazione DMS'}],
+  lavoro: [{slug:'doc-dossier-nazionale',label:'Dossier Nazionale'}],
+  ae   : [{slug:'doc-passaporto-eu',label:'Passaporto EU'}],
+  adm  : [{slug:'doc-bolkestein',label:'Bolkestein'}],
+  pagopa:[{slug:'doc-all-in-one',label:'All-in-One'}]
+  // gli altri a seguire; vanno bene anche vuoti: []
+};
+
+/* ---- Caricamento mapping immagini ---- */
+let CARD_MAP = {};
+fetch('cards/_mapping.json')
+  .then(r=>r.json())
+  .then(j=>{ CARD_MAP = j; })
+  .catch(()=>{ CARD_MAP = {}; });
+
+/* ---- Funzione openFull definitiva ---- */
+// Alias corti -> chiavi del mapping/slug
+const ALIASES = {
+  mef:'mef', interno:'interno', mimit:'mimit', mase:'mase', mit:'mit',
+  salute:'salute', mic:'mic', turismo:'turismo', masaf:'masaf', mim:'mim',
+  lavoro:'lavoro', maeci:'maeci', agid:'agid', pagopa:'pagopa', ae:'ae', adm:'adm'
+};
+
+// Fallback mapping completo come da istruzioni
+const MAPPING_FALLBACK={"MEF":["mef-1.png","mef-2.png"],"Interno":["interno-1.png"],"AgID":["agid-1.png","agid-2.png"],"ADM":["adm-1.png"],"AE":["ae-1.png"],"MASE":["mase-1.png"],"MIT":["mit-1.png"],"Salute":["salute-1.png"],"MIC":["mic-1.png"],"Turismo":["turismo-1.png"],"MASAF":["masaf-1.png"],"MIM":["mim-1.png"],"Lavoro":["lavoro-1.png"],"MAECI":["maeci-1.png"],"MIMIT":["mimit-1.png"],"PagoPA S.p.A.":["pagopa-1.png"]};
+
+async function loadMapping(){
+  try{const r=await fetch('cards/_mapping.json',{cache:'no-store'}); if(!r.ok) throw 0; return await r.json();}
+  catch{ return MAPPING_FALLBACK; }
+}
+
+// Mappa PDF/slug per SPOT (completa come da istruzioni)
+const DOC_MAP = {
+  agid: ['once-only-sdg'],
+  mef: ['costi-pa-roi','ecc-narrativa'],
+  mit: ['mit-infrastrutture'],
+  mase: ['equilibrio-ecosostenibile'],
+  mic: ['citta-metropolitana'],
+  salute: ['dms-ssat-suap'],
+  mimit: ['presentazione-dms'],
+  maeci: ['passaporto-eu'],
+  ae: ['relazione-controlli'],
+  adm: ['bolkestein'],
+  pagopa: ['pagamenti-pdnd'],
+  masaf: ['hub-urbani-prossimita'],
+  mim: ['presentazione-dms'],
+  lavoro: ['ministero-lavoro'],
+  interno: ['ministero-interno'],
+};
+
+function renderSpotButtons(minKey){
+  const c = document.querySelector('#spotBtns'); 
+  if(!c) return;
+  c.innerHTML='';
+  (DOC_MAP[minKey]||[]).forEach(slug=>{
+    const a=document.createElement('a');
+    a.href=`spot.html#${slug}`; 
+    a.textContent=`Apri in SPOT — ${slug.replace(/-/g,' ')}`;
+    c.appendChild(a);
+  });
+}
+
+function setupModalHeader(title, alias){
+  const titleEl = document.getElementById('modalTitle');
+  if(titleEl) titleEl.textContent = title || alias.toUpperCase();
+  renderSpotButtons(alias);
+}
+
+window.openFull = async function(aliasRaw, titleDisplay){
+  // 1) normalizza alias
+  const a = (ALIASES[(aliasRaw||'').toLowerCase()] || aliasRaw || '').toLowerCase();
+  // 2) header
+  setupModalHeader(titleDisplay || aliasRaw, a);
+  // 3) immagini
+  const mapping = await loadMapping();
+  let imgs = (mapping[a] || []).map(x => `./cards/${x}`);
+  if(!imgs.length) imgs = ['./cards/generic.png'];
+
+  const imgEl = document.getElementById('modalImage');
+  const overlay = document.getElementById('modalOverlay');
+  
+  if(!imgEl || !overlay) {
+    // Fallback al sistema esistente se gli elementi non ci sono
+    const modal = document.getElementById('modal');
+    const body = document.getElementById('modalBody');
+    if(modal && body) {
+      body.innerHTML = `<img src="${imgs[0]}" style="width:100%;height:auto;display:block;">`;
+      modal.style.display = 'block';
+      document.body.classList.add('modal-open');
+    }
+    return;
+  }
+
+  let i = 0;
+  const show = () => { imgEl.src = imgs[i]; };
+
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const btnBack = document.getElementById('backToMap');
+
+  if(prevBtn) prevBtn.onclick = () => { i = (i-1+imgs.length)%imgs.length; show(); };
+  if(nextBtn) nextBtn.onclick = () => { i = (i+1)%imgs.length; show(); };
+  if(btnBack) btnBack.onclick = () => { closeModal(); };
+
+  // tastiera
+  window.onkeydown = (ev)=>{
+    if(ev.key==='Escape'){ closeModal(); }
+    if(ev.key==='ArrowLeft' && prevBtn){ prevBtn.click(); }
+    if(ev.key==='ArrowRight' && nextBtn){ nextBtn.click(); }
+  };
+
+  show();
+  overlay.classList.add('is-open');
+  document.body.classList.add('modal-open');
+};
+
+function closeModal(){
+  const overlay = document.getElementById('modalOverlay');
+  if(overlay) overlay.classList.remove('is-open');
+  document.body.classList.remove('modal-open');
+}
+
+/* ---- Viewer A4: mantiene frecce esistenti ---- */
+function renderSlide(files, idx){
+  const i = ((idx%files.length)+files.length)%files.length;
+  const body = document.getElementById('modalBody');
+  body.innerHTML = `<img src="cards/${files[i]}" alt="" style="width:100%;height:auto;display:block;">`;
+  // collega le frecce già presenti (se usate):
+  window._currentSlide = { files, index:i };
+}
+function prevSlide(){ if(window._currentSlide){ renderSlide(window._currentSlide.files, window._currentSlide.index-1);} }
+function nextSlide(){ if(window._currentSlide){ renderSlide(window._currentSlide.files, window._currentSlide.index+1);} }
+function closeModal(){ 
+  document.getElementById('modal').style.display = 'none';
+  document.body.classList.remove('modal-open'); 
+}
+
+// Collega il pulsante back
+document.addEventListener('DOMContentLoaded', function(){
+  const btn = document.getElementById('btnBackToMap');
+  if(btn) btn.onclick = closeModal;
+});
+
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 </script>
 </body>
 </html>
