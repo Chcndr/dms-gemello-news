@@ -1106,6 +1106,90 @@ function openFull(m){
 })();
 </script>
 <!-- ===== END MAP v4.1 ===== -->
+<!-- MAP v4.1 — solo-modal + mapping canonico -->
+<style id="map-v41-css">
+  #card{max-height:88vh;overflow:auto}
+  #card .facts{margin:12px 0 10px}
+  #card .facts img{display:block;width:100%;height:auto;max-height:62vh;object-fit:contain}
+  /* nascondi solo vecchie facts fuori dalla modal */
+  body > .facts{display:none !important}
+</style>
+<script id="map-v41-js">
+(function(){
+  if(window.__MAP_V41__) return; window.__MAP_V41__=true;
+
+  // ID canonici in ordine nav
+  const IDS=["mef","interno","mimit","mase","mit","salute","mic","turismo","masaf","mim","lavoro","maeci","agid","pagopa","ae","adm"];
+  // mapping 1:1 -> nome file (png/jpg/webp) senza estensione
+  const CARD_SRC={
+    mef:"mef", interno:"interno", mimit:"mimit", mase:"mase", mit:"mit", salute:"salute",
+    mic:"mic", turismo:"turismo", masaf:"masaf", mim:"mim", lavoro:"lavoro", maeci:"maeci",
+    agid:"agid", pagopa:"pagopa", ae:"ae", adm:"adm"
+  };
+  const exts=["webp","png","jpg"];
+
+  function id(x){return document.getElementById(x);}
+  function ensureFacts(){
+    const card=id("card"); if(!card) return null;
+    let wrap=id("factsWrap"), img=id("factsImg");
+    if(!wrap){ wrap=document.createElement("div"); wrap.id="factsWrap"; wrap.className="facts";
+      img=document.createElement("img"); img.id="factsImg"; img.alt=""; wrap.appendChild(img);
+      card.insertBefore(wrap, card.firstChild);
+    } else if(wrap.parentElement!==card){ card.insertBefore(wrap, card.firstChild); }
+    return {card,wrap,img};
+  }
+  function buildNav(currentId){
+    const {card}=ensureFacts()||{}; if(!card) return;
+    let bar=id("minLinks");
+    if(!bar){ bar=document.createElement("div"); bar.id="minLinks"; bar.className="min-links"; card.insertBefore(bar, card.firstChild); }
+    bar.innerHTML="";
+    IDS.forEach(mid=>{
+      const m=(window.DATA||[]).find(x=>x.id===mid)||{id:mid,short:mid.toUpperCase()};
+      const b=document.createElement("button");
+      b.className="chip nav"; b.textContent=(m.short||m.nome||mid).toUpperCase();
+      if(mid===currentId) b.disabled=true;
+      b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation(); openFull(m);});
+      bar.appendChild(b);
+    });
+  }
+  let seq=0;
+  function loadCard(mid){
+    const h=ensureFacts(); if(!h) return; const {wrap,img}=h;
+    wrap.hidden=true; img.removeAttribute("src");
+    const base=CARD_SRC[mid]||"generica"; const me=++seq;
+    (function tryExt(i){
+      if(me!==seq) return;
+      if(i>=exts.length){ wrap.hidden=true; return; }
+      const src=`/dms-gemello-news/landing/cards/${base}.${exts[i]}?t=${Date.now()}`;
+      const p=new Image();
+      p.onload=()=>{ if(me!==seq) return; img.src=src; wrap.hidden=false; console.debug("[MAP v4.1] loaded", mid, src); };
+      p.onerror=()=>tryExt(i+1);
+      p.src=src;
+    })(0);
+  }
+  function install(){
+    const base=window.openFull; if(typeof base!=="function") return;
+    if(base.__MAP_V41_WRAP__) return;
+    function wrapped(m){
+      // sposta eventuali facts legacy dentro la modal
+      document.querySelectorAll("body>.facts").forEach(n=>n.remove());
+      const h=ensureFacts();
+      base(m);
+      buildNav(m.id);
+      loadCard(m.id);
+      (h?.card||id("card"))?.scrollTo(0,0);
+    }
+    wrapped.__MAP_V41_WRAP__=true;
+    window.openFull=wrapped;
+    // guardia contro sovrascritture
+    setInterval(()=>{ if(typeof window.openFull!=="function" || !window.openFull.__MAP_V41_WRAP__){ window.openFull=wrapped; } },180);
+  }
+  const t0=Date.now(); (function wait(){
+    if(Array.isArray(window.DATA) && typeof window.openFull==="function"){ install(); }
+    else if(Date.now()-t0<10000){ setTimeout(wait,60); }
+  })();
+})();
+</script>
 </body>
 </html>
 
