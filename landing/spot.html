@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8">
+<script>
+const p=new URLSearchParams(location.search);
+const mid=p.get('mid')||'mef';  // default: MEF
+const idx=p.get('idx')||0;
+location.replace(`./mappa-ministeri.html?ui=full&mid=${encodeURIComponent(mid)}&idx=${idx}`);
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=./mappa-ministeri.html?ui=full"></noscript>
+
