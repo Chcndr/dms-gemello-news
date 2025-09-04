@@ -73,6 +73,13 @@
 </style>
 </head>
 <body>
+  <!-- Navbar -->
+  <div style="position:sticky;top:0;background:#0b1320;padding:10px 16px;z-index:9999">
+    <a style="color:#c9d1d9;margin-right:14px;text-decoration:none" href="../">Home</a>
+    <a style="color:#c9d1d9;margin-right:14px;text-decoration:none" href="./mappa-ministeri.html?ui=modal">Mappa</a>
+    <a style="color:#c9d1d9;text-decoration:none" href="./spot.html">Spot</a>
+  </div>
+
   <!-- Overlay + Modal viewer -->
   <div id="map-overlay" hidden></div>
 
@@ -254,6 +261,43 @@
   // Boot
   render();
 })();
+
+// Router UI: modal vs full
+const UI = new URLSearchParams(location.search).get('ui') || 'modal'; // default 'modal'
+
+function openModalRouter(mid, idx=0) { 
+  if (window.openModal) window.openModal(mid, idx); 
+}
+
+function openFullRouter(mid, idx=0) { 
+  // For full mode, use the existing viewer
+  if (window.MAP && window.MAP[mid]) {
+    const keys = Object.keys(window.MAP);
+    const chipIndex = keys.indexOf(mid);
+    if (chipIndex >= 0) {
+      // Simulate chip click for full mode
+      const chips = document.querySelectorAll('.chip');
+      if (chips[chipIndex]) {
+        chips[chipIndex].click();
+      }
+    }
+  }
+}
+
+// Click handler for chips with data-mid
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-mid]');
+  if (!el) return;
+  e.preventDefault();
+  const mid = el.dataset.mid;
+  (UI === 'modal' ? openModalRouter : openFullRouter)(mid, 0);
+});
+
+// Auto-open if mid specified in URL
+const urlMid = new URLSearchParams(location.search).get('mid');
+if (urlMid && UI === 'modal') {
+  setTimeout(() => openModalRouter(urlMid, 0), 100);
+}
 </script>
 </body>
 </html>
