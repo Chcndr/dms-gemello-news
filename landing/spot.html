@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPOT DMS - Documenti</title>
+  <style>
+    :root {
+      --brand-green: #18c964;
+      --brand-green-2: #14b85a;
+      --bg-dark: #0b1220;
+      --text-light: #e2e8f0;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+    
+    /* Navbar */
+    .navbar {
+      display: flex;
+      gap: 16px;
+      padding: 16px 24px;
+      background: rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .navbar a {
+      color: var(--text-light);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .navbar a:hover {
+      background: var(--brand-green);
+      color: white;
+    }
+    
+    .navbar a.active {
+      background: var(--brand-green);
+      color: white;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+      color: var(--brand-green);
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 48px;
+      opacity: 0.8;
+    }
+    
+    /* PDF Grid */
+    .pdf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    
+    .pdf-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    
+    .pdf-card:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: var(--brand-green);
+      transform: translateY(-2px);
+    }
+    
+    .pdf-card h3 {
+      color: var(--brand-green);
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+    
+    .pdf-card p {
+      opacity: 0.8;
+      margin-bottom: 16px;
+    }
+    
+    .pdf-tag {
+      display: inline-block;
+      background: var(--brand-green);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    
+    /* Evidenziazione attiva */
+    .is-active {
+      outline: 3px solid var(--brand-green);
+      outline-offset: 4px;
+      background: rgba(24, 201, 100, 0.1) !important;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .navbar {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .pdf-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="home.html">Home</a>
+    <a href="mappa-ministeri.html">Mappa</a>
+    <a href="spot.html" class="active">Spot</a>
+  </nav>
+
+  <!-- Container -->
+  <div class="container">
+    <h1>📚 SPOT DMS</h1>
+    <p class="subtitle">Documenti e analisi del Digital Management System</p>
+
+    <!-- PDF Grid -->
+    <div class="pdf-grid">
+      <!-- AgID -->
+      <div class="pdf-card" id="doc-once-only" data-doc="doc-once-only">
+        <h3>Once-Only / SDG</h3>
+        <p>Principio "Once Only" e Sustainable Development Goals per la digitalizzazione della PA.</p>
+        <span class="pdf-tag">AgID</span>
+      </div>
+
+      <div class="pdf-card" id="doc-sset" data-doc="doc-sset">
+        <h3>DMS SSET (SUAP)</h3>
+        <p>Sistema di Supporto per Sportello Unico Attività Produttive e servizi sanitari.</p>
+        <span class="pdf-tag">AgID / Salute</span>
+      </div>
+
+      <!-- AE -->
+      <div class="pdf-card" id="doc-riequilibrio-ecc" data-doc="doc-riequilibrio-ecc">
+        <h3>Riequilibrio (ECC)</h3>
+        <p>Riequilibrio fiscale e ambientale possibile attraverso il DMS.</p>
+        <span class="pdf-tag">AE</span>
+      </div>
+
+      <!-- ADM -->
+      <div class="pdf-card" id="doc-carbon-credit" data-doc="doc-carbon-credit">
+        <h3>Carbon Credit DMS</h3>
+        <p>Sistema di gestione crediti di carbonio integrato nel DMS.</p>
+        <span class="pdf-tag">ADM</span>
+      </div>
+
+      <!-- MEF -->
+      <div class="pdf-card" id="doc-costi-pa" data-doc="doc-costi-pa">
+        <h3>Costi PA & ROI</h3>
+        <p>Analisi costi-benefici e ritorno sull'investimento per la Pubblica Amministrazione.</p>
+        <span class="pdf-tag">MEF</span>
+      </div>
+
+      <!-- MIT -->
+      <div class="pdf-card" id="doc-progetto-nazionale" data-doc="doc-progetto-nazionale">
+        <h3>Progetto Nazionale</h3>
+        <p>Visione strategica nazionale per l'implementazione del DMS.</p>
+        <span class="pdf-tag">MIT</span>
+      </div>
+
+      <!-- MIMIT -->
+      <div class="pdf-card" id="doc-presentazione" data-doc="doc-presentazione">
+        <h3>Presentazione DMS</h3>
+        <p>Presentazione generale del Digital Management System.</p>
+        <span class="pdf-tag">MIMIT / Turismo</span>
+      </div>
+
+      <!-- MASE -->
+      <div class="pdf-card" id="doc-equilibrio-ecosostenibile" data-doc="doc-equilibrio-ecosostenibile">
+        <h3>Equilibrio ecosostenibile</h3>
+        <p>Sostenibilità ambientale e equilibrio ecologico nel DMS.</p>
+        <span class="pdf-tag">MASE</span>
+      </div>
+
+      <!-- MIC -->
+      <div class="pdf-card" id="doc-citta-metropolitana" data-doc="doc-citta-metropolitana">
+        <h3>Città Metropolitana</h3>
+        <p>Applicazione del DMS nelle aree metropolitane e culturali.</p>
+        <span class="pdf-tag">MIC</span>
+      </div>
+
+      <!-- MASAF -->
+      <div class="pdf-card" id="doc-bolkestein" data-doc="doc-bolkestein">
+        <h3>Bolkestein (area pubblica)</h3>
+        <p>Gestione delle concessioni e aree pubbliche secondo la direttiva Bolkestein.</p>
+        <span class="pdf-tag">MASAF</span>
+      </div>
+
+      <!-- MIM -->
+      <div class="pdf-card" id="doc-app-dms" data-doc="doc-app-dms">
+        <h3>App DMS – Assistente</h3>
+        <p>Applicazione mobile e assistente digitale per l'istruzione.</p>
+        <span class="pdf-tag">MIM</span>
+      </div>
+
+      <!-- Ministero del Lavoro -->
+      <div class="pdf-card" id="doc-analisi-soluzione" data-doc="doc-analisi-soluzione">
+        <h3>Analisi & Soluzione DMS</h3>
+        <p>Analisi completa e soluzioni proposte per il mondo del lavoro.</p>
+        <span class="pdf-tag">Lavoro</span>
+      </div>
+
+      <!-- PagoPA -->
+      <div class="pdf-card" id="doc-spot" data-doc="doc-spot">
+        <h3>DMS SPOT – Note</h3>
+        <p>Note tecniche e documentazione del sistema SPOT DMS.</p>
+        <span class="pdf-tag">PagoPA</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script per evidenziazione hash-based -->
+  <script>
+    function highlightDoc(key){
+      const btn = document.querySelector(`#${CSS.escape(key)}`) ||
+                  document.querySelector(`[data-doc="${CSS.escape(key)}"]`);
+      if(!btn) return;
+      document.querySelectorAll('[data-doc],[id^="doc-"]').forEach(b=>b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      btn.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      const key = location.hash.slice(1);
+      if(key) highlightDoc(key);
+    });
+    
+    // Aggiorna evidenziazione quando cambia l'hash
+    window.addEventListener('hashchange', () => {
+      const key = location.hash.slice(1);
+      if(key) highlightDoc(key);
+    });
+  </script>
+</body>
+</html>
+
