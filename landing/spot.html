@@ -3,130 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SPOT DMS - Documenti</title>
+  <title>DMS • SPOT - Documenti</title>
   <style>
     :root {
-      --brand-green: #18c964;
-      --brand-green-2: #14b85a;
-      --bg-dark: #0b1220;
-      --text-light: #e2e8f0;
+      --bg: #0d1117;
+      --card: #161b22;
+      --fg: #c9d1d9;
+      --ac: #58a6ff;
+      --border: #30363d;
+      --hover: #21262d;
     }
     
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-dark);
-      color: var(--text-light);
-      line-height: 1.6;
+      background: var(--bg);
+      color: var(--fg);
+      font: 16px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial;
     }
     
-    /* Navbar */
-    .navbar {
+    .header {
       display: flex;
-      gap: 16px;
-      padding: 16px 24px;
-      background: rgba(255,255,255,0.05);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: #0b1320;
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid var(--border);
     }
     
-    .navbar a {
-      color: var(--text-light);
+    .nav a {
+      color: var(--fg);
       text-decoration: none;
-      padding: 8px 16px;
+      margin-right: 14px;
+      padding: 6px 10px;
       border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.2s;
+      transition: background 0.2s;
     }
     
-    .navbar a:hover {
-      background: var(--brand-green);
-      color: white;
+    .nav a:hover, .nav a.active {
+      background: #202938;
     }
     
-    .navbar a.active {
-      background: var(--brand-green);
-      color: white;
-    }
-    
-    /* Container */
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 32px 24px;
+      padding: 32px 20px;
     }
     
-    h1 {
+    .title {
       font-size: 2.5rem;
-      margin-bottom: 16px;
-      color: var(--brand-green);
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--ac);
     }
     
     .subtitle {
-      font-size: 1.2rem;
-      margin-bottom: 48px;
+      font-size: 1.1rem;
       opacity: 0.8;
+      margin-bottom: 48px;
     }
     
-    /* PDF Grid */
     .pdf-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-      margin-top: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
     }
     
-    .pdf-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
+    .pdf-item {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 24px;
-      transition: all 0.3s;
-      cursor: pointer;
+      text-decoration: none;
+      color: var(--fg);
+      transition: all 0.3s ease;
+      position: relative;
     }
     
-    .pdf-card:hover {
-      background: rgba(255,255,255,0.08);
-      border-color: var(--brand-green);
+    .pdf-item:hover {
+      background: var(--hover);
+      border-color: var(--ac);
       transform: translateY(-2px);
     }
     
-    .pdf-card h3 {
-      color: var(--brand-green);
-      margin-bottom: 12px;
-      font-size: 1.3rem;
+    .pdf-item h3 {
+      color: var(--ac);
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      font-weight: 700;
     }
     
-    .pdf-card p {
+    .pdf-item p {
       opacity: 0.8;
-      margin-bottom: 16px;
+      font-size: 0.95rem;
+      line-height: 1.4;
     }
     
     .pdf-tag {
-      display: inline-block;
-      background: var(--brand-green);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 16px;
-      font-size: 0.85rem;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--ac);
+      color: #001027;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
       font-weight: 600;
     }
     
     /* Evidenziazione attiva */
     .is-active {
-      outline: 3px solid var(--brand-green);
-      outline-offset: 4px;
-      background: rgba(24, 201, 100, 0.1) !important;
+      outline: 2px solid #16a34a;
+      background: rgba(22, 163, 74, 0.08);
     }
     
-    /* Responsive */
+    /* Video section */
+    .video-section {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+    
+    .video-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .video-item video {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .video-info {
+      padding: 16px;
+    }
+    
+    .video-info h4 {
+      color: var(--ac);
+      margin-bottom: 8px;
+    }
+    
     @media (max-width: 768px) {
-      .navbar {
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      
-      h1 {
+      .title {
         font-size: 2rem;
       }
       
@@ -137,133 +169,158 @@
   </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar">
-    <a href="home.html">Home</a>
-    <a href="mappa-ministeri.html">Mappa</a>
-    <a href="spot.html" class="active">Spot</a>
-  </nav>
+  <!-- Header -->
+  <header class="header">
+    <div style="font-weight:800">DMS • SPOT</div>
+    <nav class="nav">
+      <a href="../index.html">Home</a>
+      <a href="./mappa-ministeri.html">Mappa</a>
+      <a href="./spot.html" class="active">Spot</a>
+    </nav>
+  </header>
 
   <!-- Container -->
   <div class="container">
-    <h1>📚 SPOT DMS</h1>
+    <h1 class="title">📚 SPOT DMS</h1>
     <p class="subtitle">Documenti e analisi del Digital Management System</p>
 
     <!-- PDF Grid -->
     <div class="pdf-grid">
-      <!-- AgID -->
-      <div class="pdf-card" id="doc-once-only" data-doc="doc-once-only">
-        <h3>Once-Only / SDG</h3>
-        <p>Principio "Once Only" e Sustainable Development Goals per la digitalizzazione della PA.</p>
-        <span class="pdf-tag">AgID</span>
-      </div>
+      <!-- Documenti principali -->
+      <a class="pdf-item" data-doc="analisi-soluzione-dms" href="../docs/ANALISI E SOLUZIONE DMS.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Analisi & Soluzione DMS</h3>
+        <p>Analisi completa e soluzioni proposte per l'implementazione del Digital Management System.</p>
+      </a>
 
-      <div class="pdf-card" id="doc-sset" data-doc="doc-sset">
-        <h3>DMS SSET (SUAP)</h3>
-        <p>Sistema di Supporto per Sportello Unico Attività Produttive e servizi sanitari.</p>
-        <span class="pdf-tag">AgID / Salute</span>
-      </div>
+      <a class="pdf-item" data-doc="app-assistente-personale" href="../docs/APP DMS Assistente Personale.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>App DMS – Assistente</h3>
+        <p>Applicazione mobile e assistente digitale personale per cittadini e imprese.</p>
+      </a>
 
-      <!-- AE -->
-      <div class="pdf-card" id="doc-riequilibrio-ecc" data-doc="doc-riequilibrio-ecc">
-        <h3>Riequilibrio (ECC)</h3>
-        <p>Riequilibrio fiscale e ambientale possibile attraverso il DMS.</p>
-        <span class="pdf-tag">AE</span>
-      </div>
+      <a class="pdf-item" data-doc="bolkestein-mercati" href="../docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Bolkestein (area pubblica)</h3>
+        <p>Gestione delle concessioni e commercio su area pubblica secondo la direttiva Bolkestein.</p>
+      </a>
 
-      <!-- ADM -->
-      <div class="pdf-card" id="doc-carbon-credit" data-doc="doc-carbon-credit">
+      <a class="pdf-item" data-doc="carbon-credit-dms" href="../docs/CARBON CREDIT DMS.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
         <h3>Carbon Credit DMS</h3>
-        <p>Sistema di gestione crediti di carbonio integrato nel DMS.</p>
-        <span class="pdf-tag">ADM</span>
-      </div>
+        <p>Sistema di gestione crediti di carbonio integrato nel Digital Management System.</p>
+      </a>
 
-      <!-- MEF -->
-      <div class="pdf-card" id="doc-costi-pa" data-doc="doc-costi-pa">
+      <a class="pdf-item" data-doc="costi-pa-roi" href="../docs/COSTI PA.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
         <h3>Costi PA & ROI</h3>
         <p>Analisi costi-benefici e ritorno sull'investimento per la Pubblica Amministrazione.</p>
-        <span class="pdf-tag">MEF</span>
-      </div>
+      </a>
 
-      <!-- MIT -->
-      <div class="pdf-card" id="doc-progetto-nazionale" data-doc="doc-progetto-nazionale">
-        <h3>Progetto Nazionale</h3>
-        <p>Visione strategica nazionale per l'implementazione del DMS.</p>
-        <span class="pdf-tag">MIT</span>
-      </div>
-
-      <!-- MIMIT -->
-      <div class="pdf-card" id="doc-presentazione" data-doc="doc-presentazione">
+      <a class="pdf-item" data-doc="presentazione-dms" href="../docs/DMS         ALL-IN-ONE .pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
         <h3>Presentazione DMS</h3>
-        <p>Presentazione generale del Digital Management System.</p>
-        <span class="pdf-tag">MIMIT / Turismo</span>
-      </div>
+        <p>Presentazione generale e panoramica completa del Digital Management System.</p>
+      </a>
 
-      <!-- MASE -->
-      <div class="pdf-card" id="doc-equilibrio-ecosostenibile" data-doc="doc-equilibrio-ecosostenibile">
-        <h3>Equilibrio ecosostenibile</h3>
-        <p>Sostenibilità ambientale e equilibrio ecologico nel DMS.</p>
-        <span class="pdf-tag">MASE</span>
-      </div>
+      <a class="pdf-item" data-doc="riaccendiamo-mercati" href="../docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Riaccendiamo i Mercati</h3>
+        <p>Strategia per rivitalizzare i mercati e le città attraverso la digitalizzazione.</p>
+      </a>
 
-      <!-- MIC -->
-      <div class="pdf-card" id="doc-citta-metropolitana" data-doc="doc-citta-metropolitana">
-        <h3>Città Metropolitana</h3>
-        <p>Applicazione del DMS nelle aree metropolitane e culturali.</p>
-        <span class="pdf-tag">MIC</span>
-      </div>
+      <a class="pdf-item" data-doc="dms-clust-er" href="../docs/DMS E CLUST-ER.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>DMS & CLUST-ER</h3>
+        <p>Integrazione del DMS con il sistema CLUST-ER per l'innovazione regionale.</p>
+      </a>
 
-      <!-- MASAF -->
-      <div class="pdf-card" id="doc-bolkestein" data-doc="doc-bolkestein">
-        <h3>Bolkestein (area pubblica)</h3>
-        <p>Gestione delle concessioni e aree pubbliche secondo la direttiva Bolkestein.</p>
-        <span class="pdf-tag">MASAF</span>
-      </div>
+      <a class="pdf-item" data-doc="riequilibrio-ecc" href="../docs/DMS ECC.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Riequilibrio (ECC)</h3>
+        <p>Riequilibrio fiscale e ambientale possibile attraverso il DMS.</p>
+      </a>
 
-      <!-- MIM -->
-      <div class="pdf-card" id="doc-app-dms" data-doc="doc-app-dms">
-        <h3>App DMS – Assistente</h3>
-        <p>Applicazione mobile e assistente digitale per l'istruzione.</p>
-        <span class="pdf-tag">MIM</span>
-      </div>
+      <a class="pdf-item" data-doc="once-only-sdg" href="../docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Once-Only / SDG</h3>
+        <p>Principio "Once Only" e Single Digital Gateway per la digitalizzazione della PA.</p>
+      </a>
 
-      <!-- Ministero del Lavoro -->
-      <div class="pdf-card" id="doc-analisi-soluzione" data-doc="doc-analisi-soluzione">
-        <h3>Analisi & Soluzione DMS</h3>
-        <p>Analisi completa e soluzioni proposte per il mondo del lavoro.</p>
-        <span class="pdf-tag">Lavoro</span>
-      </div>
-
-      <!-- PagoPA -->
-      <div class="pdf-card" id="doc-spot" data-doc="doc-spot">
+      <a class="pdf-item" data-doc="dms-spot" href="../docs/DMS SPOT 1.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
         <h3>DMS SPOT – Note</h3>
         <p>Note tecniche e documentazione del sistema SPOT DMS.</p>
-        <span class="pdf-tag">PagoPA</span>
+      </a>
+
+      <a class="pdf-item" data-doc="dms-sset" href="../docs/DMS SSET.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>DMS SSET (SUAP)</h3>
+        <p>Sistema di Supporto per Sportello Unico Attività Produttive.</p>
+      </a>
+
+      <a class="pdf-item" data-doc="dossier-nazionale" href="../docs/DOSSIER NAZIONALE.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Dossier Nazionale</h3>
+        <p>Dossier nazionale per l'implementazione del DMS a livello paese.</p>
+      </a>
+
+      <a class="pdf-item" data-doc="equilibrio-ecosostenibile" href="../docs/EQUILIBRIO ECOSOSTENIBILE.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Equilibrio ecosostenibile</h3>
+        <p>Sostenibilità ambientale e equilibrio ecologico nel Digital Management System.</p>
+      </a>
+
+      <a class="pdf-item" data-doc="hub-nazionale-del-commercio" href="../docs/HUB NAZIONALE DEL COMMERCIO.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Hub Nazionale del Commercio</h3>
+        <p>Progetto per la creazione dell'Hub Nazionale del Commercio digitale.</p>
+      </a>
+
+      <a class="pdf-item" data-doc="citta-metropolitana" href="../docs/LA CITTÀ METROPOLITANA.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Città Metropolitana</h3>
+        <p>Applicazione del DMS nelle aree metropolitane e gestione urbana integrata.</p>
+      </a>
+
+      <a class="pdf-item" data-doc="relazione-controlli" href="../docs/RELAZIONE SUI CONTROLLI.pdf" target="_blank">
+        <div class="pdf-tag">PDF</div>
+        <h3>Relazione sui Controlli</h3>
+        <p>Relazione dettagliata sui sistemi di controllo e monitoraggio del DMS.</p>
+      </a>
+    </div>
+
+    <!-- Video Section -->
+    <div class="video-section">
+      <h2 style="color: var(--ac); font-size: 1.8rem; margin-bottom: 16px;">🎬 Video</h2>
+      <div class="video-grid">
+        <div class="video-item">
+          <video controls>
+            <source src="../videos/spot-dms.mp4" type="video/mp4">
+            Il tuo browser non supporta il tag video.
+          </video>
+          <div class="video-info">
+            <h4>SPOT DMS - Presentazione</h4>
+            <p>Video introduttivo al sistema SPOT del Digital Management System.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Script per evidenziazione hash-based -->
+  <!-- Script per evidenziazione hash -->
   <script>
-    function highlightDoc(key){
-      const btn = document.querySelector(`#${CSS.escape(key)}`) ||
-                  document.querySelector(`[data-doc="${CSS.escape(key)}"]`);
-      if(!btn) return;
-      document.querySelectorAll('[data-doc],[id^="doc-"]').forEach(b=>b.classList.remove('is-active'));
-      btn.classList.add('is-active');
-      btn.scrollIntoView({behavior:'smooth', block:'center'});
-    }
-    
-    window.addEventListener('DOMContentLoaded', () => {
-      const key = location.hash.slice(1);
-      if(key) highlightDoc(key);
-    });
-    
-    // Aggiorna evidenziazione quando cambia l'hash
-    window.addEventListener('hashchange', () => {
-      const key = location.hash.slice(1);
-      if(key) highlightDoc(key);
-    });
+    (function () {
+      const h = location.hash.replace(/^#/, '');
+      const p = new URLSearchParams(h);
+      const slug = p.get('doc');
+      if (!slug) return;
+      const el = document.querySelector(`[data-doc="${slug}"]`);
+      if (el) {
+        el.classList.add('is-active');
+        el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    })();
   </script>
 </body>
 </html>

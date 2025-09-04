@@ -188,6 +188,49 @@ a{color:inherit;text-decoration:none}
   background:rgba(255,255,255,.1); color:#fff; border:0; cursor:pointer;
 }
 
+/* === TESTATA VERDE MODAL === */
+:root{
+  --brand-green: #16a34a;
+  --brand-green-dark:#0e7a36;
+}
+
+.card-modal__header{
+  position: sticky; top: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem .9rem;
+  background: linear-gradient(0deg,var(--brand-green),var(--brand-green));
+  color:#fff;
+  border-radius:12px 12px 0 0;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  min-height: 56px;
+}
+
+.card-modal__title{
+  text-align:center;
+  font-weight:700;
+  letter-spacing:.2px;
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
+}
+
+.btn--ghost{
+  background: rgba(255,255,255,.12);
+  color:#fff; border:1px solid rgba(255,255,255,.2);
+  padding:.45rem .75rem; border-radius:10px;
+  cursor: pointer;
+}
+.btn--ghost:hover{ background: rgba(255,255,255,.18); }
+
+.actions .btn--spot{
+  background:#fff; color:#083b2b;
+  border:none; padding:.45rem .65rem; border-radius:10px;
+  margin-left:.4rem; font-weight:600;
+  text-decoration: none; cursor: pointer;
+}
+.actions .btn--spot:hover{ filter:brightness(.95) }
+
 /* immagini slide già full-width: mi assicuro che restino responsive */
 .sheet img{ width:100%; height:auto; display:block; }
 
@@ -412,9 +455,9 @@ body{overflow:hidden;}
 </head>
 <body>
   <div class="nav">
-    <a class="btn" href="home.html" target="_top">🏠 Home</a>
-    <a class="btn" href="mappa-ministeri.html">🗺️ Mappa</a>
-    <a class="btn" href="spot.html" target="_top">📚 Spot</a>
+    <a class="btn" href="../index.html">Home</a>
+    <a class="btn" href="./mappa-ministeri.html">Mappa</a>
+    <a class="btn" href="./spot.html">Spot</a>
     <div class="controls">
       <label class="switch"><input id="btn-auto" type="checkbox" checked> Auto-rotate</label>
       <label class="switch"><input id="btn-lines" type="checkbox" checked> Linee</label>
@@ -447,11 +490,10 @@ body{overflow:hidden;}
   <!-- Fullscreen Sheet -->
   <div id="modal" aria-hidden="true">
     <div id="card" class="sheet">
-      <div id="sheetHead" class="sheet-header">
-        <button class="btn" id="btnBack">← Torna alla mappa</button>
-        <div class="title" id="sheetTitle">Ministero</div>
-        <div class="spacer"></div>
-        <div id="docBtns" class="doc-btns"></div>
+      <div class="card-modal__header">
+        <button class="btn--ghost" id="backToMap">← Torna alla mappa</button>
+        <div class="card-modal__title" id="modalMinistryTitle">Ministero</div>
+        <div class="actions" id="spotButtons"></div>
       </div>
 
       <div id="sheetBody" class="sheet-body">
@@ -908,57 +950,78 @@ function openFull(m){
   buildNavMin(m.id);
 }
 
-/* === PATCH: Titolo dinamico + pulsante "Apri in SPOT" === */
-let CARDS = {}, DOCS = {};
+/* === TESTATA VERDE + BOTTONI SPOT === */
+// Mapping ministero → PDF per bottoni SPOT
+const DOC_MAP = {
+  mef: ["dossier-nazionale","costi-pa-roi","ecc-pillola"],
+  agid:["once-only-sdg","dms-sset","pdnd-once-only"],
+  adm:["carbon-credit-dms"],
+  ae:["riequilibrio-ecc"],
+  mit:["progetto-nazionale"],
+  mic:["citta-metropolitana","presentazione-dms"],
+  mase:["equilibrio-ecosostenibile"],
+  interno:["relazione-controlli"],
+  salute:["dms-sset"],
+  mimit:["presentazione-dms"],
+  lavoro:["analisi-soluzione-dms"],
+  mim:["app-dms-assistente"],
+  turismo:["presentazione-dms"],
+  pagopa:["analisi-soluzione-dms"],
+  masaf:["bolkestein-mercati"],
+  maeci:["passaporto-eu"]
+};
 
-// Carica entrambi i mapping
-Promise.all([
-  fetch('cards/_mapping.json').then(r=>r.json()),
-  fetch('cards/_docs.json').then(r=>r.json())
-]).then(([cards, docs]) => { 
-  CARDS = cards; 
-  DOCS = docs; 
-});
+// Alias label → key
+const ALIAS = {
+  "MEF": "mef",
+  "Ministero dell'Interno":"interno",
+  "MIT":"mit",
+  "MASE":"mase",
+  "Salute":"salute",
+  "MIMIT":"mimit",
+  "Ministero del Lavoro":"lavoro",
+  "MiC":"mic",
+  "MIC":"mic",
+  "MIM":"mim",
+  "Turismo":"turismo",
+  "AE":"ae",
+  "ADM":"adm",
+  "AgID":"agid",
+  "PagoPA S.p.A.":"pagopa",
+  "MASAF":"masaf",
+  "MAECI":"maeci"
+};
 
-const modal   = document.getElementById('modal');
-const titleEl = document.getElementById('sheetTitle');
-const btnBack = document.getElementById('btnBack');
-const docBtns = document.getElementById('docBtns');
-
-let currentKey=null, slide=0;
-
-function renderDocButtons(minKey){
-  docBtns.innerHTML = '';
-  const list = (DOCS[minKey] || DOCS['GENERICA'] || []);
-  list.forEach(d => {
-    const b = document.createElement('button');
-    b.className = 'doc-btn';
-    b.textContent = d.label;
-    b.addEventListener('click', () => {
-      // Vai a SPOT e SOLO evidenzia il PDF (non aprire)
-      location.href = `spot.html#${encodeURIComponent(d.key)}`;
-    });
-    docBtns.appendChild(b);
-  });
+function renderSpotButtons(minKey){
+  const box = document.getElementById('spotButtons');
+  if(!box) return;
+  const slugs = DOC_MAP[minKey] || [];
+  box.innerHTML = slugs.map(slug => 
+    `<a class="btn--spot" href="./spot.html#doc=${slug}">PDF • ${slug.replace(/-/g,' ')}</a>`
+  ).join('');
 }
 
-function openSheetFor(ministryDisplayName, slides){
-  currentKey = ministryDisplayName;
-  titleEl.textContent = ministryDisplayName || "Scheda";
-  renderDocButtons(ministryDisplayName);
+function openCardModal(minLabel, slides){
+  const key = ALIAS[minLabel] || minLabel.toLowerCase();
+  
+  // Aggiorna titolo
+  const titleEl = document.getElementById('modalMinistryTitle');
+  if(titleEl) titleEl.textContent = minLabel || "Scheda";
+  
+  // Render bottoni SPOT
+  renderSpotButtons(key);
+  
+  // Gestione chiusura
+  const backBtn = document.getElementById('backToMap');
+  if(backBtn) backBtn.onclick = closeModal;
 }
 
-// Modifica la funzione showModal per integrare la nuova barra
+// Modifica la funzione showModal esistente per integrare la nuova testata
 const originalShowModal = showModal;
 showModal = function(title, imgs){
   originalShowModal(title, imgs);
-  openSheetFor(title, imgs);
+  openCardModal(title, imgs);
 };
-
-// Gestione chiusura modal
-btnBack.addEventListener('click', closeModal);
-modal.addEventListener('click', e => { if(e.target===modal) closeModal(); });
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 </script>
 </body>
 </html>
