@@ -21,6 +21,29 @@
   .meta{opacity:.8;font-size:.9rem}
   .hint{opacity:.65;font-size:.85rem;margin-left:8px}
 
+  /* Navbar coerente */
+  .navbar{
+    position:sticky; top:0; z-index:50;
+    background:linear-gradient(180deg,var(--bg),rgba(15,20,24,.95));
+    border-bottom:1px solid #25313c;
+    padding:8px 12px;
+  }
+  .navbar .nav-links{
+    display:flex; gap:16px; align-items:center;
+    max-width:1400px; margin:0 auto;
+  }
+  .navbar .nav-link{
+    color:#9bd6de; text-decoration:none; font-size:.9rem;
+    padding:6px 12px; border-radius:6px;
+    transition:all .15s ease;
+  }
+  .navbar .nav-link:hover{
+    background:rgba(47,148,255,.1); color:#cfe7ff;
+  }
+  .navbar .nav-link.active{
+    background:var(--chipOn); color:#fff;
+  }
+
   /* Modal compatta */
   :root { --modal-w: 1080px; --modal-pad: 16px; --overlay: rgba(8,12,18,.68); }
   body.dim { overflow: hidden; }
@@ -73,6 +96,15 @@
 </style>
 </head>
 <body>
+  <!-- Navbar coerente -->
+  <nav class="navbar">
+    <div class="nav-links">
+      <a href="./home.html?v=1" class="nav-link">Home</a>
+      <a href="./mappa-ministeri.html?v=1" class="nav-link active">Mappa</a>
+      <a href="./spot.html?v=1" class="nav-link">Spot</a>
+    </div>
+  </nav>
+
   <!-- Overlay + Modal viewer -->
   <div id="map-overlay" hidden></div>
 
