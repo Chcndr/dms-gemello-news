@@ -846,8 +846,8 @@ function openFull(m){
   #card{max-height:88vh;overflow:auto}
   #card .facts{margin:12px 0 10px}
   #card .facts img{display:block;width:100%;height:auto;max-height:62vh;object-fit:contain}
-  /* nascondi/neutralizza qualsiasi finestra legacy residua */
-  #sheet, .sheet, body>.facts{display:none !important}
+  /* non toccare la modal #sheet */
+  body>.facts{display:none !important}
 </style>
 
 <script id="map-v3-js">
@@ -861,7 +861,8 @@ function openFull(m){
   function id(x){ return document.getElementById(x); }
 
   function nukeLegacy(){
-    document.querySelectorAll("#sheet,.sheet,body>.facts").forEach(n=>n.remove());
+    // lascia intatti #sheet/.sheet: sono la finestra corrente
+    document.querySelectorAll("body>.facts").forEach(n=>n.remove());
   }
   function ensureFacts(){
     const card = id("card");
