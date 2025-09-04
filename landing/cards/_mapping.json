@@ -1,6 +1,15 @@
 {
-  "mimit": [
-    "mimit-1.png"
+  "mic": [
+    "mic-1.png"
+  ],
+  "mit": [
+    "mit-1.png"
+  ],
+  "mim": [
+    "mim-1.png"
+  ],
+  "interno": [
+    "interno-1.png"
   ],
   "mef": [
     "mef-1.png"
@@ -11,41 +20,29 @@
   "mase": [
     "mase-1.png"
   ],
-  "interno": [
-    "interno-1.png"
-  ],
-  "salute": [
-    "salute-1.png"
-  ],
-  "mit": [
-    "mit-1.png"
-  ],
   "masaf": [
     "masaf-1.png"
-  ],
-  "mic": [
-    "mic-1.png"
-  ],
-  "mim": [
-    "mim-1.png"
   ],
   "lavoro": [
     "lavoro-1.png"
   ],
-  "maeci": [
-    "maeci-1.png"
-  ],
-  "pagopa": [
-    "pagopa-1.png"
-  ],
-  "ae": [
-    "ae-1.png"
+  "mimit": [
+    "mimit-1.png"
   ],
   "adm": [
     "adm-1.png"
   ],
+  "ae": [
+    "ae-1.png"
+  ],
+  "pagopa": [
+    "pagopa-1.png"
+  ],
   "agid": [
     "agid-1.png",
     "agid-2.png"
+  ],
+  "maeci": [
+    "maeci-1.png"
   ]
 }
