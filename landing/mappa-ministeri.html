@@ -1218,43 +1218,84 @@ function openFull(m){
   }
 })();
 </script>
-<!-- ===== MAP v4.2.1 — prune: tieni SOLO nav + facts, elimina ogni altro blocco ===== -->
-<script>
+<!-- ===== MAP v4.2 — full-bleed + mapping corretto + cleanup ===== -->
+<style id="map-v42-css">
+  #card{max-height:90vh;overflow:auto}
+  #card .facts{margin:10px 0 18px}
+  #card .facts img{display:block;width:100%;height:auto;max-height:none;border-radius:8px}
+  /* nascondi eventuali box/immagini legacy che non caricano */
+  #card .legacy,
+  #card img:is([src=""],[src^="blob:"],[src$=".pdf"]) { display:none !important }
+</style>
+
+<script id="map-v42-js">
 (function(){
-  const KEEP = new Set(["minLinks","factsWrap"]);
+  if(window.__MAP_V42__) return; window.__MAP_V42__=true;
 
-  function pruneCard(){
-    const card = document.getElementById("card");
-    if(!card) return;
+  // Mapping definitivo (ID → nome file senza estensione)
+  const CARD_SRC = {
+    mef:'mef', interno:'interno', mimit:'mimit', mase:'mase', mit:'mit',
+    salute:'salute', mic:'mic', turismo:'turismo', masaf:'masaf',
+    mim:'mim', lavoro:'lavoro', maeci:'maeci',
+    agid:'agid-moduli',          // (diagramma moduli/flussi)
+    pagopa:'pagopa-dms',         // (ecosistema/riconciliazioni PagoPA)
+    ae:'riequilibrio',           // (riequilibrio fiscale verde)
+    adm:'carbon-credit-dms'      // (schema Carbon Credit / Dogane)
+  };
+  const exts=['png','webp','jpg'];
+  const $=id=>document.getElementById(id);
 
-    // 1) lascia solo i nostri due elementi (nav e facts)
-    [...card.children].forEach(n=>{
-      if(!KEEP.has(n.id)) n.remove();
-    });
+  function ensureFacts(){
+    const card=$('card'); if(!card) return null;
+    let wrap=$('factsWrap'), img=$('factsImg');
+    if(!wrap){
+      wrap=document.createElement('div'); wrap.id='factsWrap'; wrap.className='facts';
+      img=document.createElement('img'); img.id='factsImg'; wrap.appendChild(img);
+      card.insertBefore(wrap, card.firstChild);
+    } else if(wrap.parentElement!==card){ card.insertBefore(wrap, card.firstChild); }
+    return {card,wrap,img};
+  }
 
-    // 2) se qualcuno inietta IMG/IFRAME/OBJECT dentro altri wrapper, rimuovili comunque
-    [...card.querySelectorAll("img,iframe,object,embed,canvas,video")]
-      .forEach(el=>{ if(!el.closest("#factsWrap")) el.remove(); });
-
-    // 3) elimina eventuali intestazioni/box "Documenti"
-    [...card.querySelectorAll("*")].forEach(n=>{
-      if(n.closest("#factsWrap")) return;
-      const t=(n.textContent||"").trim().toLowerCase();
-      if(t==="documenti" || t.startsWith("documenti")) n.remove();
+  function killEmptyBoxes(){
+    const card=$('card'); if(!card) return;
+    card.querySelectorAll('img:not(#factsImg)').forEach(im=>{
+      if(!im.complete || im.naturalWidth===0 || /data:|blob:|\.pdf($|\?)/.test(im.src)){
+        const box=im.closest('figure,.image,.img,.media,.doc,div'); (box||im).remove();
+      }
     });
   }
 
-  // prima pulizia + guardia continua (blocchi che compaiono dopo)
-  const t0 = setInterval(pruneCard,150);
-  setTimeout(()=>clearInterval(t0),10000);
-  const card = document.getElementById("card");
-  if(card){
-    new MutationObserver(pruneCard).observe(card,{childList:true,subtree:true});
+  let seq=0;
+  function load(mid){
+    const h=ensureFacts(); if(!h) return;
+    const {img}=h; const key=CARD_SRC[mid]||mid; const me=++seq;
+    img.removeAttribute('src');
+    (function tryExt(i){
+      if(me!==seq) return;
+      if(i>=exts.length){ console.warn('[map v4.2] no image for',mid); return; }
+      const src=`/dms-gemello-news/landing/cards/${key}.${exts[i]}?t=${Date.now()}`;
+      const p=new Image();
+      p.onload=()=>{ if(me!==seq) return; img.src=src; killEmptyBoxes(); console.log('[map v4.2] loaded',mid,src); };
+      p.onerror=()=>tryExt(i+1);
+      p.src=src;
+    })(0);
   }
-  pruneCard();
+
+  function hook(){
+    const base=window.openFull; if(!base || base.__MAP_V42__) return;
+    function wrapped(m){ base(m); load(m.id); }
+    wrapped.__MAP_V42__=true; window.openFull=wrapped;
+    setInterval(()=>{ if(!window.openFull.__MAP_V42__) window.openFull=wrapped; },180);
+  }
+
+  const t0=Date.now();
+  (function wait(){
+    if(typeof window.openFull==='function'){ hook(); }
+    else if(Date.now()-t0<8000){ setTimeout(wait,60); }
+  })();
 })();
 </script>
-<!-- ===== END v4.2.1 ===== -->
+<!-- ===== END MAP v4.2 ===== -->
 </body>
 </html>
 
