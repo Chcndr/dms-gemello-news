@@ -89,6 +89,79 @@ body{ margin:0; background:#071319; color:var(--ink) }
 .doc{ margin:0 0 1rem 0; }
 .doc img{ width:100%; height:auto; display:block; border-radius:10px }
 #modalRoot:not(.is-open) *{ pointer-events:none }
+
+/* === MAPPA: container fisso, glow, tasti orizzontali === */
+:root{
+  --site:#0f1920;            /* sfondo pagina */
+  --box:#0b1e26;             /* container mappa (scuro) */
+  --glow:#00d0ff;            /* alone ciano */
+  --green:#0F7A4C;           /* header modal */
+}
+
+body{background:var(--site);}
+
+/* area mappa fissa, niente scroll "saltellante" */
+#mapBox{
+  position:relative; margin:24px auto;
+  width:min(1200px,96vw); height:min(720px,76vh);
+  background:var(--box); border-radius:14px;
+  box-shadow:0 12px 36px rgba(0,0,0,.45);
+  overflow:hidden; isolation:isolate;
+}
+
+/* logo centrale retroilluminato */
+#centerLogo{
+  position:absolute; left:50%; top:50%; width:92px; height:92px;
+  transform:translate(-50%,-50%);
+  background:url('/dms-gemello-news/assets/img/logo-gov.svg') center/contain no-repeat;
+  filter: drop-shadow(0 0 16px rgba(0,208,255,.55));
+}
+#centerLogo::after{
+  content:""; position:absolute; inset:-18px;
+  background:radial-gradient(55% 55% at 50% 50%, rgba(0,208,255,.20), transparent 70%);
+  filter:blur(14px); pointer-events:none;
+}
+
+/* anello dei nodi */
+#ring{position:absolute; inset:8% 10%; transform-origin:50% 50%; will-change:transform;}
+.node{
+  position:absolute; width:184px; height:98px; border-radius:16px;
+  display:grid; place-items:center; text-align:center;
+  background:linear-gradient(180deg,#0e2832,#0a2028);
+  color:#eaf7ff; letter-spacing:.2px; font-weight:600;
+  box-shadow:0 0 0 2px rgba(255,255,255,.06) inset, 0 16px 40px rgba(0,0,0,.55);
+  cursor:pointer; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; touch-action:manipulation;
+  transition:transform .20s ease, box-shadow .20s ease, opacity .20s ease, filter .20s ease;
+}
+.node::before{
+  content:""; position:absolute; inset:-10px; border-radius:20px;
+  background:radial-gradient(60% 80% at 50% 50%, rgba(0,208,255,.28), transparent 70%);
+  filter:blur(12px); opacity:.9; pointer-events:none;
+}
+.node:hover{transform:scale(1.06);
+  box-shadow:0 0 0 2px rgba(0,208,255,.28) inset, 0 0 46px rgba(0,208,255,.25);
+}
+/* mantiene il testo SEMPRE orizzontale */
+.node .cap{ transform:rotate(calc(-1*var(--theta))); }
+
+/* linee dal logo ai nodi */
+#spokes{position:absolute; inset:8% 10%; pointer-events:none; opacity:.65;}
+
+/* ricerca: evidenzia match e attenua il resto */
+.node.dim{opacity:.28; filter:saturate(.6) blur(.2px);}
+.node.hit{opacity:1; filter:brightness(1.2);}
+
+/* Modal dentro il container (senza spostare la pagina) */
+#modalRoot{position:absolute; left:50%; top:6%; transform:translateX(-50%); width:min(1140px,92%); z-index:30; display:none; pointer-events:none;}
+#modalRoot.is-open{display:block; pointer-events:auto;}
+.modal{border-radius:14px; overflow:hidden; background:#0a1a21; box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.modal .head{background:var(--green); color:#fff; display:flex; gap:.75rem; align-items:center; padding:.75rem 1rem;}
+.modal .body{padding:1rem; color:#eaf1f5;}
+.modal .btn{background:#0e2832; border:1px solid rgba(255,255,255,.12); color:#eaf7ff; border-radius:10px; padding:.5rem .75rem;}
+.hidden{display:none!important}
+
+/* iPad: blocca anteprima/drag lungo tap */
+a, button, .node{ -webkit-touch-callout:none; -webkit-user-drag:none; }
 </style>
 </head>
 <body>
@@ -115,139 +188,137 @@ body{ margin:0; background:#071319; color:var(--ink) }
   </nav>
 
   <main id="mapWrap" aria-label="Mappa Ministeri (sandbox)">
-    <div id="mapStage">
-<div id="ring" class="ring auto-rotate" aria-live="polite">
-  <button class="node-btn" data-slug="agid"><span>AgID</span></button>
-  <button class="node-btn" data-slug="mef"><span>MEF · Economia e Finanze</span></button>
-  <button class="node-btn" data-slug="interno"><span>Ministero dell'Interno</span></button>
-  <button class="node-btn" data-slug="mimit"><span>MIMIT · Imprese e Made in Italy</span></button>
-  <button class="node-btn" data-slug="mase"><span>MASE · Ambiente e Sicurezza</span></button>
-  <button class="node-btn" data-slug="mit"><span>MIT · Infrastrutture e Trasporti</span></button>
-  <button class="node-btn" data-slug="salute"><span>Ministero della Salute</span></button>
-  <button class="node-btn" data-slug="mic"><span>MIC · Cultura</span></button>
-  <button class="node-btn" data-slug="turismo"><span>Ministero del Turismo</span></button>
-  <button class="node-btn" data-slug="masaf"><span>MASAF · Agricoltura</span></button>
-  <button class="node-btn" data-slug="mim"><span>MIM · Istruzione e Merito</span></button>
-  <button class="node-btn" data-slug="lavoro"><span>Ministero del Lavoro</span></button>
-  <button class="node-btn" data-slug="maeci"><span>MAECI · Affari Esteri</span></button>
-  <button class="node-btn" data-slug="pagopa"><span>PagoPA S.p.A.</span></button>
-  <button class="node-btn" data-slug="ae"><span>AE · Agenzia Entrate</span></button>
-  <button class="node-btn" data-slug="adm"><span>ADM · Agenzia Dogane</span></button>
-</div>
-
-<div id="logo" aria-hidden="true">
-  <img src="../img/logo-istituzione.svg" alt="" />
-</div>
+    <div id="mapBox">
+      <svg id="spokes" viewBox="0 0 1000 1000"></svg>
+      <div id="ring"></div>
+      <div id="centerLogo" aria-hidden="true"></div>
+      <div id="modalRoot">
+        <div class="modal">
+          <div class="head">
+            <button class="btn" id="btnBack">← Torna alla mappa</button>
+            <strong id="modalTitle"></strong>
+            <a class="btn" id="btnSpot" target="_self">Apri in SPOT</a>
+          </div>
+          <div class="body" id="modalBody"></div>
+        </div>
+      </div>
     </div>
   </main>
 
-  <!-- MODAL -->
-  <div id="modalRoot" aria-hidden="true">
-    <div class="overlay" role="presentation"></div>
-    <div class="modalCard" role="dialog" aria-modal="true">
-      <header id="modalHeader">
-        <button id="btnBack" class="back">← Torna alla mappa</button>
-        <h3 id="modalTitle"></h3>
-        <div id="spotBtns"></div>
-      </header>
-      <section id="modalBody" aria-live="polite"></section>
-    </div>
+  <!-- controlli -->
+  <div style="text-align:center; margin:16px 0; display:flex; gap:16px; justify-content:center; align-items:center; flex-wrap:wrap;">
+    <label><input id="toggleRotate" type="checkbox" checked> Auto-rotate</label>
+    <label><input id="toggleLines" type="checkbox" checked> Linee</label>
+    <input id="search" placeholder="Cerca ministero…" style="padding:4px 8px; border-radius:4px; border:1px solid #333; background:#0e2230; color:#eaf7ff;">
+    <input id="zoom" type="range" min="80" max="140" value="100" style="vertical-align:middle;width:160px">
   </div>
 
 <script>
-/* Dati semplici (più item = più schede impilate) */
-window.DOC_MAP = {
-  agid   : { title:"AgID",                            cards:[{img:"/dms-gemello-news/assets/doc/agid.jpg",    alt:"AgID"}] },
-  mef    : { title:"MEF - Economia e Finanze",        cards:[{img:"/dms-gemello-news/assets/doc/mef.jpg",     alt:"MEF"}] },
-  interno: { title:"Ministero dell'Interno",          cards:[{img:"/dms-gemello-news/assets/doc/interno.jpg", alt:"Interno"}] },
-  salute : { title:"Ministero della Salute",          cards:[{img:"/dms-gemello-news/assets/doc/salute.jpg",  alt:"Salute"}] },
-  turismo: { title:"Ministero del Turismo",           cards:[{img:"/dms-gemello-news/assets/doc/turismo.jpg", alt:"Turismo"}] },
-  lavoro : { title:"Ministero del Lavoro",            cards:[{img:"/dms-gemello-news/assets/doc/lavoro.jpg",  alt:"Lavoro"}] },
-  mit    : { title:"MIT - Infrastrutture e Trasporti",cards:[{img:"/dms-gemello-news/assets/doc/mit.jpg",     alt:"MIT"}] },
-  mim    : { title:"MIM - Istruzione e Merito",       cards:[{img:"/dms-gemello-news/assets/doc/mim.jpg",     alt:"MIM"}] },
-  mimit  : { title:"MIMIT - Imprese e Made in Italy", cards:[{img:"/dms-gemello-news/assets/doc/mimit.jpg",   alt:"MIMIT"}] },
-  mase   : { title:"MASE - Ambiente e Sicurezza",     cards:[{img:"/dms-gemello-news/assets/doc/mase.jpg",    alt:"MASE"}] },
-  masaf  : { title:"MASAF - Agricoltura",             cards:[{img:"/dms-gemello-news/assets/doc/masaf.jpg",   alt:"MASAF"}] },
-  maeci  : { title:"MAECI - Affari Esteri",           cards:[{img:"/dms-gemello-news/assets/doc/maeci.jpg",   alt:"MAECI"}] },
-  mic    : { title:"MIC - Cultura",                   cards:[{img:"/dms-gemello-news/assets/doc/mic.jpg",     alt:"MIC"}] },
-  ae     : { title:"Agenzia Entrate",                 cards:[{img:"/dms-gemello-news/assets/doc/ae.jpg",      alt:"AE"}] },
-  adm    : { title:"Agenzia Dogane",                  cards:[{img:"/dms-gemello-news/assets/doc/adm.jpg",     alt:"ADM"}] },
-  pagopa : { title:"PagoPA S.p.A.",                   cards:[{img:"/dms-gemello-news/assets/doc/pagopa.jpg",  alt:"PagoPA"}] }
-};
+/* === DATI NODI (slug, etichetta) === */
+const NODES = [
+  ["agid","AgID"],["mef","MEF · Economia e Finanze"],["interno","Ministero dell'Interno"],
+  ["mimit","MIMIT · Imprese e Made in Italy"],["maeci","MAECI · Affari Esteri"],["lavoro","Ministero del Lavoro"],
+  ["salute","Ministero della Salute"],["mit","MIT · Infrastrutture e Trasporti"],["mase","MASE · Ambiente e Sicurezza"],
+  ["mic","MIC · Cultura"],["turismo","Ministero del Turismo"],["istruzione","MIM · Istruzione e Merito"],
+  ["adm","ADM · Agenzia Dogane"],["ae","AE · Agenzia Entrate"],["pagopa","PagoPA S.p.A."],["masaf","MASAF · Agricoltura"]
+];
 
-const $ = s => document.querySelector(s);
-const root = $('#modalRoot'), title = $('#modalTitle'), body = $('#modalBody'), spot = $('#spotBtns');
-
-function renderSpotButtons(slug){
-  const href = `/dms-gemello-news/landing/spot.html#${slug}`;
-  spot.innerHTML = `<a href="${href}">Apri in SPOT</a>`;
-}
-function renderDocs(cards){
-  body.innerHTML = cards.map(c=>`<figure class="doc"><img src="${c.img}" alt="${c.alt||''}"></figure>`).join('');
-}
-function openFull(slug){
-  const d = window.DOC_MAP[slug]; if(!d) return;
-  title.textContent = d.title;
-  renderSpotButtons(slug);
-  renderDocs(d.cards||[]);
-  root.classList.add('is-open');
-  root.setAttribute('aria-hidden','false');
-  if(location.hash.slice(1)!==slug) location.hash = slug;
-}
-function closeModal(updateHash=true){
-  root.classList.remove('is-open');
-  root.setAttribute('aria-hidden','true');
-  if(updateHash) history.replaceState(null,'', location.pathname);
+/* === NAVBAR assoluta (anti-404) === */
+for(const [id,href] of [["Home","/dms-gemello-news/landing/home.html"],
+                        ["Mappa","/dms-gemello-news/landing/mappa-ministeri.html"],
+                        ["Spot","/dms-gemello-news/landing/spot.html"]]) {
+  const a=[...document.querySelectorAll('a')].find(x=>x.textContent.trim()==id);
+  if(a) a.setAttribute('href', href);
 }
 
-// === Posizionamento corona e interazioni ===
-(() => {
-  const ring = document.querySelector('#ring');
-  const nodes = [...ring.querySelectorAll('.node-btn')];
+/* === BUILD ring === */
+const ring = document.getElementById('ring');
+const spokes = document.getElementById('spokes');
+const center = {x:500,y:500}; // per l'SVG spokes
+const R = 360;                 // raggio base
+ring.innerHTML = ""; spokes.innerHTML = "";
+NODES.forEach((n,i)=>{
+  const d = document.createElement('div'); d.className='node'; d.dataset.slug=n[0];
+  d.innerHTML = `<div class="cap">${n[1]}</div>`;
+  ring.appendChild(d);
+});
 
-  // Disposizione in corona e contatore rotazione testo
-  function layout(){
-    const stage = document.querySelector('#mapStage');
-    const w = stage.clientWidth, h = stage.clientHeight;
-    const cx = w/2, cy = h*0.55;                  // centro visivo leggermente più in alto
-    const R = Math.min(w,h) * 0.36;               // raggio responsive
-    nodes.forEach((el,i) => {
-      const theta = (i / nodes.length) * Math.PI*2;
-      const x = cx + R * Math.cos(theta);
-      const y = cy + R * Math.sin(theta);
-      el.style.left = x + 'px';
-      el.style.top  = y + 'px';
-      el.style.setProperty('--deg', (theta * 180/Math.PI) + 'deg');
-    });
-  }
-  layout(); 
-  addEventListener('resize', layout);
-
-  // Click -> openFull con slug
-  nodes.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const slug = btn.dataset.slug;
-      if (window.openFull) window.openFull(slug);
-      else location.hash = slug; // fallback
-    });
+/* posiziona e disegna linee */
+function layout(scale=1){
+  const nodes = [...ring.children];
+  const step = (Math.PI*2)/nodes.length;
+  nodes.forEach((el,i)=>{
+    const th = i*step - Math.PI/2;
+    const x = 50 + (Math.cos(th)*R*scale)/ring.clientWidth*100;
+    const y = 50 + (Math.sin(th)*R*scale)/ring.clientHeight*100;
+    el.style.left = x+"%"; el.style.top = y+"%";
+    el.style.setProperty('--theta', th+'rad');
   });
+  // spokes
+  const w=1000,h=1000, rSvg = 380*scale;
+  spokes.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  spokes.innerHTML = nodes.map((_,i)=>{
+    const th = i*step - Math.PI/2;
+    const x = center.x + Math.cos(th)*rSvg;
+    const y = center.y + Math.sin(th)*rSvg;
+    return `<line x1="${center.x}" y1="${center.y}" x2="${x}" y2="${y}" stroke="rgba(0,208,255,.25)" stroke-width="2"/>`;
+  }).join("");
+}
+layout();
 
-  // iPad: niente selezione/long-press preview
-  document.addEventListener('touchstart', () => {}, {passive:true});
-})();
+/* === Auto-rotate + testo sempre orizzontale === */
+let rot=0, raf=null;
+function tick(){ rot = (rot+0.15)%360; ring.style.transform=`rotate(${rot}deg)`; raf=requestAnimationFrame(tick); }
+document.getElementById('toggleRotate').addEventListener('change', e=>{
+  if(e.target.checked){ cancelAnimationFrame(raf); raf=requestAnimationFrame(tick); }
+  else { cancelAnimationFrame(raf); ring.style.transform='rotate(0deg)'; rot=0; }
+});
+document.getElementById('toggleRotate').checked && (raf=requestAnimationFrame(tick));
 
-// Inizializzazione al caricamento
-document.addEventListener('DOMContentLoaded',()=>{
-  closeModal(false);
-  $('#btnBack').addEventListener('click',()=>closeModal());
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
-  const s = location.hash.slice(1); if(window.DOC_MAP[s]) openFull(s);
+/* === Zoom (mantiene linee allineate) === */
+const zoom = document.getElementById('zoom');
+zoom.addEventListener('input', ()=>{ const s=zoom.value/100; ring.style.scale=s; layout(s); });
+
+/* === Ricerca (evidenzia match) === */
+const q = document.getElementById('search');
+q.addEventListener('input', e=>{
+  const v=e.target.value.trim().toLowerCase();
+  [...ring.children].forEach(n=>{
+    const hit = n.textContent.toLowerCase().includes(v);
+    n.classList.toggle('hit', v && hit);
+    n.classList.toggle('dim', v && !hit);
+  });
 });
 
-window.addEventListener('hashchange',()=>{
-  const s = location.hash.slice(1);
-  if(window.DOC_MAP[s]) openFull(s); else closeModal(false);
+/* === Modal dentro al container === */
+const modalRoot = document.getElementById('modalRoot');
+const modalTitle= document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+const btnSpot    = document.getElementById('btnSpot');
+const btnBack    = document.getElementById('btnBack');
+
+function openFull(slug, title){
+  modalTitle.textContent = title || slug.toUpperCase();
+  modalBody.textContent  = title || slug.toUpperCase();
+  btnSpot.href = `/dms-gemello-news/landing/spot.html#${slug}`;
+  modalRoot.classList.add('is-open');
+}
+function closeModal(){ modalRoot.classList.remove('is-open'); }
+btnBack.addEventListener('click', closeModal);
+
+/* click nodi ⇒ modal */
+ring.addEventListener('click', e=>{
+  const n = e.target.closest('.node'); if(!n) return;
+  const slug=n.dataset.slug, title=n.textContent.trim();
+  openFull(slug, title);
 });
+
+/* iPad: blocca menu lungo tap/anteprima */
+['contextmenu','dragstart'].forEach(ev=> document.addEventListener(ev, e=>e.preventDefault(), {passive:false}));
+
+/* === Linee ON/OFF === */
+const toggleLines = document.getElementById('toggleLines');
+toggleLines.addEventListener('change', e=> spokes.style.display = e.target.checked ? 'block' : 'none');
 </script>
 </body>
 </html>
