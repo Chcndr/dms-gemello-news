@@ -162,6 +162,47 @@ body{background:var(--site);}
 
 /* iPad: blocca anteprima/drag lungo tap */
 a, button, .node{ -webkit-touch-callout:none; -webkit-user-drag:none; }
+
+/* Container fisso e contrasto */
+#mapBox{
+  position:relative; margin:24px auto;
+  width:min(1280px,96vw); height:min(78vh,880px);
+  background:#0b1f26; border-radius:16px; overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 30px 120px rgba(0,0,0,.55);
+}
+
+/* Nodo quadrato, bagliore e testo orizzontale */
+.node{
+  width:160px; height:88px; border-radius:16px;
+  background:#162a33; color:#d7eef9; font-weight:600;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),
+             0 10px 35px rgba(0,206,255,.10),
+             inset 0 0 28px rgba(0,206,255,.25);
+  display:grid; place-items:center;
+  transform:translate(-50%,-50%) rotate(var(--unrotate,0deg)); /* testo orizzontale */
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent;
+}
+
+/* Linee radiali */
+#spokes{position:absolute; inset:0; pointer-events:none;}
+.spoke{
+  position:absolute; left:50%; top:50%; height:2px; width:42%;
+  transform-origin:0 0; opacity:.65;
+  background:radial-gradient(closest-side,rgba(0,206,255,.35),transparent 60%);
+}
+
+/* Logo centrale (path assoluto) */
+#centerLogo{
+  position:absolute; left:50%; top:50%; width:88px; height:88px;
+  transform:translate(-50%,-50%);
+  background:url('/dms-gemello-news/assets/img/logo-PA.svg') center/contain no-repeat;
+  filter:drop-shadow(0 0 18px rgba(0,206,255,.6));
+}
+
+/* Modal chiuso di default */
+.modal{display:none;}
+.modal.is-open{display:block;}
 </style>
 </head>
 <body>
@@ -319,6 +360,41 @@ ring.addEventListener('click', e=>{
 /* === Linee ON/OFF === */
 const toggleLines = document.getElementById('toggleLines');
 toggleLines.addEventListener('change', e=> spokes.style.display = e.target.checked ? 'block' : 'none');
+</script>
+
+<script>
+// iPad: blocca anteprime/long-press
+document.addEventListener('contextmenu', e=>e.preventDefault(), {passive:false});
+
+// Chiudi sempre il modal all'avvio
+window.addEventListener('DOMContentLoaded', () => {
+  const m = document.getElementById('modalRoot');
+  m && m.classList.remove('is-open');
+});
+
+// Posiziona 16 nodi in corona + linee + testo orizzontale
+(() => {
+  const ring = document.getElementById('ring');
+  const nodes = [...ring.querySelectorAll('.node')];
+  const N = nodes.length || 16;
+  const R = Math.min(340, Math.floor(Math.min(ring.clientWidth, ring.clientHeight)*0.36));
+  nodes.forEach((el,i)=>{
+    const deg = (360/N)*i;
+    const rad = deg*Math.PI/180;
+    el.style.left  = `calc(50% + ${R*Math.cos(rad)}px)`;
+    el.style.top   = `calc(50% + ${R*Math.sin(rad)}px)`;
+    el.style.setProperty('--unrotate', `-${deg}deg`);   // testo orizzontale
+  });
+
+  const spokes = document.getElementById('spokes');
+  spokes.innerHTML = '';
+  for(let i=0;i<N;i++){
+    const d = document.createElement('div');
+    d.className='spoke';
+    d.style.transform = `rotate(${(360/N)*i}deg)`;
+    spokes.appendChild(d);
+  }
+})();
 </script>
 </body>
 </html>
