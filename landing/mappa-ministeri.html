@@ -88,6 +88,54 @@ body{ margin:0; background:#071319; color:var(--ink) }
 /* Modal chiuso di default */
 .modal{display:none;}
 .modal.is-open{display:block;}
+
+/* Contenitore fisso (nessun salto) */
+#mapBox{
+  position:relative; margin:24px auto;
+  width:min(1280px,96vw); height:min(78vh,880px);
+  background:#0b1f26; border-radius:16px; overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 30px 120px rgba(0,0,0,.55);
+}
+
+/* Sblocca i click: di default nulla intercetta, tranne i nodi */
+#mapBox *{ pointer-events:none; }
+#ring, .node, #centerLogo{ pointer-events:auto; }
+
+/* Nodi quadrati con glow e testo sempre orizzontale */
+.node{
+  position:absolute; left:50%; top:50%;
+  width:160px; height:88px; border-radius:16px;
+  display:grid; place-items:center; cursor:pointer;
+  background:#162a33; color:#d7eef9; font-weight:600;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),
+             0 10px 35px rgba(0,206,255,.10),
+             inset 0 0 28px rgba(0,206,255,.25);
+  transform: translate(-50%, -50%) rotate(calc(var(--unrotate,0deg) - var(--spin,0deg))) !important;
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent;
+}
+
+/* Linee dal centro */
+#spokes{ position:absolute; inset:0; z-index:0; }
+.spoke{
+  position:absolute; left:50%; top:50%;
+  height:2px; width:42%; transform-origin:0 0; opacity:.65;
+  background:radial-gradient(closest-side,rgba(0,206,255,.35),transparent 60%);
+}
+
+/* Logo centrale assoluto (path ASSOLUTO) */
+#centerLogo{
+  position:absolute; left:50%; top:50%;
+  width:92px; height:92px; transform:translate(-50%,-50%);
+  background:url('/dms-gemello-news/assets/img/logo-PA.svg') center/contain no-repeat;
+  filter:drop-shadow(0 0 18px rgba(0,206,255,.6));
+  z-index:2;
+}
+
+/* Z-index: mappa sotto, modal sopra solo quando aperto */
+#ring{ position:absolute; inset:0; z-index:1; transform:rotate(var(--spin,0deg)); }
+.modal{ display:none; z-index:1100; }
+.modal.is-open{ display:block; }
   </style>
 </head>
 <body>
@@ -119,7 +167,17 @@ body{ margin:0; background:#071319; color:var(--ink) }
         <button class="node" data-slug="adm"     aria-label="Agenzia Dogane">ADM</button>
         <button class="node" data-slug="pagopa"  aria-label="PagoPA S.p.A.">PagoPA</button>
       </div>
-      <div id="centerLogo" aria-hidden="true"></div>
+      <div id="centerLogo" aria-hidden="true">
+        <!-- Fallback SVG se l'icona non carica -->
+        <svg viewBox="0 0 64 64" width="0" height="0" focusable="false">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+        </svg>
+      </div>
       <div id="modalRoot" class="modal">
         <div class="overlay" role="presentation"></div>
         <div class="modalCard" role="dialog" aria-modal="true">
@@ -237,6 +295,54 @@ window.addEventListener('DOMContentLoaded', () => {
     spokes.appendChild(d);
   }
 })();
+</script>
+
+<script>
+// iPad: no long-press preview
+addEventListener('contextmenu', e => e.preventDefault(), {passive:false});
+
+// Chiudi modal all'avvio
+addEventListener('DOMContentLoaded', () => {
+  document.getElementById('modalRoot')?.classList.remove('is-open');
+});
+
+// Geometria corona, linee e anti-rotate
+(() => {
+  const ring = document.getElementById('ring');
+  const nodes = [...ring.querySelectorAll('.node')];
+  const N = nodes.length || 16;
+  const R = Math.min(340, Math.floor(Math.min(ring.clientWidth, ring.clientHeight)*0.36));
+
+  nodes.forEach((el,i)=>{
+    const deg = (360/N)*i;
+    const rad = deg*Math.PI/180;
+    el.style.left = `calc(50% + ${R*Math.cos(rad)}px)`;
+    el.style.top  = `calc(50% + ${R*Math.sin(rad)}px)`;
+    el.style.setProperty('--unrotate', `${-deg}deg`);
+  });
+
+  const spokes = document.getElementById('spokes');
+  spokes.innerHTML = '';
+  for(let i=0;i<N;i++){
+    const d = document.createElement('div');
+    d.className='spoke';
+    d.style.transform = `rotate(${(360/N)*i}deg)`;
+    spokes.appendChild(d);
+  }
+})();
+
+// Click nodi -> apri modal (openFull minimale e robusto)
+function openFull(slug){
+  if(!slug) return;
+  const modal = document.getElementById('modalRoot');
+  modal.classList.add('is-open');
+  // TODO: qui popola il contenuto del modal come da tua struttura
+}
+
+document.querySelectorAll('.node').forEach(n=>{
+  const slug = n.dataset.slug || n.textContent.trim().toLowerCase();
+  n.addEventListener('click', () => openFull(slug));
+});
 </script>
 </body>
 </html>
