@@ -3,34 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spot DMS - Reindirizzamento...</title>
-<meta http-equiv="refresh" content="0; url=../index.html">
+<title>Spot DMS</title>
 <style>
-  body { 
-    font-family: system-ui, -apple-system, sans-serif; 
-    background: #0f1418; 
-    color: #eaf2fa; 
-    text-align: center; 
-    padding: 2rem; 
+  :root { --bg:#0f1418; --panel:#19222b; --ink:#cfe7ff; --chip:#253342; --chipOn:#2f94ff; }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:#eaf2fa;font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+  
+  /* Navbar coerente */
+  .navbar{
+    position:sticky; top:0; z-index:50;
+    background:linear-gradient(180deg,var(--bg),rgba(15,20,24,.95));
+    border-bottom:1px solid #25313c;
+    padding:8px 12px;
   }
-  .loading { 
-    margin: 2rem 0; 
-    opacity: 0.7; 
+  .navbar .nav-links{
+    display:flex; gap:16px; align-items:center;
+    max-width:1400px; margin:0 auto;
   }
+  .navbar .nav-link{
+    color:#9bd6de; text-decoration:none; font-size:.9rem;
+    padding:6px 12px; border-radius:6px;
+    transition:all .15s ease;
+  }
+  .navbar .nav-link:hover{
+    background:rgba(47,148,255,.1); color:#cfe7ff;
+  }
+  .navbar .nav-link.active{
+    background:var(--chipOn); color:#fff;
+  }
+  
+  .container{
+    max-width:1400px; margin:0 auto; padding:2rem;
+    text-align:center;
+  }
+  h1{color:#cfe7ff; margin-bottom:1rem;}
+  p{color:#9bd6de; margin-bottom:2rem;}
 </style>
 </head>
 <body>
-  <div class="loading">
-    <h1>Reindirizzamento allo Spot DMS...</h1>
-    <p>Se non vieni reindirizzato automaticamente, <a href="../index.html" style="color: #2f94ff;">clicca qui</a>.</p>
+  <!-- Navbar coerente -->
+  <nav class="navbar">
+    <div class="nav-links">
+      <a href="/dms-gemello-news/landing/home.html" class="nav-link">Home</a>
+      <a href="/dms-gemello-news/landing/mappa-ministeri.html" class="nav-link">Mappa</a>
+      <a href="/dms-gemello-news/landing/spot.html" class="nav-link active">Spot</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Spot DMS</h1>
+    <p>Contenuti video in arrivo.</p>
   </div>
-  
-  <script>
-    // Fallback JavaScript redirect
-    setTimeout(() => {
-      location.replace('../index.html');
-    }, 100);
-  </script>
 </body>
 </html>
 
