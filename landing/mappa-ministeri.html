@@ -123,6 +123,76 @@ body{ margin:0; background:#071319; color:var(--ink) }
   .node, .chip.nav{ transition:none }
 }
 
+/* === Ottimizzazioni iPad/Tablet === */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  /* Mappa più grande su tablet */
+  #ring{ width: min(90vw, 800px); }
+  
+  /* Nodi leggermente più grandi per touch */
+  .node{ 
+    padding: .6rem .9rem; 
+    font-size: 0.95rem;
+    min-height: 44px; /* Apple touch target size */
+    min-width: 44px;
+  }
+  
+  /* Modal ottimizzato per tablet */
+  .modalCard{ 
+    width: min(95vw, 900px); 
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  #modalBody{ 
+    padding: 1.2rem; 
+    max-height: calc(85vh - 80px);
+    overflow-y: auto;
+  }
+  
+  /* Header modal più spazioso */
+  #modalHeader{ padding: .8rem 1.2rem; }
+  #modalHeader .back{ padding: .4rem .8rem; }
+  
+  /* Navigazione top più spaziosa */
+  .topnav{ padding: .8rem 1.2rem; }
+  .topnav a{ padding: .4rem .8rem; }
+}
+
+/* iPad Portrait specifico */
+@media screen and (width: 768px) and (height: 1024px) and (orientation: portrait) {
+  #ring{ width: min(85vw, 700px); }
+  .modalCard{ width: min(92vw, 700px); }
+}
+
+/* iPad Landscape specifico */
+@media screen and (width: 1024px) and (height: 768px) and (orientation: landscape) {
+  #ring{ width: min(80vw, 750px); }
+  .modalCard{ width: min(90vw, 850px); }
+}
+
+/* Touch improvements per tutti i dispositivi touch */
+@media (hover: none) and (pointer: coarse) {
+  .node{ 
+    /* Rimuovi hover effects su touch, usa solo focus */
+    transition: box-shadow .22s ease, filter .18s ease, opacity .18s ease, transform .15s ease;
+  }
+  
+  .node:active{ 
+    transform: scale(0.98);
+    filter: brightness(.96); 
+  }
+  
+  /* Pulsanti più grandi per touch */
+  #modalHeader .back,
+  .topnav a{ 
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 /* linee ON/OFF già gestite, lasciamo transizione dolce */
 :root[data-lines='off'] #links{ opacity:0; transition:.24s }
 :root[data-lines='on']  #links{ opacity:1; transition:.24s }
