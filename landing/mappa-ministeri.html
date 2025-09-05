@@ -282,167 +282,39 @@ body{overflow:hidden;}
 .facts{margin:10px 0 12px;}
 .facts img{width:100%; height:auto; border-radius:12px; display:block;}
 
-/* Scheda ministeriale integrata nella modal */
-#card .facts{ margin:12px 0 10px; padding:0; }
-#card .facts img{
-  display:block; width:100%; height:auto;
-  border:1px solid var(--stroke); border-radius:12px;
-  background:#0f2024; /* tema esistente, NO verde */
-}
+/* CSS fix-v1 per modal */
+/* overlay+modal: di default non bloccano i click sulla mappa */
+#modalRoot{position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.65); z-index:1000; pointer-events:none; backdrop-filter:blur(6px);}
+#modalRoot.is-open{display:flex; pointer-events:auto;}
 
-/* v2.6.1: card sempre leggibile dentro modal */
-#card{ max-height:88vh; overflow:auto; }
-#card .facts{ margin:12px 0 10px; }
-#card .facts img{
-  display:block;
-  width:100%; height:auto;
-  max-height:62vh;          /* evita tagli su iPad */
-  object-fit:contain;
-  border:1px solid var(--stroke);
-  border-radius:12px;
-  background:#0f2024;       /* colore tema esistente */
-}
+#modalCard{width:min(1080px,92vw); max-height:88vh; background:#0f2024; border-radius:16px;
+  border:1px solid rgba(255,255,255,.12); overflow:hidden; display:flex; flex-direction:column;}
+#modalHeader{display:flex; align-items:center; gap:10px; padding:10px 12px;
+  background:#0F7A4C; color:#eafff4; font-weight:700;}
+#btnBack{appearance:none; border:1px solid rgba(255,255,255,.2); background:transparent;
+  padding:6px 10px; border-radius:999px; cursor:pointer; color:#eafff4;}
+#headerTitle{margin-left:6px; font-weight:800; letter-spacing:.2px;}
+#spotBtns{margin-left:auto; display:flex; gap:8px;}
+#spotBtns a{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.22); background:rgba(15,32,36,.35); color:#eafff4; text-decoration:none;}
 
-/* v2.6.3: CSS aggiuntivi per card e nav */
-#card .facts img{ display:block; max-width:100%; max-height:62vh; margin:8px auto 0; object-fit:contain; border-radius:12px; }
-.min-links{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0; }
-.chip.nav{ opacity:.95; }
+#modalBody{padding:12px; overflow:auto;}
+#modalBody img{display:block; width:100%; height:auto; max-height:62vh; object-fit:contain}
 
-/* v2.7.1 — solo-modal, nascondi legacy ovunque */
-#sheet, body > .facts { display: none !important; }
-#card{ max-height:88vh; overflow:auto; }
-#card .facts{ margin:12px 0 10px; }
-#card .facts img{ display:block; width:100%; height:auto; max-height:62vh; object-fit:contain; }
+/* mappa: assicurare click sui nodi */
+.node, .tile, .node .label{user-select:none; -webkit-user-select:none; cursor:pointer}
+#stage, #world{z-index:10;}
 
-/* Modal header verde sito */
-.dms-head{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  gap:.75rem;
-  padding:.65rem .9rem;
-  background:#0F7A4C;          /* verde scuro sito */
-  color:#fff;
-  border-radius:10px 10px 0 0;
-  box-shadow:0 8px 24px rgba(0,0,0,.35);
-}
-.dms-head .title{
-  margin:0; text-align:center; font-weight:700; font-size:1rem; letter-spacing:.2px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.dms-head .btn{
-  background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.2);
-  padding:.45rem .65rem; border-radius:8px; font-weight:600; cursor:pointer;
-  backdrop-filter:saturate(120%) blur(2px);
-}
-.dms-head .btn:hover{ background:rgba(255,255,255,.18); }
-.spot-actions{ display:flex; gap:.4rem; }
-
-/* CSS header modal come richiesto nelle istruzioni */
-/* overlay centrato */
-#modalOverlay {
-  position: fixed; inset: 0;
-  background: rgba(6,16,14,.55);
-  backdrop-filter: blur(2px);
-  display: none; z-index: 1100;
-  align-items: center; justify-content: center;
-}
-#modalOverlay.is-open { display: flex; }
-body.modal-open { overflow: hidden; }
-
-/* card del modal */
-#modalCard {
-  width: min(1080px, 92vw);
-  max-height: 86vh;
-  background: #0b1a20; /* scuro del sito */
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 12px 36px rgba(0,0,0,.5);
-}
-
-/* header verde in alto, NON sticky/fixed */
-#modalHeader {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px; align-items: center;
-  height: 56px; padding: 8px 12px;
-  background: #0F7A4C; color: #fff;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  position: static; /* importante */
-}
-
-/* assicurati di rimuovere/annullare queste regole se presenti */
-#modalHeader.sticky, #modalHeader.fixed { position: static !important; }
-#modalHeader { bottom: auto !important; top: auto !important; }
-
-#backToMap{ background:rgba(255,255,255,.12); border:0; padding:8px 12px; border-radius:8px; color:#fff; }
-#modalTitle{ text-align:center; font-weight:600; letter-spacing:.2px; }
-#spotBtns a{ display:inline-block; margin-left:8px; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,.12); color:#fff; text-decoration:none; }
-
-/* CSS anti-interferenze per bottoni SPOT */
-#modalHeader, #modalHeader * { pointer-events: auto; }
-.btn-spot { cursor: pointer; display: inline-block; margin-left: .5rem; }
-
-/* livelli e dimensioni coerenti */
-#modalOverlay { z-index: 1000; }
-#modalCard { z-index: 1100; max-width: min(1140px, 92vw); }
-#modalCard img { max-width: 100%; height: auto; }
-
-/* Modal centrato + header verde del sito */
-#modalOverlay{position:fixed;inset:0;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,.6);z-index:1100;}
-#modalOverlay.is-open{display:flex;}
-#modalCard{max-width:min(1140px,92vw);width:100%;border-radius:12px;overflow:hidden;}
-#modalHeader{background:#0F7A4C !important;color:#fff;}
-#spotBtns .btn{margin-left:.5rem;margin-top:.25rem}
-.btn.btn-spot{display:inline-block;margin-left:.5rem;padding:.4rem .7rem;border-radius:.5rem;background:#0F7A4C;color:#fff;text-decoration:none}
-
-/* Modal hidden by default: non deve prendere i click */
-#modalBg, #modalOverlay, #modalCard, .modal-bg, .modalCard, .modal-card {
-  display: none !important;
-  pointer-events: none !important;
-}
-
-/* Solo quando il root ha la classe is-open il modal "vive" */
-#modalRoot.is-open #modalBg,
-#modalRoot.is-open #modalOverlay,
-#modalRoot.is-open #modalCard,
-#modalRoot.is-open .modal-bg,
-#modalRoot.is-open .modalCard,
-#modalRoot.is-open .modal-card {
-  display: block !important;
-  pointer-events: auto !important;
-  z-index: 1100;
-}
-
-/* La mappa deve restare cliccabile */
-#stage, #mapCanvas, #graph, .map-stage {
-  position: relative;
-  z-index: 10;
-}
-
-/* Modal: disattivo quando chiuso */
-#modalRoot{display:none;pointer-events:none}
-#modalRoot.is-open{display:block;pointer-events:auto}
-#mapWrap,#graph{position:relative;z-index:10}
-
-/* Disabilita anteprima/drag di Safari (long-press) */
-#mapWrap, #graph, .node, .node *{
-  -webkit-touch-callout:none;  /* stop anteprima */
-  -webkit-user-select:none; user-select:none;
-  -webkit-user-drag:none;
-  touch-action:manipulation;
-}
-
-/* Solo i nodi devono ricevere i tap */
-#mapWrap *{ pointer-events:none; }
-.node, .node *{ pointer-events:auto; cursor:pointer; }
+/* prevenire che overlay invisibile catturi click quando chiuso */
+body:not(.modal-open) #modalRoot{display:none; pointer-events:none;}
 </style>
 </head>
 <body>
   <div class="nav">
-    <a class="btn" href="/dms-gemello-news/landing/home.html" target="_top">Home</a>
-    <span class="btn is-active">Mappa</span>
-    <a class="btn" href="/dms-gemello-news/landing/spot.html" target="_top">Spot</a>
+    <a class="btn" href="/dms-gemello-news/landing/home.html">Home</a>
+    <a class="btn" href="/dms-gemello-news/landing/mappa-ministeri.html">Mappa</a>
+    <a class="btn" href="/dms-gemello-news/landing/spot.html">Spot</a>
     <div class="controls">
       <label class="switch"><input id="btn-auto" type="checkbox" checked> Auto-rotate</label>
       <label class="switch"><input id="btn-lines" type="checkbox" checked> Linee</label>
@@ -462,6 +334,17 @@ body.modal-open { overflow: hidden; }
       </div>
     </main>
 
+    <div id="modalRoot" aria-hidden="true">
+      <div id="modalCard" role="dialog" aria-modal="true">
+        <div id="modalHeader">
+          <button id="btnBack">← Torna alla mappa</button>
+          <div id="headerTitle">Ministero</div>
+          <div id="spotBtns"></div>
+        </div>
+        <div id="modalBody"><img id="factsImg" alt=""></div>
+      </div>
+    </div>
+
     <div id="sheet" class="panel" hidden>
       <h3 class="ttl"></h3>
       <p class="meta"></p>
@@ -472,67 +355,41 @@ body.modal-open { overflow: hidden; }
     </div>
   </div>
 
-  <!-- Modal -->
-  <div id="modalOverlay" class="modal-overlay">
-    <div id="modalCard">
-      <div id="modalHeader" class="modal-header">
-        <button id="backToMap" class="btn-back">← Torna alla mappa</button>
-        <div id="modalTitle" class="modal-title">-</div>
-        <div id="spotBtns" class="spot-btns"></div>
-      </div>
-      <div class="modal-body">
-        <button id="prev" class="nav prev">◀</button>
-        <img id="modalImage" alt="" />
-        <button id="next" class="nav next">▶</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Fallback modal esistente -->
+  <!-- Fullscreen Sheet -->
   <div id="modal" aria-hidden="true">
     <div id="card" class="sheet">
-      <div class="modal-head dms-head" id="dmsHead">
-        <button class="btn back" id="btnBackToMap">← Torna alla mappa</button>
-        <h3 class="title" id="modalTitle">—</h3>
-        <div class="spot-actions" id="spotActions">
-          <div id="spotBtns" class="spot-btns"></div>
+      <div id="sheetHead" class="sheet-head">
+        <h2 class="ttl">Titolo</h2>
+        <div class="actions">
+          <!-- btn dinamici SPOT/PDF -->
         </div>
+        <div id="minLinks" class="min-links"></div>
+        <button id="close" class="btn x">✕</button>
       </div>
 
-      <div id="modalBody" class="dms-modal-body"><!-- qui inietti l'IMG --></div>
+      <div id="sheetBody" class="sheet-body">
+        <img class="hero" alt="" />
+        <p class="meta"></p>
+        <ul class="bullets"></ul>
+
+        <!-- SCHEDA ministeriale (auto) -->
+        <div id="factsWrap" class="facts" hidden>
+          <img id="factsImg" alt="" />
+        </div>
+
+        <h4 style="margin:16px 0 6px">Documenti</h4>
+        <div class="docs"></div>
+      </div>
     </div>
   </div>
 
-<script>window.BUILD='qa12'</script>
 <script>
 /* HOTFIX v2.4: viewport/stage/world + pinch-zoom + glow ricerca + deeplink */
-// Fallback inline completo con 16 ministeri
-window.DOC_MAP_FALLBACK = [
-  {id:'mef', nome:'MEF · Economia e Finanze', ring:1, tag:'Ministero'},
-  {id:'interno', nome:'Ministero dell\'Interno', ring:1, tag:'Ministero'},
-  {id:'mimit', nome:'MIMIT · Imprese e Made in Italy', ring:1, tag:'Ministero'},
-  {id:'mase', nome:'MASE · Ambiente e Sicurezza Energetica', ring:1, tag:'Ministero'},
-  {id:'mit', nome:'MIT · Infrastrutture e Trasporti', ring:1, tag:'Ministero'},
-  {id:'salute', nome:'Ministero della Salute', ring:1, tag:'Ministero'},
-  {id:'mic', nome:'MIC · Cultura', ring:1, tag:'Ministero'},
-  {id:'turismo', nome:'Ministero del Turismo', ring:1, tag:'Ministero'},
-  {id:'masaf', nome:'MASAF · Agricoltura', ring:1, tag:'Ministero'},
-  {id:'mim', nome:'MIM · Istruzione e Merito', ring:1, tag:'Ministero'},
-  {id:'lavoro', nome:'Ministero del Lavoro', ring:1, tag:'Ministero'},
-  {id:'maeci', nome:'MAECI · Affari Esteri', ring:1, tag:'Ministero'},
-  {id:'agid', nome:'AgID', ring:2, tag:'Ente'},
-  {id:'pagopa', nome:'PagoPA S.p.A.', ring:2, tag:'Ente'},
-  {id:'ae', nome:'AE · Agenzia Entrate', ring:2, tag:'Ente'},
-  {id:'adm', nome:'ADM · Agenzia Dogane', ring:2, tag:'Ente'}
-];
-
+const JSON_URL = '/dms-gemello-news/landing/data/ministeri.json?v=7';
 let DATA = [];
 let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
 let phase=0, speed=0.0016, rotating=true;
-const SHOW = ['mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm','mic','turismo','masaf','mim','lavoro'];
-
-// STEP 3: Ordine/whitelist ministeri mostrati
-window.SHOW = ["mef","interno","mimit","mase","mit","salute","mic","turismo","masaf","mim","lavoro","maeci","agid","pagopa","ae","adm"];
+const SHOW = ['pcm','mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm'];
 
 // selettori viewport/stage/world
 const viewport=document.getElementById('viewport');
@@ -571,12 +428,11 @@ function jitter(i){ return (i%2 ? +0.06 : -0.06); }
 
 /* i tile DEVONO nascere in #world */
 function mkNode(m){
-  const el=document.createElement('a');
+  const el=document.createElement('div');
   el.className='node';
   el.dataset.id=m.id;
-  el.dataset.slug=m.id;  // per iPad click handler
-  el.href=`#${m.id}`;
   el.innerHTML=`<div class="label">${m.nome}</div>`;
+  el.onclick=()=>openFull(m);
   return el;
 }
 
@@ -707,8 +563,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 /* bootstrap */
 async function bootstrap(){
-  // Uso direttamente il fallback inline sicuro
-  DATA = window.DOC_MAP_FALLBACK || [];
+  try{ const r = await fetch(JSON_URL,{cache:'no-store'}); DATA = await r.json(); }catch(e){ DATA=[]; }
   window.DATA = DATA; // rendi accessibile globalmente
   layout(); cancelAnimationFrame(raf); tick();
 }
@@ -721,13 +576,6 @@ document.getElementById('btn-auto')?.addEventListener('change', e => {
 });
 
 // --- Scheda fullscreen ---
-// --- NAV estesa in ordine preferito ---
-const NAV_IDS = [
-  'mef','interno','mimit','mase','mit','salute',
-  'maeci','agid','pagopa','ae','adm',
-  'mic','turismo','masaf','mim','lavoro'
-];
-
 const modal   = document.getElementById('modal');
 const head    = document.getElementById('sheetHead');
 const body    = document.getElementById('sheetBody');
@@ -743,354 +591,139 @@ const docsBox = body.querySelector('.docs');
 const factsWrap = document.getElementById('factsWrap');
 const factsImg  = document.getElementById('factsImg');
 
-// Spostamento sicuro (se l'HTML avesse #factsWrap fuori)
-const cardEl = document.getElementById('card');
-if (cardEl && factsWrap && factsWrap.parentElement !== cardEl) {
-  cardEl.appendChild(factsWrap);
-}
-
 document.getElementById('close').onclick = () => modal.style.display = 'none';
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.style.display='none'; });
 
-// Loader immagine 1:1 (senza fallback errati)
-function loadCardFor(id){
-  if(!factsWrap || !factsImg){ return; }
-  const exts = ['png','jpg','webp'];
-  let i = 0, loaded = false;
-  function tryNext(){
-    if(i>=exts.length){
-      factsWrap.hidden = true; factsImg.removeAttribute('src'); return;
-    }
-    const src = `/dms-gemello-news/landing/cards/${id}.${exts[i++]}`;
-    const probe = new Image();
-    probe.onload = ()=>{ factsImg.src = src; factsWrap.hidden = false; };
-    probe.onerror = tryNext;
-    probe.src = src + `?t=${Date.now()}`; // cache-buster
-  }
-  tryNext();
-}
-
-// nav chips dinamiche
-function buildNavMin(currentId){
-  const bar = document.getElementById('minLinks');
-  if(!bar){ return; }
-  bar.innerHTML = '';
-  SHOW.forEach(id=>{
-    const btn = document.createElement('button');
-    btn.className = 'chip nav';
-    btn.textContent = id.toUpperCase();
-    if(id===currentId){ btn.disabled = true; }
-    btn.onclick = ()=>{
-      const m = (window.DATA||[]).find(x=>x.id===id);
-      if(m) openFull(m);
-    };
-    bar.appendChild(btn);
-  });
-}
-
-/* ===== MAP v2.7.1 — hard reset: solo modal, kill legacy, nav stabile ===== */
-(function(){
-  const IDS=['mef','interno','mimit','mase','mit','salute','mic','turismo','masaf','mim','lavoro','maeci','agid','pagopa','ae','adm'];
-
-  function $id(x){return document.getElementById(x);}
-  function ready(){return Array.isArray(window.DATA)&&typeof window.openFull==='function'&&$id('card');}
-
-  function ensureFacts(){
-    const card=$id('card'); if(!card) return null;
-    let wrap=$id('factsWrap'), img=$id('factsImg');
-    if(!wrap){
-      wrap=document.createElement('div'); wrap.id='factsWrap'; wrap.className='facts';
-      img=document.createElement('img'); img.id='factsImg'; img.alt=''; wrap.appendChild(img);
-      const first=card.querySelector('.panel'); card.insertBefore(wrap, first||card.firstChild);
-    }
-    return {wrap,img};
-  }
-
-  function nukeLegacy(){
-    document.querySelectorAll('#sheet, body > .facts').forEach(n=>n.remove());
-  }
-
-  let seq=0;
-  function loadCard(id){
-    const slot=ensureFacts(); if(!slot) return;
-    const {wrap,img}=slot; wrap.hidden=true; img.removeAttribute('src');
-    const cand=[`${id}.webp`,`${id}.png`,`${id}.jpg`,'generica.webp','generica.png','generica.jpg'];
-    const me=++seq; let i=0;
-    (function next(){
-      if(me!==seq) return;
-      if(i>=cand.length){wrap.hidden=true;return;}
-      const src=`/dms-gemello-news/landing/cards/${cand[i++]}`+`?t=${Date.now()}`;
-      const p=new Image(); p.onload=()=>{if(me!==seq)return; img.src=src; wrap.hidden=false;}; p.onerror=next; p.src=src;
-    })();
-  }
-
-  function buildNav(currentId){
-    let bar=$id('minLinks');
-    if(!bar){ bar=document.createElement('div'); bar.id='minLinks'; bar.className='min-links'; ($id('titleRow')||$id('card')||document.body).appendChild(bar); }
-    bar.innerHTML='';
-    IDS.forEach(id=>{
-      const m=(window.DATA||[]).find(x=>x.id===id); if(!m)return;
-      const b=document.createElement('button'); b.className='chip nav'; b.textContent=(m.short||m.nome||id).toUpperCase();
-      if(id===currentId) b.disabled=true;
-      b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation(); openFull(m);});
-      bar.appendChild(b);
-    });
-  }
-
-  function hook(){
-    // Hook rimosso - usa solo la definizione openFull principale
-  }
-
-  function install(){
-    document.documentElement.dataset.lines='on'; (window.redraw||window.draw||function(){})();
-    nukeLegacy(); ensureFacts();
-    new MutationObserver(()=>{ nukeLegacy(); }).observe(document.body,{childList:true,subtree:true});
-  }
-
-  if(ready()) install();
-  else { const t0=Date.now(); const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>15000){clearInterval(tm);} },40); }
-})();
-
-/* ---- Alias nomi → id canonico ---- */
-const ALIAS = {
-  agid: ['agid', "agenziadigitale", "agid • agenzia per l'italia digitale"],
-  mef:  ['mef', 'economia', 'economia e finanze'],
-  interno: ['interno', 'ministero dell\'interno'],
-  mimit: ['mimit', 'imprese e made in italy'],
-  mase: ['mase', 'ambiente'],
-  mit: ['mit', 'infrastrutture'],
-  salute: ['salute', 'ministero della salute'],
-  mic: ['mic', 'cultura'],
-  turismo: ['turismo'],
-  masaf: ['masaf', 'agricoltura'],
-  mim: ['mim', 'istruzione'],
-  lavoro: ['lavoro', 'ministero del lavoro'],
-  maeci: ['maeci', 'esteri'],
-  ae: ['ae', 'agenzia entrate'],
-  adm: ['adm', 'dogane'],
-  pagopa: ['pagopa', 'pagopa s.p.a.']
-};
-function norm(s){ return (s||'').toLowerCase().replace(/[^\w]/g,''); }
-function canon(id){
-  const n = norm(id);
-  for (const k in ALIAS){ if (ALIAS[k].some(x=>norm(x)===n)) return k; }
-  return n;
-}
-
-/* ---- Map ministero → PDF (slug in SPOT) ---- */
-// Rimossa dichiarazione duplicata, uso quella completa sotto
-
-/* ---- Caricamento mapping immagini ---- */
-// Rimuovo fetch JSON, uso solo DOC_MAP inline
-let CARD_MAP = {};
-
-/* ---- Funzione openFull definitiva ---- */
-// Alias corti -> chiavi del mapping/slug
-const ALIASES = {
-  mef:'mef', interno:'interno', mimit:'mimit', mase:'mase', mit:'mit',
-  salute:'salute', mic:'mic', turismo:'turismo', masaf:'masaf', mim:'mim',
-  lavoro:'lavoro', maeci:'maeci', agid:'agid', pagopa:'pagopa', ae:'ae', adm:'adm'
-};
-
-// Fallback mapping completo come da istruzioni
-const MAPPING_FALLBACK={"MEF":["mef-1.png","mef-2.png"],"Interno":["interno-1.png"],"AgID":["agid-1.png","agid-2.png"],"ADM":["adm-1.png"],"AE":["ae-1.png"],"MASE":["mase-1.png"],"MIT":["mit-1.png"],"Salute":["salute-1.png"],"MIC":["mic-1.png"],"Turismo":["turismo-1.png"],"MASAF":["masaf-1.png"],"MIM":["mim-1.png"],"Lavoro":["lavoro-1.png"],"MAECI":["maeci-1.png"],"MIMIT":["mimit-1.png"],"PagoPA S.p.A.":["pagopa-1.png"]};
-
-window.loadMapping = async function(){
-  return MAPPING_FALLBACK;
-}
-
-// Sorgente unica dei contenuti per modal + SPOT
-window.DOC_MAP = {
-  agid:   { title:'AgID',   images:['img/ministeri/agid-01.jpg'], pdfs:[
-    {label:'A4',   url:'/dms-gemello-news/docs/agid/a4.pdf'},
-    {label:'PDF 1',url:'/dms-gemello-news/docs/agid/doc1.pdf'}
-  ]},
-  ae:     { title:'AE - Agenzia Entrate', images:['img/ministeri/ae-01.jpg'], pdfs:[] },
-  adm:    { title:'ADM - Agenzia Dogane', images:['img/ministeri/adm-01.jpg'], pdfs:[] },
-  mef:    { title:'MEF',    images:['img/ministeri/mef-01.jpg'], pdfs:[] },
-  interno:{ title:'Ministero dell\'Interno', images:['img/ministeri/interno-01.jpg'], pdfs:[] },
-  mimit:  { title:'MIMIT', images:['img/ministeri/mimit-01.jpg'], pdfs:[] },
-  mase:   { title:'MASE',  images:['img/ministeri/mase-01.jpg'], pdfs:[] },
-  mit:    { title:'MIT',   images:['img/ministeri/mit-01.jpg'],  pdfs:[] },
-  salute: { title:'Salute',images:['img/ministeri/salute-01.jpg'],pdfs:[] },
-  mic:    { title:'MIC - Cultura', images:['img/ministeri/mic-01.jpg'], pdfs:[] },
-  turismo:{ title:'Turismo', images:['img/ministeri/turismo-01.jpg'], pdfs:[] },
-  masaf:  { title:'MASAF', images:['img/ministeri/masaf-01.jpg'], pdfs:[] },
-  mim:    { title:'MIM',   images:['img/ministeri/mim-01.jpg'],   pdfs:[] },
-  lavoro: { title:'Ministero del Lavoro', images:['img/ministeri/lavoro-01.jpg'], pdfs:[] },
-  maeci:  { title:'MAECI', images:['img/ministeri/maeci-01.jpg'], pdfs:[] },
-  pagopa: { title:'PagoPA S.p.A.', images:['img/ministeri/pagopa-01.jpg'], pdfs:[] },
-};
-
-window.renderSpotButtons = function(minKey){
-  const c = document.querySelector('#spotBtns'); 
-  if(!c) return;
-  c.innerHTML='';
-  (DOC_MAP[minKey]||[]).forEach(slug=>{
-    const a=document.createElement('a');
-    a.href=`spot.html#${slug}`; 
-    a.textContent=`Apri in SPOT — ${slug.replace(/-/g,' ')}`;
-    c.appendChild(a);
-  });
-}
-
-window.setupModalHeader = function(title, alias){
-  const titleEl = document.getElementById('modalTitle');
-  if(titleEl) titleEl.textContent = title || alias.toUpperCase();
-  window.renderSpotButtons(alias);
-}
-
-window.openFull = async function(key){
-  setupModalHeader(key);
-  renderSpotButtons(key);
-  // logica esistente apertura modal
-  const mapping = await window.loadMapping();
-  let imgs = (mapping[key] || []).map(x => `./cards/${x}`);
-  if(!imgs.length) imgs = ['./cards/generic.png'];
-
-  const modal = document.getElementById('modal');
-  const body = document.getElementById('modalBody');
-  if(modal && body) {
-    body.innerHTML = `<img src="${imgs[0]}" style="width:100%;height:auto;display:block;">`;
-    modal.style.display = 'block';
-    document.body.classList.add('modal-open');
-  }
-};
-
-function closeModal(){
-  const overlay = document.getElementById('modalOverlay');
-  if(overlay) overlay.classList.remove('is-open');
-  document.body.classList.remove('modal-open');
-}
-
-/* ---- Viewer A4: mantiene frecce esistenti ---- */
-function renderSlide(files, idx){
-  const i = ((idx%files.length)+files.length)%files.length;
-  const body = document.getElementById('modalBody');
-  body.innerHTML = `<img src="cards/${files[i]}" alt="" style="width:100%;height:auto;display:block;">`;
-  // collega le frecce già presenti (se usate):
-  window._currentSlide = { files, index:i };
-}
-function prevSlide(){ if(window._currentSlide){ renderSlide(window._currentSlide.files, window._currentSlide.index-1);} }
-function nextSlide(){ if(window._currentSlide){ renderSlide(window._currentSlide.files, window._currentSlide.index+1);} }
-function closeModal(){ 
-  document.getElementById('modal').style.display = 'none';
-  document.body.classList.remove('modal-open'); 
-}
-
-function renderSpotButtons(key){
-  const slugs = (window.DOC_MAP?.[key]?.spot || []);
-  const box = document.getElementById('spotBtns');
-  if(!box) return;
-  const base = "/dms-gemello-news/landing/spot.html#";
-  box.innerHTML = slugs.map(s => 
-    `<a class="btn btn-spot" href="${base}${s}">Apri in SPOT — ${s}</a>`
-  ).join('');
-}
-
-// Collega il pulsante back
-document.addEventListener('DOMContentLoaded', function(){
-  const btn = document.getElementById('btnBackToMap');
-  if(btn) btn.onclick = closeModal;
-});
-
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
-</script>
-<script>
-(function(){
-  const MAP = window.DOC_MAP || {};
-  const VALID = new Set(Object.keys(MAP));
-  let cur=null, idx=0;
-
-  function hardClose(){
-    document.getElementById('modalOverlay')?.classList.remove('is-open');
-    document.getElementById('modalCard')?.classList.remove('modal-open');
-    document.documentElement.classList.remove('modal-open');
-    const t=document.getElementById('modalTitle'); if(t) t.textContent='-';
-    const img=document.getElementById('docImg');   if(img) img.removeAttribute('src');
-    document.getElementById('spotBtns')?.replaceChildren();
-  }
-  window.closeModal = ()=>hardClose();
-
-  function setImage(slug, i=0){
-    const imgs = MAP[slug]?.images || [];
-    if(!imgs.length) return false;
-    idx = (i+imgs.length)%imgs.length;
-    const img = document.getElementById('docImg');
-    if(img) img.src = imgs[idx];
-    return true;
-  }
-
-  function renderSpotButtons(slug){
-    const box=document.getElementById('spotBtns'); if(!box) return;
-    const frag=document.createDocumentFragment();
-    const aSpot=document.createElement('a');
-    aSpot.className='btn btn-light';
-    aSpot.href=`/dms-gemello-news/landing/spot.html#${slug}`;
-    aSpot.textContent='Apri in SPOT — once only / sdg';
-    frag.appendChild(aSpot);
-    (MAP[slug]?.pdfs||[]).slice(0,3).forEach(p=>{
-      const a=document.createElement('a');
-      a.className='btn btn-outline-light'; a.target='_blank'; a.rel='noopener';
-      a.href=p.url; a.textContent=p.label||'PDF';
-      frag.appendChild(a);
-    });
-    box.replaceChildren(frag);
-  }
-
-  window.openFull = function(slug){
-    slug = (slug || (location.hash||'').slice(1)).toLowerCase().trim();
-    if(!VALID.has(slug)) return hardClose();          // niente slug ⇒ niente modal
-    cur=slug; idx=0;
-    const t=document.getElementById('modalTitle');
-    if(t) t.textContent = MAP[slug]?.title || slug.toUpperCase();
-    setImage(slug,0); renderSpotButtons(slug);
-    document.getElementById('modalOverlay')?.classList.add('is-open');
-    document.getElementById('modalCard')?.classList.add('modal-open');
-    document.documentElement.classList.add('modal-open');
-    const prev=document.getElementById('btnPrev'), next=document.getElementById('btnNext');
-    if(prev) prev.onclick=()=>setImage(cur, idx-1);
-    if(next) next.onclick=()=>setImage(cur, idx+1);
+function tryLoadFacts(id){
+  // carica immagine scheda se esiste: /landing/cards/<id>.png | .jpg
+  const candidates = [
+    `/dms-gemello-news/landing/cards/${id}.png`,
+    `/dms-gemello-news/landing/cards/${id}.jpg`
+  ];
+  let i=0;
+  const loadNext = () => {
+    if(i>=candidates.length){ factsWrap.hidden = true; return; }
+    factsImg.onload = () => { factsWrap.hidden = false; };
+    factsImg.onerror = () => { i++; loadNext(); };
+    factsImg.src = candidates[i];
   };
+  loadNext();
+}
 
-  function maybeFromHash(){
-    const s=(location.hash||'').slice(1).toLowerCase().trim();
-    if(new Set(Object.keys(MAP)).has(s)) window.openFull(s);
-    else {
-      // se arrivo da Home→Mappa con hash sporco, lo pulisco e CHIUDO
-      hardClose();
-      history.replaceState(null, '', location.pathname);
-    }
-  }
-
-  // all'avvio: chiudi sempre e poi valuta l'hash
-  document.addEventListener('DOMContentLoaded', ()=>{
-    hardClose();
-    maybeFromHash();
+function buildNavMin(currentId){
+  navMin.innerHTML='';
+  const others = (window.DATA||[]).filter(x=>x.id!==currentId).slice(0,8);
+  others.forEach(m=>{
+    const b = document.createElement('button');
+    b.className = 'chip nav';
+    b.textContent = (m.nome||m.id).split('•')[0].trim();
+    b.onclick = () => openFull(m);
+    navMin.appendChild(b);
   });
-  window.addEventListener('hashchange', maybeFromHash, {passive:true});
-})();
-</script>
-<script>
+}
+
+function openFull(m){
+  modal.style.display = 'flex';
+  ttl.textContent = m.nome || '';
+
+  // bottoni SPOT/PDF nello slot
+  actions.innerHTML = '';
+  (m.docs||[]).forEach(d=>{
+    const a = document.createElement('a');
+    a.className = 'btn cta';
+    a.target = '_top';
+    const spot = `/dms-gemello-news/#doc-${d.slug}`;
+    const pdf  = `/dms-gemello-news/docs/${d.slug}.pdf${d.page?`#page=${d.page}`:''}`;
+    a.href = d.open==='pdf' ? pdf : spot;
+    a.textContent = d.label || (d.open==='pdf' ? 'Apri PDF' : 'Apri su Spot');
+    actions.appendChild(a);
+  });
+
+  // meta + bullets
+  meta.textContent = [
+    m.problema && `Problema: ${m.problema}`,
+    m.soluzione && `Soluzione: ${m.soluzione}`,
+    m.risultati && `Risultati: ${m.risultati}`,
+    m.ecosistema && `Ecosistema: ${m.ecosistema}`
+  ].filter(Boolean).join(' • ');
+
+  bullets.innerHTML = '';
+  (m.punti||[]).forEach(t=>{ const li=document.createElement('li'); li.textContent=t; bullets.appendChild(li); });
+
+  // hero opzionale
+  if(m.hero){ imgHero.src=m.hero; imgHero.alt=m.alt||''; imgHero.style.display='block'; }
+  else { imgHero.style.display='none'; }
+
+  // SCHEDA auto (se presente in /landing/cards/)
+  tryLoadFacts(m.id);
+
+  // bottoni altri ministeri
+  buildNavMin(m.id);
+}
+
+// JavaScript fix-v1 per modal
 (function(){
-  const VALID = new Set(['agid','mef','interno','salute','mimit','mase','mit','adm','maeci','turismo','masaf','pagopa','ae','mim','lavoro','mic']);
-  function bindNodes(){
-    document.querySelectorAll('[data-slug]').forEach(el=>{
-      const slug = el.dataset.slug;
-      if(!VALID.has(slug)) return;
-      el.style.cursor='pointer';
-      el.style.userSelect='none'; el.style.webkitUserSelect='none'; el.style.webkitTouchCallout='none';
-      const go = (e)=>{ e.preventDefault(); if(window.openFull) window.openFull(slug); };
-      el.addEventListener('click', go, {passive:false});
-      el.addEventListener('touchend', go, {passive:false});
+  const ROOT = document.getElementById('modalRoot');
+  const CARD = document.getElementById('modalCard');
+  const TITLE= document.getElementById('headerTitle');
+  const IMG  = document.getElementById('factsImg');
+  const BTNS = document.getElementById('spotBtns');
+  const BACK = document.getElementById('btnBack');
+
+  const SPOT_BASE = "/dms-gemello-news/landing/spot.html#";
+  const VALID = new Set(["mef","interno","mimit","mase","mit","salute","mic","turismo","masaf","mim","lavoro","maeci","agid","pagopa","ae","adm"]);
+
+  function openModal(id, title, imgSrc, spotSlugs){
+    document.body.classList.add('modal-open');
+    ROOT.classList.add('is-open');
+    TITLE.textContent = title || id.toUpperCase();
+    IMG.removeAttribute('src');
+    if (imgSrc) IMG.src = imgSrc;
+    BTNS.innerHTML = '';
+    (spotSlugs||[]).forEach(s=>{
+      const a=document.createElement('a');
+      a.href = SPOT_BASE + s;
+      a.textContent = "Apri in SPOT · " + s.toUpperCase();
+      BTNS.appendChild(a);
     });
   }
-  // chiudi sempre il modal all'avvio
-  document.addEventListener('DOMContentLoaded', ()=>{ bindNodes(); document.getElementById('modalRoot')?.classList.remove('is-open'); });
-  window.addEventListener('hashchange', ()=>{ /* niente auto-open da home */ });
+  function closeModal(){
+    ROOT.classList.remove('is-open');
+    document.body.classList.remove('modal-open');
+    IMG.removeAttribute('src');
+  }
+  BACK?.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(); });
+
+  // Hook sicuro su openFull
+  if (typeof window.openFull === 'function' && !window.openFull.__patchedV1){
+    const _openFull = window.openFull;
+    window.openFull = function(m){
+      try{
+        const id = (m && m.id || '').toLowerCase();
+        if(!VALID.has(id)) return; // blocca chiamate senza slug valido
+        const title = m.nome || id.toUpperCase();
+        // risoluzione immagine: cards/<id>.(webp|png|jpg) - scegli in ordine
+        const exts = ["webp","png","jpg"];
+        let src = null;
+        for(const ext of exts){
+          const p = `cards/${id}.${ext}`;
+          // non facciamo fetch: impostiamo direttamente; se 404 resta vuoto
+          if(!src) src = p;
+        }
+        const spot = (m.pdfs || m.spot || []).slice(0,3); // fino a 3 slug spot se presenti nei dati
+        openModal(id, title, src, spot);
+      }catch(e){ console.warn("openFull patch:", e); }
+    };
+    window.openFull.__patchedV1 = true;
+  }
+
+  // Chiudi con ESC
+  document.addEventListener('keydown', e=>{ if(e.key==="Escape") closeModal(); });
+
+  // All'avvio: chiuso
+  closeModal();
 })();
 </script>
 </body>
 </html>
 
-/* force deploy */
