@@ -391,8 +391,10 @@ body.modal-open { overflow: hidden; }
 /* Modal centrato + header verde del sito */
 #modalOverlay{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.6);z-index:1100;}
 #modalCard{max-width:min(1140px,92vw);width:100%;border-radius:12px;overflow:hidden;}
-#modalHeader{background:#0F7A4C;color:#fff;position:static;}
-#modalHeader{ background:#0F7A4C !important; }
+#modalHeader{background:#0F7A4C !important;color:#fff;}
+#modalOverlay.is-open{display:block;}
+#modalCard.modal-open{display:block;}
+#spotBtns .btn{margin-left:.5rem;margin-top:.25rem}
 .btn.btn-spot{display:inline-block;margin-left:.5rem;padding:.4rem .7rem;border-radius:.5rem;background:#0F7A4C;color:#fff;text-decoration:none}
 </style>
 </head>
@@ -856,23 +858,27 @@ window.loadMapping = async function(){
   return MAPPING_FALLBACK;
 }
 
-// Mappa PDF/slug per SPOT (completa come da istruzioni)
-const DOC_MAP = {
-  agid: ['once-only-sdg'],
-  mef: ['costi-pa-roi','ecc-narrativa'],
-  mit: ['mit-infrastrutture'],
-  mase: ['equilibrio-ecosostenibile'],
-  mic: ['citta-metropolitana'],
-  salute: ['dms-ssat-suap'],
-  mimit: ['presentazione-dms'],
-  maeci: ['passaporto-eu'],
-  ae: ['relazione-controlli'],
-  adm: ['bolkestein'],
-  pagopa: ['pagamenti-pdnd'],
-  masaf: ['hub-urbani-prossimita'],
-  mim: ['presentazione-dms'],
-  lavoro: ['ministero-lavoro'],
-  interno: ['ministero-interno'],
+// Sorgente unica dei contenuti per modal + SPOT
+window.DOC_MAP = {
+  agid:   { title:'AgID',   images:['img/ministeri/agid-01.jpg'], pdfs:[
+    {label:'A4',   url:'/dms-gemello-news/docs/agid/a4.pdf'},
+    {label:'PDF 1',url:'/dms-gemello-news/docs/agid/doc1.pdf'}
+  ]},
+  ae:     { title:'AE - Agenzia Entrate', images:['img/ministeri/ae-01.jpg'], pdfs:[] },
+  adm:    { title:'ADM - Agenzia Dogane', images:['img/ministeri/adm-01.jpg'], pdfs:[] },
+  mef:    { title:'MEF',    images:['img/ministeri/mef-01.jpg'], pdfs:[] },
+  interno:{ title:'Ministero dell\'Interno', images:['img/ministeri/interno-01.jpg'], pdfs:[] },
+  mimit:  { title:'MIMIT', images:['img/ministeri/mimit-01.jpg'], pdfs:[] },
+  mase:   { title:'MASE',  images:['img/ministeri/mase-01.jpg'], pdfs:[] },
+  mit:    { title:'MIT',   images:['img/ministeri/mit-01.jpg'],  pdfs:[] },
+  salute: { title:'Salute',images:['img/ministeri/salute-01.jpg'],pdfs:[] },
+  mic:    { title:'MIC - Cultura', images:['img/ministeri/mic-01.jpg'], pdfs:[] },
+  turismo:{ title:'Turismo', images:['img/ministeri/turismo-01.jpg'], pdfs:[] },
+  masaf:  { title:'MASAF', images:['img/ministeri/masaf-01.jpg'], pdfs:[] },
+  mim:    { title:'MIM',   images:['img/ministeri/mim-01.jpg'],   pdfs:[] },
+  lavoro: { title:'Ministero del Lavoro', images:['img/ministeri/lavoro-01.jpg'], pdfs:[] },
+  maeci:  { title:'MAECI', images:['img/ministeri/maeci-01.jpg'], pdfs:[] },
+  pagopa: { title:'PagoPA S.p.A.', images:['img/ministeri/pagopa-01.jpg'], pdfs:[] },
 };
 
 window.renderSpotButtons = function(minKey){
@@ -950,46 +956,92 @@ document.addEventListener('DOMContentLoaded', function(){
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 </script>
 <script>
-(function () {
-  // 1) Slug validi (devono corrispondere a DOC_MAP)
-  const VALID = new Set([
-    'agid','ae','adm','mef','interno','mimit','mase','mit',
-    'salute','mic','turismo','masaf','mim','lavoro','maeci','pagopa'
-  ]);
+(function(){
+  const VALID = new Set(Object.keys(window.DOC_MAP||{}));
+  let CURRENT = null, INDEX = 0;
 
-  // 2) Funzione di chiusura robusta
   function closeModal(reset=true){
-    const overlay = document.getElementById('modalOverlay');
-    const card    = document.getElementById('modalCard');
-    if (overlay) overlay.classList.remove('is-open');
-    if (card)    card.classList.remove('modal-open');
+    document.getElementById('modalOverlay')?.classList.remove('is-open');
+    document.getElementById('modalCard')?.classList.remove('modal-open');
     document.documentElement.classList.remove('modal-open');
-    if (reset){
-      const t = document.getElementById('modalTitle');
-      if (t) t.textContent = '-';
-      const img = document.getElementById('docImg');
-      if (img) img.removeAttribute('src');
+    if(reset){
+      const t=document.getElementById('modalTitle'); if(t) t.textContent='-';
+      const img=document.getElementById('docImg');   if(img) img.removeAttribute('src');
+      document.getElementById('spotBtns')?.replaceChildren();
     }
   }
 
-  // 3) Guardia dentro openFull: NON aprire senza slug valido
+  function renderSpotButtons(slug){
+    const box = document.getElementById('spotBtns');
+    if(!box) return;
+    const data = (window.DOC_MAP && window.DOC_MAP[slug]) || {};
+    const pdfs = Array.isArray(data.pdfs) ? data.pdfs : [];
+    const spot = `/dms-gemello-news/landing/spot.html#${slug}`;
+
+    const frag = document.createDocumentFragment();
+
+    const aSpot = document.createElement('a');
+    aSpot.className='btn btn-light';
+    aSpot.href=spot; aSpot.textContent='Apri in SPOT — once only / sdg';
+    frag.appendChild(aSpot);
+
+    pdfs.slice(0,3).forEach(p=>{
+      const a=document.createElement('a');
+      a.className='btn btn-outline-light';
+      a.target='_blank'; a.rel='noopener';
+      a.href=p.url; a.textContent=p.label || 'PDF';
+      frag.appendChild(a);
+    });
+
+    box.replaceChildren(frag);
+  }
+
+  function setImage(slug, idx=0){
+    const d=(window.DOC_MAP||{})[slug]||{};
+    const arr = Array.isArray(d.images) ? d.images : (d.img?[d.img]:[]);
+    if(!arr.length) return false;
+    INDEX = (idx+arr.length)%arr.length;
+    const img = document.getElementById('docImg');
+    if(img) img.src = arr[INDEX];
+    return true;
+  }
+
+  // WRAPPER sicuro: non aprire senza slug valido
   const _openFull = window.openFull;
-  window.openFull = function (slug) {
-    slug = (slug || '').toLowerCase().trim();
-    if (!VALID.has(slug)) { closeModal(true); return; }
-    return _openFull ? _openFull(slug) : void 0;
+  window.openFull = function(slug){
+    slug = (slug||'').toLowerCase().trim();
+    if(!VALID.has(slug)) { closeModal(true); return; }
+
+    CURRENT = slug; INDEX = 0;
+    const d = window.DOC_MAP[slug] || {};
+    document.getElementById('modalTitle')?.replaceChildren(document.createTextNode(d.title||slug.toUpperCase()));
+
+    // immagine iniziale + bottoni
+    setImage(slug,0);
+    renderSpotButtons(slug);
+
+    // apri modal
+    document.getElementById('modalOverlay')?.classList.add('is-open');
+    document.getElementById('modalCard')?.classList.add('modal-open');
+    document.documentElement.classList.add('modal-open');
+
+    // frecce ◀ ▶
+    const prev=document.getElementById('btnPrev'), next=document.getElementById('btnNext');
+    if(prev) prev.onclick = ()=>setImage(CURRENT, INDEX-1);
+    if(next) next.onclick = ()=>setImage(CURRENT, INDEX+1);
   };
 
-  // 4) All'avvio: chiudi SEMPRE il modal
+  // All'avvio chiudi e apri solo con hash valido
   closeModal(true);
-
-  // 5) Apri solo se c'è un hash valido
-  function maybeOpenFromHash() {
-    const s = (location.hash || '').slice(1).toLowerCase().trim();
-    if (VALID.has(s)) window.openFull(s); else closeModal(true);
+  function maybeFromHash(){
+    const s=(location.hash||'').slice(1).toLowerCase().trim();
+    if(VALID.has(s)) window.openFull(s); else closeModal(true);
   }
-  maybeOpenFromHash();
-  window.addEventListener('hashchange', maybeOpenFromHash, {passive:true});
+  window.addEventListener('hashchange', maybeFromHash,{passive:true});
+  maybeFromHash();
+
+  // chiusura manuale
+  window.closeModal = closeModal;
 })();
 </script>
 </body>

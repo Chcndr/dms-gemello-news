@@ -67,6 +67,7 @@
   <div class="wrap">
     <section class="panel">
       <h2>Documenti (PDF)</h2>
+      <div id="pdfList"></div>
       <div id="docs"></div>
     </section>
 
@@ -128,6 +129,52 @@
   })();
 </script>
 
+<script>
+// Sorgente unica dei contenuti per modal + SPOT
+window.DOC_MAP = {
+  agid:   { title:'AgID',   images:['img/ministeri/agid-01.jpg'], pdfs:[
+    {label:'A4',   url:'/dms-gemello-news/docs/agid/a4.pdf'},
+    {label:'PDF 1',url:'/dms-gemello-news/docs/agid/doc1.pdf'}
+  ]},
+  ae:     { title:'AE - Agenzia Entrate', images:['img/ministeri/ae-01.jpg'], pdfs:[] },
+  adm:    { title:'ADM - Agenzia Dogane', images:['img/ministeri/adm-01.jpg'], pdfs:[] },
+  mef:    { title:'MEF',    images:['img/ministeri/mef-01.jpg'], pdfs:[] },
+  interno:{ title:'Ministero dell\'Interno', images:['img/ministeri/interno-01.jpg'], pdfs:[] },
+  mimit:  { title:'MIMIT', images:['img/ministeri/mimit-01.jpg'], pdfs:[] },
+  mase:   { title:'MASE',  images:['img/ministeri/mase-01.jpg'], pdfs:[] },
+  mit:    { title:'MIT',   images:['img/ministeri/mit-01.jpg'],  pdfs:[] },
+  salute: { title:'Salute',images:['img/ministeri/salute-01.jpg'],pdfs:[] },
+  mic:    { title:'MIC - Cultura', images:['img/ministeri/mic-01.jpg'], pdfs:[] },
+  turismo:{ title:'Turismo', images:['img/ministeri/turismo-01.jpg'], pdfs:[] },
+  masaf:  { title:'MASAF', images:['img/ministeri/masaf-01.jpg'], pdfs:[] },
+  mim:    { title:'MIM',   images:['img/ministeri/mim-01.jpg'],   pdfs:[] },
+  lavoro: { title:'Ministero del Lavoro', images:['img/ministeri/lavoro-01.jpg'], pdfs:[] },
+  maeci:  { title:'MAECI', images:['img/ministeri/maeci-01.jpg'], pdfs:[] },
+  pagopa: { title:'PagoPA S.p.A.', images:['img/ministeri/pagopa-01.jpg'], pdfs:[] },
+};
+</script>
+<script>
+(function(){
+  function render(){
+    const slug=(location.hash||'').slice(1).toLowerCase().trim();
+    const data=(window.DOC_MAP||{})[slug]||{};
+    // evidenziazione voce
+    document.querySelectorAll('[data-slug]').forEach(el=>{
+      el.classList.toggle('is-active', el.dataset.slug===slug);
+    });
+    // lista PDF
+    const box=document.getElementById('pdfList');
+    if(box){
+      const pdfs = Array.isArray(data.pdfs) ? data.pdfs : [];
+      box.innerHTML = pdfs.length
+        ? pdfs.map(p=>`<a class="btn btn-primary" target="_blank" rel="noopener" href="${p.url}">Apri · ${p.label||'PDF'}</a>`).join(' ')
+        : '<em>Nessun PDF per questa scheda</em>';
+    }
+  }
+  window.addEventListener('hashchange', render,{passive:true});
+  render();
+})();
+</script>
 <style>
 .is-active { 
   outline:2px solid #0F7A4C; 
