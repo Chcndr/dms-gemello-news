@@ -427,6 +427,41 @@
         height: 70px;
       }
     }
+
+    /* Anelli concentrici */
+    #ring-inner, #ring-outer {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      transform-origin: center center;
+    }
+
+    /* Rotazioni indipendenti */
+    #ring-inner {
+      animation: rotateInner 40s linear infinite;
+    }
+
+    #ring-outer {
+      animation: rotateOuter 60s linear infinite;
+    }
+
+    /* Pausa rotazioni quando auto-rotate è disattivato */
+    body:not(.auto-rotate) #ring-inner,
+    body:not(.auto-rotate) #ring-outer {
+      animation-play-state: paused;
+    }
+
+    /* Keyframes per rotazioni */
+    @keyframes rotateInner {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes rotateOuter {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -478,8 +513,8 @@
       <!-- Linee radiali -->
       <div id="spokes"></div>
 
-      <!-- Anello rotante -->
-      <div id="ring">
+      <!-- Anello interno (8 nodi) -->
+      <div id="ring-inner">
         <button class="node" data-slug="agid" aria-label="AgID">
           AgID
         </button>
@@ -504,6 +539,10 @@
         <button class="node" data-slug="mim" aria-label="MIM - Istruzione e Merito">
           MIM · Istruzione<br>e Merito
         </button>
+      </div>
+
+      <!-- Anello esterno (8 nodi) -->
+      <div id="ring-outer">
         <button class="node" data-slug="mimit" aria-label="MIMIT - Imprese e Made in Italy">
           MIMIT · Imprese<br>e Made in Italy
         </button>
@@ -621,7 +660,8 @@
     };
 
     // Elementi DOM
-    const ring = document.getElementById('ring');
+    const ringInner = document.getElementById('ring-inner');
+    const ringOuter = document.getElementById('ring-outer');
     const spokes = document.getElementById('spokes');
     const modal = document.getElementById('modal');
     const modalTitle = document.getElementById('modalTitle');
@@ -632,7 +672,9 @@
     const showLinesCheck = document.getElementById('showLines');
     const searchInput = document.getElementById('searchInput');
     const mapContainer = document.getElementById('mapContainer');
-    const nodes = document.querySelectorAll('.node');
+    const nodesInner = document.querySelectorAll('#ring-inner .node');
+    const nodesOuter = document.querySelectorAll('#ring-outer .node');
+    const allNodes = document.querySelectorAll('.node');
 
     // Variabili globali
     let rotationAngle = 0;
@@ -652,36 +694,64 @@
       startAutoRotation();
     }
 
-    // Setup posizionamento nodi
+    // Setup posizionamento nodi concentrici
     function setupNodes() {
-      const nodeCount = nodes.length;
-      const radius = Math.min(280, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.32);
+      const innerRadius = Math.min(200, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.25);
+      const outerRadius = Math.min(320, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.40);
       
-      // Aggiorna variabile CSS per lunghezza linee
-      document.documentElement.style.setProperty('--spoke-length', `${radius}px`);
+      // Aggiorna variabile CSS per lunghezza linee (usa il raggio esterno)
+      document.documentElement.style.setProperty('--spoke-length', `${outerRadius}px`);
       
-      nodes.forEach((node, index) => {
-        const angle = (360 / nodeCount) * index;
+      // Posiziona nodi anello interno (8 nodi)
+      nodesInner.forEach((node, index) => {
+        const angle = (360 / 8) * index + 22.5; // Sfalsamento di 22.5°
         const radian = (angle * Math.PI) / 180;
         
-        const x = Math.cos(radian) * radius;
-        const y = Math.sin(radian) * radius;
+        const x = Math.cos(radian) * innerRadius;
+        const y = Math.sin(radian) * innerRadius;
         
         node.style.left = `calc(50% + ${x}px)`;
         node.style.top = `calc(50% + ${y}px)`;
         node.dataset.angle = angle;
+        
+        // Contro-rotazione per mantenere testo orizzontale
+        node.style.setProperty('--counter-rotate', `-${angle}deg`);
+      });
+      
+      // Posiziona nodi anello esterno (8 nodi)
+      nodesOuter.forEach((node, index) => {
+        const angle = (360 / 8) * index; // Nessuno sfalsamento iniziale
+        const radian = (angle * Math.PI) / 180;
+        
+        const x = Math.cos(radian) * outerRadius;
+        const y = Math.sin(radian) * outerRadius;
+        
+        node.style.left = `calc(50% + ${x}px)`;
+        node.style.top = `calc(50% + ${y}px)`;
+        node.dataset.angle = angle;
+        
+        // Contro-rotazione per mantenere testo orizzontale
+        node.style.setProperty('--counter-rotate', `-${angle}deg`);
       });
     }
 
     // Setup linee radiali
     function setupSpokes() {
-      const nodeCount = nodes.length;
       spokes.innerHTML = '';
       
-      for (let i = 0; i < nodeCount; i++) {
+      // Linee per anello interno (8 linee)
+      for (let i = 0; i < 8; i++) {
         const spoke = document.createElement('div');
         spoke.className = 'spoke';
-        spoke.style.transform = `rotate(${(360 / nodeCount) * i}deg)`;
+        spoke.style.transform = `rotate(${(360 / 8) * i + 22.5}deg)`;
+        spokes.appendChild(spoke);
+      }
+      
+      // Linee per anello esterno (8 linee)
+      for (let i = 0; i < 8; i++) {
+        const spoke = document.createElement('div');
+        spoke.className = 'spoke';
+        spoke.style.transform = `rotate(${(360 / 8) * i}deg)`;
         spokes.appendChild(spoke);
       }
     }
@@ -689,7 +759,7 @@
     // Event listeners
     function setupEventListeners() {
       // Click nodi
-      nodes.forEach(node => {
+      allNodes.forEach(node => {
         node.addEventListener('click', () => {
           const slug = node.dataset.slug;
           openModal(slug);
@@ -737,29 +807,13 @@
     }
 
     // Auto-rotation
+    // Auto-rotation (ora gestita da CSS)
     function startAutoRotation() {
-      if (rotationInterval) return;
-      
-      rotationInterval = setInterval(() => {
-        rotationAngle += 0.5;
-        updateRotation();
-      }, 50);
+      document.body.classList.add('auto-rotate');
     }
 
     function stopAutoRotation() {
-      if (rotationInterval) {
-        clearInterval(rotationInterval);
-        rotationInterval = null;
-      }
-    }
-
-    function updateRotation() {
-      ring.style.transform = `rotate(${rotationAngle}deg)`;
-      
-      // Counter-rotate nodi per mantenerli orizzontali
-      nodes.forEach(node => {
-        node.style.setProperty('--counter-rotate', `-${rotationAngle}deg`);
-      });
+      document.body.classList.remove('auto-rotate');
     }
 
     // Modal
@@ -817,7 +871,7 @@
     function handleSearch() {
       const query = searchInput.value.toLowerCase().trim();
       
-      nodes.forEach(node => {
+      allNodes.forEach(node => {
         const slug = node.dataset.slug;
         const data = MINISTERI_DATA[slug];
         const text = node.textContent.toLowerCase();
