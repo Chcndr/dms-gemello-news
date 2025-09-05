@@ -387,6 +387,12 @@ body.modal-open { overflow: hidden; }
 #modalOverlay { z-index: 1000; }
 #modalCard { z-index: 1100; max-width: min(1140px, 92vw); }
 #modalCard img { max-width: 100%; height: auto; }
+
+/* Modal centrato + header verde del sito */
+#modalOverlay{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.6);z-index:1100;}
+#modalCard{max-width:min(1140px,92vw);width:100%;border-radius:12px;overflow:hidden;}
+#modalHeader{background:#0F7A4C;color:#fff;position:static;}
+.btn.btn-spot{display:inline-block;margin-left:.5rem;padding:.4rem .7rem;border-radius:.5rem;background:#0F7A4C;color:#fff;text-decoration:none}
 </style>
 </head>
 <body>
@@ -454,7 +460,7 @@ body.modal-open { overflow: hidden; }
     </div>
   </div>
 
-<script>const BUILD='qa11'; console.log('BUILD',BUILD);</script>
+<script>window.BUILD='qa12'</script>
 <script>
 /* HOTFIX v2.4: viewport/stage/world + pinch-zoom + glow ricerca + deeplink */
 // Fallback inline completo con 16 ministeri
@@ -890,54 +896,21 @@ window.setupModalHeader = function(title, alias){
   window.renderSpotButtons(alias);
 }
 
-window.openFull = async function(aliasRaw, titleDisplay){
-  // 1) normalizza alias
-  const a = (ALIASES[(aliasRaw||'').toLowerCase()] || aliasRaw || '').toLowerCase();
-  // 2) header
-  window.setupModalHeader(titleDisplay || aliasRaw, a);
-  // 2.1) bottoni SPOT
-  renderSpotButtons(a);
-  // 3) immagini
+window.openFull = async function(key){
+  setupModalHeader(key);
+  renderSpotButtons(key);
+  // logica esistente apertura modal
   const mapping = await window.loadMapping();
-  let imgs = (mapping[a] || []).map(x => `./cards/${x}`);
+  let imgs = (mapping[key] || []).map(x => `./cards/${x}`);
   if(!imgs.length) imgs = ['./cards/generic.png'];
 
-  const imgEl = document.getElementById('modalImage');
-  const overlay = document.getElementById('modalOverlay');
-  
-  if(!imgEl || !overlay) {
-    // Fallback al sistema esistente se gli elementi non ci sono
-    const modal = document.getElementById('modal');
-    const body = document.getElementById('modalBody');
-    if(modal && body) {
-      body.innerHTML = `<img src="${imgs[0]}" style="width:100%;height:auto;display:block;">`;
-      modal.style.display = 'block';
-      document.body.classList.add('modal-open');
-    }
-    return;
+  const modal = document.getElementById('modal');
+  const body = document.getElementById('modalBody');
+  if(modal && body) {
+    body.innerHTML = `<img src="${imgs[0]}" style="width:100%;height:auto;display:block;">`;
+    modal.style.display = 'block';
+    document.body.classList.add('modal-open');
   }
-
-  let i = 0;
-  const show = () => { imgEl.src = imgs[i]; };
-
-  const prevBtn = document.getElementById('prev');
-  const nextBtn = document.getElementById('next');
-  const btnBack = document.getElementById('backToMap');
-
-  if(prevBtn) prevBtn.onclick = () => { i = (i-1+imgs.length)%imgs.length; show(); };
-  if(nextBtn) nextBtn.onclick = () => { i = (i+1)%imgs.length; show(); };
-  if(btnBack) btnBack.onclick = () => { closeModal(); };
-
-  // tastiera
-  window.onkeydown = (ev)=>{
-    if(ev.key==='Escape'){ closeModal(); }
-    if(ev.key==='ArrowLeft' && prevBtn){ prevBtn.click(); }
-    if(ev.key==='ArrowRight' && nextBtn){ nextBtn.click(); }
-  };
-
-  show();
-  overlay.classList.add('is-open');
-  document.body.classList.add('modal-open');
 };
 
 function closeModal(){
@@ -961,23 +934,13 @@ function closeModal(){
   document.body.classList.remove('modal-open'); 
 }
 
-// Funzione per popolare i bottoni SPOT
-function renderSpotButtons(minKey) {
-  const mount = document.getElementById('spotBtns');
-  if (!mount) return;
-  mount.innerHTML = '';
-  const items = (window.DOC_MAP && window.DOC_MAP[minKey]) || [];
-  items.forEach(({ slug, label }) => {
-    const a = document.createElement('a');
-    a.className = 'btn btn-spot';
-    a.href = `./spot.html#${slug}`;
-    a.textContent = label || 'Apri in SPOT';
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = a.href;
-    });
-    mount.appendChild(a);
-  });
+function renderSpotButtons(key){
+  const slugs = (window.DOC_MAP?.[key]?.spot || []);
+  const box = document.getElementById('spotBtns');
+  if(!box) return;
+  box.innerHTML = slugs.map(s => 
+    `<a class="btn btn-spot" href="./spot.html#${s}">Apri in SPOT — ${s}</a>`
+  ).join('');
 }
 
 // Collega il pulsante back
