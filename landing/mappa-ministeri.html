@@ -389,11 +389,10 @@ body.modal-open { overflow: hidden; }
 #modalCard img { max-width: 100%; height: auto; }
 
 /* Modal centrato + header verde del sito */
-#modalOverlay{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.6);z-index:1100;}
+#modalOverlay{position:fixed;inset:0;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,.6);z-index:1100;}
+#modalOverlay.is-open{display:flex;}
 #modalCard{max-width:min(1140px,92vw);width:100%;border-radius:12px;overflow:hidden;}
 #modalHeader{background:#0F7A4C !important;color:#fff;}
-#modalOverlay.is-open{display:block;}
-#modalCard.modal-open{display:block;}
 #spotBtns .btn{margin-left:.5rem;margin-top:.25rem}
 .btn.btn-spot{display:inline-block;margin-left:.5rem;padding:.4rem .7rem;border-radius:.5rem;background:#0F7A4C;color:#fff;text-decoration:none}
 </style>
@@ -531,11 +530,11 @@ function jitter(i){ return (i%2 ? +0.06 : -0.06); }
 
 /* i tile DEVONO nascere in #world */
 function mkNode(m){
-  const el=document.createElement('div');
+  const el=document.createElement('a');
   el.className='node';
   el.dataset.id=m.id;
+  el.href=`#${m.id}`;
   el.innerHTML=`<div class="label">${m.nome}</div>`;
-  el.onclick=()=>openFull(m);
   return el;
 }
 
@@ -957,91 +956,77 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 </script>
 <script>
 (function(){
-  const VALID = new Set(Object.keys(window.DOC_MAP||{}));
-  let CURRENT = null, INDEX = 0;
+  const MAP = window.DOC_MAP || {};
+  const VALID = new Set(Object.keys(MAP));
+  let cur=null, idx=0;
 
-  function closeModal(reset=true){
+  function hardClose(){
     document.getElementById('modalOverlay')?.classList.remove('is-open');
     document.getElementById('modalCard')?.classList.remove('modal-open');
     document.documentElement.classList.remove('modal-open');
-    if(reset){
-      const t=document.getElementById('modalTitle'); if(t) t.textContent='-';
-      const img=document.getElementById('docImg');   if(img) img.removeAttribute('src');
-      document.getElementById('spotBtns')?.replaceChildren();
-    }
+    const t=document.getElementById('modalTitle'); if(t) t.textContent='-';
+    const img=document.getElementById('docImg');   if(img) img.removeAttribute('src');
+    document.getElementById('spotBtns')?.replaceChildren();
   }
+  window.closeModal = ()=>hardClose();
 
-  function renderSpotButtons(slug){
-    const box = document.getElementById('spotBtns');
-    if(!box) return;
-    const data = (window.DOC_MAP && window.DOC_MAP[slug]) || {};
-    const pdfs = Array.isArray(data.pdfs) ? data.pdfs : [];
-    const spot = `/dms-gemello-news/landing/spot.html#${slug}`;
-
-    const frag = document.createDocumentFragment();
-
-    const aSpot = document.createElement('a');
-    aSpot.className='btn btn-light';
-    aSpot.href=spot; aSpot.textContent='Apri in SPOT — once only / sdg';
-    frag.appendChild(aSpot);
-
-    pdfs.slice(0,3).forEach(p=>{
-      const a=document.createElement('a');
-      a.className='btn btn-outline-light';
-      a.target='_blank'; a.rel='noopener';
-      a.href=p.url; a.textContent=p.label || 'PDF';
-      frag.appendChild(a);
-    });
-
-    box.replaceChildren(frag);
-  }
-
-  function setImage(slug, idx=0){
-    const d=(window.DOC_MAP||{})[slug]||{};
-    const arr = Array.isArray(d.images) ? d.images : (d.img?[d.img]:[]);
-    if(!arr.length) return false;
-    INDEX = (idx+arr.length)%arr.length;
+  function setImage(slug, i=0){
+    const imgs = MAP[slug]?.images || [];
+    if(!imgs.length) return false;
+    idx = (i+imgs.length)%imgs.length;
     const img = document.getElementById('docImg');
-    if(img) img.src = arr[INDEX];
+    if(img) img.src = imgs[idx];
     return true;
   }
 
-  // WRAPPER sicuro: non aprire senza slug valido
-  const _openFull = window.openFull;
+  function renderSpotButtons(slug){
+    const box=document.getElementById('spotBtns'); if(!box) return;
+    const frag=document.createDocumentFragment();
+    const aSpot=document.createElement('a');
+    aSpot.className='btn btn-light';
+    aSpot.href=`/dms-gemello-news/landing/spot.html#${slug}`;
+    aSpot.textContent='Apri in SPOT — once only / sdg';
+    frag.appendChild(aSpot);
+    (MAP[slug]?.pdfs||[]).slice(0,3).forEach(p=>{
+      const a=document.createElement('a');
+      a.className='btn btn-outline-light'; a.target='_blank'; a.rel='noopener';
+      a.href=p.url; a.textContent=p.label||'PDF';
+      frag.appendChild(a);
+    });
+    box.replaceChildren(frag);
+  }
+
   window.openFull = function(slug){
-    slug = (slug||'').toLowerCase().trim();
-    if(!VALID.has(slug)) { closeModal(true); return; }
-
-    CURRENT = slug; INDEX = 0;
-    const d = window.DOC_MAP[slug] || {};
-    document.getElementById('modalTitle')?.replaceChildren(document.createTextNode(d.title||slug.toUpperCase()));
-
-    // immagine iniziale + bottoni
-    setImage(slug,0);
-    renderSpotButtons(slug);
-
-    // apri modal
+    slug = (slug || (location.hash||'').slice(1)).toLowerCase().trim();
+    if(!VALID.has(slug)) return hardClose();          // niente slug ⇒ niente modal
+    cur=slug; idx=0;
+    const t=document.getElementById('modalTitle');
+    if(t) t.textContent = MAP[slug]?.title || slug.toUpperCase();
+    setImage(slug,0); renderSpotButtons(slug);
     document.getElementById('modalOverlay')?.classList.add('is-open');
     document.getElementById('modalCard')?.classList.add('modal-open');
     document.documentElement.classList.add('modal-open');
-
-    // frecce ◀ ▶
     const prev=document.getElementById('btnPrev'), next=document.getElementById('btnNext');
-    if(prev) prev.onclick = ()=>setImage(CURRENT, INDEX-1);
-    if(next) next.onclick = ()=>setImage(CURRENT, INDEX+1);
+    if(prev) prev.onclick=()=>setImage(cur, idx-1);
+    if(next) next.onclick=()=>setImage(cur, idx+1);
   };
 
-  // All'avvio chiudi e apri solo con hash valido
-  closeModal(true);
   function maybeFromHash(){
     const s=(location.hash||'').slice(1).toLowerCase().trim();
-    if(VALID.has(s)) window.openFull(s); else closeModal(true);
+    if(new Set(Object.keys(MAP)).has(s)) window.openFull(s);
+    else {
+      // se arrivo da Home→Mappa con hash sporco, lo pulisco e CHIUDO
+      hardClose();
+      history.replaceState(null, '', location.pathname);
+    }
   }
-  window.addEventListener('hashchange', maybeFromHash,{passive:true});
-  maybeFromHash();
 
-  // chiusura manuale
-  window.closeModal = closeModal;
+  // all'avvio: chiudi sempre e poi valuta l'hash
+  document.addEventListener('DOMContentLoaded', ()=>{
+    hardClose();
+    maybeFromHash();
+  });
+  window.addEventListener('hashchange', maybeFromHash, {passive:true});
 })();
 </script>
 </body>
