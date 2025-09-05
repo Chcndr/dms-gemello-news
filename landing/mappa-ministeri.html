@@ -179,9 +179,16 @@ a, button, .node{ -webkit-touch-callout:none; -webkit-user-drag:none; }
              0 10px 35px rgba(0,206,255,.10),
              inset 0 0 28px rgba(0,206,255,.25);
   display:grid; place-items:center;
-  transform:translate(-50%,-50%) rotate(var(--unrotate,0deg)); /* testo orizzontale */
+  transform:translate(-50%,-50%); /* posizione senza rotazione */
   -webkit-user-select:none; user-select:none;
   -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent;
+}
+
+/* Forza il testo interno sempre orizzontale */
+.node .cap, .node span, .node div{
+  transform: rotate(var(--unrotate,0deg)) !important;
+  display: block;
+  text-align: center;
 }
 
 /* Linee radiali */
