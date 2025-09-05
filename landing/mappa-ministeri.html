@@ -638,6 +638,7 @@
     let rotationAngle = 0;
     let rotationInterval = null;
     let currentZoom = 100;
+    let animationId = null;
 
     // iPad: disabilita preview e long-press
     document.addEventListener('contextmenu', e => e.preventDefault(), { passive: false });
@@ -650,6 +651,67 @@
       setupEventListeners();
       handleInitialHash();
       startAutoRotation();
+    }
+
+    // Animazione continua dei nodi lungo l'ellisse
+    function animateNodes() {
+      if (!document.body.classList.contains('auto-rotate')) return;
+      
+      const currentTime = Date.now() / 1000; // Tempo in secondi
+      
+      // Anima nodi anello interno (40s per giro completo)
+      nodesInner.forEach((node, index) => {
+        const baseAngle = (360 / 8) * index + 22.5; // Angolo base con sfalsamento
+        const currentAngle = baseAngle + (currentTime * 360 / 40) % 360; // Rotazione in 40s
+        const radian = (currentAngle * Math.PI) / 180;
+        
+        const radiusX = parseFloat(node.dataset.radiusX);
+        const radiusY = parseFloat(node.dataset.radiusY);
+        
+        const x = Math.cos(radian) * radiusX;
+        const y = Math.sin(radian) * radiusY;
+        
+        node.style.left = `calc(50% + ${x}px)`;
+        node.style.top = `calc(50% + ${y}px)`;
+        
+        // Mantieni testo orizzontale
+        node.style.setProperty('--counter-rotate', '0deg');
+        
+        // Aggiorna distanza per le linee
+        const distance = Math.sqrt(x * x + y * y);
+        node.dataset.distance = distance;
+        node.dataset.angle = currentAngle;
+      });
+      
+      // Anima nodi anello esterno (60s per giro completo)
+      nodesOuter.forEach((node, index) => {
+        const baseAngle = (360 / 8) * index; // Angolo base senza sfalsamento
+        const currentAngle = baseAngle + (currentTime * 360 / 60) % 360; // Rotazione in 60s
+        const radian = (currentAngle * Math.PI) / 180;
+        
+        const radiusX = parseFloat(node.dataset.radiusX);
+        const radiusY = parseFloat(node.dataset.radiusY);
+        
+        const x = Math.cos(radian) * radiusX;
+        const y = Math.sin(radian) * radiusY;
+        
+        node.style.left = `calc(50% + ${x}px)`;
+        node.style.top = `calc(50% + ${y}px)`;
+        
+        // Mantieni testo orizzontale
+        node.style.setProperty('--counter-rotate', '0deg');
+        
+        // Aggiorna distanza per le linee
+        const distance = Math.sqrt(x * x + y * y);
+        node.dataset.distance = distance;
+        node.dataset.angle = currentAngle;
+      });
+      
+      // Aggiorna linee dinamiche
+      updateDynamicSpokes();
+      
+      // Continua l'animazione
+      animationId = requestAnimationFrame(animateNodes);
     }
 
     // Setup posizionamento nodi concentrici (ovali fissi)
@@ -792,13 +854,17 @@
     }
 
     // Auto-rotation
-    // Auto-rotation (ora gestita da CSS)
     function startAutoRotation() {
       document.body.classList.add('auto-rotate');
+      animateNodes(); // Avvia l'animazione continua
     }
 
     function stopAutoRotation() {
       document.body.classList.remove('auto-rotate');
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
     }
 
     // Modal
