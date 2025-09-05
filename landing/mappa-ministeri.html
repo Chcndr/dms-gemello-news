@@ -421,8 +421,8 @@ body.modal-open { overflow: hidden; }
 }
 
 /* Modal: disattivo quando chiuso */
-#modalRoot{display:none;pointer-events:none;}
-#modalRoot.is-open{display:block;pointer-events:auto;z-index:1100}
+#modalRoot{display:none;pointer-events:none}
+#modalRoot.is-open{display:block;pointer-events:auto}
 #mapWrap,#graph{position:relative;z-index:10}
 
 /* Disabilita anteprima/drag di Safari (long-press) */
@@ -1072,37 +1072,23 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 })();
 </script>
 <script>
-// All'avvio: modal chiuso
-document.addEventListener('DOMContentLoaded',()=> {
-  document.getElementById('modalRoot')?.classList.remove('is-open');
-});
-
-// Rimuovi wrapper <a> sulla mappa
 (function(){
-  const root = document.querySelector('#mapWrap, #graph');
-  if(!root) return;
-  const a = root.closest('a') || root.querySelector(':scope > a');
-  if(a){
-    const p=a.parentNode; while(a.firstChild) p.insertBefore(a.firstChild,a);
-    a.remove();
-  }
-})();
-
-// Disabilita anteprima/drag di Safari
-document.addEventListener('contextmenu', e=>e.preventDefault(), {passive:false});
-document.addEventListener('dragstart',  e=>e.preventDefault(), {passive:false});
-
-// Click nodi → openFull
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.querySelectorAll('.node[data-slug]').forEach(n=>{
-    n.addEventListener('click', e=>{
-      e.preventDefault(); e.stopPropagation();
-      const slug = n.dataset.slug;
-      const title = (n.textContent||slug).trim();
-      window.openFull?.({slug, title}) || (location.hash = slug);
+  const VALID = new Set(['agid','mef','interno','salute','mimit','mase','mit','adm','maeci','turismo','masaf','pagopa','ae','mim','lavoro','mic']);
+  function bindNodes(){
+    document.querySelectorAll('[data-slug]').forEach(el=>{
+      const slug = el.dataset.slug;
+      if(!VALID.has(slug)) return;
+      el.style.cursor='pointer';
+      el.style.userSelect='none'; el.style.webkitUserSelect='none'; el.style.webkitTouchCallout='none';
+      const go = (e)=>{ e.preventDefault(); if(window.openFull) window.openFull(slug); };
+      el.addEventListener('click', go, {passive:false});
+      el.addEventListener('touchend', go, {passive:false});
     });
-  });
-});
+  }
+  // chiudi sempre il modal all'avvio
+  document.addEventListener('DOMContentLoaded', ()=>{ bindNodes(); document.getElementById('modalRoot')?.classList.remove('is-open'); });
+  window.addEventListener('hashchange', ()=>{ /* niente auto-open da home */ });
+})();
 </script>
 </body>
 </html>
