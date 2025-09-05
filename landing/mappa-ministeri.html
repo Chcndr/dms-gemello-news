@@ -705,21 +705,25 @@
       startAutoRotation();
     }
 
-    // Setup posizionamento nodi concentrici
+    // Setup posizionamento nodi concentrici (ovali)
     function setupNodes() {
-      const innerRadius = Math.min(200, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.25);
-      const outerRadius = Math.min(320, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.40);
+      // Raggi ellittici per sfruttare meglio lo spazio orizzontale
+      const innerRadiusX = Math.min(280, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.35);
+      const innerRadiusY = Math.min(180, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.22);
+      const outerRadiusX = Math.min(420, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.52);
+      const outerRadiusY = Math.min(280, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.35);
       
-      // Aggiorna variabile CSS per lunghezza linee (più corta dei raggi)
-      document.documentElement.style.setProperty('--spoke-length', `${outerRadius - 80}px`);
+      // Aggiorna variabile CSS per lunghezza linee (usa il raggio esterno medio)
+      const avgOuterRadius = (outerRadiusX + outerRadiusY) / 2;
+      document.documentElement.style.setProperty('--spoke-length', `${avgOuterRadius - 80}px`);
       
-      // Posiziona nodi anello interno (8 nodi)
+      // Posiziona nodi anello interno (8 nodi) - ellisse
       nodesInner.forEach((node, index) => {
         const angle = (360 / 8) * index + 22.5; // Sfalsamento di 22.5°
         const radian = (angle * Math.PI) / 180;
         
-        const x = Math.cos(radian) * innerRadius;
-        const y = Math.sin(radian) * innerRadius;
+        const x = Math.cos(radian) * innerRadiusX;
+        const y = Math.sin(radian) * innerRadiusY;
         
         node.style.left = `calc(50% + ${x}px)`;
         node.style.top = `calc(50% + ${y}px)`;
@@ -729,13 +733,13 @@
         node.style.setProperty('--counter-rotate', `-${angle}deg`);
       });
       
-      // Posiziona nodi anello esterno (8 nodi)
+      // Posiziona nodi anello esterno (8 nodi) - ellisse
       nodesOuter.forEach((node, index) => {
         const angle = (360 / 8) * index; // Nessuno sfalsamento iniziale
         const radian = (angle * Math.PI) / 180;
         
-        const x = Math.cos(radian) * outerRadius;
-        const y = Math.sin(radian) * outerRadius;
+        const x = Math.cos(radian) * outerRadiusX;
+        const y = Math.sin(radian) * outerRadiusY;
         
         node.style.left = `calc(50% + ${x}px)`;
         node.style.top = `calc(50% + ${y}px)`;
