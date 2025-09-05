@@ -73,17 +73,28 @@
 
     <section class="panel">
       <h2>Video</h2>
-      <div class="videos">
-        <video controls playsinline muted preload="metadata" poster="./assets/poster-riaccendiamo.jpg">
-          <source src="/dms-gemello-news/landing/videos/teaser-riaccendiamo.mp4" type="video/mp4">
-        </video>
-        <video controls playsinline muted preload="metadata" poster="./assets/poster-emilia-romagna.jpg">
-          <source src="/dms-gemello-news/landing/videos/teaser-emilia-romagna.mp4" type="video/mp4">
-        </video>
-        <video controls playsinline muted preload="metadata" poster="./assets/poster-23.jpg">
-          <source src="/dms-gemello-news/landing/videos/teaser-23.mp4" type="video/mp4">
-        </video>
-      </div>
+      <section id="videos" class="videos">
+        <div class="video-item">
+          <h3>Riaccendiamo i mercati</h3>
+          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/landing/img/poster-riaccendiamo.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-riaccendiamo.mp4?v=20250905a" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="video-item">
+          <h3>Hub Emilia Romagna</h3>
+          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/landing/img/poster-emilia.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-emilia-romagna.mp4?v=20250905a" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="video-item">
+          <h3>Futuro (Filmato 23)</h3>
+          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/landing/img/poster-23.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-23.mp4?v=20250905a" type="video/mp4">
+          </video>
+        </div>
+      </section>
     </section>
   </div>
 
