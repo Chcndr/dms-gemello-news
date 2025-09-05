@@ -45,7 +45,88 @@ body{ margin:0; background:#071319; color:var(--ink) }
 .doc{ margin:0 0 1rem 0; }
 .doc img{ width:100%; height:auto; display:block; border-radius:10px }
 #modalRoot:not(.is-open) *{ pointer-events:none }
-  </style>
+}
+
+/* === Glow & Focus v1 === */
+:root{
+  --accent: #0F7A4C; /* verde sito */
+  --accent-24: rgba(15,122,76,.24);
+  --accent-45: rgba(15,122,76,.45);
+  --ink: #e7fbf5;
+}
+
+/* retro-illuminazione HUB (logo al centro, glow BLU come versione buona) */
+#hubIcon{
+  position:absolute; left:50%; top:50%; width:160px; height:160px;
+  transform:translate(-50%,-50%); pointer-events:none;
+  filter: drop-shadow(0 0 24px rgba(56,189,248,.45));
+}
+#hubIcon::before{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.22), transparent 65%),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="%23e6f7ff" stroke="%2300b3ff" stroke-width="14"><path d="M20 230h600L320 80 20 230zM80 260h80v260H80V260zm120 0h120v260H200V260zm160 0h120v260H360V260zm160 0h80v260h-80V260zM40 540h560v30H40z"/></svg>')
+    center/72% no-repeat;
+  opacity:.95;
+}
+#hubIcon::after{
+  content:""; position:absolute; inset:-28%;
+  border-radius:40%;
+  background: radial-gradient(60% 70% at 50% 40%, rgba(30,144,255,.25) 0%, transparent 70%);
+  filter: blur(14px);
+}
+
+/* nodi/tile: retro-illuminazione + stati hover/focus/ricerca */
+.node{
+  /* NON toccare il transform inline impostato dal layout JS */
+  transition: box-shadow .22s ease, filter .18s ease, opacity .18s ease;
+  box-shadow:
+    0 6px 18px rgba(0,0,0,.25),
+    0 0 0 1px rgba(255,255,255,.06) inset;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.18));
+  will-change: filter, box-shadow, opacity;
+}
+.node:hover,
+.node:focus-visible{
+  box-shadow:
+    0 8px 26px rgba(0,0,0,.36),
+    0 0 0 1px rgba(255,255,255,.10) inset,
+    0 0 22px var(--accent-45);
+  filter: brightness(1.06);
+  outline: 2px solid var(--accent-24);
+  outline-offset: -2px;
+}
+.node:active{ filter: brightness(.96); }
+
+/* evidenziazione da ricerca */
+.node.is-hit{
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.38),
+    0 0 0 1px rgba(255,255,255,.12) inset,
+    0 0 26px var(--accent-45);
+  filter: brightness(1.10);
+}
+.node.dim{ opacity:.20; filter: grayscale(.15) brightness(.92); }
+
+/* chip di navigazione (se presenti) */
+.chip.nav{
+  transition: box-shadow .18s ease, filter .18s ease;
+}
+.chip.nav:hover,
+.chip.nav:focus-visible{
+  box-shadow: 0 0 18px var(--accent-24);
+  filter: brightness(1.06);
+}
+
+/* opzionale: riduzione movimento */
+@media (prefers-reduced-motion: reduce){
+  .node, .chip.nav{ transition:none }
+}
+
+/* linee ON/OFF già gestite, lasciamo transizione dolce */
+:root[data-lines='off'] #links{ opacity:0; transition:.24s }
+:root[data-lines='on']  #links{ opacity:1; transition:.24s }
+</style>
 </head>
 <body>
   <nav class="topnav">
@@ -154,6 +235,50 @@ window.addEventListener('hashchange',()=>{
   const s = location.hash.slice(1);
   if(window.DOC_MAP[s]) openFull(s); else closeModal(false);
 });
+
+/* === Glow & Search states v1 (non invasivo) === */
+(function(){
+  // accessori
+  const $ = (s, r=document)=> r.querySelector(s);
+  const $$= (s, r=document)=> Array.from(r.querySelectorAll(s));
+
+  // 1) accessibilità tastiera sui nodi (senza toccare layout/onclick esistenti)
+  function armNodes(){
+    $$('.node').forEach(n=>{
+      if(n.classList.contains('center')) return;
+      if(!n.hasAttribute('tabindex')) n.tabIndex = 0;
+      n.addEventListener('keydown', e=>{
+        if(e.key==='Enter' || e.key===' '){ e.preventDefault(); n.click(); }
+      }, {passive:false});
+    });
+  }
+
+  // 2) evidenziazione "soft search": aggiunge classi senza alterare altro codice
+  const q = $('#q');
+  function applySearchHighlight(val){
+    const v = (val||'').trim().toLowerCase();
+    const nodes = $$('.node').filter(n=>!n.classList.contains('center'));
+    if(!v){
+      nodes.forEach(n=>{ n.classList.remove('is-hit','dim'); });
+      return;
+    }
+    nodes.forEach(n=>{
+      const label = n.querySelector('.label')?.textContent?.toLowerCase() || '';
+      const hit = label.includes(v);
+      n.classList.toggle('is-hit', hit);
+      n.classList.toggle('dim', !hit);
+    });
+  }
+  q && q.addEventListener('input', ()=>applySearchHighlight(q.value));
+
+  // bootstrap (anche dopo redraw)
+  document.addEventListener('DOMContentLoaded', armNodes);
+  // nel caso il layout ridisegni i nodi:
+  const world = document.getElementById('world');
+  if(world){
+    new MutationObserver(()=>armNodes()).observe(world,{childList:true,subtree:true});
+  }
+})();
 </script>
 </body>
 </html>
