@@ -138,50 +138,8 @@
     #mapContainer.zoom-100 { transform: scale(1.0); }
     #mapContainer.zoom-120 { transform: scale(1.2); }
     
-    /* Logo centrale */
-    #centerLogo {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 120px;
-      height: 120px;
-      transform: translate(-50%, -50%);
-      background: url('/dms-gemello-news/assets/img/logo-PA.svg') center/contain no-repeat;
-      filter: drop-shadow(0 0 18px rgba(0, 206, 255, 0.6));
-      z-index: 10;
-      pointer-events: none;
-    }
-    
-    /* Logo ministero sopra */
-    #ministryLogo {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 80px;
-      height: 60px;
-      transform: translate(-50%, -50%);
-      background: url('../assets/logo-ministero-finale.png') center/contain no-repeat;
-      filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.4));
-      z-index: 11;
-      pointer-events: none;
-    }
-    
-    /* Fallback logo SVG */
-    #centerLogo svg {
-      width: 100%;
-      height: 100%;
-      filter: drop-shadow(0 0 18px rgba(0, 206, 255, 0.6));
-    }
-    
-    /* Fallback logo ministero SVG */
-    #ministryLogo svg {
-      width: 100%;
-      height: 100%;
-      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
-    }
-    
-    /* Anello rotante */
-    #ring {
+    /* Linee radiali */
+    .spoke {
       position: absolute;
       inset: 0;
       z-index: 5;
@@ -462,6 +420,73 @@
       from { transform: translate(-50%, -50%) rotate(0deg); }
       to { transform: translate(-50%, -50%) rotate(360deg); }
     }
+
+    /* Nodi: contro-rotazione per rimanere orizzontali */
+    #ring-inner .node {
+      animation: counterRotateInner 40s linear infinite;
+    }
+
+    #ring-outer .node {
+      animation: counterRotateOuter 60s linear infinite;
+    }
+
+    /* Pausa contro-rotazioni quando auto-rotate è disattivato */
+    body:not(.auto-rotate) #ring-inner .node,
+    body:not(.auto-rotate) #ring-outer .node {
+      animation-play-state: paused;
+    }
+
+    /* Keyframes per contro-rotazioni */
+    @keyframes counterRotateInner {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(-360deg); }
+    }
+
+    @keyframes counterRotateOuter {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(-360deg); }
+    }
+
+    /* Raggi: girano con la corona */
+    #spokes {
+      animation: rotateSpokes 50s linear infinite;
+    }
+
+    body:not(.auto-rotate) #spokes {
+      animation-play-state: paused;
+    }
+
+    @keyframes rotateSpokes {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Centro fisso: logo ministero (no riquadro, glow blu) */
+    #hubIcon{
+      position:absolute;
+      left:50%; top:50%;
+      width:clamp(160px, 13vw, 240px);
+      height:clamp(160px, 13vw, 240px);
+      transform:translate(-50%, -50%);
+      pointer-events:none;
+      z-index: 5;
+      filter:
+        drop-shadow(0 0 32px rgba(56,189,248,.35))
+        drop-shadow(0 8px 22px rgba(0,0,0,.45));
+      opacity:.98;
+    }
+
+    /* Applica il logo come background (SVG inline in data-URL) */
+    #hubIcon::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.18), transparent 60%),
+        url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23e6f7ff'/><stop offset='1' stop-color='%23c9eeff'/></linearGradient></defs><g fill='url(%23g)' stroke='%2300b3ff' stroke-width='18' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='80' y='276' width='80' height='240' rx='6'/><rect x='200' y='276' width='120' height='240' rx='6'/><rect x='360' y='276' width='120' height='240' rx='6'/><rect x='520' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/72% no-repeat;
+    }
+
+    /* Assicurati che NON ruoti mai col resto */
+    #hubIcon { will-change: filter, opacity; }
   </style>
 </head>
 <body>
@@ -493,22 +518,8 @@
 
     <!-- Container mappa -->
     <div id="mapContainer" class="zoom-100">
-      <!-- Logo centrale -->
-      <div id="centerLogo">
-        <!-- Fallback SVG -->
-        <svg viewBox="0 0 64 64" focusable="false">
-          <defs>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="b"/>
-              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          <path fill="#6ee3ff" filter="url(#glow)" d="M8 30h48v4H8zM12 34h40l-2 18H14zM10 28l22-12 22 12z"/>
-        </svg>
-      </div>
-
-      <!-- Logo ministero sopra -->
-      <div id="ministryLogo"></div>
+      <!-- Logo centrale fisso -->
+      <div id="hubIcon" aria-hidden="true"></div>
 
       <!-- Linee radiali -->
       <div id="spokes"></div>
