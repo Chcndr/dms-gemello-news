@@ -143,12 +143,26 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 92px;
-      height: 92px;
+      width: 120px;
+      height: 120px;
       transform: translate(-50%, -50%);
       background: url('/dms-gemello-news/assets/img/logo-PA.svg') center/contain no-repeat;
       filter: drop-shadow(0 0 18px rgba(0, 206, 255, 0.6));
       z-index: 10;
+      pointer-events: none;
+    }
+    
+    /* Logo ministero sopra */
+    #ministryLogo {
+      position: absolute;
+      left: 50%;
+      top: calc(50% - 80px);
+      width: 80px;
+      height: 60px;
+      transform: translate(-50%, -50%);
+      background: url('/dms-gemello-news/assets/logo-ministero-trasparente.png') center/contain no-repeat;
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+      z-index: 11;
       pointer-events: none;
     }
     
@@ -157,6 +171,13 @@
       width: 100%;
       height: 100%;
       filter: drop-shadow(0 0 18px rgba(0, 206, 255, 0.6));
+    }
+    
+    /* Fallback logo ministero SVG */
+    #ministryLogo svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
     }
     
     /* Anello rotante */
@@ -181,12 +202,12 @@
       left: 50%;
       top: 50%;
       height: 2px;
-      width: 42%;
+      width: calc(var(--spoke-length, 280px) - 45px);
       transform-origin: 0 0;
       opacity: 0.8;
       background: linear-gradient(to right, rgba(0, 206, 255, 0.6), rgba(0, 206, 255, 0.2) 70%, transparent);
       box-shadow: 0 0 4px rgba(0, 206, 255, 0.4);
-      transition: opacity 0.3s ease;
+      transition: opacity 0.3s ease, width 0.3s ease;
     }
     
     #spokes.hidden .spoke {
@@ -451,6 +472,9 @@
         </svg>
       </div>
 
+      <!-- Logo ministero sopra -->
+      <div id="ministryLogo"></div>
+
       <!-- Linee radiali -->
       <div id="spokes"></div>
 
@@ -633,6 +657,9 @@
       const nodeCount = nodes.length;
       const radius = Math.min(280, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.32);
       
+      // Aggiorna variabile CSS per lunghezza linee
+      document.documentElement.style.setProperty('--spoke-length', `${radius}px`);
+      
       nodes.forEach((node, index) => {
         const angle = (360 / nodeCount) * index;
         const radian = (angle * Math.PI) / 180;
@@ -808,6 +835,9 @@
     function setZoom(zoom) {
       currentZoom = zoom;
       mapContainer.className = `zoom-${zoom}`;
+      
+      // Ricalcola posizioni e linee per il nuovo zoom
+      setupNodes();
       
       document.querySelectorAll('.zoom-btn').forEach(btn => {
         btn.classList.toggle('active', parseInt(btn.dataset.zoom) === zoom);
