@@ -392,6 +392,7 @@ body.modal-open { overflow: hidden; }
 #modalOverlay{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.6);z-index:1100;}
 #modalCard{max-width:min(1140px,92vw);width:100%;border-radius:12px;overflow:hidden;}
 #modalHeader{background:#0F7A4C;color:#fff;position:static;}
+#modalHeader{ background:#0F7A4C !important; }
 .btn.btn-spot{display:inline-block;margin-left:.5rem;padding:.4rem .7rem;border-radius:.5rem;background:#0F7A4C;color:#fff;text-decoration:none}
 </style>
 </head>
@@ -949,27 +950,47 @@ document.addEventListener('DOMContentLoaded', function(){
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 </script>
 <script>
-  function closeModal(){
-    document.body.classList.remove('modal-open');
-    document.getElementById('modalOverlay')?.classList.remove('is-open');
-    document.getElementById('modalCard')?.classList.remove('is-open');
-    document.getElementById('modal').style.display = 'none';
+(function () {
+  // 1) Slug validi (devono corrispondere a DOC_MAP)
+  const VALID = new Set([
+    'agid','ae','adm','mef','interno','mimit','mase','mit',
+    'salute','mic','turismo','masaf','mim','lavoro','maeci','pagopa'
+  ]);
+
+  // 2) Funzione di chiusura robusta
+  function closeModal(reset=true){
+    const overlay = document.getElementById('modalOverlay');
+    const card    = document.getElementById('modalCard');
+    if (overlay) overlay.classList.remove('is-open');
+    if (card)    card.classList.remove('modal-open');
+    document.documentElement.classList.remove('modal-open');
+    if (reset){
+      const t = document.getElementById('modalTitle');
+      if (t) t.textContent = '-';
+      const img = document.getElementById('docImg');
+      if (img) img.removeAttribute('src');
+    }
   }
 
-  function maybeOpenFromHash(){
-    const slug = (location.hash || '').slice(1).trim();
-    if (!slug) return;                      // niente hash → niente modal
-    const ok = (window.DOC_MAP && DOC_MAP[slug]) || (window.CARD_MAP && CARD_MAP[slug]);
-    if (!ok) return;                         // slug non mappato → niente modal
-    window.openFull(slug);                   // apri solo se valido
+  // 3) Guardia dentro openFull: NON aprire senza slug valido
+  const _openFull = window.openFull;
+  window.openFull = function (slug) {
+    slug = (slug || '').toLowerCase().trim();
+    if (!VALID.has(slug)) { closeModal(true); return; }
+    return _openFull ? _openFull(slug) : void 0;
+  };
+
+  // 4) All'avvio: chiudi SEMPRE il modal
+  closeModal(true);
+
+  // 5) Apri solo se c'è un hash valido
+  function maybeOpenFromHash() {
+    const s = (location.hash || '').slice(1).toLowerCase().trim();
+    if (VALID.has(s)) window.openFull(s); else closeModal(true);
   }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    closeModal();                            // forza chiusura all'avvio
-    maybeOpenFromHash();                     // apri solo se c'è #slug valido
-  });
-
-  window.addEventListener('hashchange', maybeOpenFromHash);
+  maybeOpenFromHash();
+  window.addEventListener('hashchange', maybeOpenFromHash, {passive:true});
+})();
 </script>
 </body>
 </html>
