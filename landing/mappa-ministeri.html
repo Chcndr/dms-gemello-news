@@ -948,6 +948,29 @@ document.addEventListener('DOMContentLoaded', function(){
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 </script>
+<script>
+  function closeModal(){
+    document.body.classList.remove('modal-open');
+    document.getElementById('modalOverlay')?.classList.remove('is-open');
+    document.getElementById('modalCard')?.classList.remove('is-open');
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  function maybeOpenFromHash(){
+    const slug = (location.hash || '').slice(1).trim();
+    if (!slug) return;                      // niente hash → niente modal
+    const ok = (window.DOC_MAP && DOC_MAP[slug]) || (window.CARD_MAP && CARD_MAP[slug]);
+    if (!ok) return;                         // slug non mappato → niente modal
+    window.openFull(slug);                   // apri solo se valido
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    closeModal();                            // forza chiusura all'avvio
+    maybeOpenFromHash();                     // apri solo se c'è #slug valido
+  });
+
+  window.addEventListener('hashchange', maybeOpenFromHash);
+</script>
 </body>
 </html>
 
