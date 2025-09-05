@@ -1,962 +1,160 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build" content="MAP-FIX-V2">
-<title>Mappa Ministeri — sandbox</title>
-<style>
-:root{
-  --node: clamp(176px, 12.5vw, 256px);
-  --radius: 18px;
-  --ink: #e7fbf5;
-  --chip: rgba(15,32,36,.76);
-  --stroke: rgba(255,255,255,.10);
-}
-
-*{margin:0;padding:0;box-sizing:border-box}
-body{font:400 16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#0a1a1e;overflow-x:hidden}
-a{color:inherit;text-decoration:none}
-.nav{position:sticky;top:0;z-index:1000;display:flex;gap:8px;align-items:center;padding:12px 16px;background:rgba(10,26,30,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--stroke)}
-.btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip);box-shadow:0 6px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06)}
-.btn:hover{outline:1px solid rgba(255,255,255,.06)}
-.title{margin-left:auto;margin-right:auto;font-weight:700;letter-spacing:.3px}
-.wrap{max-width:1280px;margin:0 auto;padding:0 16px 48px}
-
-#stageWrap{ height: 74vh; position:relative;border:1px solid var(--stroke);border-radius:16px;padding:12px;background:radial-gradient(60% 70% at 50% 12%, rgba(20,184,166,.08) 0%, transparent 60%); }
-#stage{ position: relative; height:100%; min-height:520px; border-radius:12px; overflow:hidden}
-
-/* TILE QUADRATI allineati come Home */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMS · Gemello Digitale — Mappa Ministeri</title>
+  <style>
+:root{ --green:#0F7A4C; --bg:#0b1418; --card:#0f2026; --ink:#dff7ff; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif }
+body{ margin:0; background:#071319; color:var(--ink) }
+.topnav{ display:flex; gap:.75rem; padding:.6rem 1rem; background:#081319; position:sticky; top:0; z-index:5 }
+.topnav a{ color:#cfefff; text-decoration:none; padding:.35rem .7rem; border-radius:8px; background:#0e2230 }
+#mapWrap{ padding:1.25rem; display:grid; place-items:center }
+#ring{ position:relative; width:min(86vw,920px); aspect-ratio:1; border-radius:999px; }
 .node{
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  width:var(--node); height:var(--node);
-  padding:16px; border-radius:var(--radius);
-  background: var(--chip);
-  border:1px solid var(--stroke);
-  box-shadow:0 6px 18px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.06) inset;
-  display:flex; align-items:center; justify-content:center;
-  text-align:center; color:var(--ink);
-  user-select:none;
+  position:absolute; inset:auto;
+  background:rgba(28,61,72,.9); color:#fff; border:0; border-radius:14px; padding:.5rem .8rem;
+  cursor:pointer; user-select:none; -webkit-user-select:none; touch-action:manipulation;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
 }
-.node .label{
-  font-weight:800; line-height:1.15; letter-spacing:.2px;
-  font-size: clamp(13px,1.05vw,18px);
-  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
-  overflow:hidden; text-wrap:balance;
-}
-/* rimuoviamo la sottoscritta "Agenzia/Ministero" */
-.node .tag{ display:none !important; }
-
-/* NODO CENTRALE: logo con glow blu, niente quadro sopra */
-.node.center{
-  width: clamp(220px, 15vw, 300px);
-  height: clamp(220px, 15vw, 300px);
-  background: rgba(15,32,36,.84);
-  border:1px solid rgba(30,144,255,.35);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.06) inset,
-    0 0 40px rgba(30,144,255,.22),
-    0 24px 60px rgba(0,0,0,.40);
-}
-.node.center .label,.node.center .tag{ display:none; }
-.node.center::before{
-  content:""; position:absolute; inset:18%;
-  background:url('../img/ministero-center.png') center/contain no-repeat;
-  z-index:1; filter:brightness(1.1) drop-shadow(0 0 18px rgba(30,144,255,.45));
-  opacity:.96;
-}
-.node.center::after{
-  content:""; position:absolute; inset:-26%; border-radius:40%;
-  background:radial-gradient(60% 70% at 50% 40%, rgba(30,144,255,.22) 0%, transparent 65%);
-  filter:blur(16px); pointer-events:none;
+/* posizionamento rapido dei 16 nodi (corona) */
+#ring .node:nth-child(1){  --a:0   } #ring .node:nth-child(2){  --a:22.5 } #ring .node:nth-child(3){  --a:45  }
+#ring .node:nth-child(4){  --a:67.5} #ring .node:nth-child(5){  --a:90  } #ring .node:nth-child(6){  --a:112.5}
+#ring .node:nth-child(7){  --a:135 } #ring .node:nth-child(8){  --a:157.5} #ring .node:nth-child(9){  --a:180 }
+#ring .node:nth-child(10){ --a:202.5}#ring .node:nth-child(11){ --a:225 } #ring .node:nth-child(12){ --a:247.5}
+#ring .node:nth-child(13){ --a:270 } #ring .node:nth-child(14){ --a:292.5} #ring .node:nth-child(15){ --a:315 }
+#ring .node:nth-child(16){ --a:337.5}
+#ring .node{
+  --r: calc(50% - 110px);
+  left: calc(50% + var(--r) * cos(var(--a)*1deg));
+  top:  calc(50% + var(--r) * sin(var(--a)*1deg));
+  transform: translate(-50%,-50%);
 }
 
-/* LINEE su canvas: visibilità */
-#links{position:absolute; inset:0; pointer-events:none;}
-:root[data-lines='off'] #links{ opacity:0; }
-
-/* foglio/scheda fullscreen */
-:root{
-  --slot:#22c55e;           /* verde slot */
-  --slot-ink:#072814;       /* testo su slot */
-  --sheet-brd:#22c55e;      /* stesso colore del contorno */
-}
-
-#modal{
-  position:fixed; inset:0; display:none;
-  align-items:flex-start;  /* spinge in alto */
-  justify-content:center;  z-index:9999;
-  padding:72px 16px 24px;  /* distanza top */
-  background:rgba(3,10,12,.72); backdrop-filter:blur(6px);
-}
-
-.sheet{width:min(1080px,92vw); background:transparent; border:0;}
-
-.sheet-head{
-  display:flex; gap:12px; align-items:center;
-  padding:12px 14px; border:1px solid var(--sheet-brd);
-  border-radius:14px 14px 0 0;
-  background:linear-gradient(180deg, rgba(34,197,94,.95), rgba(34,197,94,.90));
-  color:var(--slot-ink);
-  box-shadow:0 10px 24px rgba(0,0,0,.28);
-}
-.sheet-head .ttl{margin:0; font-size:20px; font-weight:800;}
-.sheet-head .actions{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
-.btn.cta{
-  display:inline-flex; align-items:center; gap:8px;
-  padding:8px 12px; border-radius:999px; border:1px solid rgba(0,0,0,.10);
-  background:#ffffff; color:#0b1416;
-}
-.btn.cta[href*="pdf"]::before{content:"📄";}
-.btn.cta[href*="#doc-"]::before{content:"🔗";}
-.btn.x{margin-left:8px; border:1px solid rgba(0,0,0,.2); background:rgba(255,255,255,.8); border-radius:999px; padding:6px 10px;}
-
-.sheet-body{
-  border:1px solid var(--sheet-brd); border-top:0;
-  border-radius:0 0 14px 14px;
-  background:#0f2024ee;            /* bianco se preferisci: #fff */
-  color:#e6f7ff;                    /* #0b1416 se sfondo bianco */
-  padding:16px; box-shadow:0 20px 48px rgba(0,0,0,.35);
-}
-.sheet-body .hero{
-  width:100%; max-height:320px; object-fit:cover; border-radius:12px; margin-bottom:12px; display:none;
-}
-.sheet-body .meta{opacity:.85; font-size:14px; margin:4px 0 12px;}
-.sheet-body .bullets{margin:0 0 12px 18px;}
-.sheet-body .docs{display:flex; flex-wrap:wrap; gap:8px;}
-.doc{display:inline-flex; padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06);}
-
-@media (max-width: 900px){
-  .sheet-head{flex-wrap:wrap;}
-  .sheet-head .actions{width:100%; justify-content:flex-start;}
-}
-
-.panel{margin-top:16px; padding:16px; border:1px solid var(--stroke); border-radius:12px; background:rgba(15,32,36,.42)}
-.panel h3{margin:0 0 8px}
-.meta{color:#8fa3a8; font-size:14px; margin:2px 0 12px}
-.chips{display:flex; flex-wrap:wrap; gap:8px}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:var(--chip)}
-.chip .k{opacity:.65}
-.docs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.doc{display:inline-flex;padding:8px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--chip)}
-.doc small{opacity:.7;margin-left:6px}
-.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
-.switch{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px dashed var(--stroke);border-radius:999px;opacity:.9}
-.legend{margin-top:8px; font-size:13px; color:#8fa3a8}
-@media (max-width:720px){
-  .node{width:calc(var(--node) * 0.8); height:calc(var(--node) * 0.8)}
-  #stage{height:64vh; min-height:480px}
-}
-
-.frame{
-  position:relative;
-  height:min(82vh, calc(100dvh - 88px));
-  min-height:600px;
-  margin:12px 20px 20px;
-  border:1px solid rgba(255,255,255,.26);   /* più chiaro */
-  border-radius:16px;
-  background:
-    radial-gradient(60% 70% at 50% 12%, rgba(56,189,248,.12) 0%, transparent 62%),
-    radial-gradient(40% 50% at 50% 82%, rgba(56,189,248,.08) 0%, transparent 60%);
-}
-#world{
-  position:absolute; left:50%; top:50%;
-  transform:translate(-50%,-50%) scale(1);
-  transform-origin:50% 50%;
-  will-change:transform;
-}
-#stage{ position:absolute; inset:0; overflow:hidden; touch-action:none; }
-
-/* Logo palazzo (simmetrico, glow) */
-#hubIcon{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:160px; height:160px; pointer-events:none; filter:drop-shadow(0 0 22px rgba(56,189,248,.45)); }
-#hubIcon::before{
-  content:""; position:absolute; inset:0;
-  background:
-    radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.22), transparent 60%),
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%23e6f7ff" stroke="%2300b3ff" stroke-width="12" stroke-linejoin="round"><path d="M32 196 L256 80 L480 196 Z"/><rect x="72"  y="220" width="64" height="200"/><rect x="168" y="220" width="64" height="200"/><rect x="264" y="220" width="64" height="200"/><rect x="360" y="220" width="64" height="200"/><rect x="48" y="424" width="416" height="24"/></svg>') center/72% no-repeat;
-  opacity:.96;
-}
-.node{width:200px;height:140px;padding:16px;border-radius:18px;background:rgba(15,32,36,.76);border:1px solid rgba(255,255,255,.10);box-shadow:0 6px 18px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.06) inset;display:flex;align-items:center;justify-content:center;text-align:center;}
-.node .tag{display:none!important;}
-.node .label{font-weight:800;line-height:1.16;letter-spacing:.2px;font-size:clamp(15px,1.25vw,20px);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance;}
-:root[data-lines='off'] #links{opacity:0;transition:.3s}
-:root[data-lines='on']  #links{opacity:1;transition:.3s}
-
-/* Pagina fissa + cornice più chiara */
-html,body{height:100%; overscroll-behavior:none;}
-body{overflow:hidden;}
-.frame{
-  position:relative; margin:12px 20px 20px;
-  border:1px solid rgba(255,255,255,.22);
-  border-radius:16px;
-  background: radial-gradient(60% 70% at 50% 14%, rgba(56,189,248,.10) 0%, transparent 60%);
-}
-
-/* Shell zoomabile */
-#stage{position:absolute; inset:0; overflow:hidden; touch-action:none;}
-#world{
-  position:absolute; left:50%; top:50%;
-  transform: translate(-50%,-50%) scale(1);
-  transform-origin:50% 50%; will-change:transform;
-}
-
-/* Logo palazzo (simmetrico, senza riquadro) */
-#hubIcon{
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  width:168px; height:168px; pointer-events:none;
-  filter: drop-shadow(0 0 26px rgba(56,189,248,.45));
-}
-#hubIcon::before{
-  content:""; position:absolute; inset:0;
-  background:
-    radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.24), transparent 60%),
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%23e6f7ff" stroke="%2300b3ff" stroke-width="12"><path d="M24 196h464L256 72 24 196zM64 224h64v208H64V224zm96 0h64v208h-64V224zm128 0h64v208h-64V224zm96 0h64v208h-64V224zM48 448h416v24H48z"/></svg>') center/72% no-repeat;
-  opacity:.96;
-}
-
-/* Tile: retroilluminazione leggera + incremento su match */
-:root{ --glow-off:12px; --glow-on:28px; }
-.node{
-  width:200px; height:140px; padding:16px; border-radius:18px;
-  background: rgba(18,40,44,.78);
-  border:1px solid rgba(255,255,255,.10);
-  box-shadow:
-    0 12px 28px rgba(0,0,0,.28),
-    0 0 0 1px rgba(255,255,255,.06) inset,
-    0 0 var(--glow-off) rgba(56,189,248,.20);
-  display:flex; align-items:center; justify-content:center; text-align:center;
-  transition: box-shadow .25s ease, border-color .25s ease, background .25s ease;
-}
-.node .tag{display:none!important;}
-.node .label{
-  font-weight:800; line-height:1.16; letter-spacing:.2px;
-  font-size:clamp(15px,1.25vw,20px);
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-wrap:balance;
-}
-/* Evidenza quando la ricerca trova un match */
-.node.hit{
-  border-color: rgba(56,189,248,.38);
-  box-shadow:
-    0 16px 34px rgba(0,0,0,.32),
-    0 0 0 1px rgba(255,255,255,.08) inset,
-    0 0 var(--glow-on) rgba(56,189,248,.45);
-}
-
-/* Linee ON/OFF */
-:root[data-lines='off'] #links{opacity:0; transition:.3s}
-:root[data-lines='on']  #links{opacity:1; transition:.3s}
-
-/* tema esistente */
-:root { --ink:#e7fbf5; --chip:rgba(15,32,36,.84); --stroke:rgba(255,255,255,.12); }
-
-/* header "slot": colore come prima (chip scuro) */
-.sheet-head{
-  background:var(--chip);
-  color:var(--ink);
-  border:1px solid var(--stroke);
-  border-radius:14px 14px 0 0;
-  padding:12px 14px; display:flex; gap:12px; align-items:center;
-  box-shadow:0 10px 24px rgba(0,0,0,.28);
-}
-.sheet-head .ttl{margin:0; font:800 20px/1.2 system-ui;}
-.sheet-head .actions{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
-.min-links{display:flex; gap:6px; flex-wrap:wrap;}
-
-/* chip navigazione ministeri */
-.chip.nav{
-  display:inline-flex; align-items:center; gap:6px;
-  padding:6px 10px; border:1px dashed var(--stroke);
-  border-radius:999px; background:rgba(15,32,36,.62); color:var(--ink); opacity:.92;
-}
-
-/* body: contorno uguale, scheda "bianca" opzionale */
-.sheet-body{
-  border:1px solid var(--stroke); border-top:0;
-  border-radius:0 0 14px 14px;
-  background:#0f2024ee;  /* se preferisci bianca: #fff e color:#0b1416 */
-  color:var(--ink); padding:16px;
-  box-shadow:0 20px 48px rgba(0,0,0,.35);
-}
-
-/* sezione SCHEDA */
-.facts{margin:10px 0 12px;}
-.facts img{width:100%; height:auto; border-radius:12px; display:block;}
-
-/* Scheda ministeriale integrata nella modal */
-#card .facts{ margin:12px 0 10px; padding:0; }
-#card .facts img{
-  display:block; width:100%; height:auto;
-  border:1px solid var(--stroke); border-radius:12px;
-  background:#0f2024; /* tema esistente, NO verde */
-}
-
-/* v2.6.1: card sempre leggibile dentro modal */
-#card{ max-height:88vh; overflow:auto; }
-#card .facts{ margin:12px 0 10px; }
-#card .facts img{
-  display:block;
-  width:100%; height:auto;
-  max-height:62vh;          /* evita tagli su iPad */
-  object-fit:contain;
-  border:1px solid var(--stroke);
-  border-radius:12px;
-  background:#0f2024;       /* colore tema esistente */
-}
-
-/* v2.6.3: CSS aggiuntivi per card e nav */
-#card .facts img{ display:block; max-width:100%; max-height:62vh; margin:8px auto 0; object-fit:contain; border-radius:12px; }
-.min-links{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0; }
-.chip.nav{ opacity:.95; }
-
-/* v2.7.1 — solo-modal, nascondi legacy ovunque */
-#sheet, body > .facts { display: none !important; }
-#card{ max-height:88vh; overflow:auto; }
-#card .facts{ margin:12px 0 10px; }
-#card .facts img{ display:block; width:100%; height:auto; max-height:62vh; object-fit:contain; }
-
-/* Modal header verde sito */
-.dms-head{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  gap:.75rem;
-  padding:.65rem .9rem;
-  background:#0F7A4C;          /* verde scuro sito */
-  color:#fff;
-  border-radius:10px 10px 0 0;
-  box-shadow:0 8px 24px rgba(0,0,0,.35);
-}
-.dms-head .title{
-  margin:0; text-align:center; font-weight:700; font-size:1rem; letter-spacing:.2px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.dms-head .btn{
-  background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.2);
-  padding:.45rem .65rem; border-radius:8px; font-weight:600; cursor:pointer;
-  backdrop-filter:saturate(120%) blur(2px);
-}
-.dms-head .btn:hover{ background:rgba(255,255,255,.18); }
-.spot-actions{ display:flex; gap:.4rem; }
-
-/* CSS header modal come richiesto nelle istruzioni */
-/* overlay centrato */
-#modalOverlay {
-  position: fixed; inset: 0;
-  background: rgba(6,16,14,.55);
-  backdrop-filter: blur(2px);
-  display: none; z-index: 1100;
-  align-items: center; justify-content: center;
-}
-#modalOverlay.is-open { display: flex; }
-body.modal-open { overflow: hidden; }
-
-/* card del modal */
-#modalCard {
-  width: min(1080px, 92vw);
-  max-height: 86vh;
-  background: #0b1a20; /* scuro del sito */
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 12px 36px rgba(0,0,0,.5);
-}
-
-/* header verde in alto, NON sticky/fixed */
-#modalHeader {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px; align-items: center;
-  height: 56px; padding: 8px 12px;
-  background: #0F7A4C; color: #fff;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  position: static; /* importante */
-}
-
-/* assicurati di rimuovere/annullare queste regole se presenti */
-#modalHeader.sticky, #modalHeader.fixed { position: static !important; }
-#modalHeader { bottom: auto !important; top: auto !important; }
-
-#backToMap{ background:rgba(255,255,255,.12); border:0; padding:8px 12px; border-radius:8px; color:#fff; }
-#modalTitle{ text-align:center; font-weight:600; letter-spacing:.2px; }
-#spotBtns a{ display:inline-block; margin-left:8px; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,.12); color:#fff; text-decoration:none; }
-</style>
+/* MODAL */
+#modalRoot{ position:fixed; inset:0; display:none; pointer-events:none; z-index:1100 }
+#modalRoot.is-open{ display:block; pointer-events:auto }
+#modalRoot .overlay{ position:absolute; inset:0; background:rgba(0,0,0,.6) }
+.modalCard{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width: min(92vw, 1140px); background:var(--card); border-radius:14px; overflow:hidden; }
+#modalHeader{ background:var(--green); color:#fff; display:flex; gap:.75rem; align-items:center; padding:.7rem 1rem }
+#modalHeader h3{ margin:0; font-weight:700; flex:1 }
+#modalHeader .back{ background:#0b5f3a; color:#fff; border:0; border-radius:8px; padding:.35rem .6rem; cursor:pointer }
+#spotBtns a{ background:#0e2230; color:#fff; text-decoration:none; border-radius:8px; padding:.35rem .6rem; margin-left:.4rem }
+#modalBody{ padding:1rem; background:#0b161b }
+.doc{ margin:0 0 1rem 0; }
+.doc img{ width:100%; height:auto; display:block; border-radius:10px }
+#modalRoot:not(.is-open) *{ pointer-events:none }
+  </style>
 </head>
 <body>
-  <div class="nav">
-    <a class="btn" href="/dms-gemello-news/landing/home.html" target="_top">Home</a>
-    <a class="btn" href="/dms-gemello-news/landing/mappa-ministeri.html" target="_top">Mappa</a>
-    <a class="btn" href="/dms-gemello-news/landing/spot.html" target="_top">Spot</a>
-    <div class="controls">
-      <label class="switch"><input id="btn-auto" type="checkbox" checked> Auto-rotate</label>
-      <label class="switch"><input id="btn-lines" type="checkbox" checked> Linee</label>
-      <input id="q" placeholder="Cerca ministero…" style="margin-left:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--chip);color:var(--ink);">
+  <nav class="topnav">
+    <a href="/dms-gemello-news/landing/home.html">Home</a>
+    <a href="/dms-gemello-news/landing/mappa-ministeri.html">Mappa</a>
+    <a href="/dms-gemello-news/landing/spot.html">Spot</a>
+  </nav>
+
+  <main id="mapWrap" aria-label="Mappa Ministeri (sandbox)">
+    <div id="ring">
+      <!-- 16 nodi: usare button/div (NO <a>) per evitare anteprime su iPad -->
+      <button class="node" data-slug="agid"    aria-label="AgID">AgID</button>
+      <button class="node" data-slug="mef"     aria-label="MEF">MEF</button>
+      <button class="node" data-slug="interno" aria-label="Ministero dell'Interno">Interno</button>
+      <button class="node" data-slug="salute"  aria-label="Ministero della Salute">Salute</button>
+      <button class="node" data-slug="turismo" aria-label="Ministero del Turismo">Turismo</button>
+      <button class="node" data-slug="lavoro"  aria-label="Ministero del Lavoro">Lavoro</button>
+      <button class="node" data-slug="mit"     aria-label="MIT - Infrastrutture e Trasporti">MIT</button>
+      <button class="node" data-slug="mim"     aria-label="MIM - Istruzione e Merito">MIM</button>
+      <button class="node" data-slug="mimit"   aria-label="MIMIT - Imprese e Made in Italy">MIMIT</button>
+      <button class="node" data-slug="mase"    aria-label="MASE - Ambiente e Sicurezza Energetica">MASE</button>
+      <button class="node" data-slug="masaf"   aria-label="MASAF - Agricoltura">MASAF</button>
+      <button class="node" data-slug="maeci"   aria-label="MAECI - Affari Esteri">MAECI</button>
+      <button class="node" data-slug="mic"     aria-label="MIC - Cultura">MIC</button>
+      <button class="node" data-slug="ae"      aria-label="Agenzia Entrate">AE</button>
+      <button class="node" data-slug="adm"     aria-label="Agenzia Dogane">ADM</button>
+      <button class="node" data-slug="pagopa"  aria-label="PagoPA S.p.A.">PagoPA</button>
     </div>
-    <div class="title">Mappa Ministeri (sandbox)</div>
-  </div>
+  </main>
 
-  <div class="wrap">
-    <main id="map">
-      <div id="viewport" class="frame">
-        <div id="stage" aria-label="Mappa radiale interattiva">
-          <canvas id="links"></canvas>
-          <div id="world"><!-- qui append .node --></div>
-          <div id="hubIcon" aria-hidden="true"></div>
-        </div>
-      </div>
-    </main>
-
-    <div id="sheet" class="panel" hidden>
-      <h3 class="ttl"></h3>
-      <p class="meta"></p>
-      <div class="chips"></div>
-      <h4 style="margin:16px 0 6px">Documenti</h4>
-      <div class="docs"></div>
-      <p class="legend">Suggerimento: i link "Apri su Spot" evidenziano la card nella libreria; "Apri PDF" apre direttamente il documento (eventuale pagina prefissata).</p>
-    </div>
-  </div>
-
-  <!-- Modal -->
-  <div id="modalOverlay" class="modal-overlay">
-    <div id="modalCard">
-      <div id="modalHeader" class="modal-header">
-        <button id="backToMap" class="btn-back">← Torna alla mappa</button>
-        <div id="modalTitle" class="modal-title">-</div>
-        <div id="spotBtns" class="spot-btns"></div>
-      </div>
-      <div class="modal-body">
-        <button id="prev" class="nav prev">◀</button>
-        <img id="modalImage" alt="" />
-        <button id="next" class="nav next">▶</button>
-      </div>
+  <!-- MODAL -->
+  <div id="modalRoot" aria-hidden="true">
+    <div class="overlay" role="presentation"></div>
+    <div class="modalCard" role="dialog" aria-modal="true">
+      <header id="modalHeader">
+        <button id="btnBack" class="back">← Torna alla mappa</button>
+        <h3 id="modalTitle"></h3>
+        <div id="spotBtns"></div>
+      </header>
+      <section id="modalBody" aria-live="polite"></section>
     </div>
   </div>
 
-  <!-- Fallback modal esistente -->
-  <div id="modal" aria-hidden="true">
-    <div id="card" class="sheet">
-      <div class="modal-head dms-head" id="dmsHead">
-        <button class="btn back" id="btnBackToMap">← Torna alla mappa</button>
-        <h3 class="title" id="modalTitle">—</h3>
-        <div class="spot-actions" id="spotActions"></div>
-      </div>
-
-      <div id="modalBody" class="dms-modal-body"><!-- qui inietti l'IMG --></div>
-    </div>
-  </div>
-
-<script>const BUILD='qa11'; console.log('BUILD',BUILD);</script>
 <script>
-/* HOTFIX v2.4: viewport/stage/world + pinch-zoom + glow ricerca + deeplink */
-// Fallback inline completo con 16 ministeri
-window.DOC_MAP_FALLBACK = [
-  {id:'mef', nome:'MEF · Economia e Finanze', ring:1, tag:'Ministero'},
-  {id:'interno', nome:'Ministero dell\'Interno', ring:1, tag:'Ministero'},
-  {id:'mimit', nome:'MIMIT · Imprese e Made in Italy', ring:1, tag:'Ministero'},
-  {id:'mase', nome:'MASE · Ambiente e Sicurezza Energetica', ring:1, tag:'Ministero'},
-  {id:'mit', nome:'MIT · Infrastrutture e Trasporti', ring:1, tag:'Ministero'},
-  {id:'salute', nome:'Ministero della Salute', ring:1, tag:'Ministero'},
-  {id:'mic', nome:'MIC · Cultura', ring:1, tag:'Ministero'},
-  {id:'turismo', nome:'Ministero del Turismo', ring:1, tag:'Ministero'},
-  {id:'masaf', nome:'MASAF · Agricoltura', ring:1, tag:'Ministero'},
-  {id:'mim', nome:'MIM · Istruzione e Merito', ring:1, tag:'Ministero'},
-  {id:'lavoro', nome:'Ministero del Lavoro', ring:1, tag:'Ministero'},
-  {id:'maeci', nome:'MAECI · Affari Esteri', ring:1, tag:'Ministero'},
-  {id:'agid', nome:'AgID', ring:2, tag:'Ente'},
-  {id:'pagopa', nome:'PagoPA S.p.A.', ring:2, tag:'Ente'},
-  {id:'ae', nome:'AE · Agenzia Entrate', ring:2, tag:'Ente'},
-  {id:'adm', nome:'ADM · Agenzia Dogane', ring:2, tag:'Ente'}
-];
+/* Dati semplici (più item = più schede impilate) */
+window.DOC_MAP = {
+  agid   : { title:"AgID",                            cards:[{img:"/dms-gemello-news/assets/doc/agid.jpg",    alt:"AgID"}] },
+  mef    : { title:"MEF - Economia e Finanze",        cards:[{img:"/dms-gemello-news/assets/doc/mef.jpg",     alt:"MEF"}] },
+  interno: { title:"Ministero dell'Interno",          cards:[{img:"/dms-gemello-news/assets/doc/interno.jpg", alt:"Interno"}] },
+  salute : { title:"Ministero della Salute",          cards:[{img:"/dms-gemello-news/assets/doc/salute.jpg",  alt:"Salute"}] },
+  turismo: { title:"Ministero del Turismo",           cards:[{img:"/dms-gemello-news/assets/doc/turismo.jpg", alt:"Turismo"}] },
+  lavoro : { title:"Ministero del Lavoro",            cards:[{img:"/dms-gemello-news/assets/doc/lavoro.jpg",  alt:"Lavoro"}] },
+  mit    : { title:"MIT - Infrastrutture e Trasporti",cards:[{img:"/dms-gemello-news/assets/doc/mit.jpg",     alt:"MIT"}] },
+  mim    : { title:"MIM - Istruzione e Merito",       cards:[{img:"/dms-gemello-news/assets/doc/mim.jpg",     alt:"MIM"}] },
+  mimit  : { title:"MIMIT - Imprese e Made in Italy", cards:[{img:"/dms-gemello-news/assets/doc/mimit.jpg",   alt:"MIMIT"}] },
+  mase   : { title:"MASE - Ambiente e Sicurezza",     cards:[{img:"/dms-gemello-news/assets/doc/mase.jpg",    alt:"MASE"}] },
+  masaf  : { title:"MASAF - Agricoltura",             cards:[{img:"/dms-gemello-news/assets/doc/masaf.jpg",   alt:"MASAF"}] },
+  maeci  : { title:"MAECI - Affari Esteri",           cards:[{img:"/dms-gemello-news/assets/doc/maeci.jpg",   alt:"MAECI"}] },
+  mic    : { title:"MIC - Cultura",                   cards:[{img:"/dms-gemello-news/assets/doc/mic.jpg",     alt:"MIC"}] },
+  ae     : { title:"Agenzia Entrate",                 cards:[{img:"/dms-gemello-news/assets/doc/ae.jpg",      alt:"AE"}] },
+  adm    : { title:"Agenzia Dogane",                  cards:[{img:"/dms-gemello-news/assets/doc/adm.jpg",     alt:"ADM"}] },
+  pagopa : { title:"PagoPA S.p.A.",                   cards:[{img:"/dms-gemello-news/assets/doc/pagopa.jpg",  alt:"PagoPA"}] }
+};
 
-let DATA = [];
-let cx=0, cy=0, Rx1=0, Ry1=0, Rx2=0, Ry2=0;
-let phase=0, speed=0.0016, rotating=true;
-const SHOW = ['mef','interno','mimit','mase','mit','salute','maeci','agid','pagopa','ae','adm','mic','turismo','masaf','mim','lavoro'];
+const $ = s => document.querySelector(s);
+const root = $('#modalRoot'), title = $('#modalTitle'), body = $('#modalBody'), spot = $('#spotBtns');
 
-// STEP 3: Ordine/whitelist ministeri mostrati
-window.SHOW = ["mef","interno","mimit","mase","mit","salute","mic","turismo","masaf","mim","lavoro","maeci","agid","pagopa","ae","adm"];
-
-// selettori viewport/stage/world
-const viewport=document.getElementById('viewport');
-const stage=document.getElementById('stage');
-const world=document.getElementById('world');
-const links=document.getElementById('links');
-
-// trasformazioni globali per pinch-zoom
-let scale=1, panX=0, panY=0, lastDist=null;
-function apply(){
-  // mantieni SEMPRE il baseline di centratura
-  world.style.transform = `translate(-50%,-50%) translate(${panX}px,${panY}px) scale(${scale})`;
+function renderSpotButtons(slug){
+  const href = `/dms-gemello-news/landing/spot.html#${slug}`;
+  spot.innerHTML = `<a href="${href}">Apri in SPOT</a>`;
 }
-
-// layout: centro calcolato sempre sullo stage
-function layout(){
-  const rect = stage.getBoundingClientRect();
-  cx = rect.width/2; cy = rect.height/2;
-  const S = Math.min(rect.width, rect.height);
-  Rx1 = Math.max(60, S*0.36);
-  Ry1 = Math.max(40, rect.height*0.28);
-  Rx2 = Math.max(80, S*0.46);
-  Ry2 = Math.max(50, rect.height*0.36);
-  links.width = rect.width; links.height = rect.height;
-  redraw();
+function renderDocs(cards){
+  body.innerHTML = cards.map(c=>`<figure class="doc"><img src="${c.img}" alt="${c.alt||''}"></figure>`).join('');
 }
-
-// posiziona i nodi RELATIVI al centro (cx,cy) perché #world è già centrato
-function place(el, xStage, yStage){
-  el.style.left = (xStage - cx) + 'px';   // sottraggo il centro
-  el.style.top  = (yStage - cy) + 'px';
-  el.style.transform = 'translate(-50%,-50%)';
+function openFull(slug){
+  const d = window.DOC_MAP[slug]; if(!d) return;
+  title.textContent = d.title;
+  renderSpotButtons(slug);
+  renderDocs(d.cards||[]);
+  root.classList.add('is-open');
+  root.setAttribute('aria-hidden','false');
+  if(location.hash.slice(1)!==slug) location.hash = slug;
 }
-function ellipseXY(rx,ry,a){ return [cx + rx*Math.cos(a), cy + ry*Math.sin(a)]; }
-function jitter(i){ return (i%2 ? +0.06 : -0.06); }
-
-/* i tile DEVONO nascere in #world */
-function mkNode(m){
-  const el=document.createElement('div');
-  el.className='node';
-  el.dataset.id=m.id;
-  el.innerHTML=`<div class="label">${m.nome}</div>`;
-  el.onclick=()=>openFull(m);
-  return el;
+function closeModal(updateHash=true){
+  root.classList.remove('is-open');
+  root.setAttribute('aria-hidden','true');
+  if(updateHash) history.replaceState(null,'', location.pathname);
 }
-
-function distribute(items, rx, ry, klass){
-  const n = items.length || 1;
-  items.forEach((m,i)=>{
-    const a = (i/n)*2*Math.PI + phase + jitter(i) - Math.PI/2;
-    const [x,y] = ellipseXY(rx, ry, a);
-    let el = document.querySelector(`.node[data-id="${m.id}"]`);
-    if(!el){ el = mkNode(m); world.appendChild(el); }
-    el.classList.add(klass);
-    place(el, x, y);
-  });
-}
-
-// linee: ricalcola endpoint sommando il centro
-function drawLines(all){
-  const ctx = links.getContext('2d');
-  ctx.clearRect(0,0,links.width,links.height);
-  if(document.documentElement.dataset.lines==='off') return;
-  ctx.strokeStyle = 'rgba(134,239,172,.22)';
-  ctx.lineWidth = 1.2;
-  all.forEach(m=>{
-    const el = document.querySelector(`.node[data-id="${m.id}"]`);
-    if(!el) return;
-    const x = cx + parseFloat(el.style.left || 0);
-    const y = cy + parseFloat(el.style.top  || 0);
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke();
-  });
-}
-
-function redraw(){
-  if(!DATA.length) return;
-  const ALL = DATA.filter(m => SHOW.includes(m.id));
-  const r1 = ALL.filter(d => (d.ring||1)==1);
-  const r2 = ALL.filter(d => (d.ring||2)==2);
-  distribute(r1, Rx1, Ry1, 'r1');
-  distribute(r2, Rx2, Ry2, 'r2');
-  drawLines(ALL);
-}
-
-/* animazione */
-let raf;
-function tick(){ if(rotating) phase += speed; redraw(); raf = requestAnimationFrame(tick); }
-
-// toggle linee
-document.documentElement.dataset.lines='on';
-document.getElementById('btn-lines')?.addEventListener('change',e=>{
-  document.documentElement.dataset.lines=e.target.checked?'on':'off';
-  redraw();
-});
-
-// ricerca soft con glow interattivo
-const q=document.getElementById('q');
-q?.addEventListener('input',()=>{
-  const v=q.value.trim().toLowerCase();
-  document.querySelectorAll('.node').forEach(n=>{
-    if(n.classList.contains('center'))return;
-    const hit=n.querySelector('.label').textContent.toLowerCase().includes(v);
-    n.classList.toggle('hit', v && hit);
-    n.style.opacity=v?(hit?1:.18):1;
-  });
-});
-q?.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
-    const v=q.value.trim().toLowerCase();
-    const hit=[...document.querySelectorAll('.node')].find(n=>
-      !n.classList.contains('center') && 
-      n.querySelector('.label').textContent.toLowerCase().includes(v)
-    );
-    if(hit){
-      const m=DATA.find(x=>x.id===hit.dataset.id);
-      if(m)openFull(m);
-    }
-  }
-});
-
-// pinch-zoom + pan (iPad/desktop)
-let isDragging=false, startX=0, startY=0;
-
-stage.addEventListener('wheel', e => {
-  e.preventDefault();
-  const delta = e.deltaY > 0 ? 0.9 : 1.1;
-  scale = Math.max(0.5, Math.min(2.5, scale * delta));
-  apply();
-}, {passive:false});
-
-stage.addEventListener('mousedown', e => {
-  isDragging=true; startX=e.clientX-panX; startY=e.clientY-panY;
-});
-stage.addEventListener('mousemove', e => {
-  if(!isDragging) return;
-  panX=e.clientX-startX; panY=e.clientY-startY; apply();
-});
-stage.addEventListener('mouseup', () => isDragging=false);
-
-// touch pinch-zoom
-stage.addEventListener('touchstart', e => {
-  if(e.touches.length===2){
-    const [t1,t2]=e.touches;
-    lastDist=Math.hypot(t1.clientX-t2.clientX, t1.clientY-t2.clientY);
-  } else if(e.touches.length===1){
-    isDragging=true;
-    startX=e.touches[0].clientX-panX; startY=e.touches[0].clientY-panY;
-  }
-});
-stage.addEventListener('touchmove', e => {
-  e.preventDefault();
-  if(e.touches.length===2 && lastDist){
-    const [t1,t2]=e.touches;
-    const dist=Math.hypot(t1.clientX-t2.clientX, t1.clientY-t2.clientY);
-    scale=Math.max(0.5, Math.min(2.5, scale*(dist/lastDist)));
-    lastDist=dist; apply();
-  } else if(e.touches.length===1 && isDragging){
-    panX=e.touches[0].clientX-startX; panY=e.touches[0].clientY-startY; apply();
-  }
-}, {passive:false});
-stage.addEventListener('touchend', () => {isDragging=false; lastDist=null;});
-
-// deep-link
-document.addEventListener('DOMContentLoaded',()=>{
-  const id=new URLSearchParams(location.search).get('id');
-  if(id){
-    const m=DATA.find(x=>x.id===id);
-    if(m)setTimeout(()=>openFull(m),100);
-  }
-});
-
-/* bootstrap */
-async function bootstrap(){
-  // Uso direttamente il fallback inline sicuro
-  DATA = window.DOC_MAP_FALLBACK || [];
-  window.DATA = DATA; // rendi accessibile globalmente
-  layout(); cancelAnimationFrame(raf); tick();
-}
-document.addEventListener('DOMContentLoaded', bootstrap);
-window.addEventListener('resize', layout);
-
-// toggle Auto-rotate
-document.getElementById('btn-auto')?.addEventListener('change', e => {
-  rotating = e.target.checked;
-});
-
-// --- Scheda fullscreen ---
-// --- NAV estesa in ordine preferito ---
-const NAV_IDS = [
-  'mef','interno','mimit','mase','mit','salute',
-  'maeci','agid','pagopa','ae','adm',
-  'mic','turismo','masaf','mim','lavoro'
-];
-
-const modal   = document.getElementById('modal');
-const head    = document.getElementById('sheetHead');
-const body    = document.getElementById('sheetBody');
-const ttl     = head.querySelector('.ttl');
-const actions = head.querySelector('.actions');
-const navMin  = document.getElementById('minLinks');
-
-const imgHero = body.querySelector('.hero');
-const meta    = body.querySelector('.meta');
-const bullets = body.querySelector('.bullets');
-const docsBox = body.querySelector('.docs');
-
-const factsWrap = document.getElementById('factsWrap');
-const factsImg  = document.getElementById('factsImg');
-
-// Spostamento sicuro (se l'HTML avesse #factsWrap fuori)
-const cardEl = document.getElementById('card');
-if (cardEl && factsWrap && factsWrap.parentElement !== cardEl) {
-  cardEl.appendChild(factsWrap);
-}
-
-document.getElementById('close').onclick = () => modal.style.display = 'none';
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') modal.style.display='none'; });
-
-// Loader immagine 1:1 (senza fallback errati)
-function loadCardFor(id){
-  if(!factsWrap || !factsImg){ return; }
-  const exts = ['png','jpg','webp'];
-  let i = 0, loaded = false;
-  function tryNext(){
-    if(i>=exts.length){
-      factsWrap.hidden = true; factsImg.removeAttribute('src'); return;
-    }
-    const src = `/dms-gemello-news/landing/cards/${id}.${exts[i++]}`;
-    const probe = new Image();
-    probe.onload = ()=>{ factsImg.src = src; factsWrap.hidden = false; };
-    probe.onerror = tryNext;
-    probe.src = src + `?t=${Date.now()}`; // cache-buster
-  }
-  tryNext();
-}
-
-// nav chips dinamiche
-function buildNavMin(currentId){
-  const bar = document.getElementById('minLinks');
-  if(!bar){ return; }
-  bar.innerHTML = '';
-  SHOW.forEach(id=>{
-    const btn = document.createElement('button');
-    btn.className = 'chip nav';
-    btn.textContent = id.toUpperCase();
-    if(id===currentId){ btn.disabled = true; }
-    btn.onclick = ()=>{
-      const m = (window.DATA||[]).find(x=>x.id===id);
-      if(m) openFull(m);
-    };
-    bar.appendChild(btn);
-  });
-}
-
-/* ===== MAP v2.7.1 — hard reset: solo modal, kill legacy, nav stabile ===== */
-(function(){
-  const IDS=['mef','interno','mimit','mase','mit','salute','mic','turismo','masaf','mim','lavoro','maeci','agid','pagopa','ae','adm'];
-
-  function $id(x){return document.getElementById(x);}
-  function ready(){return Array.isArray(window.DATA)&&typeof window.openFull==='function'&&$id('card');}
-
-  function ensureFacts(){
-    const card=$id('card'); if(!card) return null;
-    let wrap=$id('factsWrap'), img=$id('factsImg');
-    if(!wrap){
-      wrap=document.createElement('div'); wrap.id='factsWrap'; wrap.className='facts';
-      img=document.createElement('img'); img.id='factsImg'; img.alt=''; wrap.appendChild(img);
-      const first=card.querySelector('.panel'); card.insertBefore(wrap, first||card.firstChild);
-    }
-    return {wrap,img};
-  }
-
-  function nukeLegacy(){
-    document.querySelectorAll('#sheet, body > .facts').forEach(n=>n.remove());
-  }
-
-  let seq=0;
-  function loadCard(id){
-    const slot=ensureFacts(); if(!slot) return;
-    const {wrap,img}=slot; wrap.hidden=true; img.removeAttribute('src');
-    const cand=[`${id}.webp`,`${id}.png`,`${id}.jpg`,'generica.webp','generica.png','generica.jpg'];
-    const me=++seq; let i=0;
-    (function next(){
-      if(me!==seq) return;
-      if(i>=cand.length){wrap.hidden=true;return;}
-      const src=`/dms-gemello-news/landing/cards/${cand[i++]}`+`?t=${Date.now()}`;
-      const p=new Image(); p.onload=()=>{if(me!==seq)return; img.src=src; wrap.hidden=false;}; p.onerror=next; p.src=src;
-    })();
-  }
-
-  function buildNav(currentId){
-    let bar=$id('minLinks');
-    if(!bar){ bar=document.createElement('div'); bar.id='minLinks'; bar.className='min-links'; ($id('titleRow')||$id('card')||document.body).appendChild(bar); }
-    bar.innerHTML='';
-    IDS.forEach(id=>{
-      const m=(window.DATA||[]).find(x=>x.id===id); if(!m)return;
-      const b=document.createElement('button'); b.className='chip nav'; b.textContent=(m.short||m.nome||id).toUpperCase();
-      if(id===currentId) b.disabled=true;
-      b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation(); openFull(m);});
-      bar.appendChild(b);
+function bindNodes(){
+  document.querySelectorAll('.node[data-slug]').forEach(n=>{
+    const slug = n.dataset.slug;
+    n.addEventListener('click',()=>openFull(slug));
+    n.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openFull(slug); }
     });
-  }
-
-  function hook(){
-    // Hook rimosso - usa solo la definizione openFull principale
-  }
-
-  function install(){
-    document.documentElement.dataset.lines='on'; (window.redraw||window.draw||function(){})();
-    nukeLegacy(); ensureFacts();
-    new MutationObserver(()=>{ nukeLegacy(); }).observe(document.body,{childList:true,subtree:true});
-  }
-
-  if(ready()) install();
-  else { const t0=Date.now(); const tm=setInterval(()=>{ if(ready()){clearInterval(tm);install();} else if(Date.now()-t0>15000){clearInterval(tm);} },40); }
-})();
-
-/* ---- Alias nomi → id canonico ---- */
-const ALIAS = {
-  agid: ['agid', "agenziadigitale", "agid • agenzia per l'italia digitale"],
-  mef:  ['mef', 'economia', 'economia e finanze'],
-  interno: ['interno', 'ministero dell\'interno'],
-  mimit: ['mimit', 'imprese e made in italy'],
-  mase: ['mase', 'ambiente'],
-  mit: ['mit', 'infrastrutture'],
-  salute: ['salute', 'ministero della salute'],
-  mic: ['mic', 'cultura'],
-  turismo: ['turismo'],
-  masaf: ['masaf', 'agricoltura'],
-  mim: ['mim', 'istruzione'],
-  lavoro: ['lavoro', 'ministero del lavoro'],
-  maeci: ['maeci', 'esteri'],
-  ae: ['ae', 'agenzia entrate'],
-  adm: ['adm', 'dogane'],
-  pagopa: ['pagopa', 'pagopa s.p.a.']
-};
-function norm(s){ return (s||'').toLowerCase().replace(/[^\w]/g,''); }
-function canon(id){
-  const n = norm(id);
-  for (const k in ALIAS){ if (ALIAS[k].some(x=>norm(x)===n)) return k; }
-  return n;
-}
-
-/* ---- Map ministero → PDF (slug in SPOT) ---- */
-// Rimossa dichiarazione duplicata, uso quella completa sotto
-
-/* ---- Caricamento mapping immagini ---- */
-let CARD_MAP = {};
-fetch('cards/_mapping.json')
-  .then(r=>r.json())
-  .then(j=>{ CARD_MAP = j; })
-  .catch(()=>{ CARD_MAP = {}; });
-
-/* ---- Funzione openFull definitiva ---- */
-// Alias corti -> chiavi del mapping/slug
-const ALIASES = {
-  mef:'mef', interno:'interno', mimit:'mimit', mase:'mase', mit:'mit',
-  salute:'salute', mic:'mic', turismo:'turismo', masaf:'masaf', mim:'mim',
-  lavoro:'lavoro', maeci:'maeci', agid:'agid', pagopa:'pagopa', ae:'ae', adm:'adm'
-};
-
-// Fallback mapping completo come da istruzioni
-const MAPPING_FALLBACK={"MEF":["mef-1.png","mef-2.png"],"Interno":["interno-1.png"],"AgID":["agid-1.png","agid-2.png"],"ADM":["adm-1.png"],"AE":["ae-1.png"],"MASE":["mase-1.png"],"MIT":["mit-1.png"],"Salute":["salute-1.png"],"MIC":["mic-1.png"],"Turismo":["turismo-1.png"],"MASAF":["masaf-1.png"],"MIM":["mim-1.png"],"Lavoro":["lavoro-1.png"],"MAECI":["maeci-1.png"],"MIMIT":["mimit-1.png"],"PagoPA S.p.A.":["pagopa-1.png"]};
-
-window.loadMapping = async function(){
-  try{const r=await fetch('cards/_mapping.json',{cache:'no-store'}); if(!r.ok) throw 0; return await r.json();}
-  catch{ return MAPPING_FALLBACK; }
-}
-
-// Mappa PDF/slug per SPOT (completa come da istruzioni)
-const DOC_MAP = {
-  agid: ['once-only-sdg'],
-  mef: ['costi-pa-roi','ecc-narrativa'],
-  mit: ['mit-infrastrutture'],
-  mase: ['equilibrio-ecosostenibile'],
-  mic: ['citta-metropolitana'],
-  salute: ['dms-ssat-suap'],
-  mimit: ['presentazione-dms'],
-  maeci: ['passaporto-eu'],
-  ae: ['relazione-controlli'],
-  adm: ['bolkestein'],
-  pagopa: ['pagamenti-pdnd'],
-  masaf: ['hub-urbani-prossimita'],
-  mim: ['presentazione-dms'],
-  lavoro: ['ministero-lavoro'],
-  interno: ['ministero-interno'],
-};
-
-window.renderSpotButtons = function(minKey){
-  const c = document.querySelector('#spotBtns'); 
-  if(!c) return;
-  c.innerHTML='';
-  (DOC_MAP[minKey]||[]).forEach(slug=>{
-    const a=document.createElement('a');
-    a.href=`/dms-gemello-news/landing/spot.html#${slug}`; 
-    a.textContent=`Apri in SPOT — ${slug.replace(/-/g,' ')}`;
-    c.appendChild(a);
   });
 }
-
-window.setupModalHeader = function(title, alias){
-  const titleEl = document.getElementById('modalTitle');
-  if(titleEl) titleEl.textContent = title || alias.toUpperCase();
-  window.renderSpotButtons(alias);
-}
-
-window.openFull = async function(aliasRaw, titleDisplay){
-  // 1) normalizza alias
-  const a = (ALIASES[(aliasRaw||'').toLowerCase()] || aliasRaw || '').toLowerCase();
-  // 2) header
-  window.setupModalHeader(titleDisplay || aliasRaw, a);
-  // 3) immagini
-  const mapping = await window.loadMapping();
-  let imgs = (mapping[a] || []).map(x => `./cards/${x}`);
-  if(!imgs.length) imgs = ['./cards/generic.png'];
-
-  const imgEl = document.getElementById('modalImage');
-  const overlay = document.getElementById('modalOverlay');
-  
-  if(!imgEl || !overlay) {
-    // Fallback al sistema esistente se gli elementi non ci sono
-    const modal = document.getElementById('modal');
-    const body = document.getElementById('modalBody');
-    if(modal && body) {
-      body.innerHTML = `<img src="${imgs[0]}" style="width:100%;height:auto;display:block;">`;
-      modal.style.display = 'block';
-      document.body.classList.add('modal-open');
-    }
-    return;
-  }
-
-  let i = 0;
-  const show = () => { imgEl.src = imgs[i]; };
-
-  const prevBtn = document.getElementById('prev');
-  const nextBtn = document.getElementById('next');
-  const btnBack = document.getElementById('backToMap');
-
-  if(prevBtn) prevBtn.onclick = () => { i = (i-1+imgs.length)%imgs.length; show(); };
-  if(nextBtn) nextBtn.onclick = () => { i = (i+1)%imgs.length; show(); };
-  if(btnBack) btnBack.onclick = () => { closeModal(); };
-
-  // tastiera
-  window.onkeydown = (ev)=>{
-    if(ev.key==='Escape'){ closeModal(); }
-    if(ev.key==='ArrowLeft' && prevBtn){ prevBtn.click(); }
-    if(ev.key==='ArrowRight' && nextBtn){ nextBtn.click(); }
-  };
-
-  show();
-  overlay.classList.add('is-open');
-  document.body.classList.add('modal-open');
-};
-
-function closeModal(){
-  const overlay = document.getElementById('modalOverlay');
-  if(overlay) overlay.classList.remove('is-open');
-  document.body.classList.remove('modal-open');
-}
-
-/* ---- Viewer A4: mantiene frecce esistenti ---- */
-function renderSlide(files, idx){
-  const i = ((idx%files.length)+files.length)%files.length;
-  const body = document.getElementById('modalBody');
-  body.innerHTML = `<img src="cards/${files[i]}" alt="" style="width:100%;height:auto;display:block;">`;
-  // collega le frecce già presenti (se usate):
-  window._currentSlide = { files, index:i };
-}
-function prevSlide(){ if(window._currentSlide){ renderSlide(window._currentSlide.files, window._currentSlide.index-1);} }
-function nextSlide(){ if(window._currentSlide){ renderSlide(window._currentSlide.files, window._currentSlide.index+1);} }
-function closeModal(){ 
-  document.getElementById('modal').style.display = 'none';
-  document.body.classList.remove('modal-open'); 
-}
-
-// Collega il pulsante back
-document.addEventListener('DOMContentLoaded', function(){
-  const btn = document.getElementById('btnBackToMap');
-  if(btn) btn.onclick = closeModal;
+document.addEventListener('DOMContentLoaded',()=>{
+  closeModal(false);
+  bindNodes();
+  $('#btnBack').addEventListener('click',()=>closeModal());
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+  const s = location.hash.slice(1); if(window.DOC_MAP[s]) openFull(s);
 });
-
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+window.addEventListener('hashchange',()=>{
+  const s = location.hash.slice(1);
+  if(window.DOC_MAP[s]) openFull(s); else closeModal(false);
+});
 </script>
 </body>
 </html>
 
-/* force deploy */
