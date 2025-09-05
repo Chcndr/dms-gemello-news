@@ -7,27 +7,11 @@
   <style>
 :root{ --green:#0F7A4C; --bg:#0b1418; --card:#0f2026; --ink:#dff7ff; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif }
 body{ margin:0; background:#071319; color:var(--ink) }
-
-/* Barra superiore con controlli */
-.topnav{ 
-  display:flex; justify-content:space-between; align-items:center; 
-  gap:.75rem; padding:.6rem 1rem; background:#081319; position:sticky; top:0; z-index:5;
-  flex-wrap: wrap;
-}
-.nav-left{ display:flex; gap:.75rem; }
-.nav-left a{ color:#cfefff; text-decoration:none; padding:.35rem .7rem; border-radius:8px; background:#0e2230 }
-.nav-center{ display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
-.checkbox-control{ display:flex; align-items:center; gap:.4rem; color:#cfefff; cursor:pointer; }
-.checkbox-control input[type="checkbox"]{ margin:0; }
-.search-input{ 
-  padding:.35rem .7rem; border-radius:8px; border:1px solid #0e2230; 
-  background:#0e2230; color:#cfefff; min-width:180px;
-}
-.search-input::placeholder{ color:#8bb5c5; }
-.nav-right .page-title{ color:#cfefff; font-weight:600; }
+.topnav{ display:flex; gap:.75rem; padding:.6rem 1rem; background:#081319; position:sticky; top:0; z-index:5 }
+.topnav a{ color:#cfefff; text-decoration:none; padding:.35rem .7rem; border-radius:8px; background:#0e2230 }
+#mapWrap{ padding:1.25rem; display:grid; place-items:center }
 
 /* Contenitore fisso stile sito, niente pinch-zoom che sposta tutto */
-#mapWrap{ padding:1.25rem; display:grid; place-items:center; }
 #mapStage{
   width: min(1140px, 92vw);
   height: min(720px, calc(92vw * 0.63));
@@ -48,7 +32,7 @@ body{ margin:0; background:#071319; color:var(--ink) }
   position: absolute; inset: 0;
   transform-origin: 50% 55%;
 }
-@keyframes spin { from{transform: rotate(0deg)} to{transform: rotate(360deg)} }
+@keyframes spin { from{transform: rotate(0)} to{transform: rotate(360deg)} }
 .ring.auto-rotate{ animation: spin 56s linear infinite; }
 
 /* Nodi – rettangolari grandi con retro-illuminazione */
@@ -57,7 +41,7 @@ body{ margin:0; background:#071319; color:var(--ink) }
   width: 164px; height: 104px;
   border: 0; border-radius: 18px;
   background: rgba(18,38,46,.82);
-  color: #d7eef5; font-weight: 700; line-height: 1.2; font-size: 0.9rem;
+  color: #d7eef5; font-weight: 700; line-height: 1.2;
   box-shadow:
     inset 0 0 0 2px rgba(255,255,255,.08),
     0 8px 18px rgba(0,200,255,.12),
@@ -89,14 +73,7 @@ body{ margin:0; background:#071319; color:var(--ink) }
   transform: translate(-50%,-50%);
   filter: drop-shadow(0 0 28px rgba(0,178,255,.42)) drop-shadow(0 0 68px rgba(0,178,255,.22));
 }
-#hubIcon{
-  width: 120px; height: 120px;
-  background:
-    radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.22), transparent 65%),
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="%23e6f7ff" stroke="%2300b3ff" stroke-width="14"><path d="M20 230h600L320 80 20 230zM80 260h80v260H80V260zm120 0h120v260H200V260zm160 0h120v260H360V260zm160 0h80v260h-80V260zM40 540h560v30H40z"/></svg>')
-    center/72% no-repeat;
-  border-radius: 50%;
-}
+#logo img{ width: 120px; height:auto; display:block; }
 
 /* MODAL */
 #modalRoot{ position:fixed; inset:0; display:none; pointer-events:none; z-index:1100 }
@@ -104,7 +81,7 @@ body{ margin:0; background:#071319; color:var(--ink) }
 #modalRoot .overlay{ position:absolute; inset:0; background:rgba(0,0,0,.6) }
 .modalCard{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
   width: min(92vw, 1140px); background:var(--card); border-radius:14px; overflow:hidden; }
-#modalHeader{ background:var(--green) !important; color:#fff; display:flex; gap:.75rem; align-items:center; padding:.7rem 1rem }
+#modalHeader{ background:#0F7A4C !important; color:#fff; display:flex; gap:.75rem; align-items:center; padding:.7rem 1rem }
 #modalHeader h3{ margin:0; font-weight:700; flex:1 }
 #modalHeader .back{ background:#0b5f3a; color:#fff; border:0; border-radius:8px; padding:.35rem .6rem; cursor:pointer }
 #spotBtns a{ background:#0e2230; color:#fff; text-decoration:none; border-radius:8px; padding:.35rem .6rem; margin-left:.4rem }
@@ -112,84 +89,6 @@ body{ margin:0; background:#071319; color:var(--ink) }
 .doc{ margin:0 0 1rem 0; }
 .doc img{ width:100%; height:auto; display:block; border-radius:10px }
 #modalRoot:not(.is-open) *{ pointer-events:none }
-
-/* === Ottimizzazioni iPad/Tablet === */
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-  /* Mappa più grande su tablet */
-  #mapStage{ width: min(90vw, 800px); }
-  
-  /* Nodi leggermente più grandi per touch */
-  .node-btn{ 
-    width: 180px; height: 110px;
-    padding: .6rem .9rem; 
-    font-size: 0.95rem;
-    min-height: 44px; /* Apple touch target size */
-    min-width: 44px;
-  }
-  
-  /* Modal ottimizzato per tablet */
-  .modalCard{ 
-    width: min(95vw, 900px); 
-    max-height: 85vh;
-    overflow-y: auto;
-  }
-  
-  #modalBody{ 
-    padding: 1.2rem; 
-    max-height: calc(85vh - 80px);
-    overflow-y: auto;
-  }
-  
-  /* Header modal più spazioso */
-  #modalHeader{ padding: .8rem 1.2rem; }
-  #modalHeader .back{ padding: .4rem .8rem; }
-  
-  /* Navigazione top più spaziosa */
-  .topnav{ padding: .8rem 1.2rem; }
-  .nav-left a{ padding: .4rem .8rem; }
-}
-
-/* iPad Portrait specifico */
-@media screen and (width: 768px) and (height: 1024px) and (orientation: portrait) {
-  #mapStage{ width: min(85vw, 700px); }
-  .modalCard{ width: min(92vw, 700px); }
-}
-
-/* iPad Landscape specifico */
-@media screen and (width: 1024px) and (height: 768px) and (orientation: landscape) {
-  #mapStage{ width: min(80vw, 750px); }
-  .modalCard{ width: min(90vw, 850px); }
-}
-
-/* Touch improvements per tutti i dispositivi touch */
-@media (hover: none) and (pointer: coarse) {
-  .node-btn{ 
-    /* Rimuovi hover effects su touch, usa solo focus */
-    transition: box-shadow .22s ease, filter .18s ease, opacity .18s ease, transform .15s ease;
-  }
-  
-  .node-btn:active{ 
-    transform: translate(-50%, -50%) rotate(calc(-1 * var(--deg))) scale(0.98);
-    filter: brightness(.96); 
-  }
-  
-  /* Pulsanti più grandi per touch */
-  #modalHeader .back,
-  .nav-left a{ 
-    min-height: 44px;
-    min-width: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-/* Responsive navigation */
-@media (max-width: 768px) {
-  .topnav{ flex-direction: column; gap: .5rem; }
-  .nav-center{ order: 2; }
-  .nav-right{ order: 3; }
-  .search-input{ min-width: 150px; }
 </style>
 </head>
 <body>
@@ -217,29 +116,28 @@ body{ margin:0; background:#071319; color:var(--ink) }
 
   <main id="mapWrap" aria-label="Mappa Ministeri (sandbox)">
     <div id="mapStage">
-      <div id="ring" class="ring auto-rotate" aria-live="polite">
-        <!-- Logo centrale con glow -->
-        <div id="logo" aria-hidden="true">
-          <div id="hubIcon"></div>
-        </div>
-        <!-- 16 nodi rettangolari con testi completi -->
-        <button class="node-btn" data-slug="agid"><span>AgID</span></button>
-        <button class="node-btn" data-slug="mef"><span>MEF · Economia e Finanze</span></button>
-        <button class="node-btn" data-slug="interno"><span>Ministero dell'Interno</span></button>
-        <button class="node-btn" data-slug="mimit"><span>MIMIT · Imprese e Made in Italy</span></button>
-        <button class="node-btn" data-slug="mase"><span>MASE · Ambiente e Sicurezza</span></button>
-        <button class="node-btn" data-slug="mit"><span>MIT · Infrastrutture e Trasporti</span></button>
-        <button class="node-btn" data-slug="salute"><span>Ministero della Salute</span></button>
-        <button class="node-btn" data-slug="mic"><span>MIC · Cultura</span></button>
-        <button class="node-btn" data-slug="turismo"><span>Ministero del Turismo</span></button>
-        <button class="node-btn" data-slug="masaf"><span>MASAF · Agricoltura</span></button>
-        <button class="node-btn" data-slug="mim"><span>MIM · Istruzione e Merito</span></button>
-        <button class="node-btn" data-slug="lavoro"><span>Ministero del Lavoro</span></button>
-        <button class="node-btn" data-slug="maeci"><span>MAECI · Affari Esteri</span></button>
-        <button class="node-btn" data-slug="pagopa"><span>PagoPA S.p.A.</span></button>
-        <button class="node-btn" data-slug="ae"><span>AE · Agenzia Entrate</span></button>
-        <button class="node-btn" data-slug="adm"><span>ADM · Agenzia Dogane</span></button>
-      </div>
+<div id="ring" class="ring auto-rotate" aria-live="polite">
+  <button class="node-btn" data-slug="agid"><span>AgID</span></button>
+  <button class="node-btn" data-slug="mef"><span>MEF · Economia e Finanze</span></button>
+  <button class="node-btn" data-slug="interno"><span>Ministero dell'Interno</span></button>
+  <button class="node-btn" data-slug="mimit"><span>MIMIT · Imprese e Made in Italy</span></button>
+  <button class="node-btn" data-slug="mase"><span>MASE · Ambiente e Sicurezza</span></button>
+  <button class="node-btn" data-slug="mit"><span>MIT · Infrastrutture e Trasporti</span></button>
+  <button class="node-btn" data-slug="salute"><span>Ministero della Salute</span></button>
+  <button class="node-btn" data-slug="mic"><span>MIC · Cultura</span></button>
+  <button class="node-btn" data-slug="turismo"><span>Ministero del Turismo</span></button>
+  <button class="node-btn" data-slug="masaf"><span>MASAF · Agricoltura</span></button>
+  <button class="node-btn" data-slug="mim"><span>MIM · Istruzione e Merito</span></button>
+  <button class="node-btn" data-slug="lavoro"><span>Ministero del Lavoro</span></button>
+  <button class="node-btn" data-slug="maeci"><span>MAECI · Affari Esteri</span></button>
+  <button class="node-btn" data-slug="pagopa"><span>PagoPA S.p.A.</span></button>
+  <button class="node-btn" data-slug="ae"><span>AE · Agenzia Entrate</span></button>
+  <button class="node-btn" data-slug="adm"><span>ADM · Agenzia Dogane</span></button>
+</div>
+
+<div id="logo" aria-hidden="true">
+  <img src="../img/logo-istituzione.svg" alt="" />
+</div>
     </div>
   </main>
 
@@ -302,12 +200,8 @@ function closeModal(updateHash=true){
   if(updateHash) history.replaceState(null,'', location.pathname);
 }
 
-// === Nuovo sistema di posizionamento corona e interazioni ===
+// === Posizionamento corona e interazioni ===
 (() => {
-  const IDS = [
-    'agid','mef','interno','mimit','mase','mit','salute','mic',
-    'turismo','masaf','mim','lavoro','maeci','pagopa','ae','adm'
-  ];
   const ring = document.querySelector('#ring');
   const nodes = [...ring.querySelectorAll('.node-btn')];
 
@@ -337,36 +231,6 @@ function closeModal(updateHash=true){
       else location.hash = slug; // fallback
     });
   });
-
-  // Ricerca live (se c'è l'input)
-  const q = document.querySelector('#searchMinistero');
-  if (q){
-    q.addEventListener('input', () => {
-      const term = q.value.trim().toLowerCase();
-      nodes.forEach(b => {
-        const match = !term || b.textContent.toLowerCase().includes(term);
-        b.classList.toggle('highlight', match);
-        b.classList.toggle('dimmed', !match);
-      });
-    });
-  }
-
-  // Controlli Auto-rotate e Linee
-  const autoRotateCheckbox = document.querySelector('#autoRotate');
-  const showLinesCheckbox = document.querySelector('#showLines');
-  
-  if (autoRotateCheckbox) {
-    autoRotateCheckbox.addEventListener('change', () => {
-      ring.classList.toggle('auto-rotate', autoRotateCheckbox.checked);
-    });
-  }
-  
-  if (showLinesCheckbox) {
-    showLinesCheckbox.addEventListener('change', () => {
-      // Implementazione linee di connessione (placeholder)
-      console.log('Linee:', showLinesCheckbox.checked ? 'ON' : 'OFF');
-    });
-  }
 
   // iPad: niente selezione/long-press preview
   document.addEventListener('touchstart', () => {}, {passive:true});
