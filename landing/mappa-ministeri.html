@@ -837,11 +837,8 @@ function canon(id){
 // Rimossa dichiarazione duplicata, uso quella completa sotto
 
 /* ---- Caricamento mapping immagini ---- */
+// Rimuovo fetch JSON, uso solo DOC_MAP inline
 let CARD_MAP = {};
-fetch('cards/_mapping.json')
-  .then(r=>r.json())
-  .then(j=>{ CARD_MAP = j; })
-  .catch(()=>{ CARD_MAP = {}; });
 
 /* ---- Funzione openFull definitiva ---- */
 // Alias corti -> chiavi del mapping/slug
@@ -855,8 +852,7 @@ const ALIASES = {
 const MAPPING_FALLBACK={"MEF":["mef-1.png","mef-2.png"],"Interno":["interno-1.png"],"AgID":["agid-1.png","agid-2.png"],"ADM":["adm-1.png"],"AE":["ae-1.png"],"MASE":["mase-1.png"],"MIT":["mit-1.png"],"Salute":["salute-1.png"],"MIC":["mic-1.png"],"Turismo":["turismo-1.png"],"MASAF":["masaf-1.png"],"MIM":["mim-1.png"],"Lavoro":["lavoro-1.png"],"MAECI":["maeci-1.png"],"MIMIT":["mimit-1.png"],"PagoPA S.p.A.":["pagopa-1.png"]};
 
 window.loadMapping = async function(){
-  try{const r=await fetch('cards/_mapping.json',{cache:'no-store'}); if(!r.ok) throw 0; return await r.json();}
-  catch{ return MAPPING_FALLBACK; }
+  return MAPPING_FALLBACK;
 }
 
 // Mappa PDF/slug per SPOT (completa come da istruzioni)
