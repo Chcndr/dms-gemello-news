@@ -160,7 +160,7 @@
       left: 50%;
       top: 50%;
       height: 2px;
-      width: calc(var(--spoke-length, 280px) - 45px);
+      width: calc(var(--spoke-length, 200px) - 80px);
       transform-origin: 0 0;
       opacity: 0.8;
       background: linear-gradient(to right, rgba(0, 206, 255, 0.6), rgba(0, 206, 255, 0.2) 70%, transparent);
@@ -180,7 +180,7 @@
       width: 160px;
       height: 90px;
       transform: translate(-50%, -50%) rotate(var(--counter-rotate, 0deg));
-      background: #162a33;
+      background: rgba(22, 42, 51, 0.95);
       color: #d7eef9;
       border: none;
       border-radius: 16px;
@@ -482,7 +482,7 @@
       position:absolute; inset:0;
       background:
         radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.18), transparent 60%),
-        url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23e6f7ff'/><stop offset='1' stop-color='%23c9eeff'/></linearGradient></defs><g fill='url(%23g)' stroke='%2300b3ff' stroke-width='18' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='80' y='276' width='80' height='240' rx='6'/><rect x='200' y='276' width='120' height='240' rx='6'/><rect x='360' y='276' width='120' height='240' rx='6'/><rect x='520' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/72% no-repeat;
+        url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23e6f7ff'/><stop offset='1' stop-color='%23c9eeff'/></linearGradient></defs><g fill='url(%23g)' stroke='%2300b3ff' stroke-width='18' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='120' y='276' width='80' height='240' rx='6'/><rect x='240' y='276' width='80' height='240' rx='6'/><rect x='320' y='276' width='80' height='240' rx='6'/><rect x='440' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/72% no-repeat;
     }
 
     /* Assicurati che NON ruoti mai col resto */
@@ -707,8 +707,8 @@
 
     // Setup posizionamento nodi concentrici
     function setupNodes() {
-      const innerRadius = Math.min(200, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.25);
-      const outerRadius = Math.min(320, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.40);
+      const innerRadius = Math.min(160, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.20);
+      const outerRadius = Math.min(240, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.30);
       
       // Aggiorna variabile CSS per lunghezza linee (usa il raggio esterno)
       document.documentElement.style.setProperty('--spoke-length', `${outerRadius}px`);
