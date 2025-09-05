@@ -228,6 +228,27 @@
       pointer-events: none;
     }
     
+    /* Logo centrale */
+    #hubIcon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      z-index: 20;
+      filter: 
+        drop-shadow(0 0 20px rgba(0, 206, 255, 0.8))
+        drop-shadow(0 0 40px rgba(0, 206, 255, 0.6))
+        drop-shadow(0 0 60px rgba(0, 206, 255, 0.4));
+      pointer-events: none;
+    }
+
+    #hubIcon svg {
+      width: 100%;
+      height: 100%;
+    }
+    
     /* Modal */
     #modal {
       position: fixed;
@@ -527,6 +548,34 @@
         </button>
       </div>
 
+      <!-- Logo centrale -->
+      <div id="hubIcon">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="buildingGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#e0e0e0;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Timpano triangolare -->
+          <polygon points="30,80 100,30 170,80" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="3"/>
+          
+          <!-- Colonne (4 colonne simmetriche) -->
+          <rect x="50" y="80" width="20" height="90" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          <rect x="80" y="80" width="20" height="90" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          <rect x="100" y="80" width="20" height="90" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          <rect x="130" y="80" width="20" height="90" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          
+          <!-- Base superiore -->
+          <rect x="25" y="75" width="150" height="10" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          
+          <!-- Gradini base -->
+          <rect x="20" y="170" width="160" height="8" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          <rect x="15" y="178" width="170" height="8" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+        </svg>
+      </div>
+
       <!-- Controlli zoom -->
       <div class="zoom-controls">
         <button class="zoom-btn" data-zoom="80">0.8×</button>
@@ -787,17 +836,32 @@
     function updateDynamicSpokes() {
       spokes.innerHTML = '';
       
-      // Crea linee per tutti i nodi
-      allNodes.forEach(node => {
+      // Crea linee per nodi anello interno
+      nodesInner.forEach(node => {
         const spoke = document.createElement('div');
-        spoke.className = 'spoke';
+        spoke.className = 'spoke spoke-inner';
         
         const angle = parseFloat(node.dataset.angle);
         const distance = parseFloat(node.dataset.distance);
         
-        // Posiziona e orienta la linea verso il nodo
+        // Posiziona e orienta la linea verso il centro del nodo
         spoke.style.transform = `rotate(${angle}deg)`;
-        spoke.style.width = `${distance - 45}px`; // Si ferma prima del nodo
+        spoke.style.width = `${distance - 50}px`; // Si ferma al centro del nodo interno
+        
+        spokes.appendChild(spoke);
+      });
+      
+      // Crea linee per nodi anello esterno
+      nodesOuter.forEach(node => {
+        const spoke = document.createElement('div');
+        spoke.className = 'spoke spoke-outer';
+        
+        const angle = parseFloat(node.dataset.angle);
+        const distance = parseFloat(node.dataset.distance);
+        
+        // Posiziona e orienta la linea verso il centro del nodo
+        spoke.style.transform = `rotate(${angle}deg)`;
+        spoke.style.width = `${distance - 50}px`; // Si ferma al centro del nodo esterno
         
         spokes.appendChild(spoke);
       });
