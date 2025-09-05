@@ -397,9 +397,9 @@ body.modal-open { overflow: hidden; }
 </head>
 <body>
   <div class="nav">
-    <a class="btn" href="./home.html" target="_top">Home</a>
-    <span class="btn is-active">Mappa</span>
-    <a class="btn" href="./spot.html" target="_top">Spot</a>
+    <a class="btn" href="/dms-gemello-news/landing/home.html" target="_top">Home</a>
+    <a class="btn" href="/dms-gemello-news/landing/mappa-ministeri.html" target="_top">Mappa</a>
+    <a class="btn" href="/dms-gemello-news/landing/spot.html" target="_top">Spot</a>
     <div class="controls">
       <label class="switch"><input id="btn-auto" type="checkbox" checked> Auto-rotate</label>
       <label class="switch"><input id="btn-lines" type="checkbox" checked> Linee</label>
@@ -880,7 +880,7 @@ window.renderSpotButtons = function(minKey){
   c.innerHTML='';
   (DOC_MAP[minKey]||[]).forEach(slug=>{
     const a=document.createElement('a');
-    a.href=`spot.html#${slug}`; 
+    a.href=`/dms-gemello-news/landing/spot.html#${slug}`; 
     a.textContent=`Apri in SPOT — ${slug.replace(/-/g,' ')}`;
     c.appendChild(a);
   });
@@ -935,7 +935,7 @@ function renderSpotButtons(key){
   const box = document.getElementById('spotBtns');
   if(!box) return;
   box.innerHTML = slugs.map(s => 
-    `<a class="btn btn-spot" href="./spot.html#${s}">Apri in SPOT — ${s}</a>`
+    `<a class="btn btn-spot" href="/dms-gemello-news/landing/spot.html#${s}">Apri in SPOT — ${s}</a>`
   ).join('');
 }
 
