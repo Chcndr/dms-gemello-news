@@ -395,6 +395,30 @@ body.modal-open { overflow: hidden; }
 #modalHeader{background:#0F7A4C !important;color:#fff;}
 #spotBtns .btn{margin-left:.5rem;margin-top:.25rem}
 .btn.btn-spot{display:inline-block;margin-left:.5rem;padding:.4rem .7rem;border-radius:.5rem;background:#0F7A4C;color:#fff;text-decoration:none}
+
+/* Modal hidden by default: non deve prendere i click */
+#modalBg, #modalOverlay, #modalCard, .modal-bg, .modalCard, .modal-card {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Solo quando il root ha la classe is-open il modal "vive" */
+#modalRoot.is-open #modalBg,
+#modalRoot.is-open #modalOverlay,
+#modalRoot.is-open #modalCard,
+#modalRoot.is-open .modal-bg,
+#modalRoot.is-open .modalCard,
+#modalRoot.is-open .modal-card {
+  display: block !important;
+  pointer-events: auto !important;
+  z-index: 1100;
+}
+
+/* La mappa deve restare cliccabile */
+#stage, #mapCanvas, #graph, .map-stage {
+  position: relative;
+  z-index: 10;
+}
 </style>
 </head>
 <body>
@@ -1028,6 +1052,35 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
   });
   window.addEventListener('hashchange', maybeFromHash, {passive:true});
 })();
+</script>
+<script>
+  const ROOT = document.getElementById('modalRoot') || document.body;
+  const closeModal = (force)=> {
+    ROOT.classList.remove('is-open');
+  };
+
+  // chiudi SEMPRE all'avvio (evita overlay "appeso")
+  document.addEventListener('DOMContentLoaded', () => closeModal(true));
+
+  // apri modal SOLO quando serve
+  window.openFull = (slug) => {
+    if (!slug || typeof slug !== 'string') return;
+    ROOT.classList.add('is-open');
+    // qui resta la tua logica di popolamento header + contenuto...
+  };
+
+  // assicurati che le card siano cliccabili
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.card, .node, .minister').forEach(el => {
+      el.style.pointerEvents = 'auto';
+      el.style.cursor = 'pointer';
+      const key = el.dataset.key || el.getAttribute('data-key');
+      if (key && !el._wired) {
+        el.addEventListener('click', () => window.openFull(key));
+        el._wired = true;
+      }
+    });
+  });
 </script>
 </body>
 </html>
