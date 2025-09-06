@@ -847,7 +847,7 @@
       updateDynamicSpokes();
     }
 
-    // Aggiorna linee dinamiche in base alla posizione dei nodi
+    // Aggiorna linee dinamiche in base alla posizione REALE dei nodi
     function updateDynamicSpokes() {
       spokes.innerHTML = '';
       
@@ -856,12 +856,27 @@
         const spoke = document.createElement('div');
         spoke.className = 'spoke spoke-inner';
         
-        const angle = parseFloat(node.dataset.angle);
-        const distance = parseFloat(node.dataset.distance);
+        // Calcola l'angolo REALE dalla posizione attuale del nodo
+        const rect = node.getBoundingClientRect();
+        const mapRect = mapContainer.getBoundingClientRect();
+        const centerX = mapRect.left + mapRect.width / 2;
+        const centerY = mapRect.top + mapRect.height / 2;
+        const nodeX = rect.left + rect.width / 2;
+        const nodeY = rect.top + rect.height / 2;
         
-        // Posiziona la linea dal centro verso il nodo
-        spoke.style.transform = `rotate(${angle}deg)`;
-        spoke.style.width = `${distance - 50}px`; // Si ferma al centro del nodo
+        const deltaX = nodeX - centerX;
+        const deltaY = nodeY - centerY;
+        const realAngle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // Posiziona la linea dal centro verso il nodo REALE
+        spoke.style.position = 'absolute';
+        spoke.style.left = '50%';
+        spoke.style.top = '50%';
+        spoke.style.transform = `rotate(${realAngle}deg)`;
+        spoke.style.width = `${distance - 25}px`; // Si ferma al centro del nodo
+        spoke.style.height = '2px';
+        spoke.style.background = 'rgba(56, 189, 248, 0.4)';
         spoke.style.transformOrigin = 'left center';
         
         spokes.appendChild(spoke);
@@ -872,12 +887,27 @@
         const spoke = document.createElement('div');
         spoke.className = 'spoke spoke-outer';
         
-        const angle = parseFloat(node.dataset.angle);
-        const distance = parseFloat(node.dataset.distance);
+        // Calcola l'angolo REALE dalla posizione attuale del nodo
+        const rect = node.getBoundingClientRect();
+        const mapRect = mapContainer.getBoundingClientRect();
+        const centerX = mapRect.left + mapRect.width / 2;
+        const centerY = mapRect.top + mapRect.height / 2;
+        const nodeX = rect.left + rect.width / 2;
+        const nodeY = rect.top + rect.height / 2;
         
-        // Posiziona la linea dal centro verso il nodo
-        spoke.style.transform = `rotate(${angle}deg)`;
-        spoke.style.width = `${distance - 50}px`; // Si ferma al centro del nodo
+        const deltaX = nodeX - centerX;
+        const deltaY = nodeY - centerY;
+        const realAngle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // Posiziona la linea dal centro verso il nodo REALE
+        spoke.style.position = 'absolute';
+        spoke.style.left = '50%';
+        spoke.style.top = '50%';
+        spoke.style.transform = `rotate(${realAngle}deg)`;
+        spoke.style.width = `${distance - 25}px`; // Si ferma al centro del nodo
+        spoke.style.height = '2px';
+        spoke.style.background = 'rgba(56, 189, 248, 0.6)';
         spoke.style.transformOrigin = 'left center';
         
         spokes.appendChild(spoke);
