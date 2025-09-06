@@ -670,6 +670,14 @@
           { img: "/dms-gemello-news/assets/doc/pagopa1.png", alt: "Rete istituzionale del Digital Market System" },
           { img: "/dms-gemello-news/assets/doc/pagopa2.png", alt: "Gemello Digitale del Commercio" }
         ] 
+      },
+      pcm: { 
+        title: "Presidenza del Consiglio dei Ministri", 
+        cards: [
+          { img: "/dms-gemello-news/assets/doc/pcm/pcm-1.png", alt: "PCM - Presidenza del Consiglio dei Ministri" },
+          { img: "/dms-gemello-news/assets/doc/pcm/pcm-2.png", alt: "PCM - Struttura organizzativa" },
+          { img: "/dms-gemello-news/assets/doc/pcm/pcm-3.png", alt: "PCM - Competenze e ruoli" }
+        ] 
       }
     };
 
@@ -924,6 +932,16 @@
 
       // Hash change
       window.addEventListener('hashchange', handleHashChange);
+
+      // 3) Logo centrale → apre modal di PCM
+      const hubIcon = document.getElementById('hubIcon');
+      if (hubIcon) {
+        hubIcon.style.cursor = 'pointer';
+        hubIcon.addEventListener('click', (e) => {
+          e.preventDefault();
+          openModal('pcm');
+        });
+      }
     }
 
     // Auto-rotation
