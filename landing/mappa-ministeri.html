@@ -447,48 +447,9 @@
         radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.18), transparent 60%),
         url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23e6f7ff'/><stop offset='1' stop-color='%23c9eeff'/></linearGradient></defs><g fill='url(%23g)' stroke='%2300b3ff' stroke-width='18' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='120' y='276' width='80' height='240' rx='6'/><rect x='240' y='276' width='80' height='240' rx='6'/><rect x='320' y='276' width='80' height='240' rx='6'/><rect x='440' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/72% no-repeat;
     }
-
+    
     /* Assicurati che NON ruoti mai col resto */
     #hubIcon { will-change: filter, opacity; }
-    
-    /* Nuovi pulsanti modal - CSS rinforzato */
-    .btn {
-      padding: 8px 16px !important;
-      border-radius: 6px !important;
-      text-decoration: none !important;
-      font-weight: 500 !important;
-      cursor: pointer !important;
-      border: none !important;
-      display: inline-block !important;
-      font-size: 14px !important;
-    }
-    
-    .btn.primary {
-      background: #0f7a4c !important;
-      color: white !important;
-    }
-    
-    .btn.primary:hover {
-      background: #0b5f3a !important;
-    }
-    
-    .btn.ghost {
-      background: transparent !important;
-      color: white !important;
-      border: 1px solid rgba(255,255,255,0.3) !important;
-    }
-    
-    .btn.ghost:hover {
-      background: rgba(255,255,255,0.1) !important;
-    }
-    
-    /* Modal actions container - CSS rinforzato */
-    .modal-header .modal-actions {
-      display: flex !important;
-      gap: 0.5rem !important;
-      align-items: center !important;
-      margin-left: auto !important;
-    }
   </style>
 </head>
 <body>
@@ -625,9 +586,8 @@
       <header class="modal-header">
         <button class="modal-back" id="modalBack" aria-label="Torna alla mappa">← Torna alla mappa</button>
         <h2 class="modal-title" id="modalTitle"></h2>
-        <div class="modal-actions">
-          <a id="btnSpot"  class="btn primary" href="#">vai a PDF pertinenti</a>
-          <a id="btnNorme" class="btn ghost"   href="#">Riferimenti normativi & PNRR</a>
+        <div class="modal-actions" id="modalActions">
+          <!-- I pulsanti verranno generati dinamicamente dal JavaScript -->
         </div>
       </header>
       <div class="modal-body" id="modalBody"></div>
@@ -1037,37 +997,6 @@
       }
     }
 
-    // Mapping ministero -> parole-chiave da evidenziare in SPOT
-    const MIN2SPOT = {
-      pcm:    ["Dossier", "All-in-One", "Presentazione"],
-      mef:    ["Costi PA", "Progetto Nazionale", "Presentazione"],
-      interno:["Controlli", "Analisi"],
-      mimit:  ["Hub Nazionale", "Web3", "Usato"],
-      mase:   ["Equilibrio", "Carbon Credit"],
-      mit:    ["Hub ER", "Bologna"],
-      salute: ["Once Only", "Assistente"],
-      mic:    ["Riaccendiamo", "Hub ER"],
-      turismo:["Hub ER", "Comunicazione"],
-      masaf:  ["Progetto Nazionale", "Hub Nazionale"],
-      mim:    ["Clust-ER", "Riaccendiamo"],
-      lavoro: ["Progetto Nazionale", "Analisi"],
-      maeci:  ["Web3", "ECC"],
-      agid:   ["ECC", "Once Only"],
-      pagopa: ["Assistente", "SSET"],
-      ae:     ["Costi PA", "Analisi"],
-      adm:    ["Carbon Credit", "Bolkestein"]
-    };
-
-    // Funzione per configurare i pulsanti del modal
-    function wireModalButtons(currentMinisterId){
-      const base = "/dms-gemello-news/landing/spot.html";
-      const list = (MIN2SPOT[currentMinisterId]||[]).join(",");
-      const btnSpot  = document.getElementById("btnSpot");
-      const btnNorme = document.getElementById("btnNorme");
-      if (btnSpot)  btnSpot.href  = list ? `${base}?hot=${encodeURIComponent(list)}` : `${base}`;
-      if (btnNorme) btnNorme.href = `${base}#riferimenti-normativi`;
-    }
-
     // Modal
     function openModal(slug) {
       const data = MINISTERI_DATA[slug];
@@ -1075,8 +1004,16 @@
 
       modalTitle.textContent = data.title;
       
-      // Configura i nuovi pulsanti
-      wireModalButtons(slug);
+      // Genera pulsanti con anchor specifici per ogni ministero
+      const modalActions = document.getElementById('modalActions');
+      modalActions.innerHTML = `
+        <a href="/dms-gemello-news/landing/spot.html#tasto-${slug}"
+           class="btn btn-primary btn-go"
+           role="button">vai a PDF pertinenti</a>
+        <a href="/dms-gemello-news/landing/spot.html#norme-${slug}"
+           class="btn btn-ghost btn-norme"
+           role="button" aria-label="Riferimenti normativi e PNRR">Riferimenti normativi & PNRR</a>
+      `;
       
       // Render cards
       modalBody.innerHTML = data.cards.map(card => 
@@ -1153,9 +1090,18 @@
     }
 
     // Avvio
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
-</body>
+    document.addEventListener('DOMContentLoaded', init);  </script>
+
+<style>
+.modal-actions{display:flex!important;gap:12px!important;flex-wrap:wrap!important;margin-top:16px!important}
+.btn{display:inline-block!important;padding:10px 16px!important;border-radius:10px!important;
+     font-weight:600!important;font-size:16px!important;line-height:1!important;text-decoration:none!important;
+     -webkit-tap-highlight-color:transparent}
+.btn-primary{background:#14b8a6!important;color:#fff!important;border:1px solid #149e8f!important}
+.btn-ghost{background:transparent!important;color:#14b8a6!important;border:1px solid #14b8a6!important}
+.btn:active{transform:translateY(1px)!important}
+</style>
+
 </html>
 
 
