@@ -384,6 +384,30 @@ addEventListener('click', function (e) {
     }
     /* niente tag "PDF/INFO" */
     .node .tag{ display:none; }
+
+    /* Layout specifico per Tasto 1 - Due righe */
+    .actions.pdf-group[data-module="1"] {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .actions.pdf-group[data-module="1"] .action:first-child {
+      grid-column: 1;
+      justify-self: center;
+      max-width: 280px;
+    }
+    .actions.pdf-group[data-module="1"] .action:not(:first-child):not(:last-child) {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      grid-column: 1;
+    }
+    @media (max-width: 820px) {
+      .actions.pdf-group[data-module="1"] .action:not(:first-child):not(:last-child) {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -794,6 +818,9 @@ document.addEventListener('click', function(e){
       
       // Aggiungi le classi per il fix overlap
       actionsDiv.classList.add('actions', 'pdf-group');
+      
+      // Aggiungi data-module per CSS specifico
+      actionsDiv.setAttribute('data-module', i);
       
       // Aggiungi i nuovi CTA PDF
       if(data.pdfs && data.pdfs.length > 0) {
