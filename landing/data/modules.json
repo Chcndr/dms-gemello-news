@@ -7,7 +7,7 @@
     "pdfs": [
       {"label": "Costi PA & ROI", "file": "/dms-gemello-news/assets/doc/DATI.pdf"},
       {"label": "Analisi Controlli", "file": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"},
-      {"label": "Dashboard Metriche", "file": "#"}
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -16,9 +16,9 @@
     "sub": "Q4 2025", 
     "desc": "Scheda 'Tre Pilastri' (Governance, Dati, Operatività) + breve pitch video.",
     "pdfs": [
-      {"label": "Hub Nazionale del Commercio", "file": "/dms-gemello-news/assets/doc/HUBNAZIONALEDELCOMMERCIO(2).pdf"},
-      {"label": "DMS & CLUST-ER", "file": "/dms-gemello-news/assets/doc/DMSECLUST-ER(4).pdf"},
-      {"label": "Dossier Nazionale", "file": "/dms-gemello-news/assets/doc/DOSSIERNAZIONALE(3).pdf"}
+      {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
+      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -29,7 +29,7 @@
     "pdfs": [
       {"label": "Analisi e Soluzione DMS (102 pagine)", "file": "/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"},
       {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"},
-      {"label": "Bolkestein Commercio", "file": "/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"}
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -39,8 +39,8 @@
     "desc": "Due mercati reali con funzioni minime: anagrafiche operatori, calendario posteggi, atti digitali basilari.",
     "pdfs": [
       {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
-      {"label": "Presentazione DMS Bologna", "file": "/dms-gemello-news/assets/doc/presentazione-dms-bologna.pdf"},
-      {"label": "Commercio Ambulante", "file": "/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"}
+      {"label": "Commercio Ambulante", "file": "/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"},
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -49,8 +49,9 @@
     "sub": "Q3 2026",
     "desc": "Scalare il pilota su altri due mercati in Emilia-Romagna (hub urbani e di prossimità).",
     "pdfs": [
-      {"label": "DMS & CLUST-ER", "file": "/dms-gemello-news/assets/doc/DMSECLUST-ER(4).pdf"},
-      {"label": "Hub Urbani Prossimità ER", "file": "/dms-gemello-news/assets/doc/hub-urbani-prossimita-er.pdf"}
+      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
+      {"label": "Implementazioni Avanzate", "file": "/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"},
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -59,9 +60,9 @@
     "sub": "Q4 2026",
     "desc": "Prima versione 'gemello' con sincronizzazione dati e principio Once Only per documenti ricorrenti.",
     "pdfs": [
-      {"label": "Gemello DMS", "file": "/dms-gemello-news/assets/doc/GEMELLODMS.pdf"},
       {"label": "DMS al Centro di Tutto", "file": "/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf"},
-      {"label": "Once Only SDG", "file": "/dms-gemello-news/assets/doc/once-only-sdg.pdf"}
+      {"label": "DMS Sistema Completo", "file": "/dms-gemello-news/assets/doc/DMSSSET.pdf"},
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -72,7 +73,7 @@
     "pdfs": [
       {"label": "App DMS Assistente", "file": "/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"},
       {"label": "DMS ECC Narrativo", "file": "/dms-gemello-news/assets/doc/DMSECC(3).pdf"},
-      {"label": "DMS Sistema Completo", "file": "/dms-gemello-news/assets/doc/DMSSSET.pdf"}
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -81,9 +82,9 @@
     "sub": "Q2 2027",
     "desc": "Modello DMS per misurazione e pre-rendicontazione: raccolta dati, coerenza processi, simulazioni benefici.",
     "pdfs": [
-      {"label": "Riaccendiamo i Mercati", "file": "/dms-gemello-news/assets/doc/DMS-RiaccendiamoiMercati,RivitalizziamoleCittà(2).pdf"},
+      {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"},
       {"label": "Logica Carbon Credit", "file": "/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"},
-      {"label": "Eco Carbon Credit", "file": "/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"}
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -93,8 +94,8 @@
     "desc": "Pacchetto di compliance operativa (autorizzazioni, graduatorie, rinnovi) coerente con Bolkestein.",
     "pdfs": [
       {"label": "Bolkestein Commercio", "file": "/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"},
-      {"label": "Implementazioni Avanzate", "file": "/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"},
-      {"label": "Gestione Servizi", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"}
+      {"label": "Gestione Servizi", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"},
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -105,7 +106,7 @@
     "pdfs": [
       {"label": "DMS FinTech", "file": "/dms-gemello-news/assets/doc/DMSFINTECH.pdf"},
       {"label": "Premessa Politica", "file": "/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf"},
-      {"label": "Eventi Straordinari", "file": "/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"}
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -115,7 +116,8 @@
     "desc": "Prototipo Web3-ready (titoli digitali/attestazioni, notarizzazioni selettive), non speculativo, legato alla governance pubblica.",
     "pdfs": [
       {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
-      {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"}
+      {"label": "Eventi Straordinari", "file": "/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"},
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
@@ -125,7 +127,8 @@
     "desc": "Video 'Riaccendiamo i mercati', 'Hub Emilia-Romagna', 'Futuro' + timeline interattiva che ripercorre i traguardi.",
     "pdfs": [
       {"label": "DMS Locandina", "file": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"},
-      {"label": "DMS Set v2", "file": "/dms-gemello-news/assets/doc/DMSSSET(2).pdf"}
+      {"label": "DMS Set v2", "file": "/dms-gemello-news/assets/doc/DMSSSET(2).pdf"},
+      {"label": "Riferimenti normativi", "file": "#"}
     ]
   }
 ]
