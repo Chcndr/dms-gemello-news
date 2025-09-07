@@ -526,7 +526,7 @@
         <circle cx="256" cy="256" r="220" fill="url(#glow)"></circle>
 
         <!-- edificio -->
-        <g fill="#fffbe6" stroke="#ffd166" stroke-width="10" style="filter: drop-shadow(0 0 22px rgba(20,184,166,.55));">
+        <g fill="#fffbe6" stroke="#ffd166" stroke-width="10">
           <!-- tetto -->
           <polygon points="256,92 64,172 448,172"></polygon>
           <!-- architrave alto -->
@@ -1156,42 +1156,45 @@
   left:50%!important;
   top:50%!important;
   transform:translate(-50%, -50%)!important;
-  width:clamp(96px,10vw,140px)!important;
-  height:clamp(96px,10vw,140px)!important;
+  width:clamp(120px,15vw,180px)!important;  /* ridimensionato da 96px-140px */
+  height:auto!important;
   border-radius:50%!important;
   z-index:5!important;
   cursor:pointer!important;
-}
-
-/* SVG del logo */
-.center-logo{
-  width:100%!important;
-  height:100%!important;
   display:block!important;
+  filter:drop-shadow(0 0 22px rgba(20,184,166,.55))!important;
 }
 
-/* --- TAB MAPPA (attivo) --- */
-#topbar .tab[data-tab="mappa"].active,
-#topbar .btn-map.active,
-a[href*="mappa-ministeri"].active,
-.navbar .btn.active {
-  background: #14b8a6 !important;   /* verde istituzionale */
+/* iPad landscape: un filo più piccolo */
+@media (min-width: 1024px) and (max-height: 820px) {
+  .center-logo { width: 160px !important; }
+}
+
+/* — TAB MAPPA ATTIVO: più saturo del verde dei toggle — */
+a[href$="mappa-ministri.html"].active,
+a[href*="mappa-ministri"].active,
+#tab-mappa.active {
+  background-color: #14b8a6 !important;      /* verde istituzionale */
   color: #ffffff !important;
   border: 1px solid #0e8074 !important;
-  box-shadow: 0 0 0 1px rgba(14,128,116,.2) inset, 0 6px 14px rgba(20,184,166,.25) !important;
+  box-shadow: 0 0 0 1px rgba(14,128,116,.25) inset,
+              0 6px 14px rgba(20,184,166,.28) !important;
 }
 
-/* stato normale del tab MAPPA (non attivo) — leggermente più scuro dei toggle */
-#topbar .tab[data-tab="mappa"],
-#topbar .btn-map {
-  background: rgba(20,184,166,.12) !important;
+/* — TAB MAPPA NON ATTIVO: più scuro dei toggle — */
+a[href$="mappa-ministri.html"],
+a[href*="mappa-ministri"],
+#tab-mappa {
+  background: rgba(20,184,166,.14) !important;
   color: #d9fffa !important;
-  border: 1px solid rgba(20,184,166,.25) !important;
+  border: 1px solid rgba(20,184,166,.28) !important;
 }
 
-/* --- BG coerente con Home/Spot (più chiaro) --- */
-body {
-  background: radial-gradient(1400px 900px at 50% 20%, #0f3640 0%, #071a1d 35%, #0b2730 100%) !important;
+/* — BG coerente con Home/Spot — */
+body.mappa, .page--mappa, #mappa-root, body {
+  background:
+    radial-gradient(900px 600px at 50% -20%, rgba(20,184,166,.12), transparent 60%),
+    #0b1220 !important;              /* <-- stesso colore base delle altre pagine */
   background-attachment: fixed !important;
 }
 
