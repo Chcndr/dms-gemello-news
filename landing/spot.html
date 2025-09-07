@@ -86,6 +86,13 @@
   .doc:hover{
     background:rgba(20,184,166,.15);
   }
+  
+  /* Evidenziazione rossa per pulsanti "hot" */
+  .btn.is-hot, a.is-hot {
+    outline: 3px solid #e11d48;
+    box-shadow: 0 0 0 4px rgba(225,29,72,.25);
+    border-radius: 10px;
+  }
 </style>
 </head>
 <body>
@@ -130,6 +137,12 @@
             <source src="/dms-gemello-news/landing/videos/teaser-23.mp4?v=20250905a" type="video/mp4">
           </video>
         </div>
+      </section>
+
+      <section id="riferimenti-normativi" style="margin-top:40px">
+        <h2>Riferimenti normativi & PNRR</h2>
+        <p>Sezione in allestimento: conterrà norme, linee guida e atti di riferimento, navigabili per tema.</p>
+        <div id="norme-container"></div>
       </section>
     </section>
   </div>
@@ -225,9 +238,11 @@
       a.target = '_blank';
       a.rel = 'noopener';
       
-      // Aggiungo data-doc per evidenziazione hash
+      // Aggiungo data-doc per evidenziazione hash e data-spot + id per evidenziazione rossa
       const slug = title.toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]/g,'');
       a.setAttribute('data-doc', slug);
+      a.setAttribute('data-spot', slug);
+      a.id = slug;
       a.innerHTML = `<span>${title}</span><span>Apri ⤴</span>`;
       list.appendChild(a);
     });
@@ -242,6 +257,24 @@
       btn.classList.add('is-active');
       btn.scrollIntoView({behavior:'smooth',block:'center'});
     }
+  })();
+
+  // Evidenziazione rossa per pulsanti "hot" da parametri URL
+  (function(){
+    const q = new URLSearchParams(location.search);
+    const hot = (q.get("hot")||"").split(",").map(s=>s.trim()).filter(Boolean);
+    if (!hot.length) return;
+
+    hot.forEach(id => {
+      document.querySelectorAll(`[data-spot="${id}"], a[href$="#${id}"]`)
+        .forEach(el => {
+          el.classList.add("is-hot");
+          el.addEventListener("click", ()=> el.classList.remove("is-hot"), {once:true});
+        });
+    });
+
+    const first = document.getElementById(hot[0]);
+    if (first) first.scrollIntoView({behavior:"smooth", block:"start"});
   })();
 </script>
 
