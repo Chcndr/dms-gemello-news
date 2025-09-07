@@ -208,9 +208,10 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.08),
-        0 10px 35px rgba(0, 206, 255, 0.10),
-        inset 0 0 28px rgba(0, 206, 255, 0.25);
+        0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 10px 35px rgba(0, 206, 255, 0.20),
+        inset 0 0 28px rgba(0, 206, 255, 0.35),
+        0 0 20px rgba(56, 189, 248, 0.15);
       -webkit-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
@@ -221,18 +222,20 @@
     .node:hover, .node:focus {
       background: #1a3240;
       box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.12),
-        0 15px 45px rgba(0, 206, 255, 0.20),
-        inset 0 0 35px rgba(0, 206, 255, 0.35);
+        0 0 0 1px rgba(255, 255, 255, 0.15),
+        0 15px 45px rgba(0, 206, 255, 0.30),
+        inset 0 0 35px rgba(0, 206, 255, 0.45),
+        0 0 25px rgba(56, 189, 248, 0.25);
       transform: translate(-50%, -50%) rotate(var(--counter-rotate, 0deg)) scale(1.02);
     }
     
     .node:active {
       transform: translate(-50%, -50%) rotate(var(--counter-rotate, 0deg)) scale(0.98);
       box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.15),
-        0 20px 55px rgba(0, 206, 255, 0.30),
-        inset 0 0 42px rgba(0, 206, 255, 0.45);
+        0 0 0 1px rgba(255, 255, 255, 0.18),
+        0 20px 55px rgba(0, 206, 255, 0.40),
+        inset 0 0 42px rgba(0, 206, 255, 0.55),
+        0 0 30px rgba(56, 189, 248, 0.35);
     }
     
     .node:focus {
@@ -472,12 +475,37 @@
       content:"";
       position:absolute; inset:0;
       background:
-        radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.35), transparent 60%),
-        url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23ffffff'/><stop offset='1' stop-color='%23f5f5dc'/></linearGradient></defs><g fill='url(%23g)' stroke='%23d4af37' stroke-width='18' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='120' y='276' width='80' height='240' rx='6'/><rect x='240' y='276' width='80' height='240' rx='6'/><rect x='320' y='276' width='80' height='240' rx='6'/><rect x='440' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/72% no-repeat;
+        radial-gradient(80% 80% at 50% 50%, rgba(56,189,248,.6), transparent 70%),
+        url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23ffffff'/><stop offset='1' stop-color='%23f5f5dc'/></linearGradient></defs><g fill='url(%23g)' stroke='%23d4af37' stroke-width='8' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='120' y='276' width='80' height='240' rx='6'/><rect x='240' y='276' width='80' height='240' rx='6'/><rect x='320' y='276' width='80' height='240' rx='6'/><rect x='440' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/72% no-repeat;
+      animation: hubGlow 4s ease-in-out infinite alternate;
     }
     
     /* Assicurati che NON ruoti mai col resto */
     #hubIcon { will-change: filter, opacity; }
+    
+    /* Animazioni glow per logo centrale */
+    @keyframes hubGlow {
+      0% { 
+        background:
+          radial-gradient(80% 80% at 50% 50%, rgba(56,189,248,.6), transparent 70%),
+          url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23ffffff'/><stop offset='1' stop-color='%23f5f5dc'/></linearGradient></defs><g fill='url(%23g)' stroke='%23d4af37' stroke-width='8' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='120' y='276' width='80' height='240' rx='6'/><rect x='240' y='276' width='80' height='240' rx='6'/><rect x='320' y='276' width='80' height='240' rx='6'/><rect x='440' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/72% no-repeat;
+      }
+      100% { 
+        background:
+          radial-gradient(90% 90% at 50% 50%, rgba(56,189,248,.8), transparent 75%),
+          url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23ffffff'/><stop offset='1' stop-color='%23f5f5dc'/></linearGradient></defs><g fill='url(%23g)' stroke='%23d4af37' stroke-width='8' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='120' y='276' width='80' height='240' rx='6'/><rect x='240' y='276' width='80' height='240' rx='6'/><rect x='320' y='276' width='80' height='240' rx='6'/><rect x='440' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/72% no-repeat;
+      }
+    }
+    
+    /* Retroilluminazione linee radiali */
+    #spokes::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(50% 50% at 50% 50%, rgba(56,189,248,.15), transparent 60%);
+      pointer-events: none;
+      z-index: -1;
+    }
     
     /* CSS pulsanti modal - selettori specifici per evitare conflitti */
     .modal-actions {
