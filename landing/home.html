@@ -742,7 +742,7 @@ document.addEventListener('click', function(e){
               window.openPanelByIndex(i, accent, null);
             });
         } else {
-          const meta = window.MODULES[i];
+          const meta = window.MODULES && window.MODULES[i] ? window.MODULES[i] : null;
           const accent = getComputedStyle(el).getPropertyValue('--hc').trim() || '#14b8a6';
           window.openPanelByIndex(i, accent, meta);
         }
@@ -781,9 +781,9 @@ document.addEventListener('click', function(e){
     panel.style.setProperty('--accent', accent || '#14b8a6');
 
     // (Opzionale) riempi contenuti
-    if(data){
-      panel.querySelector('#panel-title').textContent = data.title || ('Modulo ' + i);
-      panel.querySelector('#panel-sub').textContent   = data.sub   || 'Contenuti in arrivo.';
+    if(data && data.title){
+      panel.querySelector('#panel-title').textContent = data.title;
+      panel.querySelector('#panel-sub').textContent   = data.sub || 'Contenuti in arrivo.';
       
       // Genera i CTA PDF dinamicamente
       const actionsDiv = panel.querySelector('#panel-actions');
@@ -808,9 +808,25 @@ document.addEventListener('click', function(e){
         });
       }
     } else {
-      // Fallback se non ci sono dati
-      panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
-      panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
+      // Fallback se non ci sono dati - ricarica i dati
+      console.log('Dati mancanti per modulo', i, 'ricarico...');
+      fetch('/dms-gemello-news/landing/data/modules.json?v=' + Date.now(), {cache:'no-store'})
+        .then(r => r.json())
+        .then(modules => {
+          window.MODULES = modules;
+          const moduleData = modules[i];
+          if(moduleData && moduleData.title) {
+            panel.querySelector('#panel-title').textContent = moduleData.title;
+            panel.querySelector('#panel-sub').textContent = moduleData.sub || 'Contenuti in arrivo.';
+          } else {
+            panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
+            panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
+          }
+        })
+        .catch(() => {
+          panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
+          panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
+        });
     }
 
     hero && hero.classList.add('is-hidden');
