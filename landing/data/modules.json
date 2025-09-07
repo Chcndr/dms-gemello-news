@@ -1,144 +1,144 @@
 [
   {
-    "id": "t0",
-    "title": "Dashboard Politica",
-    "period": "Q4 2025",
+    "id": 0,
+    "title": "00 • Dashboard Politica — Risultati & KPI",
+    "sub": "Q4 2025",
     "desc": "Impatto atteso, risultati misurabili e visione. Un quadro chiaro per i decisori: perché investire adesso.",
-    "links": [
-      { "label": "DMS Locandina", "href": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf" },
-      { "label": "Dati e Costi PA", "href": "/dms-gemello-news/assets/doc/DATI.pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t0-norme" }
+    "pdfs": [
+      {"label": "DMS Locandina", "file": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"},
+      {"label": "Dati e Costi PA", "file": "/dms-gemello-news/assets/doc/DATI.pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t1",
-    "title": "Tre Pilastri",
-    "period": "Q4 2025",
+    "id": 1,
+    "title": "01 • Tre Pilastri — Visione e Value Proposition",
+    "sub": "Q4 2025",
     "desc": "La cornice strategica: dossier nazionale, hub del commercio e alleanza con Clust-ER. Base politica e operativa per partire subito.",
-    "links": [
-      { "label": "Hub DMS Web3 Europa", "href": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf" },
-      { "label": "Progetto Nazionale", "href": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf" },
-      { "label": "DMS ECC", "href": "/dms-gemello-news/assets/doc/DMSECC(3).pdf" },
-      { "label": "Riequilibrio Economico", "href": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t1-norme" }
+    "pdfs": [
+      {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
+      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
+      {"label": "DMS ECC", "file": "/dms-gemello-news/assets/doc/DMSECC(3).pdf"},
+      {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t2",
-    "title": "Analisi & Problemi",
-    "period": "Q1 2026",
+    "id": 2,
+    "title": "02 • Analisi & Problemi — Stato dell'arte e costi",
+    "sub": "Q1 2026",
     "desc": "Le criticità dell'esistente: costi per la PA, inefficienze, controlli e usato. Evidenze e soluzioni DMS.",
-    "links": [
-      { "label": "Analisi e Soluzione DMS (102 pagine)", "href": "/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf" },
-      { "label": "Dati e Costi PA", "href": "/dms-gemello-news/assets/doc/DATI.pdf" },
-      { "label": "Relazione sui Controlli", "href": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf" },
-      { "label": "Mercato dell'Usato", "href": "/dms-gemello-news/assets/doc/USATO.pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t2-norme" }
+    "pdfs": [
+      {"label": "Analisi e Soluzione DMS (102 pagine)", "file": "/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"},
+      {"label": "Dati e Costi PA", "file": "/dms-gemello-news/assets/doc/DATI.pdf"},
+      {"label": "Relazione sui Controlli", "file": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"},
+      {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t3",
-    "title": "Pilota 1 — Emilia-Romagna",
-    "period": "Q2 2026",
+    "id": 3,
+    "title": "03 • Pilota Mercato — Avvio integrazione",
+    "sub": "Q2 2026",
     "desc": "Avvio del mercato/hub pilota e raccolta feedback per la stabilizzazione del modello.",
-    "links": [
-      { "label": "Progetto Nazionale", "href": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf" },
-      { "label": "Commercio Ambulante", "href": "/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf" },
-      { "label": "Implementazioni Avanzate", "href": "/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t3-norme" }
+    "pdfs": [
+      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
+      {"label": "Commercio Ambulante", "file": "/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"},
+      {"label": "Implementazioni Avanzate", "file": "/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t4",
-    "title": "Pilota 2–3 — Estensione regionale",
-    "period": "Q3 2026",
+    "id": 4,
+    "title": "04 • Hub Emilia-Romagna — Estensione e prossimità",
+    "sub": "Q3 2026",
     "desc": "Replicabilità in altri mercati per validare processi, KPI e sostenibilità economica.",
-    "links": [
-      { "label": "Progetto Nazionale", "href": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf" },
-      { "label": "Gestione Servizi Accessori", "href": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t4-norme" }
+    "pdfs": [
+      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
+      {"label": "Gestione Servizi Accessori", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t5",
-    "title": "Gemello Digitale / SDG",
-    "period": "Q4 2026",
+    "id": 5,
+    "title": "05 • Gemello Digitale / SDG — Once Only",
+    "sub": "Q4 2026",
     "desc": "Interoperabilità e Once-Only: il gemello digitale del commercio per standardizzare dati e servizi.",
-    "links": [
-      { "label": "DMS al Centro di Tutto", "href": "/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf" },
-      { "label": "DMS Sistema Completo", "href": "/dms-gemello-news/assets/doc/DMSSSET.pdf" },
-      { "label": "DMS ECC", "href": "/dms-gemello-news/assets/doc/DMSECC(3).pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t5-norme" }
+    "pdfs": [
+      {"label": "DMS al Centro di Tutto", "file": "/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf"},
+      {"label": "DMS Sistema Completo", "file": "/dms-gemello-news/assets/doc/DMSSSET.pdf"},
+      {"label": "DMS ECC", "file": "/dms-gemello-news/assets/doc/DMSECC(3).pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t6",
-    "title": "Moduli & Servizi (PA, identità, pagamenti)",
-    "period": "Q1 2027",
+    "id": 6,
+    "title": "06 • Moduli & Servizi — PA, identità, pagamenti",
+    "sub": "Q1 2027",
     "desc": "Servizi transazionali e integrazioni PA: SPID/CIE, pagoPA, app e dashboard operative.",
-    "links": [
-      { "label": "App DMS Assistente Personale", "href": "/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf" },
-      { "label": "DMS Sistema Completo", "href": "/dms-gemello-news/assets/doc/DMSSSET.pdf" },
-      { "label": "DMS Offline con CIE", "href": "/dms-gemello-news/assets/doc/DMSofflineconCIE(1).pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t6-norme" }
+    "pdfs": [
+      {"label": "App DMS Assistente Personale", "file": "/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"},
+      {"label": "DMS Sistema Completo", "file": "/dms-gemello-news/assets/doc/DMSSSET.pdf"},
+      {"label": "DMS Offline con CIE", "file": "/dms-gemello-news/assets/doc/DMSofflineconCIE(1).pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t7",
-    "title": "Carbon Credit & ESG",
-    "period": "Q2 2027",
+    "id": 7,
+    "title": "07 • Carbon Credit & ESG — Preparazione",
+    "sub": "Q2 2027",
     "desc": "Dati ambientali tracciabili, incentivi e monetizzazione sostenibile. Solo dopo standard e filiere pronte.",
-    "links": [
-      { "label": "Logica Carbon Credit", "href": "/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf" },
-      { "label": "Eco Carbon Credit", "href": "/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf" },
-      { "label": "Riequilibrio Economico", "href": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t7-norme" }
+    "pdfs": [
+      {"label": "Logica Carbon Credit", "file": "/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"},
+      {"label": "Eco Carbon Credit", "file": "/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"},
+      {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t8",
-    "title": "Bolkestein & Mercati",
-    "period": "Q3 2027",
+    "id": 8,
+    "title": "08 • Bolkestein & Mercati — Compliance e semplificazioni",
+    "sub": "Q3 2027",
     "desc": "Compliance e semplificazioni per il commercio su area pubblica: trasparenza, tracciabilità e regole certe.",
-    "links": [
-      { "label": "Bolkestein Commercio su Area Pubblica", "href": "/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf" },
-      { "label": "Relazione sui Controlli", "href": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t8-norme" }
+    "pdfs": [
+      {"label": "Bolkestein Commercio su Area Pubblica", "file": "/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"},
+      {"label": "Relazione sui Controlli", "file": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t9",
-    "title": "All-in-One & Governance",
-    "period": "Q4 2027",
+    "id": 9,
+    "title": "09 • All-in-One — Governance e piattaforma",
+    "sub": "Q4 2027",
     "desc": "Scalabilità nazionale, accordi quadro e governo dei dati—una piattaforma, molti servizi.",
-    "links": [
-      { "label": "DMS FinTech", "href": "/dms-gemello-news/assets/doc/DMSFINTECH.pdf" },
-      { "label": "Progetto Nazionale", "href": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf" },
-      { "label": "Premessa Politica", "href": "/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t9-norme" }
+    "pdfs": [
+      {"label": "DMS FinTech", "file": "/dms-gemello-news/assets/doc/DMSFINTECH.pdf"},
+      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
+      {"label": "Premessa Politica", "file": "/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t10",
-    "title": "Web3 / Token / On-chain",
-    "period": "Q1 2028",
+    "id": 10,
+    "title": "10 • Web3 / Token / On-chain — Fase finale",
+    "sub": "Q1 2028",
     "desc": "Mercati digitali trasparenti: token di servizio, tracciabilità end-to-end, tutela del consumatore.",
-    "links": [
-      { "label": "Hub DMS Web3 Europa", "href": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf" },
-      { "label": "Mercato dell'Usato", "href": "/dms-gemello-news/assets/doc/USATO.pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t10-norme" }
+    "pdfs": [
+      {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
+      {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
   {
-    "id": "t11",
-    "title": "Video & Timeline (Adozione)",
-    "period": "Q2 2028",
+    "id": 11,
+    "title": "11 • Video & Timeline — Storytelling finale",
+    "sub": "Q2 2028",
     "desc": "Comunicazione, adozione e risultati: playbook operativo e materiali per gli stakeholder.",
-    "links": [
-      { "label": "DMS Locandina", "href": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf" },
-      { "label": "DMS Set v2", "href": "/dms-gemello-news/assets/doc/DMSSSET(2).pdf" },
-      { "label": "Eventi Straordinari", "href": "/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf" },
-      { "label": "Riferimenti normativi & PNRR", "href": "/dms-gemello-news/landing/spot.html#t11-norme" }
+    "pdfs": [
+      {"label": "DMS Locandina", "file": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"},
+      {"label": "DMS Set v2", "file": "/dms-gemello-news/assets/doc/DMSSSET(2).pdf"},
+      {"label": "Eventi Straordinari", "file": "/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"},
+      {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   }
 ]
