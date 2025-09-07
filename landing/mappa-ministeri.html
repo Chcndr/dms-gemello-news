@@ -457,7 +457,7 @@
   <nav class="topnav">
     <a href="/dms-gemello-news/landing/home.html">Home</a>
     <a href="/dms-gemello-news/landing/mappa-ministeri.html" class="active">Mappa</a>
-    <a href="spot.html">Spot</a>
+    <a href="/dms-gemello-news/landing/spot.html">Spot</a>
   </nav>
 
   <!-- Container principale -->
@@ -1002,7 +1002,7 @@
       if (!data) return;
 
       modalTitle.textContent = data.title;
-      modalSpot.href = `spot.html#${slug}`;
+      modalSpot.href = `/dms-gemello-news/landing/spot.html#${slug}`;
       
       // Render cards
       modalBody.innerHTML = data.cards.map(card => 
