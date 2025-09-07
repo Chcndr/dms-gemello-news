@@ -512,11 +512,36 @@
     </div>
 
     <!-- Container mappa -->
-    <div id="mapContainer" class="zoom-120">
+    <div id="mapContainer" class="zoom-100">
       <!-- Logo centrale fisso -->
-      <div id="center-node" class="center-logo">
-        <img src="/dms-gemello-news/assets/img/palazzo.svg" alt="Istituzione" />
-      </div>
+      <svg id="center-node" class="center-logo" viewBox="0 0 512 512" width="220" height="220" aria-hidden="true">
+        <defs>
+          <radialGradient id="glow" cx="50%" cy="50%" r="55%">
+            <stop offset="0%"  stop-color="#14b8a6" stop-opacity=".55"/>
+            <stop offset="100%" stop-color="#14b8a6" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- glow -->
+        <circle cx="256" cy="256" r="220" fill="url(#glow)"></circle>
+
+        <!-- edificio -->
+        <g fill="#fffbe6" stroke="#ffd166" stroke-width="10" style="filter: drop-shadow(0 0 22px rgba(20,184,166,.55));">
+          <!-- tetto -->
+          <polygon points="256,92 64,172 448,172"></polygon>
+          <!-- architrave alto -->
+          <rect x="96" y="172" width="320" height="20" rx="6"></rect>
+
+          <!-- 4 colonne: larghezza 56, gap 32, centrate -->
+          <rect x="96"  y="196" width="56" height="172" rx="8"></rect>
+          <rect x="184" y="196" width="56" height="172" rx="8"></rect>
+          <rect x="272" y="196" width="56" height="172" rx="8"></rect>
+          <rect x="360" y="196" width="56" height="172" rx="8"></rect>
+
+          <!-- base -->
+          <rect x="96" y="372" width="320" height="24" rx="8"></rect>
+        </g>
+      </svg>
 
       <!-- Linee radiali -->
       <div id="spokes"></div>
@@ -580,8 +605,8 @@
       <!-- Controlli zoom -->
       <div class="zoom-controls">
         <button class="zoom-btn" data-zoom="80">0.8×</button>
-        <button class="zoom-btn" data-zoom="100">1.0×</button>
-        <button class="zoom-btn active" data-zoom="120">1.2×</button>
+        <button class="zoom-btn active" data-zoom="100">1.0×</button>
+        <button class="zoom-btn" data-zoom="120">1.2×</button>
       </div>
     </div>
   </div>
@@ -708,7 +733,7 @@
     // Variabili globali
     let rotationAngle = 0;
     let rotationInterval = null;
-    let currentZoom = 120;
+    let currentZoom = 100;
     let animationId = null;
 
     // iPad: disabilita preview e long-press
@@ -1135,37 +1160,39 @@
   height:clamp(96px,10vw,140px)!important;
   border-radius:50%!important;
   z-index:5!important;
+  cursor:pointer!important;
 }
 
-/* Immagine del logo */
-.center-logo > img{
+/* SVG del logo */
+.center-logo{
   width:100%!important;
   height:100%!important;
   display:block!important;
-  object-fit:contain!important;
-  -webkit-filter:
-    drop-shadow(0 0 18px rgba(20,184,166,.55))
-    drop-shadow(0 0 38px rgba(20,184,166,.35)) !important;
-  filter:
-    drop-shadow(0 0 18px rgba(20,184,166,.55))
-    drop-shadow(0 0 38px rgba(20,184,166,.35)) !important;
-  image-rendering:-webkit-optimize-contrast;
 }
 
-/* Bagliore retroilluminato dietro al logo */
-.center-logo::before{
-  content:""!important;
-  position:absolute!important;
-  inset:-24px!important;
-  border-radius:50%!important;
-  background:
-    radial-gradient(circle at 50% 50%,
-      rgba(20,184,166,.55) 0%,
-      rgba(20,184,166,.18) 35%,
-      rgba(20,184,166,0) 65%) !important;
-  filter:blur(8px)!important;
-  -webkit-filter:blur(8px)!important;
-  z-index:-1!important;
+/* --- TAB MAPPA (attivo) --- */
+#topbar .tab[data-tab="mappa"].active,
+#topbar .btn-map.active,
+a[href*="mappa-ministeri"].active,
+.navbar .btn.active {
+  background: #14b8a6 !important;   /* verde istituzionale */
+  color: #ffffff !important;
+  border: 1px solid #0e8074 !important;
+  box-shadow: 0 0 0 1px rgba(14,128,116,.2) inset, 0 6px 14px rgba(20,184,166,.25) !important;
+}
+
+/* stato normale del tab MAPPA (non attivo) — leggermente più scuro dei toggle */
+#topbar .tab[data-tab="mappa"],
+#topbar .btn-map {
+  background: rgba(20,184,166,.12) !important;
+  color: #d9fffa !important;
+  border: 1px solid rgba(20,184,166,.25) !important;
+}
+
+/* --- BG coerente con Home/Spot (più chiaro) --- */
+body {
+  background: radial-gradient(1400px 900px at 50% 20%, #0f3640 0%, #071a1d 35%, #0b2730 100%) !important;
+  background-attachment: fixed !important;
 }
 
 /* Hardening: evita che qualche reset annulli i bottoni/immagini nel modal */
