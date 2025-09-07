@@ -248,26 +248,7 @@
       pointer-events: none;
     }
     
-    /* Logo centrale */
-    #hubIcon {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 120px;
-      height: 120px;
-      z-index: 20;
-      filter: 
-        drop-shadow(0 0 20px rgba(0, 206, 255, 0.8))
-        drop-shadow(0 0 40px rgba(0, 206, 255, 0.6))
-        drop-shadow(0 0 60px rgba(0, 206, 255, 0.4));
-      cursor: pointer;
-    }
-
-    #hubIcon svg {
-      width: 100%;
-      height: 100%;
-    }
+    /* Logo centrale - RIMOSSO, ora gestito da .center-logo */
     
     /* Modal */
     #modal {
@@ -455,42 +436,7 @@
       /* Nessuna animazione quando auto-rotate è disabilitato */
     }
 
-    /* Centro fisso: logo ministero (no riquadro, glow blu) */
-    #hubIcon{
-      position:absolute;
-      left:50%; top:50%;
-      width:clamp(160px, 13vw, 240px);
-      height:clamp(160px, 13vw, 240px);
-      transform:translate(-50%, -50%);
-      pointer-events:none;
-      z-index: 5;
-      filter:
-        drop-shadow(0 0 32px rgba(56,189,248,.35))
-        drop-shadow(0 8px 22px rgba(0,0,0,.45));
-      opacity:.98;
-    }
-
-    /* Applica il logo come background (SVG inline in data-URL) */
-    #hubIcon::before{
-      content:"";
-      position:absolute; inset:0;
-      background: url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23ffffff'/><stop offset='1' stop-color='%23f5f5dc'/></linearGradient></defs><g fill='url(%23g)' stroke='%23d4af37' stroke-width='8' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='120' y='276' width='80' height='240' rx='6'/><rect x='240' y='276' width='80' height='240' rx='6'/><rect x='320' y='276' width='80' height='240' rx='6'/><rect x='440' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/90% no-repeat;
-      filter: drop-shadow(0 0 25px rgba(56,189,248,.4));
-      animation: hubGlow 4s ease-in-out infinite alternate;
-    }
-    
-    /* Assicurati che NON ruoti mai col resto */
-    #hubIcon { will-change: filter, opacity; }
-    
-    /* Animazioni glow per logo centrale */
-    @keyframes hubGlow {
-      0% { 
-        filter: drop-shadow(0 0 25px rgba(56,189,248,.4));
-      }
-      100% { 
-        filter: drop-shadow(0 0 35px rgba(56,189,248,.6));
-      }
-    }
+    /* Centro fisso: logo ministero - RIMOSSO, ora gestito da .center-logo */
     
     /* Retroilluminazione linee radiali */
     #spokes::before {
@@ -568,7 +514,9 @@
     <!-- Container mappa -->
     <div id="mapContainer" class="zoom-120">
       <!-- Logo centrale fisso -->
-      <div id="hubIcon" aria-hidden="true"></div>
+      <div id="center-node" class="center-logo">
+        <img src="/dms-gemello-news/assets/img/palazzo.svg" alt="Istituzione" />
+      </div>
 
       <!-- Linee radiali -->
       <div id="spokes"></div>
@@ -1023,7 +971,7 @@
       window.addEventListener('hashchange', handleHashChange);
 
       // 3) Logo centrale → apre modal di PCM
-      const hubIcon = document.getElementById('hubIcon');
+      const hubIcon = document.getElementById('center-node');
       if (hubIcon) {
         hubIcon.style.cursor = 'pointer';
         
@@ -1176,6 +1124,53 @@
 
     // Avvio
     document.addEventListener('DOMContentLoaded', init);  </script>
+<style>
+/* Contenitore logo centrale */
+.center-logo{
+  position:relative!important;
+  width:clamp(96px,10vw,140px)!important;
+  height:clamp(96px,10vw,140px)!important;
+  margin:auto!important;
+  border-radius:50%!important;
+  z-index:5!important;
+}
+
+/* Immagine del logo */
+.center-logo > img{
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  object-fit:contain!important;
+  -webkit-filter:
+    drop-shadow(0 0 18px rgba(20,184,166,.55))
+    drop-shadow(0 0 38px rgba(20,184,166,.35)) !important;
+  filter:
+    drop-shadow(0 0 18px rgba(20,184,166,.55))
+    drop-shadow(0 0 38px rgba(20,184,166,.35)) !important;
+  image-rendering:-webkit-optimize-contrast;
+}
+
+/* Bagliore retroilluminato dietro al logo */
+.center-logo::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-24px!important;
+  border-radius:50%!important;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(20,184,166,.55) 0%,
+      rgba(20,184,166,.18) 35%,
+      rgba(20,184,166,0) 65%) !important;
+  filter:blur(8px)!important;
+  -webkit-filter:blur(8px)!important;
+  z-index:-1!important;
+}
+
+/* Hardening: evita che qualche reset annulli i bottoni/immagini nel modal */
+.modal a.btn, .modal a[role="button"]{
+  display:inline-block!important;
+}
+</style>
 
 </html>
 
