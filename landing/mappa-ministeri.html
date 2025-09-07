@@ -616,8 +616,8 @@
       <header class="modal-header">
         <button class="modal-back" id="modalBack" aria-label="Torna alla mappa">← Torna alla mappa</button>
         <h2 class="modal-title" id="modalTitle"></h2>
-        <a id="btnSpot"  class="btn primary">Apri in SPOT</a>
-        <a id="btnNorme" class="btn ghost">Riferimenti normativi & PNRR</a>
+        <a id="btnSpot"  class="btn primary" href="#">Apri in SPOT</a>
+        <a id="btnNorme" class="btn ghost"   href="#">Riferimenti normativi & PNRR</a>
       </header>
       <div class="modal-body" id="modalBody"></div>
     </div>
@@ -1026,25 +1026,25 @@
       }
     }
 
-    // Mapping ministero -> tokens dei pulsanti SPOT da evidenziare
+    // Mapping ministero -> parole-chiave da evidenziare in SPOT
     const MIN2SPOT = {
-      pcm:    ["pilastri-dossier-nazionale","gemello-all-in-one","presentazione-sintesi"],
-      mef:    ["analisi-costi-pa","scalata-progetto-nazionale","presentazione-sintesi"],
-      interno:["analisi-controlli","analisi-soluzione"],
-      mimit:  ["pilastri-hub-nazionale","web3-ready","mercato-usato"],
-      mase:   ["sostenibilita-equilibrio","carbon-credit-dms"],
-      mit:    ["pilota-hub-er","pilota-hub-er-dossier","pilota-bo"],
-      salute: ["gemello-once-only","servizi-assistente"],
-      mic:    ["narrazione-riaccendiamo","pilota-hub-er"],
-      turismo:["pilota-hub-er","comunicazione-spot"],
-      masaf:  ["scalata-progetto-nazionale","pilastri-hub-nazionale"],
-      mim:    ["pilastri-dms-cluster-er","narrazione-riaccendiamo"],
-      lavoro: ["scalata-progetto-nazionale","analisi-soluzione"],
-      maeci:  ["web3-ready","gemello-ecc"],
-      agid:   ["gemello-ecc","gemello-once-only"],
-      pagopa: ["servizi-assistente","servizi-sset"],
-      ae:     ["analisi-costi-pa","analisi-soluzione"],
-      adm:    ["carbon-credit-dms","bolkestein"]
+      pcm:    ["Dossier", "All-in-One", "Presentazione"],
+      mef:    ["Costi PA", "Progetto Nazionale", "Presentazione"],
+      interno:["Controlli", "Analisi"],
+      mimit:  ["Hub Nazionale", "Web3", "Usato"],
+      mase:   ["Equilibrio", "Carbon Credit"],
+      mit:    ["Hub ER", "Bologna"],
+      salute: ["Once Only", "Assistente"],
+      mic:    ["Riaccendiamo", "Hub ER"],
+      turismo:["Hub ER", "Comunicazione"],
+      masaf:  ["Progetto Nazionale", "Hub Nazionale"],
+      mim:    ["Clust-ER", "Riaccendiamo"],
+      lavoro: ["Progetto Nazionale", "Analisi"],
+      maeci:  ["Web3", "ECC"],
+      agid:   ["ECC", "Once Only"],
+      pagopa: ["Assistente", "SSET"],
+      ae:     ["Costi PA", "Analisi"],
+      adm:    ["Carbon Credit", "Bolkestein"]
     };
 
     // Funzione per configurare i pulsanti del modal
@@ -1053,8 +1053,8 @@
       const list = (MIN2SPOT[currentMinisterId]||[]).join(",");
       const btnSpot  = document.getElementById("btnSpot");
       const btnNorme = document.getElementById("btnNorme");
-      btnSpot.href  = list ? `${base}?hot=${encodeURIComponent(list)}` : `${base}`;
-      btnNorme.href = `${base}#riferimenti-normativi`;
+      if (btnSpot)  btnSpot.href  = list ? `${base}?hot=${encodeURIComponent(list)}` : `${base}`;
+      if (btnNorme) btnNorme.href = `${base}#riferimenti-normativi`;
     }
 
     // Modal

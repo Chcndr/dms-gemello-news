@@ -262,19 +262,44 @@
   // Evidenziazione rossa per pulsanti "hot" da parametri URL
   (function(){
     const q = new URLSearchParams(location.search);
-    const hot = (q.get("hot")||"").split(",").map(s=>s.trim()).filter(Boolean);
-    if (!hot.length) return;
+    const raw = (q.get("hot")||"").split(",").map(s=>s.trim()).filter(Boolean);
+    if (!raw.length) return;
 
-    hot.forEach(id => {
-      document.querySelectorAll(`[data-spot="${id}"], a[href$="#${id}"]`)
-        .forEach(el => {
-          el.classList.add("is-hot");
-          el.addEventListener("click", ()=> el.classList.remove("is-hot"), {once:true});
+    const norm = s => s.toLowerCase().replace(/\s+/g,'').replace(/[^\p{L}\p{N}]/gu,'');
+
+    const pool = Array.from(document.querySelectorAll('a,button'))
+      .filter(el => (el.href||'').includes('/assets/doc/') || el.dataset.spot);
+
+    const byId = id => document.getElementById(id) ||
+                       document.querySelector(`[data-spot="${id}"]`);
+
+    const hot = new Set();
+    raw.forEach(tok => {
+      const t = norm(tok);
+      let hit = false;
+
+      // 1) prova id/data-spot
+      const idHit = byId(tok);
+      if (idHit) { hot.add(idHit); hit = true; }
+
+      // 2) fallback: match per contenuto testuale
+      if (!hit) {
+        pool.forEach(el=>{
+          const label = norm(el.textContent||"");
+          if (label.includes(t)) hot.add(el);
         });
+      }
     });
 
-    const first = document.getElementById(hot[0]);
-    if (first) first.scrollIntoView({behavior:"smooth", block:"start"});
+    // applica stile e rimuovi al click
+    let first = null;
+    hot.forEach(el=>{
+      el.classList.add('is-hot');
+      if (!first) first = el;
+      el.addEventListener('click', ()=> el.classList.remove('is-hot'), {once:true});
+    });
+    if (first) first.scrollIntoView({behavior:'smooth', block:'start'});
+
   })();
 </script>
 
