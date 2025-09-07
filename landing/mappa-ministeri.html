@@ -480,6 +480,13 @@
     .btn.ghost:hover {
       background: rgba(255,255,255,0.1);
     }
+    
+    /* Modal actions container */
+    .modal-header .modal-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
@@ -616,8 +623,10 @@
       <header class="modal-header">
         <button class="modal-back" id="modalBack" aria-label="Torna alla mappa">← Torna alla mappa</button>
         <h2 class="modal-title" id="modalTitle"></h2>
-        <a id="btnSpot"  class="btn primary" href="#">Apri in SPOT</a>
-        <a id="btnNorme" class="btn ghost"   href="#">Riferimenti normativi & PNRR</a>
+        <div class="modal-actions">
+          <a id="btnSpot"  class="btn primary" href="#">vai a PDF pertinenti</a>
+          <a id="btnNorme" class="btn ghost"   href="#">Riferimenti normativi & PNRR</a>
+        </div>
       </header>
       <div class="modal-body" id="modalBody"></div>
     </div>
