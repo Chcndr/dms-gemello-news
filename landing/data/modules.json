@@ -1,110 +1,131 @@
 [
   {
     "id": 0,
-    "title": "00 • Intro politica — Riaccendiamo il Commercio",
-    "sub": "Istituzionale • Amplia: Q4 2025",
+    "title": "00 • Dashboard Politica — Risultati & KPI",
+    "sub": "Q4 2025",
+    "desc": "Pannello 'Politica' con indicatori semplici (adozione mercati pilota, tempi pratiche, riduzione costi PA) e grafici pronti per presentazioni.",
     "pdfs": [
-      {"label": "Copertina", "file": "./docs/HUB NAZIONALE DEL COMMERCIO.pdf"},
-      {"label": "Riaccendiamo il Commercio", "file": "./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf"},
-      {"label": "Hub Nazionale del Commercio", "file": "./docs/HUB NAZIONALE DEL COMMERCIO.pdf"},
-      {"label": "Dossier nazionale", "file": "./docs/DOSSIER NAZIONALE.pdf"},
-      {"label": "DMS & CLUST-ER", "file": "./docs/DMS E CLUST-ER.pdf"},
-      {"label": "Riequilibrio (ECC — pilastro)", "file": "./docs/RIEQUILIBRIO.pdf"}
+      {"label": "Costi PA & ROI", "file": "../assets/doc/DATI.pdf"},
+      {"label": "Analisi Controlli", "file": "../assets/doc/Relazionesuicontrolli(1).pdf"},
+      {"label": "Dashboard Metriche", "file": "#"}
     ]
   },
   {
     "id": 1,
-    "title": "01 • Grosseto — Primo collegamento reale",
-    "sub": "Pilota • Amplia: Q1 2026",
+    "title": "01 • Tre Pilastri — Visione e Value Proposition",
+    "sub": "Q4 2025", 
+    "desc": "Scheda 'Tre Pilastri' (Governance, Dati, Operatività) + breve pitch video.",
     "pdfs": [
-      {"label": "Presentazione DMS", "file": "./docs/PRESENTAZIONE DMS -compressed.pdf"},
-      {"label": "DMS Spot 1", "file": "./docs/DMS SPOT 1.pdf"},
-      {"label": "Relazione sui controlli", "file": "#"}
+      {"label": "Hub Nazionale del Commercio", "file": "../assets/doc/HUBNAZIONALEDELCOMMERCIO(2).pdf"},
+      {"label": "DMS & CLUST-ER", "file": "../assets/doc/DMSECLUST-ER(4).pdf"},
+      {"label": "Dossier Nazionale", "file": "../assets/doc/DOSSIERNAZIONALE(3).pdf"}
     ]
   },
   {
     "id": 2,
-    "title": "02 • DMS & CLUST-ER — Secondo pilota HUB ER",
-    "sub": "Pilota HUB • Amplia: Q4 2025",
+    "title": "02 • Analisi & Problemi — Stato dell'arte e costi",
+    "sub": "Q1 2026",
+    "desc": "Evidenze costi PA, analisi mercato ambulante, problemi attuali e urgenza di intervento.",
     "pdfs": [
-      {"label": "DMS E CLUST-ER", "file": "./docs/DMS E CLUST-ER.pdf"},
-      {"label": "Hub Urbani e di Prossimità ER", "file": "./docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf"}
+      {"label": "Analisi e Soluzione DMS (102 pagine)", "file": "../assets/doc/ANALISIESOLUZIONEDMS(1).pdf"},
+      {"label": "Mercato dell'Usato", "file": "../assets/doc/USATO.pdf"},
+      {"label": "Bolkestein Commercio", "file": "../assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"}
     ]
   },
   {
     "id": 3,
-    "title": "03 • Pagamenti & PDND (Once-Only)",
-    "sub": "Amplia: Q1 2026",
+    "title": "03 • Pilota Mercato — Avvio integrazione",
+    "sub": "Q2 2026",
+    "desc": "Due mercati reali con funzioni minime: anagrafiche operatori, calendario posteggi, atti digitali basilari.",
     "pdfs": [
-      {"label": "DMS Once Only Single Digital Gateway", "file": "./docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf"},
-      {"label": "DMS SSET", "file": "#"}
+      {"label": "Progetto Nazionale", "file": "../assets/doc/PROGETTONAZIONALE1(1).pdf"},
+      {"label": "Presentazione DMS Bologna", "file": "./docs/presentazione-dms-bologna.pdf"},
+      {"label": "Commercio Ambulante", "file": "../assets/doc/Relazionecalocommercioambulante.pdf"}
     ]
   },
   {
     "id": 4,
-    "title": "04 • DPP (ESPR)",
-    "sub": "Amplia: Q4 2026",
+    "title": "04 • Hub Emilia-Romagna — Estensione e prossimità",
+    "sub": "Q3 2026",
+    "desc": "Scalare il pilota su altri due mercati in Emilia-Romagna (hub urbani e di prossimità).",
     "pdfs": [
-      {"label": "In arrivo", "file": "#"}
+      {"label": "DMS & CLUST-ER", "file": "../assets/doc/DMSECLUST-ER(4).pdf"},
+      {"label": "Hub Urbani Prossimità ER", "file": "./docs/hub-urbani-prossimita-er.pdf"}
     ]
   },
   {
     "id": 5,
-    "title": "05 • ECC — Narrativa",
-    "sub": "Amplia: Q2 2026",
+    "title": "05 • Gemello Digitale / SDG — Once Only",
+    "sub": "Q4 2026",
+    "desc": "Prima versione 'gemello' con sincronizzazione dati e principio Once Only per documenti ricorrenti.",
     "pdfs": [
-      {"label": "DMS ECC", "file": "./docs/DMS ECC.pdf"}
+      {"label": "Gemello DMS", "file": "../assets/doc/GEMELLODMS.pdf"},
+      {"label": "DMS al Centro di Tutto", "file": "../assets/doc/DMSalCENTROdiTUTTO(1).pdf"},
+      {"label": "Once Only SDG", "file": "./docs/once-only-sdg.pdf"}
     ]
   },
   {
     "id": 6,
-    "title": "06 • ECC — Tecnica",
-    "sub": "Amplia: Q3 2026",
+    "title": "06 • Moduli & Servizi — Estensioni utili",
+    "sub": "Q1 2027",
+    "desc": "Moduli opzionali (App Assistente DMS, ECC, SSET, All-in-One) con API interne stabili.",
     "pdfs": [
-      {"label": "Carbon Credit DMS", "file": "./docs/CARBON CREDIT DMS.pdf"}
+      {"label": "App DMS Assistente", "file": "../assets/doc/APPDMSAssistentePersonale.pdf"},
+      {"label": "DMS ECC Narrativo", "file": "../assets/doc/DMSECC(3).pdf"},
+      {"label": "DMS Sistema Completo", "file": "../assets/doc/DMSSSET.pdf"}
     ]
   },
   {
     "id": 7,
-    "title": "07 • Costi PA & ROI",
-    "sub": "Amplia: Q2 2026",
+    "title": "07 • Carbon Credit & ESG — Preparazione",
+    "sub": "Q2 2027",
+    "desc": "Modello DMS per misurazione e pre-rendicontazione: raccolta dati, coerenza processi, simulazioni benefici.",
     "pdfs": [
-      {"label": "Costi PA", "file": "./docs/COSTI PA.pdf"}
+      {"label": "Riaccendiamo i Mercati", "file": "../assets/doc/DMS-RiaccendiamoiMercati,RivitalizziamoleCittà(2).pdf"},
+      {"label": "Logica Carbon Credit", "file": "../assets/doc/LOGICACARBONCREDIT(3).pdf"},
+      {"label": "Eco Carbon Credit", "file": "../assets/doc/ECOCOCREDOIT.pdf"}
     ]
   },
   {
     "id": 8,
-    "title": "08 • Analisi & Soluzione",
-    "sub": "Amplia: Q1–Q2 2026",
+    "title": "08 • Bolkestein & Mercati — Compliance e semplificazioni",
+    "sub": "Q3 2027",
+    "desc": "Pacchetto di compliance operativa (autorizzazioni, graduatorie, rinnovi) coerente con Bolkestein.",
     "pdfs": [
-      {"label": "Analisi e Soluzione DMS", "file": "./docs/ANALISI E SOLUZIONE DMS.pdf"},
-      {"label": "Analisi", "file": "./docs/Analisi.pdf"}
+      {"label": "Bolkestein Commercio", "file": "../assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"},
+      {"label": "Implementazioni Avanzate", "file": "../assets/doc/IMPLEMENTAZIONI(1).pdf"},
+      {"label": "Gestione Servizi", "file": "../assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"}
     ]
   },
   {
     "id": 9,
-    "title": "09 • Scenario & KPI",
-    "sub": "Amplia: Q1 2027",
+    "title": "09 • All-in-One — Governance e piattaforma",
+    "sub": "Q4 2027",
+    "desc": "Consolida in un'unica vista (governo, comuni, operatori) con profili/ruoli, audit e reportistica.",
     "pdfs": [
-      {"label": "Hub DMS Web3-Ready Platform", "file": "./docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf"},
-      {"label": "Progetto Nazionale", "file": "./docs/PROGETTO NAZIONALE.pdf"}
+      {"label": "DMS FinTech", "file": "../assets/doc/DMSFINTECH.pdf"},
+      {"label": "Premessa Politica", "file": "../assets/doc/PREMESSAPOLITICA.pdf"},
+      {"label": "Eventi Straordinari", "file": "../assets/doc/EVENTISTRAORDINARI(2).pdf"}
     ]
   },
   {
     "id": 10,
-    "title": "10 • Hub Nazionale (gemello)",
-    "sub": "Amplia: Q4 2026",
+    "title": "10 • Web3 / Token / On-chain — Fase finale",
+    "sub": "Q1 2028",
+    "desc": "Prototipo Web3-ready (titoli digitali/attestazioni, notarizzazioni selettive), non speculativo, legato alla governance pubblica.",
     "pdfs": [
-      {"label": "Hub Nazionale del Commercio", "file": "./docs/HUB NAZIONALE DEL COMMERCIO.pdf"},
-      {"label": "Bolkestein Commercio", "file": "#"}
+      {"label": "Hub DMS Web3 Europa", "file": "../assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
+      {"label": "Riequilibrio Economico", "file": "../assets/doc/RIEQUILIBRIO.pdf"}
     ]
   },
   {
     "id": 11,
-    "title": "11 • App/PWA & Inclusione",
-    "sub": "Amplia: Q4 2026",
+    "title": "11 • Video & Timeline — Storytelling finale",
+    "sub": "Q2 2028",
+    "desc": "Video 'Riaccendiamo i mercati', 'Hub Emilia-Romagna', 'Futuro' + timeline interattiva che ripercorre i traguardi.",
     "pdfs": [
-      {"label": "App DMS Assistente Personale", "file": "./docs/APP DMS Assistente Personale.pdf"}
+      {"label": "DMS Locandina", "file": "../assets/doc/DMSLOCANDINA.pdf"},
+      {"label": "DMS Set v2", "file": "../assets/doc/DMSSSET(2).pdf"}
     ]
   }
 ]
