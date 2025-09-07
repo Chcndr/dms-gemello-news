@@ -3,18 +3,18 @@
     "id": 0,
     "title": "00 • Dashboard Politica — Risultati & KPI",
     "sub": "Q4 2025",
-    "desc": "Pannello 'Politica' con indicatori semplici (adozione mercati pilota, tempi pratiche, riduzione costi PA) e grafici pronti per presentazioni.",
+    "desc": "Pannello 'Politica' con indicatori semplici (adozione mercati pilota, tempi pratiche, riduzione costi PA) e grafici pronti per presentazioni. Sezione SPOT dedicata con 2–3 PDF sintetici (Costi PA, Analisi, Relazione sui controlli).",
     "pdfs": [
-      {"label": "Costi PA & ROI", "file": "/dms-gemello-news/assets/doc/DATI.pdf"},
-      {"label": "Analisi Controlli", "file": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"},
+      {"label": "Costi PA & Dati", "file": "/dms-gemello-news/assets/doc/DATI.pdf"},
+      {"label": "Relazione sui Controlli", "file": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"},
       {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
   {
     "id": 1,
     "title": "01 • Tre Pilastri — Visione e Value Proposition",
-    "sub": "Q4 2025", 
-    "desc": "Scheda 'Tre Pilastri' (Governance, Dati, Operatività) + breve pitch video.",
+    "sub": "Q4 2025",
+    "desc": "Scheda 'Tre Pilastri' (Governance, Dati, Operatività) + breve pitch video. Link SPOT a 'Presentazione DMS' e 'DMS Spot 1'. Fissa la narrativa comune prima di scendere nei progetti.",
     "pdfs": [
       {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
       {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
@@ -25,7 +25,7 @@
     "id": 2,
     "title": "02 • Analisi & Problemi — Stato dell'arte e costi",
     "sub": "Q1 2026",
-    "desc": "Evidenze costi PA, analisi mercato ambulante, problemi attuali e urgenza di intervento.",
+    "desc": "Sezione SPOT con 'Analisi e Soluzione DMS', 'Usato', 'Bolkestein – Commercio su area pubblica', evidenze costi PA. Carte/infografiche riassuntive sotto la finestra della mappa. Crea l'urgenza e la base misurabile per giudicare i benefici.",
     "pdfs": [
       {"label": "Analisi e Soluzione DMS (102 pagine)", "file": "/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"},
       {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"},
@@ -36,7 +36,7 @@
     "id": 3,
     "title": "03 • Pilota Mercato — Avvio integrazione",
     "sub": "Q2 2026",
-    "desc": "Due mercati reali con funzioni minime: anagrafiche operatori, calendario posteggi, atti digitali basilari.",
+    "desc": "Due mercati reali con funzioni minime: anagrafiche operatori, calendario posteggi, atti digitali basilari, apertura schede ministeri 'coerenti'. SPOT con 'Progetto Nazionale' e 'CM Bologna'. 6 mesi per mettere a terra primo flusso end-to-end e misurare tempi/attriti.",
     "pdfs": [
       {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
       {"label": "Commercio Ambulante", "file": "/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"},
@@ -47,10 +47,10 @@
     "id": 4,
     "title": "04 • Hub Emilia-Romagna — Estensione e prossimità",
     "sub": "Q3 2026",
-    "desc": "Scalare il pilota su altri due mercati in Emilia-Romagna (hub urbani e di prossimità).",
+    "desc": "Scalare il pilota su altri due mercati in Emilia-Romagna (hub urbani e di prossimità). SPOT con i due PDF 'Hub Urbani…'. Effetto rete regionale, test di replicabilità e supporto. Modello operativo replicabile dal punto 3.",
     "pdfs": [
-      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
       {"label": "Implementazioni Avanzate", "file": "/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"},
+      {"label": "Gestione Servizi Accessori", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"},
       {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
@@ -58,7 +58,7 @@
     "id": 5,
     "title": "05 • Gemello Digitale / SDG — Once Only",
     "sub": "Q4 2026",
-    "desc": "Prima versione 'gemello' con sincronizzazione dati e principio Once Only per documenti ricorrenti.",
+    "desc": "Prima versione 'gemello' con sincronizzazione dati (anagrafe operatori, concessioni, controlli) e principio Once Only per documenti ricorrenti. SPOT: 'Once Only / SDG'. Una volta stabilizzati flussi base, si integra il layer dati.",
     "pdfs": [
       {"label": "DMS al Centro di Tutto", "file": "/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf"},
       {"label": "DMS Sistema Completo", "file": "/dms-gemello-news/assets/doc/DMSSSET.pdf"},
@@ -69,10 +69,10 @@
     "id": 6,
     "title": "06 • Moduli & Servizi — Estensioni utili",
     "sub": "Q1 2027",
-    "desc": "Moduli opzionali (App Assistente DMS, ECC, SSET, All-in-One) con API interne stabili.",
+    "desc": "Moduli opzionali (es. App Assistente DMS, ECC, SSET, All-in-One). Schede nella finestra della mappa per ogni modulo, a scorrimento verticale. Consolidata la dorsale, aggiungiamo servizi 'a valore' misurabile.",
     "pdfs": [
-      {"label": "App DMS Assistente", "file": "/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"},
-      {"label": "DMS ECC Narrativo", "file": "/dms-gemello-news/assets/doc/DMSECC(3).pdf"},
+      {"label": "App DMS Assistente Personale", "file": "/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"},
+      {"label": "DMS ECC", "file": "/dms-gemello-news/assets/doc/DMSECC(3).pdf"},
       {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
@@ -80,7 +80,7 @@
     "id": 7,
     "title": "07 • Carbon Credit & ESG — Preparazione",
     "sub": "Q2 2027",
-    "desc": "Modello DMS per misurazione e pre-rendicontazione: raccolta dati, coerenza processi, simulazioni benefici.",
+    "desc": "Modello DMS per misurazione e pre-rendicontazione (non emissione!): raccolta dati, coerenza processi, simulazioni benefici. SPOT: 'Equilibrio ecosostenibile', 'Carbon Credit DMS'. L'effettiva monetizzazione dei crediti dipenderà da cornici europee.",
     "pdfs": [
       {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"},
       {"label": "Logica Carbon Credit", "file": "/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"},
@@ -91,10 +91,10 @@
     "id": 8,
     "title": "08 • Bolkestein & Mercati — Compliance e semplificazioni",
     "sub": "Q3 2027",
-    "desc": "Pacchetto di compliance operativa (autorizzazioni, graduatorie, rinnovi) coerente con Bolkestein.",
+    "desc": "Pacchetto di compliance operativa (autorizzazioni, graduatorie, rinnovi) coerente con Bolkestein + schede sintetiche a prova di dirigente. SPOT: PDF Bolkestein e infografiche. Dopo pilota e moduli, si riorganizza la parte normativa e procedure.",
     "pdfs": [
-      {"label": "Bolkestein Commercio", "file": "/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"},
-      {"label": "Gestione Servizi", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"},
+      {"label": "Bolkestein Commercio su Area Pubblica", "file": "/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"},
+      {"label": "Gestione Servizi Accessori", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"},
       {"label": "Riferimenti normativi", "file": "#"}
     ]
   },
@@ -102,7 +102,7 @@
     "id": 9,
     "title": "09 • All-in-One — Governance e piattaforma",
     "sub": "Q4 2027",
-    "desc": "Consolida in un'unica vista (governo, comuni, operatori) con profili/ruoli, audit e reportistica.",
+    "desc": "Consolida in un'unica vista (governo, comuni, operatori) con profili/ruoli, audit e reportistica. SPOT: 'All-in-One (doc completo)'. Fissiamo l'architettura di lungo periodo (scalabilità e controllo). Integrazione di tutti i moduli precedenti.",
     "pdfs": [
       {"label": "DMS FinTech", "file": "/dms-gemello-news/assets/doc/DMSFINTECH.pdf"},
       {"label": "Premessa Politica", "file": "/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf"},
@@ -113,7 +113,7 @@
     "id": 10,
     "title": "10 • Web3 / Token / On-chain — Fase finale",
     "sub": "Q1 2028",
-    "desc": "Prototipo Web3-ready (titoli digitali/attestazioni, notarizzazioni selettive), non speculativo, legato alla governance pubblica.",
+    "desc": "Prototipo Web3-ready (titoli digitali/attestazioni, notarizzazioni selettive), non speculativo, legato alla governance pubblica. SPOT: 'Hub DMS Web3-Ready'. Solo a valle di governance, dati e compliance consolidati. Policy legali/amministrative.",
     "pdfs": [
       {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
       {"label": "Eventi Straordinari", "file": "/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"},
@@ -124,7 +124,7 @@
     "id": 11,
     "title": "11 • Video & Timeline — Storytelling finale",
     "sub": "Q2 2028",
-    "desc": "Video 'Riaccendiamo i mercati', 'Hub Emilia-Romagna', 'Futuro' + timeline interattiva che ripercorre i traguardi.",
+    "desc": "Video 'Riaccendiamo i mercati', 'Hub Emilia-Romagna', 'Futuro' + timeline interattiva che ripercorre i traguardi. Chiusura del ciclo con comunicazione forte per diffusione nazionale. Asset video pronti e pagina SPOT ordinata per sezioni.",
     "pdfs": [
       {"label": "DMS Locandina", "file": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"},
       {"label": "DMS Set v2", "file": "/dms-gemello-news/assets/doc/DMSSSET(2).pdf"},
