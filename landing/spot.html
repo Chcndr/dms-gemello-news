@@ -94,16 +94,20 @@
     border-radius: 10px;
   }
 
-  /* Chip/button per Riferimenti Normativi – riempiti come PDF, bordo blu */
+  /* prende dinamicamente il verde dei PDF */
+  :root{ --pdf-green:#0f766e; --norme-blue:#22d3ee; }
+
   .btn-norme{
     display:inline-flex; align-items:center; gap:.5rem;
     padding:10px 14px; border-radius:10px; font-weight:600;
-    border:2px solid #22d3ee !important;        /* bordo blu */
-    background-color: var(--norme-fill,#134e4a) !important; /* FILL come PDF */
-    color: var(--norme-fg,#e5f6f5) !important;
-    text-decoration:none; white-space:nowrap;
+    background:var(--pdf-green) !important;           /* FILL come i PDF */
+    border:2px solid transparent !important;          /* nessun bordo di default */
+    color:#e6fffb !important;
+    text-decoration:none; white-space:normal;
+    line-height:1.15; overflow-wrap:anywhere;         /* titoli lunghi vanno a capo */
   }
   .btn-norme:hover,.btn-norme:focus{ filter:brightness(1.06); text-decoration:none; }
+  .btn-norme.is-relevant{ border-color:var(--norme-blue) !important; } /* SOLO se pertinente */
   .btn-norme.is-active{ box-shadow:0 0 0 3px rgba(34,211,238,.25); }
 
   /* griglia responsiva della sezione norme */
@@ -113,8 +117,8 @@
   }
 
   /* viewer per Norme: nascosto finché non serve */
-  .spot-viewer{ display:none; margin-top:18px; border-radius:12px; border:1px solid rgba(148,163,184,.2);
-    background: rgba(2,6,23,.45); padding:10px; }
+  .spot-viewer{ display:none; margin-top:18px; border-radius:12px;
+    border:1px solid rgba(148,163,184,.2); background:rgba(2,6,23,.45); padding:10px; }
   .spot-viewer.is-open{ display:block; }
   .spot-viewer header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
   .spot-viewer iframe{ width:100%; height:72vh; border:0; border-radius:8px; background:#0b1220 }
@@ -167,34 +171,34 @@
       <section id="riferimenti-normativi" style="margin-top:40px">
         <h2>Riferimenti normativi & PNRR</h2>
         <div class="norme-grid">
-          <a class="btn-norme" href="#" data-norma="sdg-2018-1724">
+          <a class="btn-norme" href="#" data-norma="sdg-2018-1724" data-min="MEF,AE,AGID,INTERNO,MIMIT">
             Single Digital Gateway (Reg. UE 2018/1724)
           </a>
-          <a class="btn-norme" href="#" data-norma="interop-europe-2024-903">
+          <a class="btn-norme" href="#" data-norma="interop-europe-2024-903" data-min="AGID,MEF,MIT,MASE">
             Interoperable Europe (Reg. UE 2024/903)
           </a>
-          <a class="btn-norme" href="#" data-norma="eidas2-2024-1183">
+          <a class="btn-norme" href="#" data-norma="eidas2-2024-1183" data-min="AGID,MEF,INTERNO,MAECI">
             eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
           </a>
-          <a class="btn-norme" href="#" data-norma="espr-dpp-2024-1781">
+          <a class="btn-norme" href="#" data-norma="espr-dpp-2024-1781" data-min="MIMIT,MASE,ADM,MEF">
             ESPR & Digital Product Passport (Reg. UE 2024/1781)
           </a>
-          <a class="btn-norme" href="#" data-norma="direttiva-servizi-2006-123">
+          <a class="btn-norme" href="#" data-norma="direttiva-servizi-2006-123" data-min="MIMIT,INTERNO,AE">
             Direttiva Servizi (2006/123/CE – "Bolkestein")
           </a>
-          <a class="btn-norme" href="#" data-norma="suap-dpr-160-2010">
+          <a class="btn-norme" href="#" data-norma="suap-dpr-160-2010" data-min="MIMIT,INTERNO,AE,MEF">
             SUAP – DPR 160/2010
           </a>
-          <a class="btn-norme" href="#" data-norma="dogane-com-2023-258-260">
+          <a class="btn-norme" href="#" data-norma="dogane-com-2023-258-260" data-min="ADM,MEF,MAECI">
             Riforma Dogane UE (pacchetto COM(2023) 258–260)
           </a>
-          <a class="btn-norme" href="#" data-norma="pnrr-italia-domani">
+          <a class="btn-norme" href="#" data-norma="pnrr-italia-domani" data-min="MEF,AGID,MIT,MASE,MIMIT">
             PNRR – Italia Domani
           </a>
-          <a class="btn-norme" href="#" data-norma="pdnd">
+          <a class="btn-norme" href="#" data-norma="pdnd" data-min="AGID,MEF,MIT,MASE,MIMIT">
             PDND – Piattaforma Digitale Nazionale Dati
           </a>
-          <a class="btn-norme" href="#" data-norma="agid-linee-interoperabilita">
+          <a class="btn-norme" href="#" data-norma="agid-linee-interoperabilita" data-min="AGID,MEF,MIT,MASE,MIMIT">
             AgID – Linee guida interoperabilità
           </a>
         </div>
@@ -396,51 +400,57 @@ window.DOC_MAP = {
 
 <script>
 (function(){
-  // Prende i colori dei bottoni PDF esistenti e li riusa per i chip Norme
-  const sample = document.querySelector('.btn-pdf, .pdf-link, .pdf-tile');
-  if (sample){
-    const cs = getComputedStyle(sample);
-    document.documentElement.style.setProperty('--norme-fill', cs.backgroundColor);
-    document.documentElement.style.setProperty('--norme-fg',   cs.color);
-  }
+  /* ——— 3a. usa esattamente il verde dei bottoni PDF ——— */
+  const samplePdfBtn = document.querySelector('.accordion button, .list button, .list a.btn');
+  const bg = samplePdfBtn ? getComputedStyle(samplePdfBtn).backgroundColor : null;
+  if(bg) document.documentElement.style.setProperty('--pdf-green', bg);
 
-  // Viewer: solo per "Riferimenti normativi" e solo quando l'href è un .pdf
+  /* ——— 3b. attiva il bordo blu solo per le norme pertinenti ———
+     -> aggiungi data-min="MEF,ADM,MIT" su ciascun chip norma
+  */
+  function getMinisteroCode(){
+    // legge dall'intestazione del modal (es. "MIT - Infrastrutture e Trasporti")
+    const h = document.querySelector('[data-ministero], .modal h1, .modal h2, .breadcrumb, .page-title');
+    const txt = (h?.getAttribute('data-ministero') || h?.textContent || '').toUpperCase();
+    const m = txt.match(/\b(AE|ADM|AGID|MAECI|MASE|MASAF|MEF|MIC|MIMIT|MIM|MIT|SALUTE|INTERNO|LAVORO|TURISMO|PAGOPA)\b/);
+    return m ? m[1] : '';
+  }
+  function paintRelevant(){
+    const code = getMinisteroCode();
+    document.querySelectorAll('.btn-norme').forEach(b=>{
+      const list = (b.dataset.min||'').toUpperCase().split(',').map(s=>s.trim());
+      if(code && list.includes(code)) b.classList.add('is-relevant');
+      else b.classList.remove('is-relevant');
+    });
+  }
+  paintRelevant();
+
+  /* ——— 3c. viewer SOLO per i PDF delle norme ——— */
   const normeSection = document.querySelector('#riferimenti-normativi') || document.querySelector('[data-section="norme"]');
-  const viewer      = document.getElementById('viewer');
-  const frame       = document.getElementById('docFrame');
-  const aOpen       = document.getElementById('viewer-open');
+  const viewer = document.getElementById('viewer');
+  const frame  = document.getElementById('docFrame');
+  const aOpen  = document.getElementById('viewer-open');
 
   function openInViewer(url){
     if (!viewer || !frame) return;
-    frame.src = url;
-    if (aOpen) aOpen.href = url;
+    frame.src = url; if (aOpen) aOpen.href = url;
     viewer.classList.add('is-open');
-    // scroll dolce con offset (evita risalite verso il video)
     const top = viewer.getBoundingClientRect().top + window.scrollY - 70;
     window.scrollTo({ top, behavior:'smooth' });
   }
 
-  // 🔒 Limita la cattura dei click SOLO alla sezione Norme
   if (normeSection){
     normeSection.addEventListener('click', function(e){
-      const a = e.target.closest('a');
-      if (!a) return;
-      const href = (a.getAttribute('href') || '').trim().toLowerCase();
-
-      // Solo PDF locali in viewer; il resto si comporta come link normale
+      const a = e.target.closest('a.btn-norme'); if(!a) return;
+      const href = (a.getAttribute('href')||'').toLowerCase().trim();
       if (href.endsWith('.pdf')){
         e.preventDefault();
         openInViewer(a.getAttribute('href'));
         normeSection.querySelectorAll('.btn-norme').forEach(x=>x.classList.remove('is-active'));
         a.classList.add('is-active');
-      } else {
-        // link non-PDF: lasciare comportamento standard (nuova scheda o stessa)
       }
     }, {passive:false});
   }
-
-  // ✅ IMPORTANTISSIMO: NON intercettare gli altri PDF della pagina
-  // (Niente delega globale su document: così i PDF "rossi" restano come prima.)
 })();
 </script>
 
