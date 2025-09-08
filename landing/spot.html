@@ -93,6 +93,25 @@
     box-shadow: 0 0 0 4px rgba(225,29,72,.25);
     border-radius: 10px;
   }
+
+  /* Chip/button per Riferimenti Normativi – outline blu */
+  .btn-norme {
+    display:inline-flex; align-items:center; gap:.5rem;
+    padding:10px 14px; border-radius:10px; font-weight:600;
+    border:2px solid #22d3ee !important;      /* blu/ciano */
+    color:#22d3ee !important; background:transparent !important;
+    text-decoration:none; white-space:nowrap;
+  }
+  .btn-norme:hover, .btn-norme:focus {
+    background:rgba(34,211,238,.08) !important;
+    text-decoration:none;
+  }
+
+  /* griglia responsiva della sezione norme */
+  .norme-grid {
+    display:grid; gap:12px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
 </style>
 </head>
 <body>
@@ -141,8 +160,38 @@
 
       <section id="riferimenti-normativi" style="margin-top:40px">
         <h2>Riferimenti normativi & PNRR</h2>
-        <p>Sezione in allestimento: conterrà norme, linee guida e atti di riferimento, navigabili per tema.</p>
-        <div id="norme-container"></div>
+        <div class="norme-grid">
+          <a class="btn-norme" href="#" data-norma="sdg-2018-1724">
+            Single Digital Gateway (Reg. UE 2018/1724)
+          </a>
+          <a class="btn-norme" href="#" data-norma="interop-europe-2024-903">
+            Interoperable Europe (Reg. UE 2024/903)
+          </a>
+          <a class="btn-norme" href="#" data-norma="eidas2-2024-1183">
+            eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
+          </a>
+          <a class="btn-norme" href="#" data-norma="espr-dpp-2024-1781">
+            ESPR & Digital Product Passport (Reg. UE 2024/1781)
+          </a>
+          <a class="btn-norme" href="#" data-norma="direttiva-servizi-2006-123">
+            Direttiva Servizi (2006/123/CE – "Bolkestein")
+          </a>
+          <a class="btn-norme" href="#" data-norma="suap-dpr-160-2010">
+            SUAP – DPR 160/2010
+          </a>
+          <a class="btn-norme" href="#" data-norma="dogane-com-2023-258-260">
+            Riforma Dogane UE (pacchetto COM(2023) 258–260)
+          </a>
+          <a class="btn-norme" href="#" data-norma="pnrr-italia-domani">
+            PNRR – Italia Domani
+          </a>
+          <a class="btn-norme" href="#" data-norma="pdnd">
+            PDND – Piattaforma Digitale Nazionale Dati
+          </a>
+          <a class="btn-norme" href="#" data-norma="agid-linee-interoperabilita">
+            AgID – Linee guida interoperabilità
+          </a>
+        </div>
       </section>
     </section>
   </div>
