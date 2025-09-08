@@ -1030,14 +1030,14 @@
       
       const terms = (hotTerms[slug] || []).join(",");
       const spotUrl = terms ? 
-        `/dms-gemello-news/landing/spot.html?hot=${encodeURIComponent(terms)}` : 
-        `/dms-gemello-news/landing/spot.html`;
+        `./spot.html?hot=${encodeURIComponent(terms)}` : 
+        `./spot.html`;
       
       modalActions.innerHTML = `
         <a href="${spotUrl}"
            class="btn btn-primary btn-go"
            role="button">vai a PDF pertinenti</a>
-        <a href="/dms-gemello-news/landing/spot.html#riferimenti-normativi"
+        <a href="./spot.html#riferimenti-normativi"
            class="btn btn-ghost btn-norme"
            role="button" aria-label="Riferimenti normativi e PNRR">Riferimenti normativi & PNRR</a>
       `;

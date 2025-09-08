@@ -131,6 +131,22 @@
   }
   .norma-chip:hover,.norma-chip:focus{ background:var(--chip-bg-hover); }
   .norma-chip.is-active{ border-color:var(--chip-border-active); }
+
+  /* Scheda normativa (quadra, bianca) */
+  .norma-card{
+    background:#ffffff; color:#0b0f14;
+    border:1px solid #dfe7e2; border-radius:14px;
+    padding:16px; margin-top:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+    grid-column: 1 / -1; /* occupa tutta la larghezza della griglia */
+  }
+  .norma-card h3{ margin:0 0 8px; font-size:1.05rem; font-weight:800 }
+  .norma-card .muted{ color:#4b5a52 }
+  .norma-card .arts{ border-left:3px solid #2A8CFF; padding-left:10px; margin:10px 0 }
+  .norma-card .btn{ display:inline-flex; gap:8px; padding:8px 12px; border:1px solid #2A8CFF; border-radius:10px; text-decoration:none; font-weight:800 }
+
+  /* Stato "vuota" (placeholder) */
+  .norma-empty{ display:flex; align-items:center; justify-content:center; min-height:140px; font-weight:700; color:#6b7d72 }
 </style>
 </head>
 <body>
@@ -182,36 +198,39 @@
 
       <section id="riferimenti-normativi" class="norme-grid" style="margin-top:40px">
         <h2 style="grid-column: 1 / -1;">Riferimenti normativi & PNRR</h2>
-        <a href="#" class="norma-chip" data-norm="sdg" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="sdg" data-id="sdg_2018_1724" target="_blank" rel="noopener">
           Single Digital Gateway (Reg. UE 2018/1724)
         </a>
-        <a href="#" class="norma-chip" data-norm="interop" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="interop" data-id="interop_2024_903" target="_blank" rel="noopener">
           Interoperable Europe (Reg. UE 2024/903)
         </a>
-        <a href="#" class="norma-chip" data-norm="eidas2" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="eidas2" data-id="eidas2_2024_1183" target="_blank" rel="noopener">
           eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
         </a>
-        <a href="#" class="norma-chip" data-norm="espr" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="espr" data-id="espr_2024_1781" target="_blank" rel="noopener">
           ESPR & Digital Product Passport (Reg. UE 2024/1781)
         </a>
-        <a href="#" class="norma-chip" data-norm="bolk" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="bolk" data-id="bolkestein_2006_123" target="_blank" rel="noopener">
           Direttiva Servizi (2006/123/CE – "Bolkestein")
         </a>
-        <a href="#" class="norma-chip" data-norm="suap" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="suap" data-id="dpr160_2010" target="_blank" rel="noopener">
           SUAP – DPR 160/2010
         </a>
-        <a href="#" class="norma-chip" data-norm="dogane" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="dogane" data-id="dogane_2023_258" target="_blank" rel="noopener">
           Riforma Dogane UE (pacchetto COM(2023) 258–260)
         </a>
-        <a href="#" class="norma-chip" data-norm="pnrr" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="pnrr" data-id="pnrr_italia" target="_blank" rel="noopener">
           PNRR – Italia Domani
         </a>
-        <a href="#" class="norma-chip" data-norm="pdnd" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="pdnd" data-id="pdnd_dati" target="_blank" rel="noopener">
           PDND – Piattaforma Digitale Nazionale Dati
         </a>
-        <a href="#" class="norma-chip" data-norm="agid" target="_blank" rel="noopener">
+        <a href="#" class="norma-chip norma-btn" data-norm="agid" data-id="agid_interop" target="_blank" rel="noopener">
           AgID – Linee guida interoperabilità
         </a>
+        
+        <!-- Scheda normativa interattiva -->
+        <section id="scheda-norma" class="norma-card norma-empty">Seleziona una norma per vedere gli articoli e il PDF.</section>
       </section>
     </section>
   </div>
@@ -370,6 +389,125 @@
     if (first) first.scrollIntoView({behavior:'smooth', block:'start'});
 
   })();
+</script>
+
+<script>
+// === PATCH SCHEDA NORMATIVA ===
+
+// Dataset minimo (aggiungi/aggiorna i tuoi PDF)
+const NORME = {
+  dpr160_2010:{
+    titolo:'DPR 160/2010 – SUAP',
+    perche:'DMS genera pratiche conformi (SCIA, subingressi, volture) e orchestra endo-pareri.',
+    articoli:[ {art:'art. 5', focus:'interoperabilità e telematica'}, {art:'art. 10', focus:'endo-pareri con enti terzi'} ],
+    pdf:'https://www.gazzettaufficiale.it/eli/id/2010/10/29/010G0184/sg'
+  },
+  siconbep_106_2023:{
+    titolo:'D.Lgs. 106/2023 – SICONBEP',
+    perche:'DMS alimenta automaticamente gli invii sulle concessioni/posteggi.',
+    articoli:[ {art:'obblighi telematici', focus:'monitoraggio concessioni'} ],
+    pdf:'https://www.gazzettaufficiale.it/eli/id/2023/05/31/23G00119/sg'
+  },
+  sdg_2018_1724:{
+    titolo:'Reg. (UE) 2018/1724 – Single Digital Gateway',
+    perche:'Principio once-only: DMS riusa dati certificati via PDND.',
+    articoli:[ {art:'artt. chiave', focus:'riuso dati cross-PA e servizi online'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32018R1724'
+  },
+  interop_2024_903:{
+    titolo:'Reg. (UE) 2024/903 – Interoperable Europe',
+    perche:'Framework per interoperabilità cross-border: DMS implementa standard comuni.',
+    articoli:[ {art:'art. 12', focus:'governance interoperabilità'}, {art:'art. 15', focus:'standard tecnici'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32024R0903'
+  },
+  eidas2_2024_1183:{
+    titolo:'Reg. (UE) 2024/1183 – eIDAS 2 Digital Wallet',
+    perche:'DMS integra wallet digitale europeo per identità e credenziali verificabili.',
+    articoli:[ {art:'art. 6a', focus:'wallet digitale europeo'}, {art:'art. 45a', focus:'credenziali verificabili'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32024R1183'
+  },
+  espr_2024_1781:{
+    titolo:'Reg. (UE) 2024/1781 – ESPR & Digital Product Passport',
+    perche:'DMS traccia sostenibilità prodotti via passaporto digitale integrato.',
+    articoli:[ {art:'art. 9', focus:'passaporto digitale prodotto'}, {art:'art. 15', focus:'tracciabilità supply chain'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32024R1781'
+  },
+  bolkestein_2006_123:{
+    titolo:'Direttiva 2006/123/CE – "Bolkestein"',
+    perche:'DMS semplifica procedure per libera prestazione servizi nel mercato interno.',
+    articoli:[ {art:'art. 8', focus:'sportello unico'}, {art:'art. 13', focus:'procedure semplificate'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32006L0123'
+  },
+  dogane_2023_258:{
+    titolo:'Riforma Dogane UE (pacchetto COM(2023) 258–260)',
+    perche:'DMS facilita adempimenti doganali digitali e interoperabilità con sistemi UE.',
+    articoli:[ {art:'digitalizzazione', focus:'procedure doganali paperless'}, {art:'interoperabilità', focus:'sistemi informativi integrati'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=COM%3A2023%3A258%3AFIN'
+  },
+  pnrr_italia:{
+    titolo:'PNRR – Italia Domani',
+    perche:'DMS contribuisce a digitalizzazione PA e transizione ecologica previste dal Piano.',
+    articoli:[ {art:'M1C1', focus:'digitalizzazione PA'}, {art:'M2C2', focus:'economia circolare'} ],
+    pdf:'https://www.governo.it/sites/governo.it/files/PNRR.pdf'
+  },
+  pdnd_dati:{
+    titolo:'PDND – Piattaforma Digitale Nazionale Dati',
+    perche:'DMS si integra con PDND per condivisione sicura dati tra amministrazioni.',
+    articoli:[ {art:'interoperabilità', focus:'API standardizzate'}, {art:'once-only', focus:'riuso dati certificati'} ],
+    pdf:'https://docs.italia.it/italia/piano-triennale-ict/pianotriennale-ict-doc/it/2021-2023/capitolo-5-interoperabilita.html'
+  },
+  agid_interop:{
+    titolo:'AgID – Linee guida interoperabilità',
+    perche:'DMS implementa standard AgID per interoperabilità tecnica e semantica.',
+    articoli:[ {art:'ModI', focus:'pattern interazione'}, {art:'API Gateway', focus:'gestione API'} ],
+    pdf:'https://docs.italia.it/italia/piano-triennale-ict/lg-modellointeroperabilita/it/bozza/index.html'
+  }
+};
+
+const SCHEDA = document.getElementById('scheda-norma');
+
+function openNorma(id){
+  const d = NORME[id];
+  if(!SCHEDA) return;
+  if(!d){
+    SCHEDA.classList.remove('norma-empty');
+    SCHEDA.innerHTML = '<p>Norma non trovata.</p>';
+    SCHEDA.removeAttribute('hidden');
+    return;
+  }
+  const articoliHTML = (d.articoli||[]).map(a=>`<li><b>${a.art}</b>: ${a.focus}</li>`).join('');
+  SCHEDA.classList.remove('norma-empty');
+  SCHEDA.innerHTML = `
+    <h3>${d.titolo}</h3>
+    <p class="muted">${d.perche}</p>
+    <div class="arts">
+      <b>Articoli/commi rilevanti:</b>
+      <ul style="margin:6px 0 0 16px">${articoliHTML}</ul>
+    </div>
+    <a class="btn" href="${d.pdf}" target="_blank" rel="noopener">📄 Testo integrale (PDF)</a>
+  `;
+  SCHEDA.removeAttribute('hidden');
+  // porta in vista su iPad
+  SCHEDA.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// Cattura click su QUALSIASI .norma-btn (sia <button> che <a>)
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.norma-btn');
+  if(!btn) return;
+  // se è un <a>, evita il reload
+  if(btn.tagName === 'A') e.preventDefault();
+  openNorma(btn.dataset.id);
+});
+
+// (opz.) Test rapido da URL: ?open=dpr160_2010
+(function(){
+  const v = new URL(location).searchParams.get('open');
+  if(v) openNorma(v);
+})();
+
+// (opz.) Esporta la funzione per test manuale da console
+window.openNorma = openNorma;
 </script>
 
 <script>
