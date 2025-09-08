@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DMS · Gemello Digitale — Spot & Documenti</title>
+<meta name="color-scheme" content="dark">
+<style>
+  :root{ --bgA:#0e2d38; --bgB:#155268; --ink:#dde2e4; --accent:#46a0bd; --r:14px; }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink);
+    background: radial-gradient(1000px 700px at 60% 18%, #1a566b 0%, transparent 60%),
+                linear-gradient(180deg, var(--bgB), var(--bgA));
+    font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  }
+  .top{display:flex; gap:10px; padding:18px}
+  .btn{
+    appearance:none; border:2px solid rgba(255,255,255,.2);
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    color:var(--ink); padding:.55rem .9rem; border-radius:12px; font-weight:700;
+    backdrop-filter:blur(6px); text-decoration:none; cursor:pointer;
+  }
+  .wrap{display:grid; grid-template-columns: minmax(260px, 520px) 1fr; gap:18px; padding:0 18px 28px}
+  .panel{background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:14px}
+  h2{margin:6px 6px 12px 6px}
+  h3.section-title{
+    margin:20px 6px 8px 6px; 
+    color:#14b8a6; 
+    font-size:14px; 
+    font-weight:600; 
+    text-transform:uppercase; 
+    letter-spacing:0.5px;
+    border-bottom:1px solid rgba(20,184,166,.3);
+    padding-bottom:4px;
+  }
+  .doc{display:flex; align-items:center; justify-content:space-between; gap:8px;
+       border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:.7rem 1rem;
+       margin:10px 6px; background:rgba(255,255,255,.05); text-decoration:none; color:var(--ink)}
+  .doc:hover{background:rgba(255,255,255,.08)}
+  .videos{display:flex; flex-direction:column; gap:14px}
+  video{width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.18); display:block}
+  @media (max-width:900px){ .wrap{grid-template-columns: 1fr} }
+</style>
+<link rel="stylesheet" href="./assets/theme-green.css">
+<!-- THEME GREEN OVERRIDE (safe, removable) -->
+<style id="theme-green">
+  :root{
+    /* Fondo: verde scuro elegante */
+    --bg-a:#071a1d;
+    --bg-b:#0b2730;
+    /* Testi */
+    --ink:#e8fbff;
+    --muted:#9bd6de;
+    /* Pannelli e bordi */
+    --panel:rgba(7,26,29,.78);
+    --stroke:rgba(173,234,240,.18);
+    /* Accenti */
+    --accent:#14b8a6;
+    --accent2:#0b5fff;
+    /* Gradiente di sfondo */
+    --bg-gradient:radial-gradient(1000px 700px at 60% 18%, #0f4c3a 0%, transparent 60%),
+                  linear-gradient(180deg, var(--bg-b), var(--bg-a));
+  }
+  body{
+    background:var(--bg-gradient);
+    color:var(--ink);
+  }
+  .panel{
+    background:var(--panel);
+    border-color:var(--stroke);
+    backdrop-filter:blur(8px);
+  }
+  .btn{
+    border-color:var(--stroke);
+    background:linear-gradient(180deg, rgba(20,184,166,.15), rgba(20,184,166,.08));
+    color:var(--ink);
+  }
+  .btn:hover{
+    background:linear-gradient(180deg, rgba(20,184,166,.25), rgba(20,184,166,.15));
+  }
+  .doc{
+    border-color:var(--stroke);
+    background:rgba(20,184,166,.08);
+  }
+  .doc:hover{
+    background:rgba(20,184,166,.15);
+  }
+  
+  /* Evidenziazione rossa per pulsanti "hot" */
+  .btn.is-hot, a.is-hot {
+    outline: 3px solid #e11d48;
+    box-shadow: 0 0 0 4px rgba(225,29,72,.25);
+    border-radius: 10px;
+  }
+
+  :root{
+    /* IDENTICO al bottone PDF */
+    --spot-chip-bg: #0f766e;       /* stesso verde dei PDF */
+    --spot-chip-bg-hover: #115e59; /* hover più scuro */
+    --spot-chip-text: #e6fff7;
+    --spot-chip-border-active: #22d3ee; /* ciano per attivate (pertinenti) */
+  }
+
+  /* griglia: 1 col mobile, 2 col tablet, 3 col desktop */
+  /* === PATCH ULTRA-SEMPLICE: 2 colonne, verde identico PDF === */
+  :root{
+    --chip-bg: #0f766e;          /* verrà sovrascritto via JS col colore reale dei PDF */
+    --chip-bg-hover:#115e59;
+    --chip-text:#e6fff7;
+    --chip-border-active:#22d3ee; /* ciano */
+  }
+
+  .norme-grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0,1fr)); /* 2 colonne fisse */
+    gap:12px;
+  }
+
+  .norma-chip{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:100%; min-height:44px; padding:10px 14px;
+    border-radius:10px;
+    background:var(--chip-bg);
+    color:var(--chip-text);
+    border:2px solid transparent;               /* niente bordo di base */
+    text-decoration:none; font-weight:600;
+    line-height:1.25; white-space:normal;
+    word-break:break-word; hyphens:auto;
+    font-size:clamp(12px, 1.6vw, 16px);         /* le etichette lunghe non esplodono */
+  }
+  .norma-chip:hover,.norma-chip:focus{ background:var(--chip-bg-hover); }
+  .norma-chip.is-active{ border-color:var(--chip-border-active); }
+
+  /* Scheda normativa (quadra, bianca) */
+  .norma-card{
+    background:#ffffff; color:#0b0f14;
+    border:1px solid #dfe7e2; border-radius:14px;
+    padding:16px; margin-top:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+    grid-column: 1 / -1; /* occupa tutta la larghezza della griglia */
+  }
+  .norma-card h3{ margin:0 0 8px; font-size:1.05rem; font-weight:800 }
+  .norma-card .muted{ color:#4b5a52 }
+  .norma-card .arts{ border-left:3px solid #2A8CFF; padding-left:10px; margin:10px 0 }
+  .norma-card .btn{ display:inline-flex; gap:8px; padding:8px 12px; border:1px solid #2A8CFF; border-radius:10px; text-decoration:none; font-weight:800 }
+
+  /* Stato "vuota" (placeholder) */
+  .norma-empty{ display:flex; align-items:center; justify-content:center; min-height:140px; font-weight:700; color:#6b7d72 }
+</style>
+</head>
+<body>
+  <nav class="top">
+    <a href="/dms-gemello-news/landing/home.html" class="btn">Home</a>
+    <a href="/dms-gemello-news/landing/mappa-ministeri.html" class="btn">Mappa</a>
+    <a href="/dms-gemello-news/landing/spot.html" class="btn">Spot</a>
+  </nav>
+
+  <div class="wrap">
+    <section class="panel">
+      <h2>Documenti (PDF)</h2>
+      <p style="margin:6px 6px 16px; color:#9bd6de; font-size:14px">
+        Archivio completo della documentazione DMS organizzato per categorie
+      </p>
+      <div id="docs">
+        <!-- I documenti verranno inseriti qui via JavaScript -->
+      </div>
+    </section>
+
+    <section class="panel">
+      <section class="videos">
+        <h2>Video</h2>
+        
+        <div class="video-item">
+          <h3>Riaccendiamo i mercati</h3>
+          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/assets/poster-riaccendiamo.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-riaccendiamo.mp4?v=20250905a" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="video-item">
+          <h3>Hub Emilia Romagna</h3>
+          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/assets/poster-emilia-romagna.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-emilia-romagna.mp4?v=20250905a" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="video-item">
+          <h3>Futuro (Filmato 23)</h3>
+          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/assets/poster-futuro.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-23.mp4?v=20250905a" type="video/mp4">
+          </video>
+        </div>
+      </section>
+
+      <!-- ancora per scroll stabile -->
+      <div id="goto-norme" style="position:relative;top:-80px;"></div>
+
+      <section id="riferimenti-normativi" class="norme-grid" style="margin-top:40px">
+        <h2 style="grid-column: 1 / -1;">Riferimenti normativi & PNRR</h2>
+        <a href="#" class="norma-chip norma-btn" data-norm="sdg" data-id="sdg_2018_1724" target="_blank" rel="noopener">
+          Single Digital Gateway (Reg. UE 2018/1724)
+        </a>
+        <a href="#" class="norma-chip norma-btn" data-norm="interop" data-id="interop_2024_903" target="_blank" rel="noopener">
+          Interoperable Europe (Reg. UE 2024/903)
+        </a>
+        <a href="#" class="norma-chip norma-btn" data-norm="eidas2" data-id="eidas2_2024_1183" target="_blank" rel="noopener">
+          eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
+        </a>
+        <a href="#" class="norma-chip norma-btn" data-norm="espr" data-id="espr_2024_1781" target="_blank" rel="noopener">
+          ESPR & Digital Product Passport (Reg. UE 2024/1781)
+        </a>
+        <a href="#" class="norma-chip norma-btn" data-norm="bolk" data-id="bolkestein_2006_123" target="_blank" rel="noopener">
+          Direttiva Servizi (2006/123/CE – "Bolkestein")
+        </a>
+        <a href="#" class="norma-chip norma-btn" data-norm="suap" data-id="dpr160_2010" target="_blank" rel="noopener">
+          SUAP – DPR 160/2010
+        </a>
+        <a href="#" class="norma-chip norma-btn" data-norm="dogane" data-id="dogane_2023_258" target="_blank" rel="noopener">
+          Riforma Dogane UE (pacchetto COM(2023) 258–260)
+        </a>
+        <a href="#" class="norma-chip norma-btn" data-norm="pnrr" data-id="pnrr_italia" target="_blank" rel="noopener">
+          PNRR – Italia Domani
+        </a>
+        <a href="#" class="norma-chip norma-btn" data-norm="pdnd" data-id="pdnd_dati" target="_blank" rel="noopener">
+          PDND – Piattaforma Digitale Nazionale Dati
+        </a>
+        <a href="#" class="norma-chip norma-btn" data-norm="agid" data-id="agid_interop" target="_blank" rel="noopener">
+          AgID – Linee guida interoperabilità
+        </a>
+        
+        <!-- Scheda normativa interattiva -->
+        <section id="scheda-norma" class="norma-card norma-empty">Seleziona una norma per vedere gli articoli e il PDF.</section>
+      </section>
+    </section>
+  </div>
+
+<script>
+  // Lista PDF completa organizzata per sezioni
+  const PDF_SECTIONS = [
+    {
+      title: "Documenti Base",
+      docs: [
+        ["Hub Nazionale del Commercio","/dms-gemello-news/assets/doc/HUBNAZIONALEDELCOMMERCIO(2).pdf"],
+        ["DMS & CLUST-ER","/dms-gemello-news/assets/doc/DMSECLUST-ER(4).pdf"],
+        ["Dossier Nazionale","/dms-gemello-news/assets/doc/DOSSIERNAZIONALE(3).pdf"],
+        ["DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città","/dms-gemello-news/assets/doc/DMS-RiaccendiamoiMercati-RivitalizziamoleCitta.pdf"],
+        ["Passaporto EU","/dms-gemello-news/assets/doc/PASSAPORTOEU(3).pdf"],
+        ["Presentazione DMS (Bologna)","/dms-gemello-news/assets/doc/PRESENTAZIONEDMS-CITTAMETROPOLITANADIBOLOGNA-3.pdf"],
+        ["Hub Urbani e di Prossimità in Emilia-Romagna","/dms-gemello-news/assets/doc/HubUrbaniediProssimita-EmiliaRomagna-1.pdf"],
+        ["Gemello DMS","/dms-gemello-news/assets/doc/INFRASTRUTTURARETEDMSEUROPA.pdf"],
+        ["DMS ECC (narrativo)","/dms-gemello-news/assets/doc/EQUILIBRIOECOSOSTENIBILE.pdf"],
+        ["DMS ECC (tecnico)","/dms-gemello-news/assets/doc/DMSECC(3).pdf"],
+        ["Carbon Credit – Logica","/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"],
+        ["Carbon Credit DMS","/dms-gemello-news/assets/doc/CARBONCREDITDMS-4.pdf"],
+        ["Ecosistema Costi PA","/dms-gemello-news/assets/doc/EcosistemaDMS-hub-costiPA-2.pdf"],
+        ["Analisi & Soluzione DMS","/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"],
+        ["Scenario Futuro","/dms-gemello-news/assets/doc/ScenarioFuturo(3).pdf"]
+      ]
+    },
+    {
+      title: "Analisi e Ricerche",
+      docs: [
+        ["Analisi Commercio Ambulante","/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"],
+        ["Report Controlli PA","/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"],
+        ["Analisi Dati Sistema","/dms-gemello-news/assets/doc/DATI.pdf"],
+        ["Mercato dell'Usato","/dms-gemello-news/assets/doc/USATO.pdf"],
+        ["Riequilibrio Economico","/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"],
+        ["Relazione Approfondita DMS (102 pagine)","/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"]
+      ]
+    },
+    {
+      title: "Implementazione Tecnica",
+      docs: [
+        ["DMS Sistema Completo","/dms-gemello-news/assets/doc/DMScompleto2(1).pdf"],
+        ["Implementazioni Avanzate","/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"],
+        ["DMS Offline con CIE","/dms-gemello-news/assets/doc/DMSofflineconCIE(1).pdf"],
+        ["Gestione Servizi Accessori","/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"],
+        ["DMS al Centro di Tutto","/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf"],
+        ["Frammentazione Digitale PA","/dms-gemello-news/assets/doc/Vuoto1332(1).pdf"]
+      ]
+    },
+    {
+      title: "FinTech e Carbon Credit",
+      docs: [
+        ["DMS FinTech","/dms-gemello-news/assets/doc/DMSFINTECH.pdf"],
+        ["Eco Carbon Credit","/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"],
+        ["Logica Carbon Credit Avanzata","/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"],
+        ["Eventi Straordinari","/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"]
+      ]
+    },
+    {
+      title: "Progetto Nazionale",
+      docs: [
+        ["Progetto Nazionale","/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"],
+        ["Hub DMS Web3 Europa","/dms-gemello-news/assets/doc/DMSWeb3-SmartContract(2).pdf"],
+        ["Premessa Politica","/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf"],
+        ["Bolkestein Commercio","/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"]
+      ]
+    },
+    {
+      title: "App e Strumenti",
+      docs: [
+        ["App DMS Assistente","/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"],
+        ["DMS Locandina","/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"],
+        ["DMS Set v2","/dms-gemello-news/assets/doc/DMSSSET(2).pdf"]
+      ]
+    }
+  ];
+
+  // Genera la lista dei documenti organizzata per sezioni
+  const list = document.getElementById('docs');
+  
+  PDF_SECTIONS.forEach(section => {
+    // Aggiungi titolo sezione
+    const sectionTitle = document.createElement('h3');
+    sectionTitle.className = 'section-title';
+    sectionTitle.textContent = section.title;
+    list.appendChild(sectionTitle);
+    
+    // Aggiungi documenti della sezione
+    section.docs.forEach(([title, href]) => {
+      const a = document.createElement('a');
+      a.className = 'doc';
+      a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      
+      // Aggiungo data-doc per evidenziazione hash e data-spot + id per evidenziazione rossa
+      const slug = title.toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]/g,'');
+      a.setAttribute('data-doc', slug);
+      a.setAttribute('data-spot', slug);
+      a.id = slug;
+      a.innerHTML = `<span>${title}</span><span>Apri ⤴</span>`;
+      list.appendChild(a);
+    });
+  });
+
+  // Evidenziazione hash-based
+  (function(){
+    const h = (location.hash||'').replace('#','');
+    if(!h) return;
+    const btn = document.querySelector(`[data-doc="${h}"]`);
+    if(btn){
+      btn.classList.add('is-active');
+      btn.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  })();
+
+  // Evidenziazione rossa per pulsanti "hot" da parametri URL
+  (function(){
+    const q = new URLSearchParams(location.search);
+    const raw = (q.get("hot")||"").split(",").map(s=>s.trim()).filter(Boolean);
+    if (!raw.length) return;
+
+    const norm = s => s.toLowerCase().replace(/\s+/g,'').replace(/[^\p{L}\p{N}]/gu,'');
+
+    const pool = Array.from(document.querySelectorAll('a,button'))
+      .filter(el => (el.href||'').includes('/assets/doc/') || el.dataset.spot);
+
+    const byId = id => document.getElementById(id) ||
+                       document.querySelector(`[data-spot="${id}"]`);
+
+    const hot = new Set();
+    raw.forEach(tok => {
+      const t = norm(tok);
+      let hit = false;
+
+      // 1) prova id/data-spot
+      const idHit = byId(tok);
+      if (idHit) { hot.add(idHit); hit = true; }
+
+      // 2) fallback: match per contenuto testuale
+      if (!hit) {
+        pool.forEach(el=>{
+          const label = norm(el.textContent||"");
+          if (label.includes(t)) hot.add(el);
+        });
+      }
+    });
+
+    // applica stile e rimuovi al click
+    let first = null;
+    hot.forEach(el=>{
+      el.classList.add('is-hot');
+      if (!first) first = el;
+      el.addEventListener('click', ()=> el.classList.remove('is-hot'), {once:true});
+    });
+    if (first) first.scrollIntoView({behavior:'smooth', block:'start'});
+
+  })();
+</script>
+
+<script>
+// === PATCH SCHEDA NORMATIVA ===
+
+// Dataset minimo (aggiungi/aggiorna i tuoi PDF)
+const NORME = {
+  dpr160_2010:{
+    titolo:'DPR 160/2010 – SUAP',
+    perche:'DMS genera pratiche conformi (SCIA, subingressi, volture) e orchestra endo-pareri.',
+    articoli:[ {art:'art. 5', focus:'interoperabilità e telematica'}, {art:'art. 10', focus:'endo-pareri con enti terzi'} ],
+    pdf:'https://www.gazzettaufficiale.it/eli/id/2010/10/29/010G0184/sg'
+  },
+  siconbep_106_2023:{
+    titolo:'D.Lgs. 106/2023 – SICONBEP',
+    perche:'DMS alimenta automaticamente gli invii sulle concessioni/posteggi.',
+    articoli:[ {art:'obblighi telematici', focus:'monitoraggio concessioni'} ],
+    pdf:'https://www.gazzettaufficiale.it/eli/id/2023/05/31/23G00119/sg'
+  },
+  sdg_2018_1724:{
+    titolo:'Reg. (UE) 2018/1724 – Single Digital Gateway',
+    perche:'Principio once-only: DMS riusa dati certificati via PDND.',
+    articoli:[ {art:'artt. chiave', focus:'riuso dati cross-PA e servizi online'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32018R1724'
+  },
+  interop_2024_903:{
+    titolo:'Reg. (UE) 2024/903 – Interoperable Europe',
+    perche:'Framework per interoperabilità cross-border: DMS implementa standard comuni.',
+    articoli:[ {art:'art. 12', focus:'governance interoperabilità'}, {art:'art. 15', focus:'standard tecnici'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32024R0903'
+  },
+  eidas2_2024_1183:{
+    titolo:'Reg. (UE) 2024/1183 – eIDAS 2 Digital Wallet',
+    perche:'DMS integra wallet digitale europeo per identità e credenziali verificabili.',
+    articoli:[ {art:'art. 6a', focus:'wallet digitale europeo'}, {art:'art. 45a', focus:'credenziali verificabili'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32024R1183'
+  },
+  espr_2024_1781:{
+    titolo:'Reg. (UE) 2024/1781 – ESPR & Digital Product Passport',
+    perche:'DMS traccia sostenibilità prodotti via passaporto digitale integrato.',
+    articoli:[ {art:'art. 9', focus:'passaporto digitale prodotto'}, {art:'art. 15', focus:'tracciabilità supply chain'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32024R1781'
+  },
+  bolkestein_2006_123:{
+    titolo:'Direttiva 2006/123/CE – "Bolkestein"',
+    perche:'DMS semplifica procedure per libera prestazione servizi nel mercato interno.',
+    articoli:[ {art:'art. 8', focus:'sportello unico'}, {art:'art. 13', focus:'procedure semplificate'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX%3A32006L0123'
+  },
+  dogane_2023_258:{
+    titolo:'Riforma Dogane UE (pacchetto COM(2023) 258–260)',
+    perche:'DMS facilita adempimenti doganali digitali e interoperabilità con sistemi UE.',
+    articoli:[ {art:'digitalizzazione', focus:'procedure doganali paperless'}, {art:'interoperabilità', focus:'sistemi informativi integrati'} ],
+    pdf:'https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=COM%3A2023%3A258%3AFIN'
+  },
+  pnrr_italia:{
+    titolo:'PNRR – Italia Domani',
+    perche:'DMS contribuisce a digitalizzazione PA e transizione ecologica previste dal Piano.',
+    articoli:[ {art:'M1C1', focus:'digitalizzazione PA'}, {art:'M2C2', focus:'economia circolare'} ],
+    pdf:'https://www.governo.it/sites/governo.it/files/PNRR.pdf'
+  },
+  pdnd_dati:{
+    titolo:'PDND – Piattaforma Digitale Nazionale Dati',
+    perche:'DMS si integra con PDND per condivisione sicura dati tra amministrazioni.',
+    articoli:[ {art:'interoperabilità', focus:'API standardizzate'}, {art:'once-only', focus:'riuso dati certificati'} ],
+    pdf:'https://docs.italia.it/italia/piano-triennale-ict/pianotriennale-ict-doc/it/2021-2023/capitolo-5-interoperabilita.html'
+  },
+  agid_interop:{
+    titolo:'AgID – Linee guida interoperabilità',
+    perche:'DMS implementa standard AgID per interoperabilità tecnica e semantica.',
+    articoli:[ {art:'ModI', focus:'pattern interazione'}, {art:'API Gateway', focus:'gestione API'} ],
+    pdf:'https://docs.italia.it/italia/piano-triennale-ict/lg-modellointeroperabilita/it/bozza/index.html'
+  }
+};
+
+<script>
+// === Mappa PDF ufficiali per ogni norma (fonti: EUR-Lex, Normattiva, Docs Italia, Governo) ===
+const PDF = {
+  sdg_2018_1724:               'https://eur-lex.europa.eu/eli/reg/2018/1724/oj',
+  interoperable_europe_2024_903:'https://eur-lex.europa.eu/eli/reg/2024/903/oj',
+  eidas2_2024_1183:            'https://eur-lex.europa.eu/eli/reg/2024/1183/oj',
+  espr_dpp_2024_1781:          'https://eur-lex.europa.eu/eli/reg/2024/1781/oj',
+  bolkestein_2006_123:         'https://eur-lex.europa.eu/eli/dir/2006/123/oj',
+  dpr160_2010:                 'https://www.normattiva.it/uri-res/N2Ls?urn:nir:presidente.repubblica:decreto:2010-09-07;160',
+  dogane_com_2023_258_260:     'https://eur-lex.europa.eu/search.html?text=COM(2023)%20258%20259%20260%20customs',
+  pnrr_italiadomani:           'https://www.governo.it/sites/governo.it/files/PNRR_Italia_Domani.pdf',
+  pdnd:                        'https://docs.italia.it/italia/piano-triennale-ict/dati-di-qualita-docs/it/bozza/index.html',
+  agid_linee_interop:          'https://docs.italia.it/agid/interoperabilita-tecnica/lg-modellointeroperabilita-docs/it/stabile/_downloads/pdf/lg-modellointeroperabilita-docs.pdf',
+  siconbep_106_2023:           'https://www.rgs.mef.gov.it/siconbep/'
+};
+
+// Applica la mappa PDF all'oggetto NORME esistente (idempotente)
+if (typeof NORME === 'object' && NORME) {
+  Object.entries(PDF).forEach(([id, url]) => {
+    if (!NORME[id]) NORME[id] = {};
+    NORME[id].pdf = url;
+  });
+}
+</script>
+
+const SCHEDA = document.getElementById('scheda-norma');
+
+function openNorma(id){
+  const d = NORME[id];
+  if(!SCHEDA) return;
+  if(!d){
+    SCHEDA.classList.remove('norma-empty');
+    SCHEDA.innerHTML = '<p>Norma non trovata.</p>';
+    SCHEDA.removeAttribute('hidden');
+    return;
+  }
+  const articoliHTML = (d.articoli||[]).map(a=>`<li><b>${a.art}</b>: ${a.focus}</li>`).join('');
+  SCHEDA.classList.remove('norma-empty');
+  SCHEDA.innerHTML = `
+    <h3>${d.titolo}</h3>
+    <p class="muted">${d.perche}</p>
+    <div class="arts">
+      <b>Articoli/commi rilevanti:</b>
+      <ul style="margin:6px 0 0 16px">${articoliHTML}</ul>
+    </div>
+    <a class="btn" href="${d.pdf}" target="_blank" rel="noopener">📄 Testo integrale (PDF)</a>
+  `;
+  SCHEDA.removeAttribute('hidden');
+  // porta in vista su iPad
+  SCHEDA.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// Cattura click su QUALSIASI .norma-btn (sia <button> che <a>)
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.norma-btn');
+  if(!btn) return;
+  // se è un <a>, evita il reload
+  if(btn.tagName === 'A') e.preventDefault();
+  openNorma(btn.dataset.id);
+});
+
+// (opz.) Test rapido da URL: ?open=dpr160_2010
+(function(){
+  const v = new URL(location).searchParams.get('open');
+  if(v) openNorma(v);
+})();
+
+// (opz.) Esporta la funzione per test manuale da console
+window.openNorma = openNorma;
+</script>
+
+<script>
+// Sorgente unica dei contenuti per modal + SPOT
+window.DOC_MAP = {
+  agid:   { title:'AgID',   images:['img/ministeri/agid-01.jpg'], pdfs:[
+    {label:'A4',   url:'/dms-gemello-news/docs/agid/a4.pdf'},
+    {label:'PDF 1',url:'/dms-gemello-news/docs/agid/doc1.pdf'}
+  ]},
+  ae:     { title:'AE - Agenzia Entrate', images:['img/ministeri/ae-01.jpg'], pdfs:[] },
+  mef:    { title:'MEF - Min. Economia e Finanze', images:['img/ministeri/mef-01.jpg','img/ministeri/mef-02.jpg','img/ministeri/mef-03.jpg'], pdfs:[
+    {label:'Scheda 1', url:'/dms-gemello-news/assets/doc/MEF/MEF-scheda-1.pdf'},
+    {label:'Scheda 2', url:'/dms-gemello-news/assets/doc/MEF/MEF-scheda-2.pdf'},
+    {label:'Scheda 3', url:'/dms-gemello-news/assets/doc/MEF/MEF-scheda-3.pdf'},
+    {label:'Scheda 4', url:'/dms-gemello-news/assets/doc/MEF/MEF-scheda-4.pdf'}
+  ]},
+  salute: { title:'Min. della Salute', images:['img/ministeri/salute-01.jpg','img/ministeri/salute-02.jpg'], pdfs:[
+    {label:'Scheda A', url:'/dms-gemello-news/assets/doc/salute/salute-scheda-a.pdf'},
+    {label:'Scheda B', url:'/dms-gemello-news/assets/doc/salute/salute-scheda-b.pdf'}
+  ]},
+  mit:    { title:'MIT - Min. Infrastrutture e Trasporti', images:['img/ministeri/mit-01.jpg'], pdfs:[] },
+  pagopa: { title:'PagoPA', images:['img/ministeri/pagopa-01.jpg'], pdfs:[] },
+  pcm:    { title:'PCM - Presidenza Consiglio Ministri', images:['img/ministeri/pcm-01.jpg','img/ministeri/pcm-02.jpg','img/ministeri/pcm-03.jpg'], pdfs:[
+    {label:'Scheda 1', url:'/dms-gemello-news/assets/doc/PCM/PCM-scheda-1.pdf'},
+    {label:'Scheda 2', url:'/dms-gemello-news/assets/doc/PCM/PCM-scheda-2.pdf'},
+    {label:'Scheda 3', url:'/dms-gemello-news/assets/doc/PCM/PCM-scheda-3.pdf'}
+  ]}
+};
+</script>
+
+<script>
+// === PATCH ULTRA-SEMPLICE ===
+
+// === 0) copia il COLORE esatto dei bottoni PDF ===
+(function(){
+  // selettore di un bottone PDF già presente nella colonna sinistra
+  const pdfBtn = document.querySelector('.spot .doc-list a, .spot .btn-pdf, .doc-card a, .panel a[href$=".pdf"]');
+  if (pdfBtn){
+    const s = getComputedStyle(pdfBtn);
+    document.documentElement.style.setProperty('--chip-bg', s.backgroundColor);
+    document.documentElement.style.setProperty('--chip-text', s.color);
+  }
+})();
+
+// === 1) disattiva qualunque anteprima inline/iframe ===
+const preview = document.getElementById('doc-preview');
+if (preview){ preview.style.display='none'; }
+
+// forza sempre nuova tab (anche su PDF della lista)
+document.querySelectorAll('#riferimenti-normativi a, .spot a[href$=".pdf"]').forEach(a=>{
+  a.setAttribute('target','_blank'); a.setAttribute('rel','noopener');
+  a.addEventListener('click', (e)=>{
+    // lascia il default del browser: evita preventDefault (alcuni popup blocker bloccano window.open)
+    e.stopPropagation();
+  }, {passive:true});
+});
+
+// === 2) scroll affidabile alla sezione quando arrivo dalla mappa ===
+(function(){
+  const hash = window.location.hash;
+  if (hash === '#riferimenti-normativi' || hash === '#norme') {
+    setTimeout(()=>{
+      (document.getElementById('goto-norme') || document.getElementById('riferimenti-normativi'))
+        ?.scrollIntoView({behavior:'instant', block:'start'});
+    },0);
+  }
+})();
+
+// === 3) evidenzia SOLO le norme pertinenti al ministero (bordo ciano) ===
+const NORMA_MAP = {
+  'MEF':['sdg','interop','pdnd','pnrr'],
+  'MIMIT':['espr','eidas2','bolk','interop'],
+  'ADM':['dogane','pdnd','sdg'],
+  'AE':['pdnd','pnrr','sdg'],
+  'MIT':['sdg','pnrr','suap'],
+  'Interno':['sdg','pdnd'],
+  'Salute':['pdnd','eidas2','interop'],
+  'Turismo':['sdg','pnrr'],
+  'MASAF':['pnrr','pdnd'],
+  'MASE':['pnrr','espr'],
+  'MIC':['sdg','pnrr'],
+  'MIM':['pnrr','pdnd'],
+  'MAECI':['interop','eidas2'],
+  'AgID':['interop','pdnd'],
+  'PagoPA':['sdg','pnrr','pdnd']
+};
+
+(function(){
+  const q = new URLSearchParams(location.search);
+  const min = q.get('min');             // es. ?min=MEF
+  const set = new Set(NORMA_MAP[min] || []);
+  document.querySelectorAll('#riferimenti-normativi .norma-chip').forEach(el=>{
+    el.classList.toggle('is-active', set.has(el.dataset.norm));
+  });
+})();
+</script>
+
+<script>
+(function(){
+  // ============ 0) CSS di sicurezza, nel caso mancasse ============
+  var css = `
+  :root{--focus-blue:#2A8CFF}
+  .norma-card{background:#fff;color:#0b0f14;border:1px solid #dfe7e2;border-radius:14px;padding:16px;margin-top:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+  .norma-card h3{margin:0 0 8px;font-size:1.05rem;font-weight:800}
+  .norma-card .muted{color:#4b5a52}
+  .norma-card .arts{border-left:3px solid var(--focus-blue);padding-left:10px;margin:10px 0}
+  .norma-card .btn{display:inline-flex;gap:8px;padding:8px 12px;border:1px solid var(--focus-blue);border-radius:10px;text-decoration:none;font-weight:800}
+  .norma-empty{display:flex;align-items:center;justify-content:center;min-height:140px;font-weight:700;color:#6b7d72}
+  .norma-btn.is-hot{animation:hotPing 1.4s ease-in-out 2}
+  @keyframes hotPing{0%{box-shadow:0 0 0 0 rgba(42,140,255,.65)}60%{box-shadow:0 0 0 12px rgba(42,140,255,0)}100%{box-shadow:0 0 0 0 rgba(42,140,255,0)}}
+  `;
+  var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  // ============ 1) Assicura che la scheda esista ============
+  var card = document.getElementById('scheda-norma');
+  if(!card){
+    card = document.createElement('section');
+    card.id = 'scheda-norma';
+    card.className = 'norma-card norma-empty';
+    card.textContent = 'Seleziona una norma per vedere articoli/commi e PDF ufficiale.';
+    var anchor = document.querySelector('.norma-btn');
+    (anchor && anchor.parentElement ? anchor.parentElement : document.body).insertAdjacentElement('afterend', card);
+  }
+
+  // ============ 2) openNorma di fallback (se manca) ============
+  window.openNorma = window.openNorma || function(id){
+    var d = (window.NORME && window.NORME[id]) || null;
+    var tEl = document.querySelector('.norma-btn[data-id="'+id+'"]');
+    var titolo = d?.titolo || (tEl?.textContent?.trim() || id);
+    var perche = d?.perche || 'Scheda tecnica in caricamento.';
+    var arts = (d?.articoli || []);
+    var pdf = d?.pdf || (tEl?.dataset.pdf || '#');
+    var li = arts.length ? arts.map(a=>`<li><b>${a.art}</b>: ${a.focus||''}</li>`).join('') : '<li>(in aggiornamento)</li>';
+    card.classList.remove('norma-empty');
+    card.innerHTML = `
+      <h3>${titolo}</h3>
+      <p class="muted">${perche}</p>
+      <div class="arts"><b>Articoli/commi:</b><ul style="margin:6px 0 0 16px">${li}</ul></div>
+      <a class="btn" href="${pdf}" target="_blank" rel="noopener">📄 PDF ufficiale</a>
+    `;
+    card.scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+
+  // ============ 3) Bind iPad-safe ai tasti (capture + touchstart) ============
+  function bind(el){
+    // Se è <a>, neutralizza per evitare salti
+    if(el.tagName==='A'){ el.setAttribute('href','javascript:void(0)'); el.removeAttribute('target'); el.setAttribute('rel','noopener'); }
+    var handler = function(e){
+      e.preventDefault(); e.stopPropagation();
+      document.querySelectorAll('.norma-btn').forEach(b=>b.classList.remove('is-hot'));
+      el.classList.add('is-hot');
+      if(el.dataset && el.dataset.id) openNorma(el.dataset.id);
+    };
+    el.addEventListener('touchstart', handler, {passive:false, capture:true}); // prima del click su iPad
+    el.addEventListener('click', handler, true); // in capture-phase
+  }
+  document.querySelectorAll('.norma-btn[data-id]').forEach(bind);
+
+  // ============ 4) Parametri URL (compatibile col tuo impianto) ============
+  var q = new URL(location).searchParams;
+  if(q.get('m') && typeof window.highlightByMinister==='function'){ window.highlightByMinister(q.get('m')); }
+  if(q.get('hot')){ var t=document.querySelector(`.norma-btn[data-id="${q.get('hot')}"]`); if(t){ t.classList.add('is-hot'); t.scrollIntoView({behavior:'smooth', block:'center'}); } }
+  if(q.get('open')){ openNorma(q.get('open')); }
+
+  // ============ 5) Diag opzionale: ?diag=1 mostra box di prova ============
+  if(q.get('diag')==='1'){
+    var box=document.createElement('div');
+    box.style.cssText='position:fixed;left:10px;bottom:10px;z-index:9999;background:#111;color:#fff;border:1px solid #3a3a3a;border-radius:10px;padding:8px 10px;font:600 12px system-ui';
+    var count=document.querySelectorAll('.norma-btn[data-id]').length;
+    var nCount=(window.NORME?Object.keys(window.NORME).length:0);
+    box.innerHTML=`Diag: tasti=${count} • scheda=${!!card} • dataset=${nCount}<br><button id="__probe" style="margin-top:6px">Apri prova (DPR160)</button>`;
+    document.body.appendChild(box);
+    document.getElementById('__probe').onclick=()=>openNorma('dpr160_2010');
+  }
+})();
+</script>
+
+<script>
+(function(){
+  // --- CSS di ripristino (forza visibilità scheda, zero conflitti) ---
+  const css = `
+  :root{--focus-blue:#2A8CFF}
+  #scheda-norma{display:block !important}
+  .norma-card{background:#fff;color:#0b0f14;border:1px solid #dfe7e2;border-radius:14px;padding:16px;margin-top:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+  .norma-card h3{margin:0 0 8px;font-size:1.05rem;font-weight:800}
+  .muted{color:#4b5a52}
+  .arts{border-left:3px solid var(--focus-blue);padding-left:10px;margin:10px 0}
+  .btn-pdf{display:inline-flex;gap:8px;padding:8px 12px;border:1px solid var(--focus-blue);border-radius:10px;text-decoration:none;font-weight:800}
+  .norma-btn.is-hot{animation:hotPing 1.4s ease-in-out 2}
+  @keyframes hotPing{0%{box-shadow:0 0 0 0 rgba(42,140,255,.65)}60%{box-shadow:0 0 0 12px rgba(42,140,255,0)}100%{box-shadow:0 0 0 0 rgba(42,140,255,0)}}
+  `;
+  const st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
+
+  // --- 1) Assicura che la scheda esista proprio sotto i tasti ---
+  let card = document.getElementById('scheda-norma');
+  if(!card){
+    card = document.createElement('section');
+    card.id='scheda-norma';
+    card.className='norma-card';
+    const grid = document.querySelector('#btnGrid') || document.querySelector('.grid') || document.querySelector('.norme') || document.body;
+    grid.insertAdjacentElement('afterend', card);
+  }
+  // Rimuovi eventuali classi che la nascondono
+  ['hidden','is-hidden','d-none'].forEach(c=>card.classList.remove(c));
+  card.removeAttribute('hidden'); card.style.visibility='visible';
+
+  // --- 2) openNorma robusto (non rompe la funzione copertine) ---
+  window.openNorma = window.openNorma || function(id){
+    const d = (window.NORME && window.NORME[id]) || null;
+    // Fallback: usa il testo del bottone se il dataset non c'è
+    const btn = document.querySelector('.norma-btn[data-id="'+id+'"]');
+    const titolo = d?.titolo || d?.t || (btn?.textContent?.trim() || id);
+    const perche = d?.perche || d?.p || 'Sintesi normativa.';
+    const art = (d?.articoli || d?.a || []).map(a=>typeof a==='string'?a:`${a.art}${a.focus?(' — '+a.focus):''}`);
+    const pdf = d?.pdf || btn?.dataset.pdf || '#';
+    card.innerHTML = `
+      <h3>${titolo}</h3>
+      <p class="muted">${perche}</p>
+      <div class="arts"><b>Articoli/commi rilevanti:</b>
+        <ul style="margin:6px 0 0 16px">${(art.length?art:['(in aggiornamento)']).map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn-pdf" href="${pdf}" target="_blank" rel="noopener">📄 Testo integrale (PDF)</a>
+        <!-- Se volete mantenere le copertine PDF in rosso, legate QUI il vostro handler esistente -->
+        <button type="button" class="btn-pdf" onclick="window.showPdfCover?.('${id}')">🖼️ Copertina PDF</button>
+      </div>
+    `;
+    card.scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+
+  // --- 3) iPad-safe: blocca navigazione/submit PRIMA che Safari agisca ---
+  function activate(e){
+    const t = e.target.closest('.norma-btn[data-id]');
+    if(!t) return;
+    if(e.cancelable!==false) e.preventDefault();
+    e.stopPropagation(); if(t.tagName==='A'){ t.href='javascript:void(0)'; t.removeAttribute('target'); }
+    if(t.tagName==='BUTTON' && t.type!=='button'){ t.type='button'; }
+    document.querySelectorAll('.norma-btn').forEach(b=>b.classList.remove('is-hot'));
+    t.classList.add('is-hot');
+    window.openNorma(t.dataset.id);
+  }
+  ['touchstart','click'].forEach(evt=>document.addEventListener(evt, activate, {passive:false, capture:true}));
+  document.addEventListener('submit',(e)=>{const a=document.activeElement; if(a?.classList?.contains('norma-btn')){e.preventDefault(); e.stopPropagation();}}, true);
+
+  // --- 4) Supporto parametri (test facile) ---
+  const q=new URL(location).searchParams;
+  if(q.get('open')) window.openNorma(q.get('open'));
+  if(q.get('hot')){ const t=document.querySelector(`.norma-btn[data-id="${q.get('hot')}"]`); if(t){ t.classList.add('is-hot'); t.scrollIntoView({behavior:'smooth', block:'center'});} }
+  if(q.get('m') && typeof window.highlightByMinister==='function'){ window.highlightByMinister(q.get('m')); }
+})();
+</script>
+
+<style>
+  /* KILL SWITCH: la scheda DEVE essere visibile */
+  #scheda-norma,
+  .norma-card{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    height:auto !important;
+  }
+</style>
+<script>
+(function(){
+  // 1) Trova/crea la scheda e rimuovi QUALSIASI stato di occultamento
+  let s = document.getElementById('scheda-norma');
+  if(!s){
+    s = document.createElement('section');
+    s.id='scheda-norma'; s.className='norma-card';
+    (document.querySelector('#btnGrid') || document.querySelector('.grid') || document.body)
+      .insertAdjacentElement('afterend', s);
+  }
+  s.hidden = false;
+  s.removeAttribute('aria-hidden');
+  ['hidden','is-hidden','d-none','collapse','collapsed','off','sr-only'].forEach(c=>s.classList.remove(c));
+  ['display','visibility','opacity','height'].forEach(prop=>s.style.removeProperty(prop));
+
+  // 2) Se qualche handler esterno prova a nasconderla, lo blocchiamo
+  const stopHide = new MutationObserver(muts=>{
+    muts.forEach(m=>{
+      if(m.target === s){
+        if (s.hidden || s.getAttribute('aria-hidden') === 'true') { s.hidden=false; s.setAttribute('aria-hidden','false'); }
+        ['hidden','is-hidden','d-none','collapse','collapsed','off','sr-only'].forEach(c=>s.classList.remove(c));
+        ['display','visibility','opacity','height'].forEach(prop=>s.style.removeProperty(prop));
+      }
+    });
+  });
+  stopHide.observe(s, {attributes:true, attributeFilter:['class','style','hidden','aria-hidden']});
+
+  // 3) iPad-safe per i tasti: nessun salto, nessun reload
+  function safeBind(btn){
+    if(btn.tagName==='A'){ btn.href='javascript:void(0)'; btn.removeAttribute('target'); btn.setAttribute('rel','noopener'); }
+    const open = (e)=>{ if(e.cancelable!==false) e.preventDefault(); e.stopPropagation(); window.openNorma?.(btn.dataset.id); };
+    btn.addEventListener('touchstart', open, {passive:false, capture:true});
+    btn.addEventListener('click', open, true);
+  }
+  document.querySelectorAll('.norma-btn[data-id]').forEach(safeBind);
+})();
+</script>
+
+<style>
+  /* Kill-switch: la scheda DEVE essere visibile */
+  #scheda-norma,.norma-card{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important}
+</style>
+<script>
+(function(){
+  // 0) Version tag per capire a colpo d'occhio che la pagina è aggiornata
+  window.__DMS_VERSION = 'scheda-hardlock-v3-2025-09-08T23:00';
+
+  // 1) Assicura che il contenitore esista proprio sotto la griglia dei tasti
+  function ensureCard(){
+    let s = document.getElementById('scheda-norma');
+    if(!s){
+      s = document.createElement('section');
+      s.id='scheda-norma'; s.className='norma-card';
+      s.innerHTML='Seleziona una norma per vedere articoli/commi e il PDF ufficiale.';
+      (document.querySelector('#btnGrid') || document.querySelector('.grid') || document.body)
+        .insertAdjacentElement('afterend', s);
+    }
+    // rimuovi qualsiasi "nascondi"
+    s.hidden=false; s.removeAttribute('aria-hidden');
+    ['hidden','is-hidden','d-none','collapse','collapsed','off','sr-only'].forEach(c=>s.classList.remove(c));
+    ['display','visibility','opacity','height'].forEach(p=>s.style.removeProperty(p));
+    return s;
+  }
+  const CARD = ensureCard();
+
+  // 2) Fallback openNorma: usa NORME se c'è, altrimenti ricava titolo/testo dal bottone
+  window.openNorma = window.openNorma || function(id){
+    const d = (window.NORME && window.NORME[id]) || {};
+    const btn = document.querySelector('.norma-btn[data-id="'+id+'"]');
+    const titolo = d.titolo || d.t || (btn?.textContent?.trim() || id);
+    const perche = d.perche || d.p || 'Sintesi normativa.';
+    const arti = (d.articoli || d.a || []).map(a=>typeof a==='string'?a:(a.art+(a.focus?(' — '+a.focus):'')));
+    const pdf  = d.pdf || btn?.dataset.pdf || '#';
+    CARD.innerHTML = `
+      <h3 style="margin:0 0 8px">${titolo}</h3>
+      <p class="muted" style="color:#4b5a52">${perche}</p>
+      <div class="arts" style="border-left:3px solid #2A8CFF;padding-left:10px;margin:10px 0">
+        <b>Articoli/commi rilevanti:</b>
+        <ul style="margin:6px 0 0 16px">${(arti.length?arti:['(in aggiornamento)']).map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+      <a class="btn" style="display:inline-flex;gap:8px;padding:8px 12px;border:1px solid #2A8CFF;border-radius:10px;text-decoration:none;font-weight:800"
+         href="${pdf}" target="_blank" rel="noopener">📄 Testo integrale (PDF)</a>`;
+    CARD.scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+
+  // 3) iPad-safe: blocca navigazioni/submit PRIMA che Safari agisca (touchstart + click in capture)
+  function bind(btn){
+    if(btn.tagName==='A'){ btn.href='javascript:void(0)'; btn.removeAttribute('target'); btn.setAttribute('rel','noopener'); }
+    const open = (e)=>{
+      if(e.cancelable!==false) e.preventDefault();
+      e.stopPropagation(); if(typeof e.stopImmediatePropagation==='function') e.stopImmediatePropagation();
+      document.querySelectorAll('.norma-btn').forEach(b=>b.classList.remove('is-hot'));
+      btn.classList.add('is-hot');
+      window.openNorma(btn.dataset.id);
+    };
+    btn.addEventListener('touchstart', open, {passive:false, capture:true});
+    btn.addEventListener('click', open, true);
+  }
+  document.querySelectorAll('.norma-btn[data-id]').forEach(bind);
+
+  // 4) Se uno script terzo prova a nasconderla, la riaccendiamo
+  new MutationObserver(()=>ensureCard()).observe(CARD, {attributes:true, attributeFilter:['class','style','hidden','aria-hidden']});
+
+  // 5) Parametri utili: ?open=…  ?m=…&hot=…  ?diag=1
+  const q=new URL(location).searchParams;
+  if(q.get('open')) window.openNorma(q.get('open'));
+  if(q.get('hot')){ const t=document.querySelector(`.norma-btn[data-id="${q.get('hot')}"]`); if(t){ t.classList.add('is-hot'); t.scrollIntoView({behavior:'smooth', block:'center'});} }
+  if(q.get('m') && typeof window.highlightByMinister==='function'){ window.highlightByMinister(q.get('m')); }
+
+  // 6) Overlay diagnostico a richiesta: ?diag=1
+  if(q.get('diag')==='1'){
+    const box=document.createElement('div');
+    box.style='position:fixed;left:10px;bottom:10px;z-index:9999;background:#111;color:#fff;border:1px solid #3a3a3a;border-radius:10px;padding:8px 10px;font:600 12px system-ui';
+    const nBtn=document.querySelectorAll('.norma-btn[data-id]').length;
+    box.innerHTML=`v:${window.__DMS_VERSION} • tasti:${nBtn} • scheda:${!!CARD}
+      <br><button id="__probe" style="margin-top:6px">Apri DPR160</button>`;
+    document.body.appendChild(box);
+    document.getElementById('__probe').onclick=()=>window.openNorma('dpr160_2010');
+  }
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+  caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+}
+</script>
+
+</body>
+</html>
+

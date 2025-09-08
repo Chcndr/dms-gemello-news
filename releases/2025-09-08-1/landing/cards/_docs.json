@@ -1,0 +1,46 @@
+{
+  "AgID": [
+    { "key": "doc-once-only", "label": "Once-Only / SDG" },
+    { "key": "doc-sset",       "label": "DMS SSET (SUAP)" }
+  ],
+  "AE": [
+    { "key": "doc-riequilibrio-ecc", "label": "Riequilibrio (ECC)" }
+  ],
+  "ADM": [
+    { "key": "doc-carbon-credit", "label": "Carbon Credit DMS" }
+  ],
+  "MEF": [
+    { "key": "doc-costi-pa", "label": "Costi PA & ROI" }
+  ],
+  "MIT": [
+    { "key": "doc-progetto-nazionale", "label": "Progetto Nazionale" }
+  ],
+  "MIMIT": [
+    { "key": "doc-presentazione", "label": "Presentazione DMS" }
+  ],
+  "MASE": [
+    { "key": "doc-equilibrio-ecosostenibile", "label": "Equilibrio ecosostenibile" }
+  ],
+  "MIC": [
+    { "key": "doc-citta-metropolitana", "label": "Città Metropolitana" }
+  ],
+  "MASAF": [
+    { "key": "doc-bolkestein", "label": "Bolkestein (area pubblica)" }
+  ],
+  "MIM": [
+    { "key": "doc-app-dms", "label": "App DMS – Assistente" }
+  ],
+  "Ministero del Lavoro": [
+    { "key": "doc-analisi-soluzione", "label": "Analisi & Soluzione DMS" }
+  ],
+  "Salute": [
+    { "key": "doc-sset", "label": "DMS SSET (SUAP)" }
+  ],
+  "PagoPA S.p.A.": [
+    { "key": "doc-spot", "label": "DMS SPOT – Note" }
+  ],
+  "GENERICA": [
+    { "key": "doc-presentazione", "label": "Presentazione DMS" }
+  ]
+}
+

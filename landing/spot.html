@@ -464,6 +464,31 @@ const NORME = {
   }
 };
 
+<script>
+// === Mappa PDF ufficiali per ogni norma (fonti: EUR-Lex, Normattiva, Docs Italia, Governo) ===
+const PDF = {
+  sdg_2018_1724:               'https://eur-lex.europa.eu/eli/reg/2018/1724/oj',
+  interoperable_europe_2024_903:'https://eur-lex.europa.eu/eli/reg/2024/903/oj',
+  eidas2_2024_1183:            'https://eur-lex.europa.eu/eli/reg/2024/1183/oj',
+  espr_dpp_2024_1781:          'https://eur-lex.europa.eu/eli/reg/2024/1781/oj',
+  bolkestein_2006_123:         'https://eur-lex.europa.eu/eli/dir/2006/123/oj',
+  dpr160_2010:                 'https://www.normattiva.it/uri-res/N2Ls?urn:nir:presidente.repubblica:decreto:2010-09-07;160',
+  dogane_com_2023_258_260:     'https://eur-lex.europa.eu/search.html?text=COM(2023)%20258%20259%20260%20customs',
+  pnrr_italiadomani:           'https://www.governo.it/sites/governo.it/files/PNRR_Italia_Domani.pdf',
+  pdnd:                        'https://docs.italia.it/italia/piano-triennale-ict/dati-di-qualita-docs/it/bozza/index.html',
+  agid_linee_interop:          'https://docs.italia.it/agid/interoperabilita-tecnica/lg-modellointeroperabilita-docs/it/stabile/_downloads/pdf/lg-modellointeroperabilita-docs.pdf',
+  siconbep_106_2023:           'https://www.rgs.mef.gov.it/siconbep/'
+};
+
+// Applica la mappa PDF all'oggetto NORME esistente (idempotente)
+if (typeof NORME === 'object' && NORME) {
+  Object.entries(PDF).forEach(([id, url]) => {
+    if (!NORME[id]) NORME[id] = {};
+    NORME[id].pdf = url;
+  });
+}
+</script>
+
 const SCHEDA = document.getElementById('scheda-norma');
 
 function openNorma(id){
@@ -602,6 +627,209 @@ const NORMA_MAP = {
   document.querySelectorAll('#riferimenti-normativi .norma-chip').forEach(el=>{
     el.classList.toggle('is-active', set.has(el.dataset.norm));
   });
+})();
+</script>
+
+<script>
+(function(){
+  // ============ 0) CSS di sicurezza, nel caso mancasse ============
+  var css = `
+  :root{--focus-blue:#2A8CFF}
+  .norma-card{background:#fff;color:#0b0f14;border:1px solid #dfe7e2;border-radius:14px;padding:16px;margin-top:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+  .norma-card h3{margin:0 0 8px;font-size:1.05rem;font-weight:800}
+  .norma-card .muted{color:#4b5a52}
+  .norma-card .arts{border-left:3px solid var(--focus-blue);padding-left:10px;margin:10px 0}
+  .norma-card .btn{display:inline-flex;gap:8px;padding:8px 12px;border:1px solid var(--focus-blue);border-radius:10px;text-decoration:none;font-weight:800}
+  .norma-empty{display:flex;align-items:center;justify-content:center;min-height:140px;font-weight:700;color:#6b7d72}
+  .norma-btn.is-hot{animation:hotPing 1.4s ease-in-out 2}
+  @keyframes hotPing{0%{box-shadow:0 0 0 0 rgba(42,140,255,.65)}60%{box-shadow:0 0 0 12px rgba(42,140,255,0)}100%{box-shadow:0 0 0 0 rgba(42,140,255,0)}}
+  `;
+  var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  // ============ 1) Assicura che la scheda esista ============
+  var card = document.getElementById('scheda-norma');
+  if(!card){
+    card = document.createElement('section');
+    card.id = 'scheda-norma';
+    card.className = 'norma-card norma-empty';
+    card.textContent = 'Seleziona una norma per vedere articoli/commi e PDF ufficiale.';
+    var anchor = document.querySelector('.norma-btn');
+    (anchor && anchor.parentElement ? anchor.parentElement : document.body).insertAdjacentElement('afterend', card);
+  }
+
+  // ============ 2) openNorma di fallback (se manca) ============
+  window.openNorma = window.openNorma || function(id){
+    var d = (window.NORME && window.NORME[id]) || null;
+    var tEl = document.querySelector('.norma-btn[data-id="'+id+'"]');
+    var titolo = d?.titolo || (tEl?.textContent?.trim() || id);
+    var perche = d?.perche || 'Scheda tecnica in caricamento.';
+    var arts = (d?.articoli || []);
+    var pdf = d?.pdf || (tEl?.dataset.pdf || '#');
+    var li = arts.length ? arts.map(a=>`<li><b>${a.art}</b>: ${a.focus||''}</li>`).join('') : '<li>(in aggiornamento)</li>';
+    card.classList.remove('norma-empty');
+    card.innerHTML = `
+      <h3>${titolo}</h3>
+      <p class="muted">${perche}</p>
+      <div class="arts"><b>Articoli/commi:</b><ul style="margin:6px 0 0 16px">${li}</ul></div>
+      <a class="btn" href="${pdf}" target="_blank" rel="noopener">📄 PDF ufficiale</a>
+    `;
+    card.scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+
+  // ============ 3) Bind iPad-safe ai tasti (capture + touchstart) ============
+  function bind(el){
+    // Se è <a>, neutralizza per evitare salti
+    if(el.tagName==='A'){ el.setAttribute('href','javascript:void(0)'); el.removeAttribute('target'); el.setAttribute('rel','noopener'); }
+    var handler = function(e){
+      e.preventDefault(); e.stopPropagation();
+      document.querySelectorAll('.norma-btn').forEach(b=>b.classList.remove('is-hot'));
+      el.classList.add('is-hot');
+      if(el.dataset && el.dataset.id) openNorma(el.dataset.id);
+    };
+    el.addEventListener('touchstart', handler, {passive:false, capture:true}); // prima del click su iPad
+    el.addEventListener('click', handler, true); // in capture-phase
+  }
+  document.querySelectorAll('.norma-btn[data-id]').forEach(bind);
+
+  // ============ 4) Parametri URL (compatibile col tuo impianto) ============
+  var q = new URL(location).searchParams;
+  if(q.get('m') && typeof window.highlightByMinister==='function'){ window.highlightByMinister(q.get('m')); }
+  if(q.get('hot')){ var t=document.querySelector(`.norma-btn[data-id="${q.get('hot')}"]`); if(t){ t.classList.add('is-hot'); t.scrollIntoView({behavior:'smooth', block:'center'}); } }
+  if(q.get('open')){ openNorma(q.get('open')); }
+
+  // ============ 5) Diag opzionale: ?diag=1 mostra box di prova ============
+  if(q.get('diag')==='1'){
+    var box=document.createElement('div');
+    box.style.cssText='position:fixed;left:10px;bottom:10px;z-index:9999;background:#111;color:#fff;border:1px solid #3a3a3a;border-radius:10px;padding:8px 10px;font:600 12px system-ui';
+    var count=document.querySelectorAll('.norma-btn[data-id]').length;
+    var nCount=(window.NORME?Object.keys(window.NORME).length:0);
+    box.innerHTML=`Diag: tasti=${count} • scheda=${!!card} • dataset=${nCount}<br><button id="__probe" style="margin-top:6px">Apri prova (DPR160)</button>`;
+    document.body.appendChild(box);
+    document.getElementById('__probe').onclick=()=>openNorma('dpr160_2010');
+  }
+})();
+</script>
+
+<script>
+(function(){
+  // --- CSS di ripristino (forza visibilità scheda, zero conflitti) ---
+  const css = `
+  :root{--focus-blue:#2A8CFF}
+  #scheda-norma{display:block !important}
+  .norma-card{background:#fff;color:#0b0f14;border:1px solid #dfe7e2;border-radius:14px;padding:16px;margin-top:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+  .norma-card h3{margin:0 0 8px;font-size:1.05rem;font-weight:800}
+  .muted{color:#4b5a52}
+  .arts{border-left:3px solid var(--focus-blue);padding-left:10px;margin:10px 0}
+  .btn-pdf{display:inline-flex;gap:8px;padding:8px 12px;border:1px solid var(--focus-blue);border-radius:10px;text-decoration:none;font-weight:800}
+  .norma-btn.is-hot{animation:hotPing 1.4s ease-in-out 2}
+  @keyframes hotPing{0%{box-shadow:0 0 0 0 rgba(42,140,255,.65)}60%{box-shadow:0 0 0 12px rgba(42,140,255,0)}100%{box-shadow:0 0 0 0 rgba(42,140,255,0)}}
+  `;
+  const st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
+
+  // --- 1) Assicura che la scheda esista proprio sotto i tasti ---
+  let card = document.getElementById('scheda-norma');
+  if(!card){
+    card = document.createElement('section');
+    card.id='scheda-norma';
+    card.className='norma-card';
+    const grid = document.querySelector('#btnGrid') || document.querySelector('.grid') || document.querySelector('.norme') || document.body;
+    grid.insertAdjacentElement('afterend', card);
+  }
+  // Rimuovi eventuali classi che la nascondono
+  ['hidden','is-hidden','d-none'].forEach(c=>card.classList.remove(c));
+  card.removeAttribute('hidden'); card.style.visibility='visible';
+
+  // --- 2) openNorma robusto (non rompe la funzione copertine) ---
+  window.openNorma = window.openNorma || function(id){
+    const d = (window.NORME && window.NORME[id]) || null;
+    // Fallback: usa il testo del bottone se il dataset non c'è
+    const btn = document.querySelector('.norma-btn[data-id="'+id+'"]');
+    const titolo = d?.titolo || d?.t || (btn?.textContent?.trim() || id);
+    const perche = d?.perche || d?.p || 'Sintesi normativa.';
+    const art = (d?.articoli || d?.a || []).map(a=>typeof a==='string'?a:`${a.art}${a.focus?(' — '+a.focus):''}`);
+    const pdf = d?.pdf || btn?.dataset.pdf || '#';
+    card.innerHTML = `
+      <h3>${titolo}</h3>
+      <p class="muted">${perche}</p>
+      <div class="arts"><b>Articoli/commi rilevanti:</b>
+        <ul style="margin:6px 0 0 16px">${(art.length?art:['(in aggiornamento)']).map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn-pdf" href="${pdf}" target="_blank" rel="noopener">📄 Testo integrale (PDF)</a>
+        <!-- Se volete mantenere le copertine PDF in rosso, legate QUI il vostro handler esistente -->
+        <button type="button" class="btn-pdf" onclick="window.showPdfCover?.('${id}')">🖼️ Copertina PDF</button>
+      </div>
+    `;
+    card.scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+
+  // --- 3) iPad-safe: blocca navigazione/submit PRIMA che Safari agisca ---
+  function activate(e){
+    const t = e.target.closest('.norma-btn[data-id]');
+    if(!t) return;
+    if(e.cancelable!==false) e.preventDefault();
+    e.stopPropagation(); if(t.tagName==='A'){ t.href='javascript:void(0)'; t.removeAttribute('target'); }
+    if(t.tagName==='BUTTON' && t.type!=='button'){ t.type='button'; }
+    document.querySelectorAll('.norma-btn').forEach(b=>b.classList.remove('is-hot'));
+    t.classList.add('is-hot');
+    window.openNorma(t.dataset.id);
+  }
+  ['touchstart','click'].forEach(evt=>document.addEventListener(evt, activate, {passive:false, capture:true}));
+  document.addEventListener('submit',(e)=>{const a=document.activeElement; if(a?.classList?.contains('norma-btn')){e.preventDefault(); e.stopPropagation();}}, true);
+
+  // --- 4) Supporto parametri (test facile) ---
+  const q=new URL(location).searchParams;
+  if(q.get('open')) window.openNorma(q.get('open'));
+  if(q.get('hot')){ const t=document.querySelector(`.norma-btn[data-id="${q.get('hot')}"]`); if(t){ t.classList.add('is-hot'); t.scrollIntoView({behavior:'smooth', block:'center'});} }
+  if(q.get('m') && typeof window.highlightByMinister==='function'){ window.highlightByMinister(q.get('m')); }
+})();
+</script>
+
+<style>
+  /* KILL SWITCH: la scheda DEVE essere visibile */
+  #scheda-norma,
+  .norma-card{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    height:auto !important;
+  }
+</style>
+<script>
+(function(){
+  // 1) Trova/crea la scheda e rimuovi QUALSIASI stato di occultamento
+  let s = document.getElementById('scheda-norma');
+  if(!s){
+    s = document.createElement('section');
+    s.id='scheda-norma'; s.className='norma-card';
+    (document.querySelector('#btnGrid') || document.querySelector('.grid') || document.body)
+      .insertAdjacentElement('afterend', s);
+  }
+  s.hidden = false;
+  s.removeAttribute('aria-hidden');
+  ['hidden','is-hidden','d-none','collapse','collapsed','off','sr-only'].forEach(c=>s.classList.remove(c));
+  ['display','visibility','opacity','height'].forEach(prop=>s.style.removeProperty(prop));
+
+  // 2) Se qualche handler esterno prova a nasconderla, lo blocchiamo
+  const stopHide = new MutationObserver(muts=>{
+    muts.forEach(m=>{
+      if(m.target === s){
+        if (s.hidden || s.getAttribute('aria-hidden') === 'true') { s.hidden=false; s.setAttribute('aria-hidden','false'); }
+        ['hidden','is-hidden','d-none','collapse','collapsed','off','sr-only'].forEach(c=>s.classList.remove(c));
+        ['display','visibility','opacity','height'].forEach(prop=>s.style.removeProperty(prop));
+      }
+    });
+  });
+  stopHide.observe(s, {attributes:true, attributeFilter:['class','style','hidden','aria-hidden']});
+
+  // 3) iPad-safe per i tasti: nessun salto, nessun reload
+  function safeBind(btn){
+    if(btn.tagName==='A'){ btn.href='javascript:void(0)'; btn.removeAttribute('target'); btn.setAttribute('rel','noopener'); }
+    const open = (e)=>{ if(e.cancelable!==false) e.preventDefault(); e.stopPropagation(); window.openNorma?.(btn.dataset.id); };
+    btn.addEventListener('touchstart', open, {passive:false, capture:true});
+    btn.addEventListener('click', open, true);
+  }
+  document.querySelectorAll('.norma-btn[data-id]').forEach(safeBind);
 })();
 </script>
 

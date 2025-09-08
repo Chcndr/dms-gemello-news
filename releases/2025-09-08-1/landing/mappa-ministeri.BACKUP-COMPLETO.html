@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMS · Gemello Digitale — Mappa Ministeri</title>
+  <style>
+:root{ --green:#0F7A4C; --bg:#0b1418; --card:#0f2026; --ink:#dff7ff; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif }
+body{ margin:0; background:#071319; color:var(--ink) }
+.topnav{ display:flex; gap:.75rem; padding:.6rem 1rem; background:#081319; position:sticky; top:0; z-index:5 }
+.topnav a{ color:#cfefff; text-decoration:none; padding:.35rem .7rem; border-radius:8px; background:#0e2230 }
+#mapWrap{ padding:1.25rem; display:grid; place-items:center }
+#ring{ position:relative; width:min(86vw,920px); aspect-ratio:1; border-radius:999px; }
+.node{
+  position:absolute; inset:auto;
+  background:rgba(28,61,72,.9); color:#fff; border:0; border-radius:14px; padding:.5rem .8rem;
+  cursor:pointer; user-select:none; -webkit-user-select:none; touch-action:manipulation;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+/* posizionamento rapido dei 16 nodi (corona) */
+#ring .node:nth-child(1){  --a:0   } #ring .node:nth-child(2){  --a:22.5 } #ring .node:nth-child(3){  --a:45  }
+#ring .node:nth-child(4){  --a:67.5} #ring .node:nth-child(5){  --a:90  } #ring .node:nth-child(6){  --a:112.5}
+#ring .node:nth-child(7){  --a:135 } #ring .node:nth-child(8){  --a:157.5} #ring .node:nth-child(9){  --a:180 }
+#ring .node:nth-child(10){ --a:202.5}#ring .node:nth-child(11){ --a:225 } #ring .node:nth-child(12){ --a:247.5}
+#ring .node:nth-child(13){ --a:270 } #ring .node:nth-child(14){ --a:292.5} #ring .node:nth-child(15){ --a:315 }
+#ring .node:nth-child(16){ --a:337.5}
+#ring .node{
+  --r: calc(50% - 110px);
+  left: calc(50% + var(--r) * cos(var(--a)*1deg));
+  top:  calc(50% + var(--r) * sin(var(--a)*1deg));
+  transform: translate(-50%,-50%);
+}
+
+/* MODAL */
+#modalRoot{ position:fixed; inset:0; display:none; pointer-events:none; z-index:1100 }
+#modalRoot.is-open{ display:block; pointer-events:auto }
+#modalRoot .overlay{ position:absolute; inset:0; background:rgba(0,0,0,.6) }
+.modalCard{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width: min(92vw, 1140px); background:var(--card); border-radius:14px; overflow:hidden; }
+#modalHeader{ background:var(--green); color:#fff; display:flex; gap:.75rem; align-items:center; padding:.7rem 1rem }
+#modalHeader h3{ margin:0; font-weight:700; flex:1 }
+#modalHeader .back{ background:#0b5f3a; color:#fff; border:0; border-radius:8px; padding:.35rem .6rem; cursor:pointer }
+#spotBtns a{ background:#0e2230; color:#fff; text-decoration:none; border-radius:8px; padding:.35rem .6rem; margin-left:.4rem }
+#modalBody{ padding:1rem; background:#0b161b }
+.doc{ margin:0 0 1rem 0; }
+.doc img{ width:100%; height:auto; display:block; border-radius:10px }
+#modalRoot:not(.is-open) *{ pointer-events:none }
+
+/* Container fisso dentro la cornice */
+#mapBox{
+  position:relative; margin:24px auto;
+  width:min(1280px,96vw); height:min(78vh,880px);
+  background:#0b1f26; border-radius:16px; overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 30px 120px rgba(0,0,0,.55);
+}
+
+/* Nodo quadrato, glow e testo orizzontale */
+.node{
+  width:160px; height:88px; border-radius:16px;
+  background:#162a33; color:#d7eef9; font-weight:600;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),
+             0 10px 35px rgba(0,206,255,.10),
+             inset 0 0 28px rgba(0,206,255,.25);
+  display:grid; place-items:center;
+  /* testo sempre orizzontale, compensando la rotazione dell'anello */
+  transform: translate(-50%, -50%) rotate(calc(var(--unrotate, 0deg) - var(--spin, 0deg))) !important;
+  writing-mode: horizontal-tb; text-orientation: mixed;
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent;
+}
+
+/* Linee radiali */
+#spokes{position:absolute; inset:0; pointer-events:none;}
+.spoke{
+  position:absolute; left:50%; top:50%; height:2px; width:42%;
+  transform-origin:0 0; opacity:.65;
+  background:radial-gradient(closest-side,rgba(0,206,255,.35),transparent 60%);
+}
+
+/* Logo centrale (percorso ASSOLUTO) */
+#centerLogo{
+  position:absolute; left:50%; top:50%; width:88px; height:88px;
+  transform:translate(-50%,-50%);
+  background:url('/dms-gemello-news/assets/img/logo-PA.svg') center/contain no-repeat;
+  filter:drop-shadow(0 0 18px rgba(0,206,255,.6));
+}
+
+/* Modal chiuso di default */
+.modal{display:none;}
+.modal.is-open{display:block;}
+
+/* Contenitore fisso (nessun salto) */
+#mapBox{
+  position:relative; margin:24px auto;
+  width:min(1280px,96vw); height:min(78vh,880px);
+  background:#0b1f26; border-radius:16px; overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 30px 120px rgba(0,0,0,.55);
+}
+
+/* Sblocca i click: di default nulla intercetta, tranne i nodi */
+#mapBox *{ pointer-events:none; }
+#ring, .node, #centerLogo{ pointer-events:auto; }
+
+/* Nodi quadrati con glow e testo sempre orizzontale */
+.node{
+  position:absolute; left:50%; top:50%;
+  width:160px; height:88px; border-radius:16px;
+  display:grid; place-items:center; cursor:pointer;
+  background:#162a33; color:#d7eef9; font-weight:600;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),
+             0 10px 35px rgba(0,206,255,.10),
+             inset 0 0 28px rgba(0,206,255,.25);
+  transform: translate(-50%, -50%) rotate(calc(var(--unrotate,0deg) - var(--spin,0deg))) !important;
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent;
+}
+
+/* Linee dal centro */
+#spokes{ position:absolute; inset:0; z-index:0; }
+.spoke{
+  position:absolute; left:50%; top:50%;
+  height:2px; width:42%; transform-origin:0 0; opacity:.65;
+  background:radial-gradient(closest-side,rgba(0,206,255,.35),transparent 60%);
+}
+
+/* Logo centrale assoluto (path ASSOLUTO) */
+#centerLogo{
+  position:absolute; left:50%; top:50%;
+  width:92px; height:92px; transform:translate(-50%,-50%);
+  background:url('/dms-gemello-news/assets/img/logo-PA.svg') center/contain no-repeat;
+  filter:drop-shadow(0 0 18px rgba(0,206,255,.6));
+  z-index:2;
+}
+
+/* Z-index: mappa sotto, modal sopra solo quando aperto */
+#ring{ position:absolute; inset:0; z-index:1; transform:rotate(var(--spin,0deg)); }
+.modal{ display:none; z-index:1100; }
+.modal.is-open{ display:block; }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="/dms-gemello-news/landing/home.html">Home</a>
+    <a href="/dms-gemello-news/landing/mappa-ministeri.html">Mappa</a>
+    <a href="/dms-gemello-news/landing/spot.html">Spot</a>
+  </nav>
+
+  <main id="mapWrap" aria-label="Mappa Ministeri (sandbox)">
+    <div id="mapBox">
+      <div id="spokes"></div>
+      <div id="ring">
+        <!-- 16 nodi: usare button/div (NO <a>) per evitare anteprime su iPad -->
+        <button class="node" data-slug="agid"    aria-label="AgID">AgID</button>
+        <button class="node" data-slug="mef"     aria-label="MEF">MEF</button>
+        <button class="node" data-slug="interno" aria-label="Ministero dell'Interno">Interno</button>
+        <button class="node" data-slug="salute"  aria-label="Ministero della Salute">Salute</button>
+        <button class="node" data-slug="turismo" aria-label="Ministero del Turismo">Turismo</button>
+        <button class="node" data-slug="lavoro"  aria-label="Ministero del Lavoro">Lavoro</button>
+        <button class="node" data-slug="mit"     aria-label="MIT - Infrastrutture e Trasporti">MIT</button>
+        <button class="node" data-slug="mim"     aria-label="MIM - Istruzione e Merito">MIM</button>
+        <button class="node" data-slug="mimit"   aria-label="MIMIT - Imprese e Made in Italy">MIMIT</button>
+        <button class="node" data-slug="mase"    aria-label="MASE - Ambiente e Sicurezza Energetica">MASE</button>
+        <button class="node" data-slug="masaf"   aria-label="MASAF - Agricoltura">MASAF</button>
+        <button class="node" data-slug="maeci"   aria-label="MAECI - Affari Esteri">MAECI</button>
+        <button class="node" data-slug="mic"     aria-label="MIC - Cultura">MIC</button>
+        <button class="node" data-slug="ae"      aria-label="Agenzia Entrate">AE</button>
+        <button class="node" data-slug="adm"     aria-label="Agenzia Dogane">ADM</button>
+        <button class="node" data-slug="pagopa"  aria-label="PagoPA S.p.A.">PagoPA</button>
+      </div>
+      <div id="centerLogo" aria-hidden="true">
+        <!-- Fallback SVG se l'icona non carica -->
+        <svg viewBox="0 0 64 64" width="0" height="0" focusable="false">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+        </svg>
+      </div>
+      <div id="modalRoot" class="modal">
+        <div class="overlay" role="presentation"></div>
+        <div class="modalCard" role="dialog" aria-modal="true">
+          <header id="modalHeader">
+            <button id="btnBack" class="back">← Torna alla mappa</button>
+            <h3 id="modalTitle"></h3>
+            <div id="spotBtns"></div>
+          </header>
+          <section id="modalBody" aria-live="polite"></section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+/* Dati semplici (più item = più schede impilate) */
+window.DOC_MAP = {
+  agid   : { title:"AgID",                            cards:[{img:"/dms-gemello-news/assets/doc/agid.jpg",    alt:"AgID"}] },
+  mef    : { title:"MEF - Economia e Finanze",        cards:[{img:"/dms-gemello-news/assets/doc/mef.jpg",     alt:"MEF"}] },
+  interno: { title:"Ministero dell'Interno",          cards:[{img:"/dms-gemello-news/assets/doc/interno.jpg", alt:"Interno"}] },
+  salute : { title:"Ministero della Salute",          cards:[{img:"/dms-gemello-news/assets/doc/salute.jpg",  alt:"Salute"}] },
+  turismo: { title:"Ministero del Turismo",           cards:[{img:"/dms-gemello-news/assets/doc/turismo.jpg", alt:"Turismo"}] },
+  lavoro : { title:"Ministero del Lavoro",            cards:[{img:"/dms-gemello-news/assets/doc/lavoro.jpg",  alt:"Lavoro"}] },
+  mit    : { title:"MIT - Infrastrutture e Trasporti",cards:[{img:"/dms-gemello-news/assets/doc/mit.jpg",     alt:"MIT"}] },
+  mim    : { title:"MIM - Istruzione e Merito",       cards:[{img:"/dms-gemello-news/assets/doc/mim.jpg",     alt:"MIM"}] },
+  mimit  : { title:"MIMIT - Imprese e Made in Italy", cards:[{img:"/dms-gemello-news/assets/doc/mimit.jpg",   alt:"MIMIT"}] },
+  mase   : { title:"MASE - Ambiente e Sicurezza",     cards:[{img:"/dms-gemello-news/assets/doc/mase.jpg",    alt:"MASE"}] },
+  masaf  : { title:"MASAF - Agricoltura",             cards:[{img:"/dms-gemello-news/assets/doc/masaf.jpg",   alt:"MASAF"}] },
+  maeci  : { title:"MAECI - Affari Esteri",           cards:[{img:"/dms-gemello-news/assets/doc/maeci.jpg",   alt:"MAECI"}] },
+  mic    : { title:"MIC - Cultura",                   cards:[{img:"/dms-gemello-news/assets/doc/mic.jpg",     alt:"MIC"}] },
+  ae     : { title:"Agenzia Entrate",                 cards:[{img:"/dms-gemello-news/assets/doc/ae.jpg",      alt:"AE"}] },
+  adm    : { title:"Agenzia Dogane",                  cards:[{img:"/dms-gemello-news/assets/doc/adm.jpg",     alt:"ADM"}] },
+  pagopa : { title:"PagoPA S.p.A.",                   cards:[{img:"/dms-gemello-news/assets/doc/pagopa.jpg",  alt:"PagoPA"}] }
+};
+
+const $ = s => document.querySelector(s);
+const root = $('#modalRoot'), title = $('#modalTitle'), body = $('#modalBody'), spot = $('#spotBtns');
+
+function renderSpotButtons(slug){
+  const href = `/dms-gemello-news/landing/spot.html#${slug}`;
+  spot.innerHTML = `<a href="${href}">Apri in SPOT</a>`;
+}
+function renderDocs(cards){
+  body.innerHTML = cards.map(c=>`<figure class="doc"><img src="${c.img}" alt="${c.alt||''}"></figure>`).join('');
+}
+function openFull(slug){
+  const d = window.DOC_MAP[slug]; if(!d) return;
+  title.textContent = d.title;
+  renderSpotButtons(slug);
+  renderDocs(d.cards||[]);
+  root.classList.add('is-open');
+  root.setAttribute('aria-hidden','false');
+  if(location.hash.slice(1)!==slug) location.hash = slug;
+}
+function closeModal(updateHash=true){
+  root.classList.remove('is-open');
+  root.setAttribute('aria-hidden','true');
+  if(updateHash) history.replaceState(null,'', location.pathname);
+}
+function bindNodes(){
+  document.querySelectorAll('.node[data-slug]').forEach(n=>{
+    const slug = n.dataset.slug;
+    n.addEventListener('click',()=>openFull(slug));
+    n.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openFull(slug); }
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  closeModal(false);
+  bindNodes();
+  $('#btnBack').addEventListener('click',()=>closeModal());
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+  const s = location.hash.slice(1); if(window.DOC_MAP[s]) openFull(s);
+});
+window.addEventListener('hashchange',()=>{
+  const s = location.hash.slice(1);
+  if(window.DOC_MAP[s]) openFull(s); else closeModal(false);
+});
+</script>
+
+<script>
+// iPad: niente anteprima/long-press
+document.addEventListener('contextmenu', e=>e.preventDefault(), {passive:false});
+
+// Chiudi sempre il modal all'avvio
+window.addEventListener('DOMContentLoaded', () => {
+  const m = document.getElementById('modalRoot');
+  if (m) m.classList.remove('is-open');
+});
+
+// Geometria corona + linee + anti-rotate
+(() => {
+  const ring = document.getElementById('ring');
+  const nodes = [...ring.querySelectorAll('.node')];
+  const N = nodes.length || 16;
+  const R = Math.min(340, Math.floor(Math.min(ring.clientWidth, ring.clientHeight)*0.36));
+
+  nodes.forEach((el,i)=>{
+    const deg = (360/N)*i;
+    const rad = deg*Math.PI/180;
+    el.style.left  = `calc(50% + ${R*Math.cos(rad)}px)`;
+    el.style.top   = `calc(50% + ${R*Math.sin(rad)}px)`;
+    // unrotate di base (compensazione geometrica)
+    el.style.setProperty('--unrotate', `${-deg}deg`);
+  });
+
+  // Linee radiali
+  const spokes = document.getElementById('spokes');
+  spokes.innerHTML = '';
+  for(let i=0;i<N;i++){
+    const d = document.createElement('div');
+    d.className='spoke';
+    d.style.transform = `rotate(${(360/N)*i}deg)`;
+    spokes.appendChild(d);
+  }
+})();
+</script>
+
+<script>
+// iPad: no long-press preview
+addEventListener('contextmenu', e => e.preventDefault(), {passive:false});
+
+// Chiudi modal all'avvio
+addEventListener('DOMContentLoaded', () => {
+  document.getElementById('modalRoot')?.classList.remove('is-open');
+});
+
+// Geometria corona, linee e anti-rotate
+(() => {
+  const ring = document.getElementById('ring');
+  const nodes = [...ring.querySelectorAll('.node')];
+  const N = nodes.length || 16;
+  const R = Math.min(340, Math.floor(Math.min(ring.clientWidth, ring.clientHeight)*0.36));
+
+  nodes.forEach((el,i)=>{
+    const deg = (360/N)*i;
+    const rad = deg*Math.PI/180;
+    el.style.left = `calc(50% + ${R*Math.cos(rad)}px)`;
+    el.style.top  = `calc(50% + ${R*Math.sin(rad)}px)`;
+    el.style.setProperty('--unrotate', `${-deg}deg`);
+  });
+
+  const spokes = document.getElementById('spokes');
+  spokes.innerHTML = '';
+  for(let i=0;i<N;i++){
+    const d = document.createElement('div');
+    d.className='spoke';
+    d.style.transform = `rotate(${(360/N)*i}deg)`;
+    spokes.appendChild(d);
+  }
+})();
+
+// Click nodi -> apri modal (openFull minimale e robusto)
+function openFull(slug){
+  if(!slug) return;
+  const modal = document.getElementById('modalRoot');
+  modal.classList.add('is-open');
+  // TODO: qui popola il contenuto del modal come da tua struttura
+}
+
+document.querySelectorAll('.node').forEach(n=>{
+  const slug = n.dataset.slug || n.textContent.trim().toLowerCase();
+  n.addEventListener('click', () => openFull(slug));
+});
+</script>
+</body>
+</html>
+

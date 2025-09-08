@@ -1,0 +1,7 @@
+PDF LINKS VERIFICATION:
+dpr160_2010: https://www.normattiva.it/uri-res/N2Ls?urn:nir:presidente.repubblica:decreto:2010-09-07;160
+sdg_2018_1724: https://eur-lex.europa.eu/eli/reg/2018/1724/oj
+siconbep_106_2023: https://www.rgs.mef.gov.it/siconbep/
+pnrr_italiadomani: https://www.governo.it/sites/governo.it/files/PNRR_Italia_Domani.pdf
+agid_linee_interop: https://docs.italia.it/agid/interoperabilita-tecnica/lg-modellointeroperabilita-docs/it/stabile/_downloads/pdf/lg-modellointeroperabilita-docs.pdf
+

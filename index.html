@@ -1,4 +1,8 @@
 <!doctype html><meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=/dms-gemello-news/landing/home.html">
-<script>location.replace("/dms-gemello-news/landing/home.html");</script>
+<script>
+  (function(){
+    var REL = '/releases/2025-09-08-1/';   // cambia solo questa riga al prossimo switch
+    location.replace(REL + 'index.html' + location.search + location.hash);
+  })();
+</script>
 
