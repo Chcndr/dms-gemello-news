@@ -95,50 +95,37 @@
   }
 
   :root{
-    /* stesso verde dei bottoni PDF (fallback coerente) */
-    --pill-bg: #0f766e;         /* teal-700 */
-    --pill-bg-hover: #115e59;   /* teal-800 */
-    --pill-text: #e6fff7;       /* testo chiaro */
-    --pill-border: #22d3ee;     /* ciano bordo default */
-    --pill-border-active: #ef4444; /* rosso quando mappata al ministero */
+    /* IDENTICO al bottone PDF */
+    --spot-chip-bg: #0f766e;       /* stesso verde dei PDF */
+    --spot-chip-bg-hover: #115e59; /* hover più scuro */
+    --spot-chip-text: #e6fff7;
+    --spot-chip-border-active: #22d3ee; /* ciano per attivate (pertinenti) */
   }
 
-  /* container norme */
+  /* griglia: 1 col mobile, 2 col tablet, 3 col desktop */
   .norme-wrap{
     display:grid;
-    grid-template-columns: repeat(3, minmax(0,1fr));
+    grid-template-columns: 1fr;
     gap:12px;
   }
+  @media (min-width: 640px){ .norme-wrap{ grid-template-columns: repeat(2,1fr); } }
+  @media (min-width:1024px){ .norme-wrap{ grid-template-columns: repeat(3,1fr); } }
 
-  /* pillole norme = come i PDF, ma con bordo ciano */
+  /* chip pieni come i PDF, SENZA bordo di default */
   .norma-chip{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:100%;
-    min-height:44px;
-    padding:10px 14px;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:100%; min-height:44px; padding:10px 14px;
     border-radius:10px;
-    background: var(--pill-bg);
-    color: var(--pill-text);
-    border:2px solid var(--pill-border);
-    text-decoration:none;
-    font-weight:600;
-    line-height:1.2;
-    white-space:normal;           /* WRAP pulito */
-    word-break:break-word; 
-    hyphens:auto;
+    background: var(--spot-chip-bg);
+    color: var(--spot-chip-text);
+    border:2px solid transparent;          /* nessun bordo di base */
+    text-decoration:none; font-weight:600; line-height:1.25;
+    white-space:normal; word-break:break-word; hyphens:auto;
   }
-  .norma-chip:hover,
-  .norma-chip:focus{ background:var(--pill-bg-hover); }
+  .norma-chip:hover,.norma-chip:focus{ background:var(--spot-chip-bg-hover); }
 
-  /* bordi solo quando la norma è pertinente al ministero selezionato */
-  .norma-chip.is-active{ border-color: var(--pill-border-active); }
-
-  /* mobile */
-  @media (max-width: 900px){
-    .norme-wrap{ grid-template-columns: 1fr; }
-  }
+  /* bordo ciano SOLO quando pertinente al ministero */
+  .norma-chip.is-active{ border-color: var(--spot-chip-border-active); }
 </style>
 </head>
 <body>
@@ -411,25 +398,7 @@ window.DOC_MAP = {
 </script>
 
 <script>
-// 1) Scroll affidabile al container norme quando arrivo da MAPPA
-(function(){
-  const hash = window.location.hash;
-  if (hash === '#riferimenti-normativi' || hash === '#norme') {
-    setTimeout(() => {
-      const anchor = document.getElementById('goto-norme') || document.getElementById('riferimenti-normativi');
-      anchor?.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 0);
-  }
-})();
-
-// 2) Evita anteprime/iframes: tutti i link PDF e norme aprono nuova scheda
-document.querySelectorAll('.spot a[href$=".pdf"], .norma-chip').forEach(a=>{
-  a.setAttribute('target','_blank');
-  a.setAttribute('rel','noopener');
-});
-
-// 3) Evidenzia solo le norme pertinenti al ministero cliccato
-//    La MAPPA deve passare ?min=XXX quando apre SPOT (già succede per i PDF evidenziati).
+// 0) Costanti mappa norme per ministero (usiamo ?min=… già in uso per i PDF)
 const NORMA_MAP = {
   'MEF':      ['sdg','interop','pdnd','pnrr'],
   'MIMIT':    ['espr','eidas2','bolk','interop'],
@@ -448,15 +417,36 @@ const NORMA_MAP = {
   'PagoPA':   ['sdg','pnrr','pdnd']
 };
 
-// Leggi "min" dall'URL, es. ?min=MEF
+// 1) Scroll affidabile al container norme quando arrivo da MAPPA
+(function(){
+  const hash = window.location.hash;
+  if (hash === '#riferimenti-normativi' || hash === '#norme') {
+    setTimeout(() => {
+      (document.getElementById('goto-norme') || document.getElementById('riferimenti-normativi'))
+        ?.scrollIntoView({behavior:'instant', block:'start'});
+    }, 0);
+  }
+})();
+
+// 2) Forza sempre nuova tab e blocca qualsiasi anteprima/inline
+document.querySelectorAll('.norma-chip, .spot a[href$=".pdf"]').forEach(a=>{
+  a.addEventListener('click', (e)=>{
+    const url = a.getAttribute('href');
+    if (!url) return;
+    e.preventDefault(); e.stopPropagation();
+    window.open(url, '_blank', 'noopener');
+  }, {passive:false});
+});
+
+// 3) Evidenzia SOLO le norme pertinenti al ministero richiesto
 (function(){
   const params = new URLSearchParams(window.location.search);
   const min = params.get('min');
   if (!min) return;
-  const on = new Set((NORMA_MAP[min] || []));
-  document.querySelectorAll('.norma-chip').forEach(btn=>{
-    const id = btn.getAttribute('data-norm');
-    btn.classList.toggle('is-active', on.has(id));
+  const set = new Set(NORMA_MAP[min] || []);
+  document.querySelectorAll('.norma-chip').forEach(el=>{
+    const id = el.getAttribute('data-norm');
+    el.classList.toggle('is-active', set.has(id));
   });
 })();
 </script>
