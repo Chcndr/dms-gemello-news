@@ -94,34 +94,51 @@
     border-radius: 10px;
   }
 
-  /* prende dinamicamente il verde dei PDF */
-  :root{ --pdf-green:#0f766e; --norme-blue:#22d3ee; }
-
-  .btn-norme{
-    display:inline-flex; align-items:center; gap:.5rem;
-    padding:10px 14px; border-radius:10px; font-weight:600;
-    background:var(--pdf-green) !important;           /* FILL come i PDF */
-    border:2px solid transparent !important;          /* nessun bordo di default */
-    color:#e6fffb !important;
-    text-decoration:none; white-space:normal;
-    line-height:1.15; overflow-wrap:anywhere;         /* titoli lunghi vanno a capo */
-  }
-  .btn-norme:hover,.btn-norme:focus{ filter:brightness(1.06); text-decoration:none; }
-  .btn-norme.is-relevant{ border-color:var(--norme-blue) !important; } /* SOLO se pertinente */
-  .btn-norme.is-active{ box-shadow:0 0 0 3px rgba(34,211,238,.25); }
-
-  /* griglia responsiva della sezione norme */
-  .norme-grid {
-    display:grid; gap:12px;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  :root{
+    /* stesso verde dei bottoni PDF (fallback coerente) */
+    --pill-bg: #0f766e;         /* teal-700 */
+    --pill-bg-hover: #115e59;   /* teal-800 */
+    --pill-text: #e6fff7;       /* testo chiaro */
+    --pill-border: #22d3ee;     /* ciano bordo default */
+    --pill-border-active: #ef4444; /* rosso quando mappata al ministero */
   }
 
-  /* viewer per Norme: nascosto finché non serve */
-  .spot-viewer{ display:none; margin-top:18px; border-radius:12px;
-    border:1px solid rgba(148,163,184,.2); background:rgba(2,6,23,.45); padding:10px; }
-  .spot-viewer.is-open{ display:block; }
-  .spot-viewer header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .spot-viewer iframe{ width:100%; height:72vh; border:0; border-radius:8px; background:#0b1220 }
+  /* container norme */
+  .norme-wrap{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap:12px;
+  }
+
+  /* pillole norme = come i PDF, ma con bordo ciano */
+  .norma-chip{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    min-height:44px;
+    padding:10px 14px;
+    border-radius:10px;
+    background: var(--pill-bg);
+    color: var(--pill-text);
+    border:2px solid var(--pill-border);
+    text-decoration:none;
+    font-weight:600;
+    line-height:1.2;
+    white-space:normal;           /* WRAP pulito */
+    word-break:break-word; 
+    hyphens:auto;
+  }
+  .norma-chip:hover,
+  .norma-chip:focus{ background:var(--pill-bg-hover); }
+
+  /* bordi solo quando la norma è pertinente al ministero selezionato */
+  .norma-chip.is-active{ border-color: var(--pill-border-active); }
+
+  /* mobile */
+  @media (max-width: 900px){
+    .norme-wrap{ grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -168,48 +185,43 @@
         </div>
       </section>
 
-      <section id="riferimenti-normativi" style="margin-top:40px">
+      <!-- ancora per scroll affidabile -->
+      <div id="goto-norme" style="position:relative;top:-80px;"></div>
+
+      <section id="riferimenti-normativi" class="norme-wrap" style="margin-top:40px">
         <h2>Riferimenti normativi & PNRR</h2>
         <div class="norme-grid">
-          <a class="btn-norme" href="#" data-norma="sdg-2018-1724" data-min="MEF,AE,AGID,INTERNO,MIMIT">
+          <a class="norma-chip" href="#" data-norm="sdg" target="_blank" rel="noopener">
             Single Digital Gateway (Reg. UE 2018/1724)
           </a>
-          <a class="btn-norme" href="#" data-norma="interop-europe-2024-903" data-min="AGID,MEF,MIT,MASE">
+          <a class="norma-chip" href="#" data-norm="interop" target="_blank" rel="noopener">
             Interoperable Europe (Reg. UE 2024/903)
           </a>
-          <a class="btn-norme" href="#" data-norma="eidas2-2024-1183" data-min="AGID,MEF,INTERNO,MAECI">
+          <a class="norma-chip" href="#" data-norm="eidas2" target="_blank" rel="noopener">
             eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
           </a>
-          <a class="btn-norme" href="#" data-norma="espr-dpp-2024-1781" data-min="MIMIT,MASE,ADM,MEF">
+          <a class="norma-chip" href="#" data-norm="espr" target="_blank" rel="noopener">
             ESPR & Digital Product Passport (Reg. UE 2024/1781)
           </a>
-          <a class="btn-norme" href="#" data-norma="direttiva-servizi-2006-123" data-min="MIMIT,INTERNO,AE">
+          <a class="norma-chip" href="#" data-norm="bolk" target="_blank" rel="noopener">
             Direttiva Servizi (2006/123/CE – "Bolkestein")
           </a>
-          <a class="btn-norme" href="#" data-norma="suap-dpr-160-2010" data-min="MIMIT,INTERNO,AE,MEF">
+          <a class="norma-chip" href="#" data-norm="suap" target="_blank" rel="noopener">
             SUAP – DPR 160/2010
           </a>
-          <a class="btn-norme" href="#" data-norma="dogane-com-2023-258-260" data-min="ADM,MEF,MAECI">
+          <a class="norma-chip" href="#" data-norm="dogane" target="_blank" rel="noopener">
             Riforma Dogane UE (pacchetto COM(2023) 258–260)
           </a>
-          <a class="btn-norme" href="#" data-norma="pnrr-italia-domani" data-min="MEF,AGID,MIT,MASE,MIMIT">
+          <a class="norma-chip" href="#" data-norm="pnrr" target="_blank" rel="noopener">
             PNRR – Italia Domani
           </a>
-          <a class="btn-norme" href="#" data-norma="pdnd" data-min="AGID,MEF,MIT,MASE,MIMIT">
+          <a class="norma-chip" href="#" data-norm="pdnd" target="_blank" rel="noopener">
             PDND – Piattaforma Digitale Nazionale Dati
           </a>
-          <a class="btn-norme" href="#" data-norma="agid-linee-interoperabilita" data-min="AGID,MEF,MIT,MASE,MIMIT">
+          <a class="norma-chip" href="#" data-norm="agid" target="_blank" rel="noopener">
             AgID – Linee guida interoperabilità
           </a>
         </div>
-
-        <section id="viewer" class="spot-viewer">
-          <header>
-            <strong>Anteprima documento</strong>
-            <a id="viewer-open" class="btn-norme" href="#" target="_blank" rel="noopener">Apri in nuova scheda ↗</a>
-          </header>
-          <iframe id="docFrame" title="Anteprima PDF"></iframe>
-        </section>
       </section>
     </section>
   </div>
@@ -399,58 +411,53 @@ window.DOC_MAP = {
 </script>
 
 <script>
+// 1) Scroll affidabile al container norme quando arrivo da MAPPA
 (function(){
-  /* ——— 3a. usa esattamente il verde dei bottoni PDF ——— */
-  const samplePdfBtn = document.querySelector('.accordion button, .list button, .list a.btn');
-  const bg = samplePdfBtn ? getComputedStyle(samplePdfBtn).backgroundColor : null;
-  if(bg) document.documentElement.style.setProperty('--pdf-green', bg);
-
-  /* ——— 3b. attiva il bordo blu solo per le norme pertinenti ———
-     -> aggiungi data-min="MEF,ADM,MIT" su ciascun chip norma
-  */
-  function getMinisteroCode(){
-    // legge dall'intestazione del modal (es. "MIT - Infrastrutture e Trasporti")
-    const h = document.querySelector('[data-ministero], .modal h1, .modal h2, .breadcrumb, .page-title');
-    const txt = (h?.getAttribute('data-ministero') || h?.textContent || '').toUpperCase();
-    const m = txt.match(/\b(AE|ADM|AGID|MAECI|MASE|MASAF|MEF|MIC|MIMIT|MIM|MIT|SALUTE|INTERNO|LAVORO|TURISMO|PAGOPA)\b/);
-    return m ? m[1] : '';
+  const hash = window.location.hash;
+  if (hash === '#riferimenti-normativi' || hash === '#norme') {
+    setTimeout(() => {
+      const anchor = document.getElementById('goto-norme') || document.getElementById('riferimenti-normativi');
+      anchor?.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 0);
   }
-  function paintRelevant(){
-    const code = getMinisteroCode();
-    document.querySelectorAll('.btn-norme').forEach(b=>{
-      const list = (b.dataset.min||'').toUpperCase().split(',').map(s=>s.trim());
-      if(code && list.includes(code)) b.classList.add('is-relevant');
-      else b.classList.remove('is-relevant');
-    });
-  }
-  paintRelevant();
+})();
 
-  /* ——— 3c. viewer SOLO per i PDF delle norme ——— */
-  const normeSection = document.querySelector('#riferimenti-normativi') || document.querySelector('[data-section="norme"]');
-  const viewer = document.getElementById('viewer');
-  const frame  = document.getElementById('docFrame');
-  const aOpen  = document.getElementById('viewer-open');
+// 2) Evita anteprime/iframes: tutti i link PDF e norme aprono nuova scheda
+document.querySelectorAll('.spot a[href$=".pdf"], .norma-chip').forEach(a=>{
+  a.setAttribute('target','_blank');
+  a.setAttribute('rel','noopener');
+});
 
-  function openInViewer(url){
-    if (!viewer || !frame) return;
-    frame.src = url; if (aOpen) aOpen.href = url;
-    viewer.classList.add('is-open');
-    const top = viewer.getBoundingClientRect().top + window.scrollY - 70;
-    window.scrollTo({ top, behavior:'smooth' });
-  }
+// 3) Evidenzia solo le norme pertinenti al ministero cliccato
+//    La MAPPA deve passare ?min=XXX quando apre SPOT (già succede per i PDF evidenziati).
+const NORMA_MAP = {
+  'MEF':      ['sdg','interop','pdnd','pnrr'],
+  'MIMIT':    ['espr','eidas2','bolk','interop'],
+  'ADM':      ['dogane','pdnd','sdg'],
+  'AE':       ['pdnd','pnrr','sdg'],
+  'MIT':      ['sdg','pnrr','suap'],
+  'Interno':  ['sdg','pdnd'],
+  'Salute':   ['pdnd','eidas2','interop'],
+  'Turismo':  ['sdg','pnrr'],
+  'MASAF':    ['pnrr','pdnd'],
+  'MASE':     ['pnrr','espr'],
+  'MIC':      ['sdg','pnrr'],
+  'MIM':      ['pnrr','pdnd'],
+  'MAECI':    ['interop','eidas2'],
+  'AgID':     ['interop','pdnd'],
+  'PagoPA':   ['sdg','pnrr','pdnd']
+};
 
-  if (normeSection){
-    normeSection.addEventListener('click', function(e){
-      const a = e.target.closest('a.btn-norme'); if(!a) return;
-      const href = (a.getAttribute('href')||'').toLowerCase().trim();
-      if (href.endsWith('.pdf')){
-        e.preventDefault();
-        openInViewer(a.getAttribute('href'));
-        normeSection.querySelectorAll('.btn-norme').forEach(x=>x.classList.remove('is-active'));
-        a.classList.add('is-active');
-      }
-    }, {passive:false});
-  }
+// Leggi "min" dall'URL, es. ?min=MEF
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const min = params.get('min');
+  if (!min) return;
+  const on = new Set((NORMA_MAP[min] || []));
+  document.querySelectorAll('.norma-chip').forEach(btn=>{
+    const id = btn.getAttribute('data-norm');
+    btn.classList.toggle('is-active', on.has(id));
+  });
 })();
 </script>
 
