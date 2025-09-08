@@ -94,24 +94,34 @@
     border-radius: 10px;
   }
 
-  /* Chip/button per Riferimenti Normativi – outline blu */
+  /* Chip/button per Riferimenti Normativi – riempito come PDF, bordo blu */
   .btn-norme {
     display:inline-flex; align-items:center; gap:.5rem;
     padding:10px 14px; border-radius:10px; font-weight:600;
-    border:2px solid #22d3ee !important;      /* blu/ciano */
-    color:#22d3ee !important; background:transparent !important;
+    border:2px solid #22d3ee !important;          /* contorno blu */
+    background: var(--chip-fill, rgba(15,23,42,.6)) !important; /* fill come PDF */
+    color: var(--chip-fg, #e2e8f0) !important;
     text-decoration:none; white-space:nowrap;
   }
-  .btn-norme:hover, .btn-norme:focus {
-    background:rgba(34,211,238,.08) !important;
+  .btn-norme:hover,.btn-norme:focus{
+    filter:brightness(1.06);
     text-decoration:none;
   }
+
+  /* stato attivo (facoltativo) */
+  .btn-norme.is-active{ box-shadow:0 0 0 3px rgba(34,211,238,.25); }
 
   /* griglia responsiva della sezione norme */
   .norme-grid {
     display:grid; gap:12px;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   }
+
+  /* viewer container */
+  .spot-viewer{ margin-top:18px; border-radius:12px; border:1px solid rgba(148,163,184,.2);
+    background: rgba(2,6,23,.45); padding:10px; }
+  .spot-viewer header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .spot-viewer iframe{ width:100%; height:72vh; border:0; border-radius:8px; background:#0b1220 }
 </style>
 </head>
 <body>
@@ -192,6 +202,14 @@
             AgID – Linee guida interoperabilità
           </a>
         </div>
+
+        <section id="viewer" class="spot-viewer">
+          <header>
+            <strong>Anteprima documento</strong>
+            <a id="viewer-open" class="btn-norme" href="#" target="_blank" rel="noopener">Apri in nuova scheda ↗</a>
+          </header>
+          <iframe id="docFrame" title="Anteprima PDF"></iframe>
+        </section>
       </section>
     </section>
   </div>
@@ -378,6 +396,61 @@ window.DOC_MAP = {
     {label:'Scheda 3', url:'/dms-gemello-news/assets/doc/PCM/PCM-scheda-3.pdf'}
   ]}
 };
+</script>
+
+<script>
+(function(){
+  // 1) Colore: riusa il fill dei pulsanti/tiles PDF esistenti
+  const samplePdf = document.querySelector('.pdf-list a, .spot-list a, .pdf-tile, .btn-pdf');
+  if (samplePdf){
+    const cs = getComputedStyle(samplePdf);
+    document.documentElement.style.setProperty('--chip-fill', cs.backgroundColor);
+    document.documentElement.style.setProperty('--chip-fg',   cs.color);
+  }
+
+  // 2) Helper scroll con offset (evita che risalga sul video)
+  function scrollToViewer(){
+    const el = document.getElementById('viewer');
+    if (!el) return;
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+    setTimeout(()=>window.scrollBy({top:-70, left:0, behavior:'instant'}), 250); // header offset
+  }
+
+  // 3) Apri PDF nel viewer
+  const frame = document.getElementById('docFrame');
+  const aOpen = document.getElementById('viewer-open');
+
+  function openInViewer(url){
+    if (!frame) return;
+    frame.src = url;
+    if (aOpen) aOpen.href = url;
+    scrollToViewer();
+  }
+
+  // 4) Deleghe click: qualunque link a .pdf nella pagina SPOT
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    // solo PDF locali (per esterni lasciamo comportamento normale)
+    if (href.endsWith('.pdf') && !a.hasAttribute('data-external')){
+      e.preventDefault();
+      openInViewer(href);
+      // evidenzia attivo nella lista
+      document.querySelectorAll('.btn-pdf, .pdf-link, .spot-list a').forEach(x=>x.classList?.remove('is-active'));
+      a.classList?.add('is-active');
+    }
+  }, {passive:false});
+
+  // 5) Stato attivo per chip norme (solo visual, i link restano esterni)
+  document.querySelectorAll('.btn-norme').forEach(btn=>{
+    btn.addEventListener('click', ()=> {
+      document.querySelectorAll('.btn-norme').forEach(b=>b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      // se in futuro alcune norme diventano PDF locali, basterà aggiungere href .pdf e verranno aperte qui.
+    });
+  });
+})();
 </script>
 
 </body>
