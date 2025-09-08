@@ -103,29 +103,34 @@
   }
 
   /* griglia: 1 col mobile, 2 col tablet, 3 col desktop */
-  .norme-wrap{
+  /* === PATCH ULTRA-SEMPLICE: 2 colonne, verde identico PDF === */
+  :root{
+    --chip-bg: #0f766e;          /* verrà sovrascritto via JS col colore reale dei PDF */
+    --chip-bg-hover:#115e59;
+    --chip-text:#e6fff7;
+    --chip-border-active:#22d3ee; /* ciano */
+  }
+
+  .norme-grid{
     display:grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0,1fr)); /* 2 colonne fisse */
     gap:12px;
   }
-  @media (min-width: 640px){ .norme-wrap{ grid-template-columns: repeat(2,1fr); } }
-  @media (min-width:1024px){ .norme-wrap{ grid-template-columns: repeat(3,1fr); } }
 
-  /* chip pieni come i PDF, SENZA bordo di default */
   .norma-chip{
     display:inline-flex; align-items:center; justify-content:center;
     width:100%; min-height:44px; padding:10px 14px;
     border-radius:10px;
-    background: var(--spot-chip-bg);
-    color: var(--spot-chip-text);
-    border:2px solid transparent;          /* nessun bordo di base */
-    text-decoration:none; font-weight:600; line-height:1.25;
-    white-space:normal; word-break:break-word; hyphens:auto;
+    background:var(--chip-bg);
+    color:var(--chip-text);
+    border:2px solid transparent;               /* niente bordo di base */
+    text-decoration:none; font-weight:600;
+    line-height:1.25; white-space:normal;
+    word-break:break-word; hyphens:auto;
+    font-size:clamp(12px, 1.6vw, 16px);         /* le etichette lunghe non esplodono */
   }
-  .norma-chip:hover,.norma-chip:focus{ background:var(--spot-chip-bg-hover); }
-
-  /* bordo ciano SOLO quando pertinente al ministero */
-  .norma-chip.is-active{ border-color: var(--spot-chip-border-active); }
+  .norma-chip:hover,.norma-chip:focus{ background:var(--chip-bg-hover); }
+  .norma-chip.is-active{ border-color:var(--chip-border-active); }
 </style>
 </head>
 <body>
@@ -172,43 +177,41 @@
         </div>
       </section>
 
-      <!-- ancora per scroll affidabile -->
+      <!-- ancora per scroll stabile -->
       <div id="goto-norme" style="position:relative;top:-80px;"></div>
 
-      <section id="riferimenti-normativi" style="margin-top:40px">
-        <h2>Riferimenti normativi & PNRR</h2>
-        <div class="norme-wrap">
-          <a class="norma-chip" href="#" data-norm="sdg" target="_blank" rel="noopener">
-            Single Digital Gateway (Reg. UE 2018/1724)
-          </a>
-          <a class="norma-chip" href="#" data-norm="interop" target="_blank" rel="noopener">
-            Interoperable Europe (Reg. UE 2024/903)
-          </a>
-          <a class="norma-chip" href="#" data-norm="eidas2" target="_blank" rel="noopener">
-            eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
-          </a>
-          <a class="norma-chip" href="#" data-norm="espr" target="_blank" rel="noopener">
-            ESPR & Digital Product Passport (Reg. UE 2024/1781)
-          </a>
-          <a class="norma-chip" href="#" data-norm="bolk" target="_blank" rel="noopener">
-            Direttiva Servizi (2006/123/CE – "Bolkestein")
-          </a>
-          <a class="norma-chip" href="#" data-norm="suap" target="_blank" rel="noopener">
-            SUAP – DPR 160/2010
-          </a>
-          <a class="norma-chip" href="#" data-norm="dogane" target="_blank" rel="noopener">
-            Riforma Dogane UE (pacchetto COM(2023) 258–260)
-          </a>
-          <a class="norma-chip" href="#" data-norm="pnrr" target="_blank" rel="noopener">
-            PNRR – Italia Domani
-          </a>
-          <a class="norma-chip" href="#" data-norm="pdnd" target="_blank" rel="noopener">
-            PDND – Piattaforma Digitale Nazionale Dati
-          </a>
-          <a class="norma-chip" href="#" data-norm="agid" target="_blank" rel="noopener">
-            AgID – Linee guida interoperabilità
-          </a>
-        </div>
+      <section id="riferimenti-normativi" class="norme-grid" style="margin-top:40px">
+        <h2 style="grid-column: 1 / -1;">Riferimenti normativi & PNRR</h2>
+        <a href="#" class="norma-chip" data-norm="sdg" target="_blank" rel="noopener">
+          Single Digital Gateway (Reg. UE 2018/1724)
+        </a>
+        <a href="#" class="norma-chip" data-norm="interop" target="_blank" rel="noopener">
+          Interoperable Europe (Reg. UE 2024/903)
+        </a>
+        <a href="#" class="norma-chip" data-norm="eidas2" target="_blank" rel="noopener">
+          eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
+        </a>
+        <a href="#" class="norma-chip" data-norm="espr" target="_blank" rel="noopener">
+          ESPR & Digital Product Passport (Reg. UE 2024/1781)
+        </a>
+        <a href="#" class="norma-chip" data-norm="bolk" target="_blank" rel="noopener">
+          Direttiva Servizi (2006/123/CE – "Bolkestein")
+        </a>
+        <a href="#" class="norma-chip" data-norm="suap" target="_blank" rel="noopener">
+          SUAP – DPR 160/2010
+        </a>
+        <a href="#" class="norma-chip" data-norm="dogane" target="_blank" rel="noopener">
+          Riforma Dogane UE (pacchetto COM(2023) 258–260)
+        </a>
+        <a href="#" class="norma-chip" data-norm="pnrr" target="_blank" rel="noopener">
+          PNRR – Italia Domani
+        </a>
+        <a href="#" class="norma-chip" data-norm="pdnd" target="_blank" rel="noopener">
+          PDND – Piattaforma Digitale Nazionale Dati
+        </a>
+        <a href="#" class="norma-chip" data-norm="agid" target="_blank" rel="noopener">
+          AgID – Linee guida interoperabilità
+        </a>
       </section>
     </section>
   </div>
@@ -398,55 +401,68 @@ window.DOC_MAP = {
 </script>
 
 <script>
-// 0) Costanti mappa norme per ministero (usiamo ?min=… già in uso per i PDF)
-const NORMA_MAP = {
-  'MEF':      ['sdg','interop','pdnd','pnrr'],
-  'MIMIT':    ['espr','eidas2','bolk','interop'],
-  'ADM':      ['dogane','pdnd','sdg'],
-  'AE':       ['pdnd','pnrr','sdg'],
-  'MIT':      ['sdg','pnrr','suap'],
-  'Interno':  ['sdg','pdnd'],
-  'Salute':   ['pdnd','eidas2','interop'],
-  'Turismo':  ['sdg','pnrr'],
-  'MASAF':    ['pnrr','pdnd'],
-  'MASE':     ['pnrr','espr'],
-  'MIC':      ['sdg','pnrr'],
-  'MIM':      ['pnrr','pdnd'],
-  'MAECI':    ['interop','eidas2'],
-  'AgID':     ['interop','pdnd'],
-  'PagoPA':   ['sdg','pnrr','pdnd']
-};
+// === PATCH ULTRA-SEMPLICE ===
 
-// 1) Scroll affidabile al container norme quando arrivo da MAPPA
+// === 0) copia il COLORE esatto dei bottoni PDF ===
 (function(){
-  const hash = window.location.hash;
-  if (hash === '#riferimenti-normativi' || hash === '#norme') {
-    setTimeout(() => {
-      (document.getElementById('goto-norme') || document.getElementById('riferimenti-normativi'))
-        ?.scrollIntoView({behavior:'instant', block:'start'});
-    }, 0);
+  // selettore di un bottone PDF già presente nella colonna sinistra
+  const pdfBtn = document.querySelector('.spot .doc-list a, .spot .btn-pdf, .doc-card a, .panel a[href$=".pdf"]');
+  if (pdfBtn){
+    const s = getComputedStyle(pdfBtn);
+    document.documentElement.style.setProperty('--chip-bg', s.backgroundColor);
+    document.documentElement.style.setProperty('--chip-text', s.color);
   }
 })();
 
-// 2) Forza sempre nuova tab e blocca qualsiasi anteprima/inline
-document.querySelectorAll('.norma-chip, .spot a[href$=".pdf"]').forEach(a=>{
+// === 1) disattiva qualunque anteprima inline/iframe ===
+const preview = document.getElementById('doc-preview');
+if (preview){ preview.style.display='none'; }
+
+// forza sempre nuova tab (anche su PDF della lista)
+document.querySelectorAll('#riferimenti-normativi a, .spot a[href$=".pdf"]').forEach(a=>{
+  a.setAttribute('target','_blank'); a.setAttribute('rel','noopener');
   a.addEventListener('click', (e)=>{
-    const url = a.getAttribute('href');
-    if (!url) return;
-    e.preventDefault(); e.stopPropagation();
-    window.open(url, '_blank', 'noopener');
-  }, {passive:false});
+    // lascia il default del browser: evita preventDefault (alcuni popup blocker bloccano window.open)
+    e.stopPropagation();
+  }, {passive:true});
 });
 
-// 3) Evidenzia SOLO le norme pertinenti al ministero richiesto
+// === 2) scroll affidabile alla sezione quando arrivo dalla mappa ===
 (function(){
-  const params = new URLSearchParams(window.location.search);
-  const min = params.get('min');
-  if (!min) return;
+  const hash = window.location.hash;
+  if (hash === '#riferimenti-normativi' || hash === '#norme') {
+    setTimeout(()=>{
+      (document.getElementById('goto-norme') || document.getElementById('riferimenti-normativi'))
+        ?.scrollIntoView({behavior:'instant', block:'start'});
+    },0);
+  }
+})();
+
+// === 3) evidenzia SOLO le norme pertinenti al ministero (bordo ciano) ===
+const NORMA_MAP = {
+  'MEF':['sdg','interop','pdnd','pnrr'],
+  'MIMIT':['espr','eidas2','bolk','interop'],
+  'ADM':['dogane','pdnd','sdg'],
+  'AE':['pdnd','pnrr','sdg'],
+  'MIT':['sdg','pnrr','suap'],
+  'Interno':['sdg','pdnd'],
+  'Salute':['pdnd','eidas2','interop'],
+  'Turismo':['sdg','pnrr'],
+  'MASAF':['pnrr','pdnd'],
+  'MASE':['pnrr','espr'],
+  'MIC':['sdg','pnrr'],
+  'MIM':['pnrr','pdnd'],
+  'MAECI':['interop','eidas2'],
+  'AgID':['interop','pdnd'],
+  'PagoPA':['sdg','pnrr','pdnd']
+};
+
+(function(){
+  const q = new URLSearchParams(location.search);
+  const min = q.get('min');             // es. ?min=MEF
   const set = new Set(NORMA_MAP[min] || []);
-  document.querySelectorAll('.norma-chip').forEach(el=>{
-    const id = el.getAttribute('data-norm');
-    el.classList.toggle('is-active', set.has(id));
+  document.querySelectorAll('#riferimenti-normativi .norma-chip').forEach(el=>{
+    el.classList.toggle('is-active', set.has(el.dataset.norm));
   });
 })();
 </script>
