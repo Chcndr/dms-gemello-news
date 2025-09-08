@@ -94,21 +94,16 @@
     border-radius: 10px;
   }
 
-  /* Chip/button per Riferimenti Normativi – riempito come PDF, bordo blu */
-  .btn-norme {
+  /* Chip/button per Riferimenti Normativi – riempiti come PDF, bordo blu */
+  .btn-norme{
     display:inline-flex; align-items:center; gap:.5rem;
     padding:10px 14px; border-radius:10px; font-weight:600;
-    border:2px solid #22d3ee !important;          /* contorno blu */
-    background: var(--chip-fill, rgba(15,23,42,.6)) !important; /* fill come PDF */
-    color: var(--chip-fg, #e2e8f0) !important;
+    border:2px solid #22d3ee !important;        /* bordo blu */
+    background-color: var(--norme-fill,#134e4a) !important; /* FILL come PDF */
+    color: var(--norme-fg,#e5f6f5) !important;
     text-decoration:none; white-space:nowrap;
   }
-  .btn-norme:hover,.btn-norme:focus{
-    filter:brightness(1.06);
-    text-decoration:none;
-  }
-
-  /* stato attivo (facoltativo) */
+  .btn-norme:hover,.btn-norme:focus{ filter:brightness(1.06); text-decoration:none; }
   .btn-norme.is-active{ box-shadow:0 0 0 3px rgba(34,211,238,.25); }
 
   /* griglia responsiva della sezione norme */
@@ -117,9 +112,10 @@
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   }
 
-  /* viewer container */
-  .spot-viewer{ margin-top:18px; border-radius:12px; border:1px solid rgba(148,163,184,.2);
+  /* viewer per Norme: nascosto finché non serve */
+  .spot-viewer{ display:none; margin-top:18px; border-radius:12px; border:1px solid rgba(148,163,184,.2);
     background: rgba(2,6,23,.45); padding:10px; }
+  .spot-viewer.is-open{ display:block; }
   .spot-viewer header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
   .spot-viewer iframe{ width:100%; height:72vh; border:0; border-radius:8px; background:#0b1220 }
 </style>
@@ -400,56 +396,51 @@ window.DOC_MAP = {
 
 <script>
 (function(){
-  // 1) Colore: riusa il fill dei pulsanti/tiles PDF esistenti
-  const samplePdf = document.querySelector('.pdf-list a, .spot-list a, .pdf-tile, .btn-pdf');
-  if (samplePdf){
-    const cs = getComputedStyle(samplePdf);
-    document.documentElement.style.setProperty('--chip-fill', cs.backgroundColor);
-    document.documentElement.style.setProperty('--chip-fg',   cs.color);
+  // Prende i colori dei bottoni PDF esistenti e li riusa per i chip Norme
+  const sample = document.querySelector('.btn-pdf, .pdf-link, .pdf-tile');
+  if (sample){
+    const cs = getComputedStyle(sample);
+    document.documentElement.style.setProperty('--norme-fill', cs.backgroundColor);
+    document.documentElement.style.setProperty('--norme-fg',   cs.color);
   }
 
-  // 2) Helper scroll con offset (evita che risalga sul video)
-  function scrollToViewer(){
-    const el = document.getElementById('viewer');
-    if (!el) return;
-    el.scrollIntoView({behavior:'smooth', block:'start'});
-    setTimeout(()=>window.scrollBy({top:-70, left:0, behavior:'instant'}), 250); // header offset
-  }
-
-  // 3) Apri PDF nel viewer
-  const frame = document.getElementById('docFrame');
-  const aOpen = document.getElementById('viewer-open');
+  // Viewer: solo per "Riferimenti normativi" e solo quando l'href è un .pdf
+  const normeSection = document.querySelector('#riferimenti-normativi') || document.querySelector('[data-section="norme"]');
+  const viewer      = document.getElementById('viewer');
+  const frame       = document.getElementById('docFrame');
+  const aOpen       = document.getElementById('viewer-open');
 
   function openInViewer(url){
-    if (!frame) return;
+    if (!viewer || !frame) return;
     frame.src = url;
     if (aOpen) aOpen.href = url;
-    scrollToViewer();
+    viewer.classList.add('is-open');
+    // scroll dolce con offset (evita risalite verso il video)
+    const top = viewer.getBoundingClientRect().top + window.scrollY - 70;
+    window.scrollTo({ top, behavior:'smooth' });
   }
 
-  // 4) Deleghe click: qualunque link a .pdf nella pagina SPOT
-  document.addEventListener('click', function(e){
-    const a = e.target.closest('a');
-    if (!a) return;
-    const href = a.getAttribute('href') || '';
-    // solo PDF locali (per esterni lasciamo comportamento normale)
-    if (href.endsWith('.pdf') && !a.hasAttribute('data-external')){
-      e.preventDefault();
-      openInViewer(href);
-      // evidenzia attivo nella lista
-      document.querySelectorAll('.btn-pdf, .pdf-link, .spot-list a').forEach(x=>x.classList?.remove('is-active'));
-      a.classList?.add('is-active');
-    }
-  }, {passive:false});
+  // 🔒 Limita la cattura dei click SOLO alla sezione Norme
+  if (normeSection){
+    normeSection.addEventListener('click', function(e){
+      const a = e.target.closest('a');
+      if (!a) return;
+      const href = (a.getAttribute('href') || '').trim().toLowerCase();
 
-  // 5) Stato attivo per chip norme (solo visual, i link restano esterni)
-  document.querySelectorAll('.btn-norme').forEach(btn=>{
-    btn.addEventListener('click', ()=> {
-      document.querySelectorAll('.btn-norme').forEach(b=>b.classList.remove('is-active'));
-      btn.classList.add('is-active');
-      // se in futuro alcune norme diventano PDF locali, basterà aggiungere href .pdf e verranno aperte qui.
-    });
-  });
+      // Solo PDF locali in viewer; il resto si comporta come link normale
+      if (href.endsWith('.pdf')){
+        e.preventDefault();
+        openInViewer(a.getAttribute('href'));
+        normeSection.querySelectorAll('.btn-norme').forEach(x=>x.classList.remove('is-active'));
+        a.classList.add('is-active');
+      } else {
+        // link non-PDF: lasciare comportamento standard (nuova scheda o stessa)
+      }
+    }, {passive:false});
+  }
+
+  // ✅ IMPORTANTISSIMO: NON intercettare gli altri PDF della pagina
+  // (Niente delega globale su document: così i PDF "rossi" restano come prima.)
 })();
 </script>
 
