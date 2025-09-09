@@ -98,7 +98,7 @@
   .btn-norme {
     display:inline-flex; align-items:center; gap:.5rem;
     padding:10px 14px; border-radius:10px; font-weight:600;
-    border-color:var(--stroke) !important;
+    border:1px solid var(--stroke) !important; /* AGGIUNTO: stesso contorno dei PDF */
     background:rgba(20,184,166,.08) !important; /* stesso colore dei PDF */
     color:var(--ink) !important;
     text-decoration:none; 
@@ -154,28 +154,28 @@
         
         <div class="video-item">
           <h3>Riaccendiamo i mercati</h3>
-          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/assets/poster-riaccendiamo.jpg">
+          <video controls preload="metadata" playsinline width="100%" poster="/dms-gemello-news/assets/poster-riaccendiamo.jpg">
             <source src="/dms-gemello-news/landing/videos/teaser-riaccendiamo.mp4?v=20250905a" type="video/mp4">
           </video>
         </div>
 
         <div class="video-item">
           <h3>Hub Emilia Romagna</h3>
-          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/assets/poster-emilia-romagna.jpg">
+          <video controls preload="metadata" playsinline width="100%" poster="/dms-gemello-news/assets/poster-emilia-romagna.jpg">
             <source src="/dms-gemello-news/landing/videos/teaser-emilia-romagna.mp4?v=20250905a" type="video/mp4">
           </video>
         </div>
 
         <div class="video-item">
-          <h3>Futuro (Filmato 23)</h3>
-          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/assets/poster-futuro.jpg">
+          <h3>Futuro con DMS</h3>
+          <video controls preload="metadata" playsinline width="100%" poster="/dms-gemello-news/assets/poster-futuro.jpg">
             <source src="/dms-gemello-news/landing/videos/teaser-23.mp4?v=20250905a" type="video/mp4">
           </video>
         </div>
       </section>
 
       <section id="riferimenti-normativi" style="margin-top:40px">
-        <h2>Riferimenti normativi & PNRR</h2>
+        <h2 style="color:#14b8a6;">Riferimenti normativi & PNRR</h2>
         <div class="norme-grid">
           <a class="btn-norme" href="javascript:void(0)" data-norma="sdg-2018-1724" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32018R1724">
             Single Digital Gateway (Reg. UE 2018/1724)
@@ -530,6 +530,18 @@ window.DOC_MAP = {
       document.querySelectorAll('.btn-norme').forEach(b=>b.classList.remove('is-active'));
       btn.classList.add('is-active');
       // se in futuro alcune norme diventano PDF locali, basterà aggiungere href .pdf e verranno aperte qui.
+    });
+  });
+
+  // 6) Stop automatico video quando ne parte un altro
+  document.querySelectorAll('video').forEach(video => {
+    video.addEventListener('play', () => {
+      // Ferma tutti gli altri video quando questo inizia
+      document.querySelectorAll('video').forEach(otherVideo => {
+        if (otherVideo !== video) {
+          otherVideo.pause();
+        }
+      });
     });
   });
 })();
