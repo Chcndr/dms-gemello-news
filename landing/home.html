@@ -42,19 +42,19 @@ addEventListener('click', function (e) {
       --accent:#14b8a6;
       --hc:#23b5a6; /* hover color default */
       
-      /* scala semaforo: VERDE (0,1,2) → ARANCIONE (3) → ROSSO (4-11) */
-      --hc0:#22c55e;  /* VERDE - Dashboard Politica */
-      --hc1:#22c55e;  /* VERDE - Tre Pilastri */
-      --hc2:#22c55e;  /* VERDE - Analisi & Problemi */
-      --hc3:#f97316;  /* ARANCIONE - Pilota Mercato */
-      --hc4:#e11d48;  /* ROSSO - Hub Emilia-Romagna */
-      --hc5:#e11d48;  /* ROSSO - Gemello Digitale / SDG */
-      --hc6:#e11d48;  /* ROSSO - Moduli & Servizi */
-      --hc7:#e11d48;  /* ROSSO - Carbon Credit & ESG */
-      --hc8:#e11d48;  /* ROSSO - Bolkestein & Mercati */
-      --hc9:#e11d48;  /* ROSSO - All-in-One */
-      --hc10:#e11d48; /* ROSSO - Web3 / Token / On-chain */
-      --hc11:#e11d48; /* ROSSO - Video & Timeline */
+      /* scala armonica originale: rosso → arancio → giallo → giallo-verde → verde */
+      --hc0:#e11d48;  /* rosso acceso */
+      --hc1:#f97316;  /* arancio intenso */
+      --hc2:#fb923c;  /* arancio chiaro */
+      --hc3:#fbbf24;  /* ambra */
+      --hc4:#eab308;  /* giallo scuro */
+      --hc5:#d9f000;  /* giallo pieno */
+      --hc6:#bde34a;  /* giallo-verde */
+      --hc7:#9bdc4b;  /* verde-giallo */
+      --hc8:#66c653;  /* verde medio */
+      --hc9:#36b24a;  /* verde intenso */
+      --hc10:#22a866; /* verde con punta teal */
+      --hc11:#21c55d; /* verde acceso (finale) */
     }
 
     /* fondo */
@@ -387,6 +387,19 @@ addEventListener('click', function (e) {
       margin-top:8px; padding:2px 10px; border-radius:999px;
       font-size:.90rem; opacity:.95;
       background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+    }
+    
+    /* SEMAFORO per sfondo data */
+    .node[data-i="0"] .sub, .node[data-i="1"] .sub, .node[data-i="2"] .sub {
+      background:#22c55e; color:#003d00; border-color:#16a34a; /* VERDE */
+    }
+    .node[data-i="3"] .sub {
+      background:#f97316; color:#7c2d12; border-color:#ea580c; /* ARANCIONE */
+    }
+    .node[data-i="4"] .sub, .node[data-i="5"] .sub, .node[data-i="6"] .sub,
+    .node[data-i="7"] .sub, .node[data-i="8"] .sub, .node[data-i="9"] .sub,
+    .node[data-i="10"] .sub, .node[data-i="11"] .sub {
+      background:#e11d48; color:#7f1d1d; border-color:#be185d; /* ROSSO */
     }
     /* niente tag "PDF/INFO" */
     .node .tag{ display:none; }
