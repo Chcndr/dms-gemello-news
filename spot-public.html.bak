@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DMS · Gemello Digitale — Spot & Documenti</title>
+<meta name="color-scheme" content="dark">
+<style>
+  :root{ --bgA:#0e2d38; --bgB:#155268; --ink:#dde2e4; --accent:#46a0bd; --r:14px; }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink);
+    background: radial-gradient(1000px 700px at 60% 18%, #1a566b 0%, transparent 60%),
+                linear-gradient(180deg, var(--bgB), var(--bgA));
+    font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  }
+  .top{display:flex; gap:10px; padding:18px}
+  .btn{
+    appearance:none; border:2px solid rgba(255,255,255,.2);
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    color:var(--ink); padding:.55rem .9rem; border-radius:12px; font-weight:700;
+    backdrop-filter:blur(6px); text-decoration:none; cursor:pointer;
+  }
+  .wrap{display:grid; grid-template-columns: minmax(260px, 520px) 1fr; gap:18px; padding:0 18px 28px}
+  .panel{background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:14px}
+  h2{margin:6px 6px 12px 6px}
+  h3.section-title{
+    margin:20px 6px 8px 6px; 
+    color:#14b8a6; 
+    font-size:14px; 
+    font-weight:600; 
+    text-transform:uppercase; 
+    letter-spacing:0.5px;
+    border-bottom:1px solid rgba(20,184,166,.3);
+    padding-bottom:4px;
+  }
+  .doc{display:flex; align-items:center; justify-content:space-between; gap:8px;
+       border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:.7rem 1rem;
+       margin:10px 6px; background:rgba(255,255,255,.05); text-decoration:none; color:var(--ink)}
+  .doc:hover{background:rgba(255,255,255,.08)}
+  .videos{display:flex; flex-direction:column; gap:14px}
+  video{width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.18); display:block}
+  @media (max-width:900px){ .wrap{grid-template-columns: 1fr} }
+</style>
+<link rel="stylesheet" href="./assets/theme-green.css">
+<!-- THEME GREEN OVERRIDE (safe, removable) -->
+<style id="theme-green">
+  :root{
+    /* Fondo: verde scuro elegante */
+    --bg-a:#071a1d;
+    --bg-b:#0b2730;
+    /* Testi */
+    --ink:#e8fbff;
+    --muted:#9bd6de;
+    /* Pannelli e bordi */
+    --panel:rgba(7,26,29,.78);
+    --stroke:rgba(173,234,240,.18);
+    /* Accenti */
+    --accent:#14b8a6;
+    --accent2:#0b5fff;
+    /* Gradiente di sfondo */
+    --bg-gradient:radial-gradient(1000px 700px at 60% 18%, #0f4c3a 0%, transparent 60%),
+                  linear-gradient(180deg, var(--bg-b), var(--bg-a));
+  }
+  body{
+    background:var(--bg-gradient);
+    color:var(--ink);
+  }
+  .panel{
+    background:var(--panel);
+    border-color:var(--stroke);
+    backdrop-filter:blur(8px);
+  }
+  .btn{
+    border-color:var(--stroke);
+    background:linear-gradient(180deg, rgba(20,184,166,.15), rgba(20,184,166,.08));
+    color:var(--ink);
+  }
+  .btn:hover{
+    background:linear-gradient(180deg, rgba(20,184,166,.25), rgba(20,184,166,.15));
+  }
+  .doc{
+    border-color:var(--stroke);
+    background:rgba(20,184,166,.08);
+  }
+  .doc:hover{
+    background:rgba(20,184,166,.15);
+  }
+  
+  /* Evidenziazione rossa per pulsanti "hot" */
+  .btn.is-hot, a.is-hot {
+    outline: 3px solid #e11d48;
+    box-shadow: 0 0 0 4px rgba(225,29,72,.25);
+    border-radius: 10px;
+  }
+
+  :root{
+    /* IDENTICO al bottone PDF */
+    --spot-chip-bg: #0f766e;       /* stesso verde dei PDF */
+    --spot-chip-bg-hover: #115e59; /* hover più scuro */
+    --spot-chip-text: #e6fff7;
+    --spot-chip-border-active: #22d3ee; /* ciano per attivate (pertinenti) */
+  }
+
+  /* griglia: 1 col mobile, 2 col tablet, 3 col desktop */
+  /* === PATCH ULTRA-SEMPLICE: 2 colonne, verde identico PDF === */
+  :root{
+    --chip-bg: #0f766e;          /* verrà sovrascritto via JS col colore reale dei PDF */
+    --chip-bg-hover:#115e59;
+    --chip-text:#e6fff7;
+    --chip-border-active:#22d3ee; /* ciano */
+  }
+
+  .norme-grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0,1fr)); /* 2 colonne fisse */
+    gap:12px;
+  }
+
+  .norma-chip{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:100%; min-height:44px; padding:10px 14px;
+    border-radius:10px;
+    background:var(--chip-bg);
+    color:var(--chip-text);
+    border:2px solid transparent;               /* niente bordo di base */
+    text-decoration:none; font-weight:600;
+    line-height:1.25; white-space:normal;
+    word-break:break-word; hyphens:auto;
+    font-size:clamp(12px, 1.6vw, 16px);         /* le etichette lunghe non esplodono */
+  }
+  .norma-chip:hover,.norma-chip:focus{ background:var(--chip-bg-hover); }
+  .norma-chip.is-active{ border-color:var(--chip-border-active); }
+</style>
+</head>
+<body>
+  <nav class="top">
+    <a href="/dms-gemello-news/landing/home.html" class="btn">Home</a>
+    <a href="/dms-gemello-news/landing/mappa-ministeri.html" class="btn">Mappa</a>
+    <a href="/dms-gemello-news/landing/spot.html" class="btn">Spot</a>
+  </nav>
+
+  <div class="wrap">
+    <section class="panel">
+      <h2>Documenti (PDF)</h2>
+      <p style="margin:6px 6px 16px; color:#9bd6de; font-size:14px">
+        Archivio completo della documentazione DMS organizzato per categorie
+      </p>
+      <div id="docs">
+        <!-- I documenti verranno inseriti qui via JavaScript -->
+      </div>
+    </section>
+
+    <section class="panel">
+      <section class="videos">
+        <h2>Video</h2>
+        
+        <div class="video-item">
+          <h3>Riaccendiamo i mercati</h3>
+          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/assets/poster-riaccendiamo.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-riaccendiamo.mp4?v=20250905a" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="video-item">
+          <h3>Hub Emilia Romagna</h3>
+          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/assets/poster-emilia-romagna.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-emilia-romagna.mp4?v=20250905a" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="video-item">
+          <h3>Futuro (Filmato 23)</h3>
+          <video controls preload="metadata" playsinline muted width="100%" poster="/dms-gemello-news/assets/poster-futuro.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-23.mp4?v=20250905a" type="video/mp4">
+          </video>
+        </div>
+      </section>
+
+      <!-- ancora per scroll stabile -->
+      <div id="goto-norme" style="position:relative;top:-80px;"></div>
+
+      <section id="riferimenti-normativi" class="norme-grid" style="margin-top:40px">
+        <h2 style="grid-column: 1 / -1;">Riferimenti normativi & PNRR</h2>
+        <a href="#" class="norma-chip" data-norm="sdg" target="_blank" rel="noopener">
+          Single Digital Gateway (Reg. UE 2018/1724)
+        </a>
+        <a href="#" class="norma-chip" data-norm="interop" target="_blank" rel="noopener">
+          Interoperable Europe (Reg. UE 2024/903)
+        </a>
+        <a href="#" class="norma-chip" data-norm="eidas2" target="_blank" rel="noopener">
+          eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
+        </a>
+        <a href="#" class="norma-chip" data-norm="espr" target="_blank" rel="noopener">
+          ESPR & Digital Product Passport (Reg. UE 2024/1781)
+        </a>
+        <a href="#" class="norma-chip" data-norm="bolk" target="_blank" rel="noopener">
+          Direttiva Servizi (2006/123/CE – "Bolkestein")
+        </a>
+        <a href="#" class="norma-chip" data-norm="suap" target="_blank" rel="noopener">
+          SUAP – DPR 160/2010
+        </a>
+        <a href="#" class="norma-chip" data-norm="dogane" target="_blank" rel="noopener">
+          Riforma Dogane UE (pacchetto COM(2023) 258–260)
+        </a>
+        <a href="#" class="norma-chip" data-norm="pnrr" target="_blank" rel="noopener">
+          PNRR – Italia Domani
+        </a>
+        <a href="#" class="norma-chip" data-norm="pdnd" target="_blank" rel="noopener">
+          PDND – Piattaforma Digitale Nazionale Dati
+        </a>
+        <a href="#" class="norma-chip" data-norm="agid" target="_blank" rel="noopener">
+          AgID – Linee guida interoperabilità
+        </a>
+      </section>
+    </section>
+  </div>
+
+<script>
+  // Lista PDF completa organizzata per sezioni
+  const PDF_SECTIONS = [
+    {
+      title: "Documenti Base",
+      docs: [
+        ["Hub Nazionale del Commercio","/dms-gemello-news/assets/doc/HUBNAZIONALEDELCOMMERCIO(2).pdf"],
+        ["DMS & CLUST-ER","/dms-gemello-news/assets/doc/DMSECLUST-ER(4).pdf"],
+        ["Dossier Nazionale","/dms-gemello-news/assets/doc/DOSSIERNAZIONALE(3).pdf"],
+        ["DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città","/dms-gemello-news/assets/doc/DMS-RiaccendiamoiMercati-RivitalizziamoleCitta.pdf"],
+        ["Passaporto EU","/dms-gemello-news/assets/doc/PASSAPORTOEU(3).pdf"],
+        ["Presentazione DMS (Bologna)","/dms-gemello-news/assets/doc/PRESENTAZIONEDMS-CITTAMETROPOLITANADIBOLOGNA-3.pdf"],
+        ["Hub Urbani e di Prossimità in Emilia-Romagna","/dms-gemello-news/assets/doc/HubUrbaniediProssimita-EmiliaRomagna-1.pdf"],
+        ["Gemello DMS","/dms-gemello-news/assets/doc/INFRASTRUTTURARETEDMSEUROPA.pdf"],
+        ["DMS ECC (narrativo)","/dms-gemello-news/assets/doc/EQUILIBRIOECOSOSTENIBILE.pdf"],
+        ["DMS ECC (tecnico)","/dms-gemello-news/assets/doc/DMSECC(3).pdf"],
+        ["Carbon Credit – Logica","/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"],
+        ["Carbon Credit DMS","/dms-gemello-news/assets/doc/CARBONCREDITDMS-4.pdf"],
+        ["Ecosistema Costi PA","/dms-gemello-news/assets/doc/EcosistemaDMS-hub-costiPA-2.pdf"],
+        ["Analisi & Soluzione DMS","/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"],
+        ["Scenario Futuro","/dms-gemello-news/assets/doc/ScenarioFuturo(3).pdf"]
+      ]
+    },
+    {
+      title: "Analisi e Ricerche",
+      docs: [
+        ["Analisi Commercio Ambulante","/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"],
+        ["Report Controlli PA","/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"],
+        ["Analisi Dati Sistema","/dms-gemello-news/assets/doc/DATI.pdf"],
+        ["Mercato dell'Usato","/dms-gemello-news/assets/doc/USATO.pdf"],
+        ["Riequilibrio Economico","/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"],
+        ["Relazione Approfondita DMS (102 pagine)","/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"]
+      ]
+    },
+    {
+      title: "Implementazione Tecnica",
+      docs: [
+        ["DMS Sistema Completo","/dms-gemello-news/assets/doc/DMScompleto2(1).pdf"],
+        ["Implementazioni Avanzate","/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"],
+        ["DMS Offline con CIE","/dms-gemello-news/assets/doc/DMSofflineconCIE(1).pdf"],
+        ["Gestione Servizi Accessori","/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"],
+        ["DMS al Centro di Tutto","/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf"],
+        ["Frammentazione Digitale PA","/dms-gemello-news/assets/doc/Vuoto1332(1).pdf"]
+      ]
+    },
+    {
+      title: "FinTech e Carbon Credit",
+      docs: [
+        ["DMS FinTech","/dms-gemello-news/assets/doc/DMSFINTECH.pdf"],
+        ["Eco Carbon Credit","/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"],
+        ["Logica Carbon Credit Avanzata","/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"],
+        ["Eventi Straordinari","/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"]
+      ]
+    },
+    {
+      title: "Progetto Nazionale",
+      docs: [
+        ["Progetto Nazionale","/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"],
+        ["Hub DMS Web3 Europa","/dms-gemello-news/assets/doc/DMSWeb3-SmartContract(2).pdf"],
+        ["Premessa Politica","/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf"],
+        ["Bolkestein Commercio","/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"]
+      ]
+    },
+    {
+      title: "App e Strumenti",
+      docs: [
+        ["App DMS Assistente","/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"],
+        ["DMS Locandina","/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"],
+        ["DMS Set v2","/dms-gemello-news/assets/doc/DMSSSET(2).pdf"]
+      ]
+    }
+  ];
+
+  // Genera la lista dei documenti organizzata per sezioni
+  const list = document.getElementById('docs');
+  
+  PDF_SECTIONS.forEach(section => {
+    // Aggiungi titolo sezione
+    const sectionTitle = document.createElement('h3');
+    sectionTitle.className = 'section-title';
+    sectionTitle.textContent = section.title;
+    list.appendChild(sectionTitle);
+    
+    // Aggiungi documenti della sezione
+    section.docs.forEach(([title, href]) => {
+      const a = document.createElement('a');
+      a.className = 'doc';
+      a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      
+      // Aggiungo data-doc per evidenziazione hash e data-spot + id per evidenziazione rossa
+      const slug = title.toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]/g,'');
+      a.setAttribute('data-doc', slug);
+      a.setAttribute('data-spot', slug);
+      a.id = slug;
+      a.innerHTML = `<span>${title}</span><span>Apri ⤴</span>`;
+      list.appendChild(a);
+    });
+  });
+
+  // Evidenziazione hash-based
+  (function(){
+    const h = (location.hash||'').replace('#','');
+    if(!h) return;
+    const btn = document.querySelector(`[data-doc="${h}"]`);
+    if(btn){
+      btn.classList.add('is-active');
+      btn.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  })();
+
+  // Evidenziazione rossa per pulsanti "hot" da parametri URL
+  (function(){
+    const q = new URLSearchParams(location.search);
+    const raw = (q.get("hot")||"").split(",").map(s=>s.trim()).filter(Boolean);
+    if (!raw.length) return;
+
+    const norm = s => s.toLowerCase().replace(/\s+/g,'').replace(/[^\p{L}\p{N}]/gu,'');
+
+    const pool = Array.from(document.querySelectorAll('a,button'))
+      .filter(el => (el.href||'').includes('/assets/doc/') || el.dataset.spot);
+
+    const byId = id => document.getElementById(id) ||
+                       document.querySelector(`[data-spot="${id}"]`);
+
+    const hot = new Set();
+    raw.forEach(tok => {
+      const t = norm(tok);
+      let hit = false;
+
+      // 1) prova id/data-spot
+      const idHit = byId(tok);
+      if (idHit) { hot.add(idHit); hit = true; }
+
+      // 2) fallback: match per contenuto testuale
+      if (!hit) {
+        pool.forEach(el=>{
+          const label = norm(el.textContent||"");
+          if (label.includes(t)) hot.add(el);
+        });
+      }
+    });
+
+    // applica stile e rimuovi al click
+    let first = null;
+    hot.forEach(el=>{
+      el.classList.add('is-hot');
+      if (!first) first = el;
+      el.addEventListener('click', ()=> el.classList.remove('is-hot'), {once:true});
+    });
+    if (first) first.scrollIntoView({behavior:'smooth', block:'start'});
+
+  })();
+</script>
+
+<script>
+// Sorgente unica dei contenuti per modal + SPOT
+window.DOC_MAP = {
+  agid:   { title:'AgID',   images:['img/ministeri/agid-01.jpg'], pdfs:[
+    {label:'A4',   url:'/dms-gemello-news/docs/agid/a4.pdf'},
+    {label:'PDF 1',url:'/dms-gemello-news/docs/agid/doc1.pdf'}
+  ]},
+  ae:     { title:'AE - Agenzia Entrate', images:['img/ministeri/ae-01.jpg'], pdfs:[] },
+  mef:    { title:'MEF - Min. Economia e Finanze', images:['img/ministeri/mef-01.jpg','img/ministeri/mef-02.jpg','img/ministeri/mef-03.jpg'], pdfs:[
+    {label:'Scheda 1', url:'/dms-gemello-news/assets/doc/MEF/MEF-scheda-1.pdf'},
+    {label:'Scheda 2', url:'/dms-gemello-news/assets/doc/MEF/MEF-scheda-2.pdf'},
+    {label:'Scheda 3', url:'/dms-gemello-news/assets/doc/MEF/MEF-scheda-3.pdf'},
+    {label:'Scheda 4', url:'/dms-gemello-news/assets/doc/MEF/MEF-scheda-4.pdf'}
+  ]},
+  salute: { title:'Min. della Salute', images:['img/ministeri/salute-01.jpg','img/ministeri/salute-02.jpg'], pdfs:[
+    {label:'Scheda A', url:'/dms-gemello-news/assets/doc/salute/salute-scheda-a.pdf'},
+    {label:'Scheda B', url:'/dms-gemello-news/assets/doc/salute/salute-scheda-b.pdf'}
+  ]},
+  mit:    { title:'MIT - Min. Infrastrutture e Trasporti', images:['img/ministeri/mit-01.jpg'], pdfs:[] },
+  pagopa: { title:'PagoPA', images:['img/ministeri/pagopa-01.jpg'], pdfs:[] },
+  pcm:    { title:'PCM - Presidenza Consiglio Ministri', images:['img/ministeri/pcm-01.jpg','img/ministeri/pcm-02.jpg','img/ministeri/pcm-03.jpg'], pdfs:[
+    {label:'Scheda 1', url:'/dms-gemello-news/assets/doc/PCM/PCM-scheda-1.pdf'},
+    {label:'Scheda 2', url:'/dms-gemello-news/assets/doc/PCM/PCM-scheda-2.pdf'},
+    {label:'Scheda 3', url:'/dms-gemello-news/assets/doc/PCM/PCM-scheda-3.pdf'}
+  ]}
+};
+</script>
+
+<script>
+// === PATCH ULTRA-SEMPLICE ===
+
+// === 0) copia il COLORE esatto dei bottoni PDF ===
+(function(){
+  // selettore di un bottone PDF già presente nella colonna sinistra
+  const pdfBtn = document.querySelector('.spot .doc-list a, .spot .btn-pdf, .doc-card a, .panel a[href$=".pdf"]');
+  if (pdfBtn){
+    const s = getComputedStyle(pdfBtn);
+    document.documentElement.style.setProperty('--chip-bg', s.backgroundColor);
+    document.documentElement.style.setProperty('--chip-text', s.color);
+  }
+})();
+
+// === 1) disattiva qualunque anteprima inline/iframe ===
+const preview = document.getElementById('doc-preview');
+if (preview){ preview.style.display='none'; }
+
+// forza sempre nuova tab (anche su PDF della lista)
+document.querySelectorAll('#riferimenti-normativi a, .spot a[href$=".pdf"]').forEach(a=>{
+  a.setAttribute('target','_blank'); a.setAttribute('rel','noopener');
+  a.addEventListener('click', (e)=>{
+    // lascia il default del browser: evita preventDefault (alcuni popup blocker bloccano window.open)
+    e.stopPropagation();
+  }, {passive:true});
+});
+
+// === 2) scroll affidabile alla sezione quando arrivo dalla mappa ===
+(function(){
+  const hash = window.location.hash;
+  if (hash === '#riferimenti-normativi' || hash === '#norme') {
+    setTimeout(()=>{
+      (document.getElementById('goto-norme') || document.getElementById('riferimenti-normativi'))
+        ?.scrollIntoView({behavior:'instant', block:'start'});
+    },0);
+  }
+})();
+
+// === 3) evidenzia SOLO le norme pertinenti al ministero (bordo ciano) ===
+const NORMA_MAP = {
+  'MEF':['sdg','interop','pdnd','pnrr'],
+  'MIMIT':['espr','eidas2','bolk','interop'],
+  'ADM':['dogane','pdnd','sdg'],
+  'AE':['pdnd','pnrr','sdg'],
+  'MIT':['sdg','pnrr','suap'],
+  'Interno':['sdg','pdnd'],
+  'Salute':['pdnd','eidas2','interop'],
+  'Turismo':['sdg','pnrr'],
+  'MASAF':['pnrr','pdnd'],
+  'MASE':['pnrr','espr'],
+  'MIC':['sdg','pnrr'],
+  'MIM':['pnrr','pdnd'],
+  'MAECI':['interop','eidas2'],
+  'AgID':['interop','pdnd'],
+  'PagoPA':['sdg','pnrr','pdnd']
+};
+
+(function(){
+  const q = new URLSearchParams(location.search);
+  const min = q.get('min');             // es. ?min=MEF
+  const set = new Set(NORMA_MAP[min] || []);
+  document.querySelectorAll('#riferimenti-normativi .norma-chip').forEach(el=>{
+    el.classList.toggle('is-active', set.has(el.dataset.norm));
+  });
+})();
+</script>
+
+</body>
+</html>
+

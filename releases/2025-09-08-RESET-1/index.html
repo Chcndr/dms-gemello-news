@@ -1,0 +1,70 @@
+<!doctype html><html lang="it"><head>
+<meta charset
+<base href="/dms-gemello-news/">="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DMS • Riferimenti normativi – release RESET</title>
+<style>
+:root{--bg:#0c1214;--ink:#ecf3ef;--mut:#a7b9af;--line:#20312b;--blue:#2A8CFF}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto}
+.wrap{max-width:1120px;margin:auto;padding:18px}
+h1{font-size:1.2rem;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
+.muted{color:#4b5a52}
+.arts{border-left:3px solid var(--blue);padding-left:10px;margin:10px 0}
+.btn{display:inline-flex;gap:8px;padding:8px 12px;border:1px solid var(--blue);border-radius:10px;text-decoration:none;font-weight:800}
+</style>
+</head><body>
+<div class="wrap">
+  <h1>Riferimenti normativi & PNRR — Release RESET</h1>
+
+  </div>
+
+</div>
+
+<script>
+/* === DATASET NORME (titolo, sintesi, articoli/commi, link PDF ufficiali) === */
+  sdg_2018_1724:{t:'Reg. (UE) 2018/1724 — Single Digital Gateway',p:'Principio once-only: DMS riusa dati via PDND e aggiorna atti senza duplicazioni.',a:['riuso dati cross-PA, servizi online'],pdf:'https://eur-lex.europa.eu/eli/reg/2018/1724/oj'},
+  interoperable_europe_2024_903:{t:'Reg. (UE) 2024/903 — Interoperable Europe',p:'Cornice UE per interoperabilità; DMS si allinea a standard e scambio dati.',a:['cooperazione transfrontaliera, standard'],pdf:'https://eur-lex.europa.eu/eli/reg/2024/903/oj'},
+  eidas2_2024_1183:{t:'Reg. (UE) 2024/1183 — eIDAS 2 (EU Digital Wallet)',p:'Identità e sigilli qualificati; DMS integra credenziali e firme.',a:['identità digitale, firme qualificate'],pdf:'https://eur-lex.europa.eu/eli/reg/2024/1183/oj'},
+  espr_dpp_2024_1781:{t:'Reg. (UE) 2024/1781 — ESPR & DPP',p:'Passaporto digitale del prodotto e requisiti eco-design.',a:['tracciabilità, info ambientali'],pdf:'https://eur-lex.europa.eu/eli/reg/2024/1781/oj'},
+  bolkestein_2006_123:{t:'Direttiva 2006/123/CE — Servizi',p:'Criteri oggettivi e pubblicità esiti; DMS gestisce graduatorie e pagamenti tracciati.',a:['trasparenza e concorrenza'],pdf:'https://eur-lex.europa.eu/eli/dir/2006/123/oj'},
+  dpr160_2010:{t:'DPR 160/2010 — SUAP',p:'DMS genera pratiche conformi (SCIA, subingressi, volture) e orchestra endo-pareri.',a:['art. 5 — telematica & interoperabilità','art. 10 — endo-pareri con enti terzi'],pdf:'https://www.normattiva.it/uri-res/N2Ls?urn:nir:presidente.repubblica:decreto:2010-09-07;160'},
+  dogane_com_2023_258_260:{t:'Riforma Dogane UE — COM(2023) 258–260',p:'Controlli risk-based e tracciabilità.',a:['semplificazioni e controlli'],pdf:'https://eur-lex.europa.eu/search.html?text=COM(2023)%20258%20259%20260%20customs'},
+  pnrr_italiadomani:{t:'PNRR — Italia Domani',p:'Finanzia digitalizzazione e interoperabilità; DMS è brick operativo per Hub e PA.',a:['M1C1 — servizi digitali'],pdf:'https://www.governo.it/sites/governo.it/files/PNRR_Italia_Domani.pdf'},
+  pdnd:{t:'Piattaforma Digitale Nazionale Dati — PDND',p:'Scambio dati once-only; DMS integra PDND.',a:['catalogo/accordi — interoperabilità applicativa'],pdf:'https://docs.italia.it/italia/piano-triennale-ict/dati-di-qualita-docs/it/bozza/index.html'},
+  agid_linee_interop:{t:'AgID — Linee guida interoperabilità',p:'Regole tecniche: API, sicurezza, semantica.',a:['modelli dati e sicurezza'],pdf:'https://docs.italia.it/agid/interoperabilita-tecnica/lg-modellointeroperabilita-docs/it/stabile/_downloads/pdf/lg-modellointeroperabilita-docs.pdf'},
+  siconbep_106_2023:{t:'D.Lgs. 106/2023 — SICONBEP',p:'Invii telematici concessioni/posteggi.',a:['monitoraggio concessioni'],pdf:'https://www.rgs.mef.gov.it/siconbep/'}
+};
+
+(function(){
+  window.__DMS_VERSION='reset-min-1';
+
+    const d=NORME[id]||{};
+    const li=(d.a||[]).map(x=>`<li>${x}</li>`).join('');
+    CARD.innerHTML=`<h3>${d.t||id}</h3>
+      <p class="muted">${d.p||''}</p>
+      <div class="arts"><b>Articoli/commi rilevanti:</b><ul style="margin:6px 0 0 16px">${li||'<li>(in aggiornamento)</li>'}</ul></div>
+      <a class="btn" href="${d.pdf||'#'}" target="_blank" rel="noopener">📄 Testo integrale (PDF)</a>`;
+    CARD.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  function bind(btn){
+    if(btn.tagName==='A'){ btn.href='javascript:void(0)'; btn.removeAttribute('target'); btn.setAttribute('rel','noopener'); }
+    const h=(e)=>{ if(e.cancelable!==false)e.preventDefault(); e.stopPropagation();
+      btn.classList.add('is-hot');
+    };
+    btn.addEventListener('touchstart',h,{passive:false,capture:true});
+    btn.addEventListener('click',h,true);
+  }
+
+  const q=new URL(location).searchParams;
+  if(q.get('diag')==='1'){ const box=document.createElement('div'); box.style='position:fixed;left:10px;bottom:10px;z-index:9999;background:#111;color:#fff;border:1px solid #3a3a3a;border-radius:10px;padding:8px 10px;font:600 12px system-ui'; box.textContent='v:'+window.__DMS_VERSION; document.body.appendChild(box); }
+})();
+</script>
+
+<!-- One-shot anti-cache (rimuovere nella release successiva) -->
+<script>
+if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));}
+if(window.caches){caches.keys().then(k=>k.forEach(c=>caches.delete(c)));}
+</script>
+</body></html>
+

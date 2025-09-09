@@ -1,8 +1,30 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset
-<base href="/dms-gemello-news/">="utf-8"/>
+  <meta charset="utf-8"/>
+  <script>
+/* Kill-switch: qualunque click su <a> che punterebbe a /landing/... viene corretto
+   verso la root del repo; le ancore #doc-/#vid- vengono aperte fuori dall'iframe. */
+addEventListener('click', function (e) {
+  const a = e.target.closest('a');
+  if (!a) return;
+
+  let href = a.getAttribute('href') || '';
+  const isHashDoc = /^#(doc|vid)-/.test(href);
+  const isBadLanding = /^\/landing\//.test(href);
+
+  if (isHashDoc) {
+    e.preventDefault(); e.stopImmediatePropagation();
+    top.location.href = '/dms-gemello-news/' + href.replace(/^#/, '#');
+    return;
+  }
+  if (isBadLanding) {
+    e.preventDefault(); e.stopImmediatePropagation();
+    top.location.href = href.replace(/^\/landing\//, '/dms-gemello-news/landing/');
+    return;
+  }
+}, { capture: true, passive: false });
+</script>
   <base href="https://chcndr.github.io/dms-gemello-news/">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>DMS • Orologio roadmap</title>
@@ -367,8 +389,9 @@
 <body>
   <!-- Nav -->
   <nav class="top">
-    <a class="btn" href="/dms-gemello-news/">🎬 Spot</a>
-    <a class="btn" href="/dms-gemello-news/mindmap.html">🧠 Mappa</a>
+    <a class="btn" href="/dms-gemello-news/landing/home.html">Home</a>
+    <a class="btn" href="/dms-gemello-news/landing/mappa-ministeri.html">Mappa</a>
+    <a class="btn" href="/dms-gemello-news/landing/spot.html">Spot</a>
   </nav>
 
   <!-- Claim -->
@@ -405,18 +428,18 @@
   <div id="glowLayer" aria-hidden="true"></div>
 
   <!-- 12 pulsanti ore 0..11 -->
-  <!-- BTN-00 START --><button class="node" data-i="0"><span class="title">Intro politica</span><span class="sub">Q4 2025</span></button><!-- BTN-00 END -->
-  <!-- BTN-01 START --><button class="node" data-i="1"><span class="title">Grosseto — Primo collegamento reale</span><span class="sub">Q1 2026</span></button><!-- BTN-01 END -->
-  <!-- BTN-02 START --><button class="node" data-i="2"><span class="title">DMS & CLUST-ER — Pilota HUB ER</span><span class="sub">Q4 2025</span></button><!-- BTN-02 END -->
-  <!-- BTN-03 START --><button class="node" data-i="3"><span class="title">Pagamenti & PDND (Once-Only)</span><span class="sub">Q1 2026</span></button><!-- BTN-03 END -->
-  <!-- BTN-04 START --><button class="node" data-i="4"><span class="title">DPP (ESPR)</span><span class="sub">Q4 2026</span></button><!-- BTN-04 END -->
-  <!-- BTN-05 START --><button class="node" data-i="5"><span class="title">ECC — Narrativa</span><span class="sub">Q2 2026</span></button><!-- BTN-05 END -->
-  <!-- BTN-06 START --><button class="node" data-i="6"><span class="title">ECC — Tecnica</span><span class="sub">Q3 2026</span></button><!-- BTN-06 END -->
-  <!-- BTN-07 START --><button class="node" data-i="7"><span class="title">Costi PA & ROI</span><span class="sub">Q2 2026</span></button><!-- BTN-07 END -->
-  <!-- BTN-08 START --><button class="node" data-i="8"><span class="title">Analisi & Soluzione DMS</span><span class="sub">Q1–Q2 2026</span></button><!-- BTN-08 END -->
-  <!-- BTN-09 START --><button class="node" data-i="9"><span class="title">Scenario & KPI</span><span class="sub">Q1 2027</span></button><!-- BTN-09 END -->
-  <!-- BTN-10 START --><button class="node" data-i="10"><span class="title">Hub Nazionale (gemello)</span><span class="sub">Q4 2026</span></button><!-- BTN-10 END -->
-  <!-- BTN-11 START --><button class="node" data-i="11"><span class="title">App/PWA & Inclusione</span><span class="sub">Q4 2026</span></button><!-- BTN-11 END -->
+  <!-- BTN-00 START --><button class="node" data-i="0"><span class="title">Dashboard Politica</span><span class="sub">Q4 2025</span></button><!-- BTN-00 END -->
+  <!-- BTN-01 START --><button class="node" data-i="1"><span class="title">Tre Pilastri</span><span class="sub">Q4 2025</span></button><!-- BTN-01 END -->
+  <!-- BTN-02 START --><button class="node" data-i="2"><span class="title">Analisi & Problemi</span><span class="sub">Q1 2026</span></button><!-- BTN-02 END -->
+  <!-- BTN-03 START --><button class="node" data-i="3"><span class="title">Pilota Mercato</span><span class="sub">Q2 2026</span></button><!-- BTN-03 END -->
+  <!-- BTN-04 START --><button class="node" data-i="4"><span class="title">Hub Emilia-Romagna</span><span class="sub">Q3 2026</span></button><!-- BTN-04 END -->
+  <!-- BTN-05 START --><button class="node" data-i="5"><span class="title">Gemello Digitale / SDG</span><span class="sub">Q4 2026</span></button><!-- BTN-05 END -->
+  <!-- BTN-06 START --><button class="node" data-i="6"><span class="title">Moduli & Servizi</span><span class="sub">Q1 2027</span></button><!-- BTN-06 END -->
+  <!-- BTN-07 START --><button class="node" data-i="7"><span class="title">Carbon Credit & ESG</span><span class="sub">Q2 2027</span></button><!-- BTN-07 END -->
+  <!-- BTN-08 START --><button class="node" data-i="8"><span class="title">Bolkestein & Mercati</span><span class="sub">Q3 2027</span></button><!-- BTN-08 END -->
+  <!-- BTN-09 START --><button class="node" data-i="9"><span class="title">All-in-One</span><span class="sub">Q4 2027</span></button><!-- BTN-09 END -->
+  <!-- BTN-10 START --><button class="node" data-i="10"><span class="title">Web3 / Token / On-chain</span><span class="sub">Q1 2028</span></button><!-- BTN-10 END -->
+  <!-- BTN-11 START --><button class="node" data-i="11"><span class="title">Video & Timeline</span><span class="sub">Q2 2028</span></button><!-- BTN-11 END -->
 
   <!-- Puntale lancetta -->
   <div id="handTip" class="hand-tip" aria-hidden="true"></div>
@@ -618,15 +641,20 @@
       './docs/RIEQUILIBRIO.pdf': 'riequilibrio-ecc',
       './docs/PRESENTAZIONE DMS -compressed.pdf': 'presentazione-dms',
       './docs/DMS SPOT 1.pdf': 'dms-spot-1',
+      './docs/Relazione sui controlli.pdf': 'relazione-controlli',
       './docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf': 'hub-urbani-prossimita-er',
       './docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf': 'once-only-sdg',
+      './docs/DMS SSET.pdf': 'dms-sset',
+      './docs/PDND • DPP.pdf': 'passaporto-eu',
       './docs/DMS ECC.pdf': 'dms-ecc',
+      './docs/EQUILIBRIO ECOSOSTENIBILE.pdf': 'equilibrio-ecosostenibile',
       './docs/CARBON CREDIT DMS.pdf': 'carbon-credit-dms',
       './docs/COSTI PA.pdf': 'costi-pa',
       './docs/ANALISI E SOLUZIONE DMS.pdf': 'analisi-e-soluzione-dms',
       './docs/Analisi.pdf': 'analisi',
       './docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf': 'scenario-futuro',
       './docs/PROGETTO NAZIONALE.pdf': 'progetto-nazionale',
+      './docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf': 'bolkestein-mercati',
       './docs/APP DMS Assistente Personale.pdf': 'app-dms-assistente'
     };
     
@@ -636,7 +664,7 @@
         if(pdf.file === '#' || !slug) {
           links.push([pdf.label, '#', true]); // placeholder
         } else {
-          links.push([pdf.label, `${SPOT_URL}#doc-${slug}`, false]);
+          links.push([pdf.label, `/dms-gemello-news/#doc-${slug}`, false]);
         }
       });
     }
@@ -645,7 +673,16 @@
       if(isPlaceholder) {
         return `<a class="action" href="#" aria-disabled="true">${label}</a>`;
       } else {
-        return `<a class="action" href="${safeHref(href)}" target="_self" rel="noopener">${label}</a>`;
+        // Test diretto per "Dossier nazionale"
+        if(label === 'Dossier nazionale') {
+          return `<a class="action spot test-direct"
+   href="https://chcndr.github.io/dms-gemello-news/docs/dossier-nazionale.pdf"
+   target="_top" rel="noopener"
+   >
+  Apri PDF (test diretto)
+</a>`;
+        }
+        return `<a class="action spot" href="${safeHref(href)}" target="_top" rel="noopener">${label}</a>`;
       }
     }).join(' ');
   }
@@ -671,16 +708,28 @@
 
   function closePanel(){ panel.hidden = true; document.body.classList.remove('panel-open'); hero.style.visibility=''; }
   back?.addEventListener('click', closePanel);
-
   addEventListener('resize', ()=>{ if(panel && !panel.hidden){ const r = hero.getBoundingClientRect(); root.style.setProperty('--vw', r.width + 'px'); root.style.setProperty('--vh', r.height + 'px'); } }, {passive:true});
 })();
+</script>
 
-    // Integrazione click nodi con pannelli
+<script>
+/* Priorità massima (capture): i click su .test-direct non possono essere "hijackati" */
+document.addEventListener('click', function(e){
+  const a = e.target.closest('a.test-direct');
+  if(!a) return;
+  e.stopImmediatePropagation();   // blocca altri listener
+  e.preventDefault();             // evita qualunque preventDefault altrui
+  window.top.location.href = a.href; // navigazione forzata al PDF
+}, {capture:true});
+</script>
+
+<script>
+// Integrazione click nodi con pannelli
     document.querySelectorAll('.node').forEach((el, i) => {
       el.addEventListener('click', () => {
         // Carica modules.json se non già caricato
         if (!window.MODULES) {
-          fetch('./data/modules.json')
+          fetch('/dms-gemello-news/landing/data/modules.json?v=1', {cache:'no-store'})
             .then(r => r.json())
             .then(data => {
               window.MODULES = data;
@@ -693,7 +742,7 @@
               window.openPanelByIndex(i, accent, null);
             });
         } else {
-          const meta = window.MODULES[i];
+          const meta = window.MODULES && window.MODULES[i] ? window.MODULES[i] : null;
           const accent = getComputedStyle(el).getPropertyValue('--hc').trim() || '#14b8a6';
           window.openPanelByIndex(i, accent, meta);
         }
@@ -732,9 +781,9 @@
     panel.style.setProperty('--accent', accent || '#14b8a6');
 
     // (Opzionale) riempi contenuti
-    if(data){
-      panel.querySelector('#panel-title').textContent = data.title || ('Modulo ' + i);
-      panel.querySelector('#panel-sub').textContent   = data.sub   || 'Contenuti in arrivo.';
+    if(data && data.title){
+      panel.querySelector('#panel-title').textContent = data.title;
+      panel.querySelector('#panel-sub').textContent   = data.sub || 'Contenuti in arrivo.';
       
       // Genera i CTA PDF dinamicamente
       const actionsDiv = panel.querySelector('#panel-actions');
@@ -759,9 +808,25 @@
         });
       }
     } else {
-      // Fallback se non ci sono dati
-      panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
-      panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
+      // Fallback se non ci sono dati - ricarica i dati
+      console.log('Dati mancanti per modulo', i, 'ricarico...');
+      fetch('/dms-gemello-news/landing/data/modules.json?v=' + Date.now(), {cache:'no-store'})
+        .then(r => r.json())
+        .then(modules => {
+          window.MODULES = modules;
+          const moduleData = modules[i];
+          if(moduleData && moduleData.title) {
+            panel.querySelector('#panel-title').textContent = moduleData.title;
+            panel.querySelector('#panel-sub').textContent = moduleData.sub || 'Contenuti in arrivo.';
+          } else {
+            panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
+            panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
+          }
+        })
+        .catch(() => {
+          panel.querySelector('#panel-title').textContent = 'Modulo ' + i;
+          panel.querySelector('#panel-sub').textContent = 'Contenuti in arrivo.';
+        });
     }
 
     hero && hero.classList.add('is-hidden');
@@ -802,3 +867,4 @@
 </body>
 </html>
 
+<!-- BUILD_TOKEN: STABLE_2025-09-02_18-01 -->

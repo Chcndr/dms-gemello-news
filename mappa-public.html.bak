@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMS · Gemello Digitale — Mappa Ministeri</title>
+  <style>
+    /* Reset e base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    /* Pagina fissa per zoom funzionante */
+    html, body {
+      height: 100vh;
+      overflow: hidden;
+      background: #0b1f26;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #d7eef9;
+    }
+    
+    /* Navbar */
+    .topnav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 2000;
+      display: flex;
+      gap: 0;
+      background: rgba(11, 22, 27, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .topnav a {
+      display: block;
+      padding: 12px 20px;
+      color: #d7eef9;
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .topnav a:hover {
+      background: rgba(22, 42, 51, 0.8);
+      color: #ffffff;
+    }
+    
+    .topnav a.active {
+      background: #0f7a4c;
+      color: white;
+      border-bottom-color: #0b5f3a;
+    }
+    
+    /* Container principale */
+    .main-container {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    /* Pannello comandi */
+    .controls-panel {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      padding: 12px 24px;
+      background: rgba(11, 22, 27, 0.8);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .control-group label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #d7eef9;
+    }
+    
+    .control-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #0f7a4c;
+    }
+    
+    .search-input {
+      padding: 8px 12px;
+      background: rgba(22, 42, 51, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #eaf1f5;
+      font-size: 14px;
+      width: 200px;
+    }
+    
+    .search-input::placeholder {
+      color: #7a9aa8;
+    }
+    
+    .page-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #d7eef9;
+    }
+    
+    /* Container mappa fisso */
+    #mapContainer {
+      position: relative;
+      width: min(1280px, 96vw);
+      height: min(800px, 80vh);
+      background: #0b161b;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 30px 120px rgba(0, 0, 0, 0.55),
+        inset 0 0 120px rgba(0, 206, 255, 0.03);
+      transform-origin: center center;
+      transition: transform 0.3s ease;
+    }
+    
+    /* Zoom levels */
+    #mapContainer.zoom-80 { transform: scale(0.8); }
+    #mapContainer.zoom-100 { transform: scale(1.0); }
+    #mapContainer.zoom-120 { transform: scale(1.2); }
+    
+    /* Linee radiali */
+    .spoke {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      transform-origin: center center;
+      transition: transform 0.1s linear;
+    }
+    
+    /* Linee radiali */
+    #spokes {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .spoke {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      height: 2px;
+      width: calc(var(--spoke-length, 240px) - 40px);
+      transform-origin: 0 0;
+      opacity: 0.8;
+      background: linear-gradient(to right, rgba(0, 206, 255, 0.6), rgba(0, 206, 255, 0.2) 70%, transparent);
+      box-shadow: 0 0 4px rgba(0, 206, 255, 0.4);
+      transition: opacity 0.3s ease, width 0.3s ease;
+    }
+    
+    #spokes.hidden .spoke {
+      opacity: 0;
+    }
+    
+    /* Nodi ministeri */
+    .node {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 160px;
+      height: 90px;
+      transform: translate(-50%, -50%) rotate(var(--counter-rotate, 0deg));
+      background: rgba(22, 42, 51, 0.95);
+      color: #d7eef9;
+      border: none;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 13px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 10px 35px rgba(0, 206, 255, 0.10),
+        inset 0 0 28px rgba(0, 206, 255, 0.25);
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      z-index: 20;
+    }
+    
+    .node:hover, .node:focus {
+      background: #1a3240;
+      box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 15px 45px rgba(0, 206, 255, 0.20),
+        inset 0 0 35px rgba(0, 206, 255, 0.35);
+      transform: translate(-50%, -50%) rotate(var(--counter-rotate, 0deg)) scale(1.02);
+    }
+    
+    .node:active {
+      transform: translate(-50%, -50%) rotate(var(--counter-rotate, 0deg)) scale(0.98);
+      box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.15),
+        0 20px 55px rgba(0, 206, 255, 0.30),
+        inset 0 0 42px rgba(0, 206, 255, 0.45);
+    }
+    
+    .node:focus {
+      outline: 2px solid rgba(110, 227, 255, 0.6);
+      outline-offset: 2px;
+    }
+    
+    .node.filtered {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    /* Logo centrale */
+    #hubIcon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      z-index: 20;
+      filter: 
+        drop-shadow(0 0 20px rgba(0, 206, 255, 0.8))
+        drop-shadow(0 0 40px rgba(0, 206, 255, 0.6))
+        drop-shadow(0 0 60px rgba(0, 206, 255, 0.4));
+      cursor: pointer;
+    }
+
+    #hubIcon svg {
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Modal */
+    #modal {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: none;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+    }
+    
+    #modal.is-open {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-card {
+      width: min(92vw, 1140px);
+      max-height: 90vh;
+      background: #0b161b;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 30px 120px rgba(0, 0, 0, 0.7);
+      transform: scale(1);
+      transition: transform 0.2s ease;
+    }
+    
+    #modal:not(.is-open) .modal-card {
+      transform: scale(0.95);
+    }
+    
+    .modal-header {
+      background: #0f7a4c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+    }
+    
+    .modal-back {
+      background: #0b5f3a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+    
+    .modal-back:hover {
+      background: #0a5232;
+    }
+    
+    .modal-title {
+      flex: 1;
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    .modal-spot {
+      background: #0e2230;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+    
+    .modal-spot:hover {
+      background: #1a3240;
+    }
+    
+    .modal-body {
+      padding: 20px;
+      max-height: calc(90vh - 80px);
+      overflow-y: auto;
+    }
+    
+    .doc-card {
+      margin: 0 0 16px 0;
+    }
+    
+    .doc-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Zoom controls */
+    .zoom-controls {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 8px;
+      z-index: 100;
+    }
+    
+    .zoom-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(11, 22, 27, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #d7eef9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    
+    .zoom-btn:hover {
+      background: rgba(11, 22, 27, 1);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .zoom-btn.active {
+      background: #0f7a4c;
+      color: #fff;
+      border-color: #0f7a4c;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .controls-panel {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+      }
+      
+      .search-input {
+        width: 100%;
+      }
+      
+      .node {
+        width: 120px;
+        height: 70px;
+        font-size: 11px;
+      }
+      
+      #centerLogo {
+        width: 70px;
+        heig    /* Anelli concentrici - COMPLETAMENTE FISSI */
+    #ring-inner, #ring-outer {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+    }
+
+    /* NESSUNA animazione per gli anelli */
+
+    /* Nodi: NESSUNA animazione automatica */
+    /* I nodi si muoveranno solo tramite JavaScript */
+
+    /* Raggi: gestiti dinamicamente via JavaScript */
+    #spokes {
+      /* Nessuna animazione CSS fissa */
+    }
+
+    body:not(.auto-rotate) #spokes {
+      /* Nessuna animazione quando auto-rotate è disabilitato */
+    }
+
+    /* Centro fisso: logo ministero (no riquadro, glow blu) */
+    #hubIcon{
+      position:absolute;
+      left:50%; top:50%;
+      width:clamp(160px, 13vw, 240px);
+      height:clamp(160px, 13vw, 240px);
+      transform:translate(-50%, -50%);
+      pointer-events:none;
+      z-index: 5;
+      filter:
+        drop-shadow(0 0 32px rgba(56,189,248,.35))
+        drop-shadow(0 8px 22px rgba(0,0,0,.45));
+      opacity:.98;
+    }
+
+    /* Applica il logo come background (SVG inline in data-URL) */
+    #hubIcon::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(60% 60% at 50% 50%, rgba(56,189,248,.18), transparent 60%),
+        url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' aria-hidden='true'><defs><linearGradient id='g' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='%23e6f7ff'/><stop offset='1' stop-color='%23c9eeff'/></linearGradient></defs><g fill='url(%23g)' stroke='%2300b3ff' stroke-width='18' stroke-linejoin='round'><path d='M20 246h600L320 92 20 246z'/><rect x='120' y='276' width='80' height='240' rx='6'/><rect x='240' y='276' width='80' height='240' rx='6'/><rect x='320' y='276' width='80' height='240' rx='6'/><rect x='440' y='276' width='80' height='240' rx='6'/><rect x='48'  y='532' width='544' height='30' rx='6'/></g></svg>") center/72% no-repeat;
+    }
+    
+    /* Assicurati che NON ruoti mai col resto */
+    #hubIcon { will-change: filter, opacity; }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="topnav">
+    <a href="/dms-gemello-news/landing/home.html">Home</a>
+    <a href="/dms-gemello-news/landing/mappa-ministeri.html" class="active">Mappa</a>
+    <a href="/dms-gemello-news/landing/spot.html">Spot</a>
+  </nav>
+
+  <!-- Container principale -->
+  <div class="main-container">
+    <!-- Pannello comandi -->
+    <div class="controls-panel">
+      <div class="control-group">
+        <input type="checkbox" id="autoRotate" checked>
+        <label for="autoRotate">Auto-rotate</label>
+      </div>
+      
+      <div class="control-group">
+        <input type="checkbox" id="showLines" checked>
+        <label for="showLines">Linee</label>
+      </div>
+      
+      <input type="text" class="search-input" id="searchInput" placeholder="Cerca ministero...">
+      
+      <div class="page-title">Mappa Ministeri (sandbox)</div>
+    </div>
+
+    <!-- Container mappa -->
+    <div id="mapContainer" class="zoom-100">
+      <!-- Logo centrale fisso -->
+      <div id="hubIcon" aria-hidden="true"></div>
+
+      <!-- Linee radiali -->
+      <div id="spokes"></div>
+
+      <!-- Anello interno (8 nodi) -->
+      <div id="ring-inner">
+        <button class="node" data-slug="agid" aria-label="AgID">
+          AgID
+        </button>
+        <button class="node" data-slug="mef" aria-label="MEF - Economia e Finanze">
+          MEF · Economia<br>e Finanze
+        </button>
+        <button class="node" data-slug="interno" aria-label="Ministero dell'Interno">
+          Ministero<br>dell'Interno
+        </button>
+        <button class="node" data-slug="salute" aria-label="Ministero della Salute">
+          Ministero<br>della Salute
+        </button>
+        <button class="node" data-slug="turismo" aria-label="Ministero del Turismo">
+          Ministero<br>del Turismo
+        </button>
+        <button class="node" data-slug="lavoro" aria-label="Ministero del Lavoro">
+          Ministero<br>del Lavoro
+        </button>
+        <button class="node" data-slug="mit" aria-label="MIT - Infrastrutture e Trasporti">
+          MIT · Infrastrutture<br>e Trasporti
+        </button>
+        <button class="node" data-slug="mim" aria-label="MIM - Istruzione e Merito">
+          MIM · Istruzione<br>e Merito
+        </button>
+      </div>
+
+      <!-- Anello esterno (8 nodi) -->
+      <div id="ring-outer">
+        <button class="node" data-slug="mimit" aria-label="MIMIT - Imprese e Made in Italy">
+          MIMIT · Imprese<br>e Made in Italy
+        </button>
+        <button class="node" data-slug="mase" aria-label="MASE - Ambiente e Sicurezza">
+          MASE · Ambiente<br>e Sicurezza
+        </button>
+        <button class="node" data-slug="masaf" aria-label="MASAF - Agricoltura">
+          MASAF ·<br>Agricoltura
+        </button>
+        <button class="node" data-slug="maeci" aria-label="MAECI - Affari Esteri">
+          MAECI ·<br>Affari Esteri
+        </button>
+        <button class="node" data-slug="mic" aria-label="MIC - Cultura">
+          MIC ·<br>Cultura
+        </button>
+        <button class="node" data-slug="ae" aria-label="AE - Agenzia Entrate">
+          AE · Agenzia<br>Entrate
+        </button>
+        <button class="node" data-slug="adm" aria-label="ADM - Agenzia Dogane">
+          ADM · Agenzia<br>Dogane
+        </button>
+        <button class="node" data-slug="pagopa" aria-label="PagoPA S.p.A.">
+          PagoPA S.p.A.
+        </button>
+      </div>
+
+      <!-- Logo centrale -->
+      <div id="hubIcon">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="buildingGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#e0e0e0;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Timpano triangolare -->
+          <polygon points="30,80 100,30 170,80" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="3"/>
+          
+          <!-- Colonne (4 colonne con distanze uniformi) -->
+          <rect x="45" y="80" width="18" height="90" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          <rect x="73" y="80" width="18" height="90" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          <rect x="109" y="80" width="18" height="90" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          <rect x="137" y="80" width="18" height="90" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          
+          <!-- Base superiore -->
+          <rect x="25" y="75" width="150" height="10" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          
+          <!-- Gradini base -->
+          <rect x="20" y="170" width="160" height="8" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+          <rect x="15" y="178" width="170" height="8" fill="url(#buildingGrad)" stroke="#d4af37" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <!-- Controlli zoom -->
+      <div class="zoom-controls">
+        <button class="zoom-btn" data-zoom="80">0.8×</button>
+        <button class="zoom-btn active" data-zoom="100">1.0×</button>
+        <button class="zoom-btn" data-zoom="120">1.2×</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card">
+      <header class="modal-header">
+        <button class="modal-back" id="modalBack" aria-label="Torna alla mappa">← Torna alla mappa</button>
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-actions" id="modalActions">
+          <!-- I pulsanti verranno generati dinamicamente dal JavaScript -->
+        </div>
+      </header>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // Dati ministeri inline
+    const MINISTERI_DATA = {
+      agid: { 
+        title: "AgID", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/agid.png", alt: "Piattaforma DMS Modulare Cloud-based" }] 
+      },
+      mef: { 
+        title: "MEF - Economia e Finanze", 
+        cards: [
+          { img: "/dms-gemello-news/assets/doc/mef.png", alt: "Ruolo strategico del DMS per il Ministero dell'Economia e delle Finanze" },
+          { img: "/dms-gemello-news/assets/doc/mef2.png", alt: "Il riequilibrio fiscale e ambientale possibile" }
+        ] 
+      },
+      interno: { 
+        title: "Ministero dell'Interno", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/interno.png", alt: "Ruolo strategico del DMS per il Ministero dell'Interno" }] 
+      },
+      salute: { 
+        title: "Ministero della Salute", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/salute.png", alt: "Ruolo strategico del Ministero della Salute nel Sistema DMS" }] 
+      },
+      turismo: { 
+        title: "Ministero del Turismo", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/turismo.png", alt: "Ruolo strategico del DMS per il Ministero del Turismo" }] 
+      },
+      lavoro: { 
+        title: "Ministero del Lavoro", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/lavoro.png", alt: "Ruolo strategico del DMS per il Ministero del Lavoro" }] 
+      },
+      mit: { 
+        title: "MIT - Infrastrutture e Trasporti", 
+        cards: [
+          { img: "/dms-gemello-news/assets/doc/mit1.png", alt: "Ruolo strategico del DMS per il MIT - Logistica e mobilità" },
+          { img: "/dms-gemello-news/assets/doc/mit2.png", alt: "Ruolo strategico del DMS per il MIT - Programmazione e digitalizzazione" }
+        ] 
+      },
+      mim: { 
+        title: "MIM - Istruzione e Merito", 
+        cards: [
+          { img: "/dms-gemello-news/assets/doc/mim1.png", alt: "Ruolo strategico del DMS per il MIM - Formazione professionale e digitalizzazione" },
+          { img: "/dms-gemello-news/assets/doc/mim2.png", alt: "Ruolo strategico del MIM nel sistema DMS - Formazione, Inclusione e Innovazione" }
+        ] 
+      },
+      mimit: { 
+        title: "MIMIT - Imprese e Made in Italy", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/mimit.png", alt: "Ruolo strategico del DMS per il MIMIT - Normativa, Commercio e Digitalizzazione" }] 
+      },
+      mase: { 
+        title: "MASE - Ambiente e Sicurezza", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/mase.png", alt: "Ruolo strategico del DMS per il MASE - Eco Carbon Credit e Sostenibilità" }] 
+      },
+      masaf: { 
+        title: "MASAF - Agricoltura", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/masaf.png", alt: "Ruolo strategico del DMS per il MASAF - Agricoltura, Filiera corta e Foreste" }] 
+      },
+      maeci: { 
+        title: "MAECI - Affari Esteri", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/maeci.jpg", alt: "MAECI" }] 
+      },
+      mic: { 
+        title: "MIC - Cultura", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/mic.png", alt: "Ruolo strategico del MIC nel sistema DMS - Hub centri storici e promozione eventi" }] 
+      },
+      ae: { 
+        title: "AE - Agenzia Entrate", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/ae.png", alt: "Il riequilibrio fiscale e ambientale possibile" }] 
+      },
+      adm: { 
+        title: "ADM - Agenzia Dogane", 
+        cards: [{ img: "/dms-gemello-news/assets/doc/adm.png", alt: "Carbon Credit DMS - Infrastruttura europea di tassazione" }] 
+      },
+      pagopa: { 
+        title: "PagoPA S.p.A.", 
+        cards: [
+          { img: "/dms-gemello-news/assets/doc/pagopa1.png", alt: "Rete istituzionale del Digital Market System" },
+          { img: "/dms-gemello-news/assets/doc/pagopa2.png", alt: "Gemello Digitale del Commercio" }
+        ] 
+      },
+      pcm: { 
+        title: "Presidenza del Consiglio dei Ministri", 
+        cards: [
+          { img: "/dms-gemello-news/assets/doc/pcm/pcm-1.png", alt: "PCM - Presidenza del Consiglio dei Ministri" },
+          { img: "/dms-gemello-news/assets/doc/pcm/pcm-2.png", alt: "PCM - Struttura organizzativa" },
+          { img: "/dms-gemello-news/assets/doc/pcm/pcm-3.png", alt: "PCM - Competenze e ruoli" }
+        ] 
+      }
+    };
+
+    // Elementi DOM
+    const ringInner = document.getElementById('ring-inner');
+    const ringOuter = document.getElementById('ring-outer');
+    const spokes = document.getElementById('spokes');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const modalBack = document.getElementById('modalBack');
+    const autoRotateCheck = document.getElementById('autoRotate');
+    const showLinesCheck = document.getElementById('showLines');
+    const searchInput = document.getElementById('searchInput');
+    const mapContainer = document.getElementById('mapContainer');
+    const nodesInner = document.querySelectorAll('#ring-inner .node');
+    const nodesOuter = document.querySelectorAll('#ring-outer .node');
+    const allNodes = document.querySelectorAll('.node');
+
+    // Variabili globali
+    let rotationAngle = 0;
+    let rotationInterval = null;
+    let currentZoom = 100;
+    let animationId = null;
+
+    // iPad: disabilita preview e long-press
+    document.addEventListener('contextmenu', e => e.preventDefault(), { passive: false });
+    document.addEventListener('selectstart', e => e.preventDefault(), { passive: false });
+
+    // Inizializzazione
+    function init() {
+      setupNodes();
+      setupSpokes();
+      setupEventListeners();
+      handleInitialHash();
+      startAutoRotation();
+    }
+
+    // Animazione continua dei nodi lungo l'ellisse
+    function animateNodes() {
+      if (!document.body.classList.contains('auto-rotate')) return;
+      
+      const currentTime = Date.now() / 1000; // Tempo in secondi
+      
+      // Anima nodi anello interno (40s per giro completo)
+      nodesInner.forEach((node, index) => {
+        const baseAngle = (360 / 8) * index + 22.5; // Angolo base con sfalsamento
+        const currentAngle = baseAngle + (currentTime * 360 / 40) % 360; // Rotazione in 40s
+        const radian = (currentAngle * Math.PI) / 180;
+        
+        const radiusX = parseFloat(node.dataset.radiusX);
+        const radiusY = parseFloat(node.dataset.radiusY);
+        
+        const x = Math.cos(radian) * radiusX;
+        const y = Math.sin(radian) * radiusY;
+        
+        node.style.left = `calc(50% + ${x}px)`;
+        node.style.top = `calc(50% + ${y}px)`;
+        
+        // Mantieni testo orizzontale
+        node.style.setProperty('--counter-rotate', '0deg');
+        
+        // Aggiorna distanza per le linee
+        const distance = Math.sqrt(x * x + y * y);
+        node.dataset.distance = distance;
+        node.dataset.angle = currentAngle;
+      });
+      
+      // Anima nodi anello esterno (60s per giro completo)
+      nodesOuter.forEach((node, index) => {
+        const baseAngle = (360 / 8) * index; // Angolo base senza sfalsamento
+        const currentAngle = baseAngle + (currentTime * 360 / 60) % 360; // Rotazione in 60s
+        const radian = (currentAngle * Math.PI) / 180;
+        
+        const radiusX = parseFloat(node.dataset.radiusX);
+        const radiusY = parseFloat(node.dataset.radiusY);
+        
+        const x = Math.cos(radian) * radiusX;
+        const y = Math.sin(radian) * radiusY;
+        
+        node.style.left = `calc(50% + ${x}px)`;
+        node.style.top = `calc(50% + ${y}px)`;
+        
+        // Mantieni testo orizzontale
+        node.style.setProperty('--counter-rotate', '0deg');
+        
+        // Aggiorna distanza per le linee
+        const distance = Math.sqrt(x * x + y * y);
+        node.dataset.distance = distance;
+        node.dataset.angle = currentAngle;
+      });
+      
+      // Aggiorna linee dinamiche
+      updateDynamicSpokes();
+      
+      // Continua l'animazione
+      animationId = requestAnimationFrame(animateNodes);
+    }
+
+    // Setup posizionamento nodi concentrici (ovali fissi)
+    function setupNodes() {
+      // Raggi ellittici allungati in orizzontale per sfruttare meglio lo spazio
+      const innerRadiusX = Math.min(350, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.44);
+      const innerRadiusY = Math.min(160, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.20);
+      const outerRadiusX = Math.min(500, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.62);
+      const outerRadiusY = Math.min(240, Math.min(mapContainer.offsetWidth, mapContainer.offsetHeight) * 0.30);
+      
+      // Salva i raggi per uso nelle linee dinamiche
+      window.ellipseRadii = { innerRadiusX, innerRadiusY, outerRadiusX, outerRadiusY };
+      
+      // Posiziona nodi anello interno (8 nodi) - ellisse fissa
+      nodesInner.forEach((node, index) => {
+        const angle = (360 / 8) * index + 22.5; // Sfalsamento di 22.5°
+        const radian = (angle * Math.PI) / 180;
+        
+        const x = Math.cos(radian) * innerRadiusX;
+        const y = Math.sin(radian) * innerRadiusY;
+        
+        // Calcola distanza dal centro per questa posizione
+        const distanceFromCenter = Math.sqrt(x * x + y * y);
+        
+        node.style.left = `calc(50% + ${x}px)`;
+        node.style.top = `calc(50% + ${y}px)`;
+        node.dataset.angle = angle;
+        node.dataset.baseX = x;
+        node.dataset.baseY = y;
+        node.dataset.radiusX = innerRadiusX;
+        node.dataset.radiusY = innerRadiusY;
+        node.dataset.distance = distanceFromCenter;
+        
+        // Contro-rotazione per mantenere testo orizzontale
+        node.style.setProperty('--counter-rotate', `-${angle}deg`);
+      });
+      
+      // Posiziona nodi anello esterno (8 nodi) - ellisse fissa
+      nodesOuter.forEach((node, index) => {
+        const angle = (360 / 8) * index; // Nessuno sfalsamento iniziale
+        const radian = (angle * Math.PI) / 180;
+        
+        const x = Math.cos(radian) * outerRadiusX;
+        const y = Math.sin(radian) * outerRadiusY;
+        
+        // Calcola distanza dal centro per questa posizione
+        const distanceFromCenter = Math.sqrt(x * x + y * y);
+        
+        node.style.left = `calc(50% + ${x}px)`;
+        node.style.top = `calc(50% + ${y}px)`;
+        node.dataset.angle = angle;
+        node.dataset.baseX = x;
+        node.dataset.baseY = y;
+        node.dataset.radiusX = outerRadiusX;
+        node.dataset.radiusY = outerRadiusY;
+        node.dataset.distance = distanceFromCenter;
+        
+        // Contro-rotazione per mantenere testo orizzontale
+        node.style.setProperty('--counter-rotate', `-${angle}deg`);
+      });
+      
+      // Aggiorna le linee dinamiche
+      updateDynamicSpokes();
+    }
+
+    // Setup linee radiali dinamiche
+    function setupSpokes() {
+      spokes.innerHTML = '';
+      updateDynamicSpokes();
+    }
+
+    // Aggiorna linee dinamiche in base alla posizione REALE dei nodi
+    function updateDynamicSpokes() {
+      spokes.innerHTML = '';
+      
+      // Crea linee per nodi anello interno
+      nodesInner.forEach(node => {
+        const spoke = document.createElement('div');
+        spoke.className = 'spoke spoke-inner';
+        
+        // Calcola l'angolo REALE dalla posizione attuale del nodo
+        const rect = node.getBoundingClientRect();
+        const mapRect = mapContainer.getBoundingClientRect();
+        const centerX = mapRect.left + mapRect.width / 2;
+        const centerY = mapRect.top + mapRect.height / 2;
+        const nodeX = rect.left + rect.width / 2;
+        const nodeY = rect.top + rect.height / 2;
+        
+        const deltaX = nodeX - centerX;
+        const deltaY = nodeY - centerY;
+        const realAngle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // Posiziona la linea dal centro verso il nodo REALE
+        spoke.style.position = 'absolute';
+        spoke.style.left = '50%';
+        spoke.style.top = '50%';
+        spoke.style.transform = `rotate(${realAngle}deg)`;
+        spoke.style.width = `${distance - 25}px`; // Si ferma al centro del nodo
+        spoke.style.height = '2px';
+        spoke.style.background = 'rgba(56, 189, 248, 0.4)';
+        spoke.style.transformOrigin = 'left center';
+        
+        spokes.appendChild(spoke);
+      });
+      
+      // Crea linee per nodi anello esterno
+      nodesOuter.forEach(node => {
+        const spoke = document.createElement('div');
+        spoke.className = 'spoke spoke-outer';
+        
+        // Calcola l'angolo REALE dalla posizione attuale del nodo
+        const rect = node.getBoundingClientRect();
+        const mapRect = mapContainer.getBoundingClientRect();
+        const centerX = mapRect.left + mapRect.width / 2;
+        const centerY = mapRect.top + mapRect.height / 2;
+        const nodeX = rect.left + rect.width / 2;
+        const nodeY = rect.top + rect.height / 2;
+        
+        const deltaX = nodeX - centerX;
+        const deltaY = nodeY - centerY;
+        const realAngle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // Posiziona la linea dal centro verso il nodo REALE
+        spoke.style.position = 'absolute';
+        spoke.style.left = '50%';
+        spoke.style.top = '50%';
+        spoke.style.transform = `rotate(${realAngle}deg)`;
+        spoke.style.width = `${distance - 25}px`; // Si ferma al centro del nodo
+        spoke.style.height = '2px';
+        spoke.style.background = 'rgba(56, 189, 248, 0.6)';
+        spoke.style.transformOrigin = 'left center';
+        
+        spokes.appendChild(spoke);
+      });
+    }
+
+    // Event listeners
+    function setupEventListeners() {
+      // Click nodi
+      allNodes.forEach(node => {
+        node.addEventListener('click', () => {
+          const slug = node.dataset.slug;
+          openModal(slug);
+        });
+      });
+
+      // Modal
+      modalBack.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      // Keyboard
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+      });
+
+      // Auto-rotate
+      autoRotateCheck.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          startAutoRotation();
+        } else {
+          stopAutoRotation();
+        }
+      });
+
+      // Linee
+      showLinesCheck.addEventListener('change', (e) => {
+        spokes.classList.toggle('hidden', !e.target.checked);
+      });
+
+      // Ricerca
+      searchInput.addEventListener('input', handleSearch);
+
+      // Zoom
+      document.querySelectorAll('.zoom-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const zoom = parseInt(btn.dataset.zoom);
+          setZoom(zoom);
+        });
+      });
+
+      // Hash change
+      window.addEventListener('hashchange', handleHashChange);
+
+      // 3) Logo centrale → apre modal di PCM
+      const hubIcon = document.getElementById('hubIcon');
+      if (hubIcon) {
+        hubIcon.style.cursor = 'pointer';
+        
+        // Click per desktop
+        hubIcon.addEventListener('click', (e) => {
+          e.preventDefault();
+          openModal('pcm');
+        });
+        
+        // Touch per mobile/iPad
+        hubIcon.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          openModal('pcm');
+        });
+      }
+    }
+
+    // Auto-rotation
+    function startAutoRotation() {
+      document.body.classList.add('auto-rotate');
+      animateNodes(); // Avvia l'animazione continua
+    }
+
+    function stopAutoRotation() {
+      document.body.classList.remove('auto-rotate');
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+    }
+
+    // Modal
+    function openModal(slug) {
+      const data = MINISTERI_DATA[slug];
+      if (!data) return;
+
+      modalTitle.textContent = data.title;
+      
+      // Genera pulsanti con anchor specifici per ogni ministero
+      const modalActions = document.getElementById('modalActions');
+      
+      // Mapping per evidenziazione rossa (parole-chiave per ogni ministero)
+      const hotTerms = {
+        pcm: ["Dossier", "All-in-One", "Presentazione"],
+        mef: ["Costi PA", "Progetto Nazionale", "Presentazione"],
+        interno: ["Controlli", "Analisi"],
+        mimit: ["Hub Nazionale", "Web3", "Usato"],
+        mase: ["Equilibrio", "Carbon Credit"],
+        mit: ["Hub ER", "Bologna"],
+        salute: ["Once Only", "Assistente"],
+        mic: ["Riaccendiamo", "Hub ER"],
+        turismo: ["Hub ER", "Comunicazione"],
+        masaf: ["Progetto Nazionale", "Hub Nazionale"],
+        mim: ["Clust-ER", "Riaccendiamo"],
+        lavoro: ["Progetto Nazionale", "Analisi"],
+        maeci: ["Web3", "ECC"],
+        agid: ["ECC", "Once Only"],
+        pagopa: ["Assistente", "SSET"],
+        ae: ["Costi PA", "Analisi"],
+        adm: ["Carbon Credit", "Bolkestein"]
+      };
+      
+      const terms = (hotTerms[slug] || []).join(",");
+      const spotUrl = terms ? 
+        `/dms-gemello-news/landing/spot.html?hot=${encodeURIComponent(terms)}` : 
+        `/dms-gemello-news/landing/spot.html`;
+      
+      modalActions.innerHTML = `
+        <a href="${spotUrl}"
+           class="btn btn-primary btn-go"
+           role="button">vai a PDF pertinenti</a>
+        <a href="/dms-gemello-news/landing/spot.html#riferimenti-normativi"
+           class="btn btn-ghost btn-norme"
+           role="button" aria-label="Riferimenti normativi e PNRR">Riferimenti normativi & PNRR</a>
+      `;
+      
+      // Render cards
+      modalBody.innerHTML = data.cards.map(card => 
+        `<div class="doc-card">
+          <img src="${card.img}" alt="${card.alt}" loading="lazy">
+        </div>`
+      ).join('');
+
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      
+      // Update hash
+      if (location.hash.slice(1) !== slug) {
+        history.pushState(null, '', `#${slug}`);
+      }
+    }
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      
+      // Clear hash
+      if (location.hash) {
+        history.pushState(null, '', location.pathname);
+      }
+    }
+
+    // Hash handling
+    function handleInitialHash() {
+      const slug = location.hash.slice(1);
+      if (slug && MINISTERI_DATA[slug]) {
+        openModal(slug);
+      }
+    }
+
+    function handleHashChange() {
+      const slug = location.hash.slice(1);
+      if (slug && MINISTERI_DATA[slug]) {
+        openModal(slug);
+      } else {
+        closeModal();
+      }
+    }
+
+    // Ricerca
+    function handleSearch() {
+      const query = searchInput.value.toLowerCase().trim();
+      
+      allNodes.forEach(node => {
+        const slug = node.dataset.slug;
+        const data = MINISTERI_DATA[slug];
+        const text = node.textContent.toLowerCase();
+        
+        const matches = !query || 
+          text.includes(query) || 
+          slug.includes(query) || 
+          data.title.toLowerCase().includes(query);
+        
+        node.classList.toggle('filtered', !matches);
+      });
+    }
+
+    // Zoom
+    function setZoom(zoom) {
+      currentZoom = zoom;
+      mapContainer.className = `zoom-${zoom}`;
+      
+      // Ricalcola posizioni e linee per il nuovo zoom
+      setupNodes();
+      
+      document.querySelectorAll('.zoom-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.zoom) === zoom);
+      });
+    }
+
+    // Avvio
+    document.addEventListener('DOMContentLoaded', init);  </script>
+
+<style>
+.modal-actions{display:flex!important;gap:12px!important;flex-wrap:wrap!important;margin-top:16px!important}
+.btn{display:inline-block!important;padding:10px 16px!important;border-radius:10px!important;
+     font-weight:600!important;font-size:16px!important;line-height:1!important;text-decoration:none!important;
+     -webkit-tap-highlight-color:transparent}
+.btn-primary{background:#e11d48!important;color:#fff!important;border:1px solid #be123c!important}
+.btn-ghost{background:#1e40af!important;color:#fff!important;border:1px solid #1e40af!important}
+.btn:active{transform:translateY(1px)!important}
+</style>
+
+</html>
+
+
+<!-- Force deploy refresh -->
+

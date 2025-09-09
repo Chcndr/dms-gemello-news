@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset
+<base href="/dms-gemello-news/">="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DMS • Test scheda normativa (offline/iPad-safe)</title>
+<style>
+  :root{ --bg:#0c1214; --ink:#ecf3ef; --muted:#a7b9af; --line:#20312b; --focus-blue:#2A8CFF; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#0c1214;color:var(--ink)}
+  .wrap{max-width:1120px;margin:auto;padding:18px}
+  h1{font-size:1.2rem;margin:0 0 10px}
+  .grid{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
+             text-decoration:none;font-weight:800;display:flex;align-items:center;justify-content:center;min-height:48px}
+  @keyframes hotPing{0%{box-shadow:0 0 0 0 rgba(42,140,255,.65)}60%{box-shadow:0 0 0 12px rgba(42,140,255,0)}100%{box-shadow:0 0 0 0 rgba(42,140,255,0)}}
+  .muted{color:#4b5a52}
+  .arts{border-left:3px solid var(--focus-blue);padding-left:10px;margin-top:10px}
+  .btn{display:inline-flex;gap:8px;padding:8px 12px;border:1px solid var(--focus-blue);border-radius:10px;text-decoration:none;font-weight:800}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Riferimenti normativi & PNRR — Test locale</h1>
+
+    </div>
+
+  </div>
+
+<script>
+/* Dataset minimale (link PDF segnaposto) */
+  dpr160_2010:{ t:'DPR 160/2010 — SUAP', p:'DMS genera pratiche conformi (SCIA, subingressi, volture) e orchestra endo-pareri.',
+                a:['art. 5 — telematica & interoperabilità','art. 10 — endo-pareri con enti terzi'], pdf:'#' },
+  siconbep_106_2023:{ t:'D.Lgs. 106/2023 — SICONBEP', p:'Invii telematici concessioni/posteggi: DMS alimenta automaticamente SICONBEP.',
+                a:['obblighi telematici — monitoraggio concessioni'], pdf:'#' },
+  sdg_2018_1724:{ t:'Reg. (UE) 2018/1724 — Single Digital Gateway', p:'Principio once-only: DMS riusa dati via PDND e aggiorna atti senza duplicazioni.',
+                a:['artt. chiave — riuso dati cross-PA e servizi online'], pdf:'#' }
+};
+
+
+/* Apertura scheda */
+  const d = NORME[id]; if(!d){ S.innerHTML='<p>Norma non trovata.</p>'; return; }
+  S.innerHTML = `<h3>${d.t}</h3>
+    <p class="muted">${d.p}</p>
+    <div class="arts"><b>Articoli/commi rilevanti:</b>
+      <ul style="margin:6px 0 0 16px">${d.a.map(x=>`<li>${x}</li>`).join('')}</ul>
+    </div>
+    <a class="btn" href="${d.pdf}" target="_blank" rel="noopener">📄 Testo integrale (PDF)</a>`;
+  S.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* iPad-safe: blocca navigazione e apri scheda su touchstart (niente salti) */
+function bind(el){
+  if(el.tagName==='A'){ el.setAttribute('href','javascript:void(0)'); el.removeAttribute('target'); el.setAttribute('rel','noopener'); }
+  const h = e => { e.preventDefault(); e.stopPropagation();
+  };
+  el.addEventListener('touchstart', h, {passive:false, capture:true});
+  el.addEventListener('click', h, true);
+}
+
+/* Parametri utili per test: ?open=dpr160_2010 */
+</script>
+</body>
+</html>
+
