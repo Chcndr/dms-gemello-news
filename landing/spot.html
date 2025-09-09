@@ -193,6 +193,7 @@ window.DOC_MAP = {
   background: rgba(15, 122, 76, 0.1);
 }
 </style>
+<script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
 </body>
 </html>
 
