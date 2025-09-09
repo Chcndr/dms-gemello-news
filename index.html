@@ -1,8 +1,18 @@
-<!doctype html><meta charset="utf-8">
+<!doctype html>
+<html lang="it"><head>
+<meta charset="utf-8">
+<base href="/dms-gemello-news/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DMS — Redirect</title>
+<!-- DMS-PROOF index-switch-v1 -->
+<meta http-equiv="refresh" content="0; url=landing/home.html?from=index&v=index-switch-v1">
 <script>
-  (function(){
-    var REL = '/releases/2025-09-08-1/';   // cambia solo questa riga al prossimo switch
-    location.replace(REL + 'index.html' + location.search + location.hash);
-  })();
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))}
+  location.replace('landing/home.html?from=index&v=index-switch-v1');
 </script>
+<noscript>
+  <meta http-equiv="refresh" content="0; url=landing/home.html?from=index&v=index-switch-v1">
+  <a href="landing/home.html?from=index&v=index-switch-v1">Vai alla Home</a>
+</noscript>
+</head><body></body></html>
 
