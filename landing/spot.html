@@ -94,24 +94,40 @@
     border-radius: 10px;
   }
 
-  /* Chip/button per Riferimenti Normativi – outline blu */
+  /* Chip/button per Riferimenti Normativi – stesso colore dei PDF */
   .btn-norme {
     display:inline-flex; align-items:center; gap:.5rem;
     padding:10px 14px; border-radius:10px; font-weight:600;
-    border:2px solid #22d3ee !important;      /* blu/ciano */
-    color:#22d3ee !important; background:transparent !important;
-    text-decoration:none; white-space:nowrap;
+    border-color:var(--stroke) !important;
+    background:rgba(20,184,166,.08) !important; /* stesso colore dei PDF */
+    color:var(--ink) !important;
+    text-decoration:none; 
+    white-space:normal; /* permette il word-wrap */
+    word-wrap:break-word; /* spezza le parole lunghe */
+    text-align:center; /* centra il testo */
+    min-height:44px; /* altezza minima per testi lunghi */
+    line-height:1.3; /* migliore spaziatura righe */
   }
-  .btn-norme:hover, .btn-norme:focus {
-    background:rgba(34,211,238,.08) !important;
+  .btn-norme:hover,.btn-norme:focus{
+    background:rgba(20,184,166,.15) !important; /* stesso hover dei PDF */
     text-decoration:none;
   }
+
+  /* stato attivo (facoltativo) */
+  .btn-norme.is-active{ box-shadow:0 0 0 3px rgba(34,211,238,.25); }
 
   /* griglia responsiva della sezione norme */
   .norme-grid {
     display:grid; gap:12px;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* più spazio per testi lunghi */
+    align-items:start; /* allinea i pulsanti in alto */
   }
+
+  /* viewer container */
+  .spot-viewer{ margin-top:18px; border-radius:12px; border:1px solid rgba(148,163,184,.2);
+    background: rgba(2,6,23,.45); padding:10px; }
+  .spot-viewer header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .spot-viewer iframe{ width:100%; height:72vh; border:0; border-radius:8px; background:#0b1220 }
 </style>
 </head>
 <body>
@@ -161,37 +177,45 @@
       <section id="riferimenti-normativi" style="margin-top:40px">
         <h2>Riferimenti normativi & PNRR</h2>
         <div class="norme-grid">
-          <a class="btn-norme" href="#" data-norma="sdg-2018-1724">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="sdg-2018-1724" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32018R1724">
             Single Digital Gateway (Reg. UE 2018/1724)
           </a>
-          <a class="btn-norme" href="#" data-norma="interop-europe-2024-903">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="interop-europe-2024-903" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32024R0903">
             Interoperable Europe (Reg. UE 2024/903)
           </a>
-          <a class="btn-norme" href="#" data-norma="eidas2-2024-1183">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="eidas2-2024-1183" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32024R1183">
             eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
           </a>
-          <a class="btn-norme" href="#" data-norma="espr-dpp-2024-1781">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="espr-dpp-2024-1781" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32024R1781">
             ESPR & Digital Product Passport (Reg. UE 2024/1781)
           </a>
-          <a class="btn-norme" href="#" data-norma="direttiva-servizi-2006-123">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="direttiva-servizi-2006-123" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32006L0123">
             Direttiva Servizi (2006/123/CE – "Bolkestein")
           </a>
-          <a class="btn-norme" href="#" data-norma="suap-dpr-160-2010">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="suap-dpr-160-2010" data-norma-url="https://www.gazzettaufficiale.it/eli/id/2010/10/07/010G0183/sg">
             SUAP – DPR 160/2010
           </a>
-          <a class="btn-norme" href="#" data-norma="dogane-com-2023-258-260">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="dogane-com-2023-258-260" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=COM:2023:258:FIN">
             Riforma Dogane UE (pacchetto COM(2023) 258–260)
           </a>
-          <a class="btn-norme" href="#" data-norma="pnrr-italia-domani">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="pnrr-italia-domani" data-norma-url="https://www.governo.it/sites/governo.it/files/PNRR.pdf">
             PNRR – Italia Domani
           </a>
-          <a class="btn-norme" href="#" data-norma="pdnd">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="pdnd" data-norma-url="https://www.agid.gov.it/it/infrastrutture/sistema-pubblico-connettivita/pdnd-interoperabilita">
             PDND – Piattaforma Digitale Nazionale Dati
           </a>
-          <a class="btn-norme" href="#" data-norma="agid-linee-interoperabilita">
+          <a class="btn-norme" href="javascript:void(0)" data-norma="agid-linee-interoperabilita" data-norma-url="https://www.agid.gov.it/it/infrastrutture/sistema-pubblico-connettivita/il-nuovo-modello-interoperabilita">
             AgID – Linee guida interoperabilità
           </a>
         </div>
+
+        <section id="viewer" class="spot-viewer">
+          <header>
+            <strong>Anteprima documento</strong>
+            <a id="viewer-open" class="btn-norme" href="#" target="_blank" rel="noopener">Apri in nuova scheda ↗</a>
+          </header>
+          <iframe id="docFrame" title="Anteprima PDF"></iframe>
+        </section>
       </section>
     </section>
   </div>
@@ -380,7 +404,137 @@ window.DOC_MAP = {
 };
 </script>
 
-<script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
+<script>
+(function(){
+  // 1) Colore: riusa il fill dei pulsanti/tiles PDF esistenti
+  const samplePdf = document.querySelector('.pdf-list a, .spot-list a, .pdf-tile, .btn-pdf');
+  if (samplePdf){
+    const cs = getComputedStyle(samplePdf);
+    document.documentElement.style.setProperty('--chip-fill', cs.backgroundColor);
+    document.documentElement.style.setProperty('--chip-fg',   cs.color);
+  }
+
+  // 2) Helper scroll con offset (evita che risalga sul video)
+  function scrollToViewer(){
+    const el = document.getElementById('viewer');
+    if (!el) return;
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+    setTimeout(()=>window.scrollBy({top:-70, left:0, behavior:'instant'}), 250); // header offset
+  }
+
+  // 3) Apri PDF nel viewer
+  const frame = document.getElementById('docFrame');
+  const aOpen = document.getElementById('viewer-open');
+
+  function openInViewer(url){
+    if (!frame) return;
+    frame.src = url;
+    if (aOpen) aOpen.href = url;
+    scrollToViewer();
+  }
+
+  // 3b) Apri norma nel viewer con contenuto descrittivo
+  function openNormaInViewer(normaId, normaUrl, normaTitle) {
+    if (!frame) return;
+    
+    // Contenuto HTML descrittivo per la norma
+    const normaContent = getNormaContent(normaId, normaTitle, normaUrl);
+    
+    // Crea un blob HTML e aprilo nell'iframe
+    const blob = new Blob([normaContent], { type: 'text/html' });
+    const blobUrl = URL.createObjectURL(blob);
+    frame.src = blobUrl;
+    
+    if (aOpen) {
+      aOpen.href = normaUrl;
+      aOpen.textContent = 'Vai al sito ufficiale ↗';
+    }
+    scrollToViewer();
+  }
+
+  // 3c) Genera contenuto descrittivo per ogni norma
+  function getNormaContent(normaId, title, url) {
+    const descriptions = {
+      'sdg-2018-1724': 'Il Single Digital Gateway stabilisce un punto di accesso unico per cittadini e imprese per accedere ai servizi pubblici digitali in tutta l\'UE. Il DMS implementa questa direttiva fornendo un\'interfaccia unificata per tutti i servizi digitali ministeriali.',
+      'interop-europe-2024-903': 'Interoperable Europe promuove l\'interoperabilità tra i sistemi informatici pubblici europei. Il DMS adotta questi standard per garantire la compatibilità con altri sistemi europei.',
+      'eidas2-2024-1183': 'eIDAS 2 introduce il Digital Wallet europeo per l\'identità digitale. Il DMS integra questi standard per l\'autenticazione sicura degli utenti.',
+      'espr-dpp-2024-1781': 'Il Digital Product Passport traccia il ciclo di vita dei prodotti. Il DMS utilizza questi principi per la tracciabilità dei processi amministrativi.',
+      'direttiva-servizi-2006-123': 'La Direttiva Servizi (Bolkestein) semplifica l\'accesso ai servizi nel mercato interno UE. Il DMS implementa gli sportelli unici digitali richiesti.',
+      'suap-dpr-160-2010': 'Il SUAP (Sportello Unico Attività Produttive) centralizza le pratiche per le attività economiche. Il DMS estende questo modello a livello ministeriale.',
+      'dogane-com-2023-258-260': 'La riforma delle dogane UE digitalizza i processi doganali. Il DMS integra questi flussi per il commercio internazionale.',
+      'pnrr-italia-domani': 'Il PNRR finanzia la digitalizzazione della PA italiana. Il DMS è parte integrante di questa trasformazione digitale.',
+      'pdnd': 'La PDND facilita lo scambio sicuro di dati tra PA. Il DMS utilizza questa infrastruttura per l\'interoperabilità.',
+      'agid-linee-interoperabilita': 'Le linee guida AgID definiscono gli standard di interoperabilità. Il DMS implementa tutti questi requisiti tecnici.'
+    };
+
+    return `
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${title}</title>
+      <style>
+        body { font-family: system-ui, sans-serif; line-height: 1.6; padding: 20px; background: #0b1220; color: #e8fbff; }
+        h1 { color: #14b8a6; border-bottom: 2px solid #14b8a6; padding-bottom: 10px; }
+        .description { background: rgba(20,184,166,.1); padding: 15px; border-radius: 8px; margin: 20px 0; }
+        .cta { text-align: center; margin-top: 30px; }
+        .btn { display: inline-block; padding: 12px 24px; background: #14b8a6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .btn:hover { background: #0f7a4c; }
+      </style>
+    </head>
+    <body>
+      <h1>${title}</h1>
+      <div class="description">
+        <h3>Collegamento con il DMS</h3>
+        <p>${descriptions[normaId] || 'Questa normativa è fondamentale per il funzionamento del DMS e la digitalizzazione dei servizi pubblici.'}</p>
+      </div>
+      <div class="cta">
+        <a href="${url}" target="_blank" class="btn">Vai al testo ufficiale della normativa ↗</a>
+      </div>
+    </body>
+    </html>`;
+  }
+
+  // 4) Deleghe click: distingue tra PDF (nuova scheda) e norme (viewer)
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    
+    // Se è un pulsante delle norme, aprilo nel viewer con contenuto descrittivo
+    if (a.classList.contains('btn-norme')) {
+      e.preventDefault();
+      const normaId = a.getAttribute('data-norma');
+      const normaUrl = a.getAttribute('data-norma-url');
+      openNormaInViewer(normaId, normaUrl, a.textContent.trim());
+      // evidenzia attivo
+      document.querySelectorAll('.btn-norme').forEach(x=>x.classList?.remove('is-active'));
+      a.classList?.add('is-active');
+      return;
+    }
+    
+    // Solo PDF locali nel viewer (per i documenti della lista sinistra)
+    if (href.endsWith('.pdf') && !a.hasAttribute('data-external') && !a.hasAttribute('target')){
+      e.preventDefault();
+      openInViewer(href);
+      // evidenzia attivo nella lista
+      document.querySelectorAll('.btn-pdf, .pdf-link, .spot-list a').forEach(x=>x.classList?.remove('is-active'));
+      a.classList?.add('is-active');
+    }
+  }, {passive:false});
+
+  // 5) Stato attivo per chip norme (solo visual, i link restano esterni)
+  document.querySelectorAll('.btn-norme').forEach(btn=>{
+    btn.addEventListener('click', ()=> {
+      document.querySelectorAll('.btn-norme').forEach(b=>b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      // se in futuro alcune norme diventano PDF locali, basterà aggiungere href .pdf e verranno aperte qui.
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
 
