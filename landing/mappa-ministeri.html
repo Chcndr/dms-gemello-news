@@ -1029,13 +1029,13 @@
       };
       
       // Genera link con parametro ministero per evidenziazione blu
-      const spotUrl = `/dms-gemello-news/landing/spot.html?m=${slug}`;
+      const spotUrl = `./spot.html?m=${slug}`;
       
       modalActions.innerHTML = `
         <a href="${spotUrl}"
            class="btn btn-primary btn-go"
            role="button">vai a PDF pertinenti</a>
-        <a href="/dms-gemello-news/landing/spot.html#riferimenti-normativi"
+        <a href="./spot.html#riferimenti-normativi"
            class="btn btn-ghost btn-norme"
            role="button" aria-label="Riferimenti normativi e PNRR">Riferimenti normativi & PNRR</a>
       `;
