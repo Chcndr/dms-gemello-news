@@ -800,19 +800,31 @@ const MAP_MINISTERO = {
 };
 
 function applyMinisterHighlight(mKey){
+  console.log('🔍 DEBUG: applyMinisterHighlight called with:', mKey);
   document.querySelectorAll('.btn-norme').forEach(b=>b.classList.remove('is-min-hot'));
   const ids = new Set(MAP_MINISTERO[mKey]||[]);
+  console.log('🔍 DEBUG: IDs to highlight:', Array.from(ids));
   document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>{ 
-    if(ids.has(b.dataset.norma)) b.classList.add('is-min-hot'); 
+    console.log('🔍 DEBUG: Checking button:', b.dataset.norma, 'in set:', ids.has(b.dataset.norma));
+    if(ids.has(b.dataset.norma)) {
+      b.classList.add('is-min-hot');
+      console.log('🔍 DEBUG: Added highlight to:', b.dataset.norma);
+    }
   });
 }
 
 (function initNorme(){
   const p=new URLSearchParams(location.search);
   const m=p.get('m'), hot=p.get('hot'), open=p.get('open');
-  if(m) applyMinisterHighlight(m);
+  console.log('🔍 DEBUG: initNorme started', {m, hot, open});
+  
+  if(m) {
+    console.log('🔍 DEBUG: Applying highlight for ministry:', m);
+    applyMinisterHighlight(m);
+  }
   if(hot){ 
     const btn=document.querySelector(`.btn-norme[data-norma="${hot}"]`); 
+    console.log('🔍 DEBUG: Hot button found:', btn);
     if(btn) btn.classList.add('is-min-hot'); 
   }
   if(open && typeof openNormaInViewer==='function') {
