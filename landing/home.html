@@ -391,15 +391,20 @@ addEventListener('click', function (e) {
     
     /* SEMAFORO per sfondo data */
     .node[data-i="0"] .sub, .node[data-i="1"] .sub, .node[data-i="2"] .sub {
-      background:#22c55e; color:#ffffff; border-color:#16a34a; /* VERDE con testo bianco */
+      background:#22c55e; color:#ffffff !important; border-color:#16a34a; /* VERDE con testo bianco */
     }
     .node[data-i="3"] .sub {
-      background:#f97316; color:#ffffff; border-color:#ea580c; /* ARANCIONE con testo bianco */
+      background:#f97316; color:#ffffff !important; border-color:#ea580c; /* ARANCIONE con testo bianco */
     }
     .node[data-i="4"] .sub, .node[data-i="5"] .sub, .node[data-i="6"] .sub,
     .node[data-i="7"] .sub, .node[data-i="8"] .sub, .node[data-i="9"] .sub,
     .node[data-i="10"] .sub, .node[data-i="11"] .sub {
-      background:#e11d48; color:#ffffff; border-color:#be185d; /* ROSSO con testo bianco */
+      background:#e11d48; color:#ffffff !important; border-color:#be185d; /* ROSSO con testo bianco */
+    }
+    
+    /* FORZA BIANCO per tutte le date del semaforo - regola aggiuntiva */
+    button.node .sub {
+      color: #ffffff !important;
     }
     /* niente tag "PDF/INFO" */
     .node .tag{ display:none; }
