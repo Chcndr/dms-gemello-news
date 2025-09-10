@@ -840,6 +840,141 @@ function applyMinisterHighlight(mKey){
 })();
 </script>
 
+<!-- DMS • Norme • Patch additiva post-rollback (safe) -->
+<script>
+(function(){
+  if (window.__DMS_POST_RB_PATCH__) return; window.__DMS_POST_RB_PATCH__=true;
+
+  const norm = s => (s||'').toString().trim().toLowerCase().replace(/_/g,'-');
+
+  /* 1) CTA: "Vai alla legge ufficiale" nella STESSA scheda */
+  (function ensureCTA(){
+    let cta = document.getElementById('cta-ufficiale') || document.getElementById('viewer-open');
+    if (!cta){
+      cta = document.createElement('a');
+      (document.querySelector('.norme-cta-col') || document.body).appendChild(cta);
+    }
+    cta.id = 'cta-ufficiale';
+    cta.classList.remove('btn-norme');           // non deve essere intercettata dal delegato norme
+    cta.classList.add('btn-ufficiale');
+    cta.removeAttribute('target');               // stessa scheda
+    cta.setAttribute('rel','noopener');
+    cta.setAttribute('data-ext','1');            // bandierina per ignorare deleghe norme
+    cta.textContent = 'Vai alla legge ufficiale';
+
+    // Forza apertura nella stessa scheda (anche iPad/Safari) e blocca altri handler
+    cta.addEventListener('click', function(ev){
+      const href = this.getAttribute('href') || '#';
+      if (href === '#'){ ev.preventDefault(); return; }
+      ev.stopImmediatePropagation(); ev.preventDefault();
+      window.location.assign(href); // stessa scheda
+    }, true);
+  })();
+
+  /* 2) URL ufficiale della norma: dal bottone o dal dataset JSON (#NORME) */
+  function getNormaUrl(nid, btn){
+    const attr = btn?.getAttribute('data-norma-url');
+    if (attr) return attr;
+    try{
+      const raw = document.getElementById('NORME')?.textContent||'[]';
+      const arr = JSON.parse(raw);
+      const hit = arr.find(x => norm(x.id)===nid);
+      if (hit?.link_ufficiale) return hit.link_ufficiale;
+    }catch(_){}
+    return '#';
+  }
+
+  /* 3) Click su NORMA: aggiorna CTA + spegni SOLO quel bordo blu */
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.btn-norme[data-norma]');
+    if (!btn) return;
+
+    const id   = norm(btn.getAttribute('data-norma'));
+    const href = getNormaUrl(id, btn);
+
+    const cta = document.getElementById('cta-ufficiale');
+    if (cta){
+      cta.setAttribute('href', href);
+      cta.classList.toggle('is-disabled', href==='#');
+      cta.setAttribute('aria-disabled', href==='#' ? 'true':'false');
+      cta.textContent = 'Vai alla legge ufficiale';
+    }
+
+    // spegni solo il bordo blu del tasto cliccato (gli altri restano)
+    if (btn.classList.contains('is-min-hot')){
+      setTimeout(()=>btn.classList.remove('is-min-hot'), 0);
+    }
+  }, {passive:true});
+
+  /* 4) Accensione BLU da Mappa (?m, ?hot, ?open) tollerando _ / - */
+  const MAP_MINISTERO = {
+    mef:["csrd-2022-2464","cbam-2023-956","riforma-dogane-com-2023-258-260","ets-revision-2023-959"],
+    mimit:["suap-dpr-160-2010","espr-dpp-2024-1781","direttiva-servizi-2006-123","pnrr-italia-domani"],
+    innovazione:["sdg-2018-1724","interoperable-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689","pdnd","agid-linee-interoperabilita"],
+    ambiente:["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464"],
+    dogane:["riforma-dogane-com-2023-258-260","espr-dpp-2024-1781"],
+    pa:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interoperable-europe-2024-903"],
+    interno_regioni:["suap-dpr-160-2010","pdnd","direttiva-servizi-2006-123"]
+  };
+  function applyBluFromMinister(mKey){
+    if (typeof window.applyMinisterHighlight === 'function') return window.applyMinisterHighlight(mKey);
+    const ids = new Set((MAP_MINISTERO[mKey]||[]).map(norm));
+    document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>{
+      b.classList.remove('is-min-hot');
+      if (ids.has(norm(b.getAttribute('data-norma')))) b.classList.add('is-min-hot');
+    });
+  }
+
+  (function initFromURL(){
+    const p = new URLSearchParams(location.search);
+    const m   = p.get('m');
+    const hot = norm(p.get('hot'));
+    const opn = norm(p.get('open'));
+
+    if (m) applyBluFromMinister(m);
+    if (hot){
+      const b = document.querySelector(`.btn-norme[data-norma="${hot}"]`);
+      if (b) b.classList.add('is-min-hot');
+    }
+    if (opn){
+      // prepara CTA subito (lo storico aprirà comunque la scheda)
+      const b = document.querySelector(`.btn-norme[data-norma="${opn}"]`);
+      const href = getNormaUrl(opn, b);
+      const cta = document.getElementById('cta-ufficiale');
+      if (cta){
+        cta.setAttribute('href', href);
+        cta.classList.toggle('is-disabled', href==='#');
+        cta.setAttribute('aria-disabled', href==='#' ? 'true':'false');
+      }
+      // se il legacy non apre da solo, prova a forzare dopo il suo init
+      if (typeof window.openNorma === 'function'){
+        setTimeout(()=>window.openNorma(opn, b?.textContent?.trim()||opn, b?.getAttribute('data-norma-url')||''), 0);
+      }
+    }
+
+    // badge diagnostico per riconoscere la patch
+    if (p.get('diag')==='1'){
+      const tag=document.createElement('div');
+      tag.style="position:fixed;left:10px;bottom:10px;background:#0b0f14;color:#9bd3ff;padding:6px 10px;border-radius:6px;font:12px/1.2 system-ui;z-index:99999;opacity:.9";
+      tag.textContent=`diag • m=${m||'-'} • hot=${hot||'-'} • open=${opn||'-'} • rb-patch`;
+      document.body.appendChild(tag);
+    }
+  })();
+})();
+</script>
+
+<style>
+/* stile base CTA (se mancasse) */
+.btn-ufficiale{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:10px 14px;border-radius:10px;font-weight:700;
+  border:1px solid var(--stroke,rgba(148,163,184,.25));
+  background:rgba(20,184,166,.10);color:var(--ink,#eafaf2);text-decoration:none;
+}
+.btn-ufficiale:hover{ background:rgba(20,184,166,.18) }
+.btn-ufficiale.is-disabled{ pointer-events:none;opacity:.55;filter:grayscale(.15) }
+</style>
+
 </body>
 </html>
 
