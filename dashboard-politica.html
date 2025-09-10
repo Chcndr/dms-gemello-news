@@ -199,6 +199,8 @@
             overflow: hidden;
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+            pointer-events: auto;
+            z-index: 100;
         }
 
         .btn-shock:hover {
@@ -430,6 +432,8 @@
             letter-spacing: 1px;
             position: relative;
             overflow: hidden;
+            pointer-events: auto;
+            z-index: 100;
         }
 
         .cta-btn:hover {
@@ -791,12 +795,6 @@
                 const duration = 3000; // 3 secondi
                 const increment = target / (duration / 16); // 60fps
                 let current = 0;
-                
-                // Suono contatore
-                if (audioCounter) {
-                    audioCounter.currentTime = 0;
-                    audioCounter.play().catch(e => console.log('Audio non supportato'));
-                }
                 
                 const timer = setInterval(() => {
                     current += increment;
