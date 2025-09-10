@@ -460,13 +460,8 @@ window.DOC_MAP = {
     
     // Crea un blob HTML e aprilo nell'iframe
     const blob = new Blob([normaContent], { type: 'text/html' });
-    const blobUrl = URL.createObjectURL(blob);
     frame.src = blobUrl;
     
-    if (aOpen) {
-      aOpen.href = normaUrl;
-      aOpen.textContent = 'Vai al sito ufficiale ↗';
-    }
     scrollToViewer();
   }
 
