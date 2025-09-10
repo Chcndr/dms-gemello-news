@@ -87,53 +87,109 @@
     background:rgba(20,184,166,.15);
   }
   
-  /* Evidenziazione rossa per pulsanti "hot" */
-  .btn.is-hot, a.is-hot {
-    outline: 3px solid #e11d48;
-    box-shadow: 0 0 0 4px rgba(225,29,72,.25);
-    border-radius: 10px;
-  }
-
-  /* Evidenziazione blu per normative ministeriali */
-  .btn-norme.is-min-hot {
-    outline: 2px solid #2d9cff;
-    box-shadow: 0 0 0 3px rgba(45,156,255,.25) inset;
-  }
-
-  /* Chip/button per Riferimenti Normativi – stesso colore dei PDF */
-  .btn-norme {
+  /* Chip/button per Riferimenti Normativi */
+  .norma-btn {
     display:inline-flex; align-items:center; gap:.5rem;
     padding:10px 14px; border-radius:10px; font-weight:600;
-    border:1px solid var(--stroke) !important; /* AGGIUNTO: stesso contorno dei PDF */
-    background:rgba(20,184,166,.08) !important; /* stesso colore dei PDF */
+    border:1px solid var(--stroke) !important;
+    background:rgba(20,184,166,.08) !important;
     color:var(--ink) !important;
     text-decoration:none; 
-    white-space:normal; /* permette il word-wrap */
-    word-wrap:break-word; /* spezza le parole lunghe */
-    text-align:center; /* centra il testo */
-    min-height:44px; /* altezza minima per testi lunghi */
-    line-height:1.3; /* migliore spaziatura righe */
+    white-space:normal;
+    word-wrap:break-word;
+    text-align:center;
+    min-height:44px;
+    line-height:1.3;
   }
-  .btn-norme:hover,.btn-norme:focus{
-    background:rgba(20,184,166,.15) !important; /* stesso hover dei PDF */
+  .norma-btn:hover,.norma-btn:focus{
+    background:rgba(20,184,166,.15) !important;
     text-decoration:none;
   }
 
-  /* stato attivo (facoltativo) */
-  .btn-norme.is-active{ box-shadow:0 0 0 3px rgba(34,211,238,.25); }
+  /* bordo blu quando un ministero accende più norme */
+  .norma-btn.is-min-hot{
+    outline:2px solid #2d9cff;
+    box-shadow:0 0 0 3px rgba(45,156,255,.25) inset;
+  }
+
+  /* CTA disabilitata se manca link */
+  .btn-ufficiale.is-disabled{
+    pointer-events:none; opacity:.55; filter:grayscale(.15);
+  }
+
+  /* chip stile scheda ricca */
+  .scheda-ricca .chip{
+    display:inline-block;
+    background:#163224; border:1px solid #204a38; border-radius:999px;
+    padding:4px 8px; margin:2px; font-size:12px; color:#dff6ea;
+  }
 
   /* griglia responsiva della sezione norme */
   .norme-grid {
     display:grid; gap:12px;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* più spazio per testi lunghi */
-    align-items:start; /* allinea i pulsanti in alto */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    align-items:start;
   }
 
-  /* viewer container */
-  .spot-viewer{ margin-top:18px; border-radius:12px; border:1px solid rgba(148,163,184,.2);
-    background: rgba(2,6,23,.45); padding:10px; }
-  .spot-viewer header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .spot-viewer iframe{ width:100%; height:72vh; border:0; border-radius:8px; background:#0b1220 }
+  /* CTA esterna */
+  .norme-cta-col {
+    margin-top: 20px;
+    text-align: right;
+  }
+
+  .btn-ufficiale {
+    display: inline-block;
+    padding: 12px 20px;
+    background: linear-gradient(180deg, rgba(20,184,166,.25), rgba(20,184,166,.15));
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .btn-ufficiale:hover {
+    background: linear-gradient(180deg, rgba(20,184,166,.35), rgba(20,184,166,.25));
+  }
+
+  /* Scheda ricca */
+  #scheda-norma {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    display: none;
+  }
+
+  #scheda-norma.is-open {
+    display: block;
+  }
+
+  .scheda-ricca h3 {
+    color: #14b8a6;
+    margin-top: 0;
+  }
+
+  .scheda-ricca h4 {
+    color: #14b8a6;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .scheda-ricca .chips {
+    margin: 1rem 0;
+  }
+
+  .scheda-ricca .nota {
+    background: rgba(251,191,36,.1);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #fbbf24;
+    color: #fbbf24;
+    font-style: italic;
+    margin-top: 1.5rem;
+  }
 </style>
 </head>
 <body>
@@ -183,60 +239,337 @@
       <section id="riferimenti-normativi" style="margin-top:40px">
         <h2 style="color:#14b8a6;">Riferimenti normativi & PNRR</h2>
         <div class="norme-grid">
-          <a class="btn-norme" href="javascript:void(0)" data-norma="sdg-2018-1724" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32018R1724">
+          <a class="norma-btn" href="javascript:void(0)" data-id="sdg_2018_1724">
             Single Digital Gateway (Reg. UE 2018/1724)
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="interop-europe-2024-903" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32024R0903">
+          <a class="norma-btn" href="javascript:void(0)" data-id="interoperable_europe_2024_903">
             Interoperable Europe (Reg. UE 2024/903)
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="eidas2-2024-1183" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32024R1183">
+          <a class="norma-btn" href="javascript:void(0)" data-id="eidas2_2024_1183">
             eIDAS 2 – Digital Wallet (Reg. UE 2024/1183)
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="espr-dpp-2024-1781" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32024R1781">
+          <a class="norma-btn" href="javascript:void(0)" data-id="espr_dpp_2024_1781">
             ESPR & Digital Product Passport (Reg. UE 2024/1781)
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="direttiva-servizi-2006-123" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32006L0123">
+          <a class="norma-btn" href="javascript:void(0)" data-id="dir_servizi_2006_123_ce">
             Direttiva Servizi (2006/123/CE – "Bolkestein")
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="suap-dpr-160-2010" data-norma-url="https://www.gazzettaufficiale.it/eli/id/2010/10/07/010G0183/sg">
+          <a class="norma-btn" href="javascript:void(0)" data-id="dpr160_2010">
             SUAP – DPR 160/2010
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="dogane-com-2023-258-260" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=COM:2023:258:FIN">
+          <a class="norma-btn" href="javascript:void(0)" data-id="riforma_dogane_com_2023_258_260">
             Riforma Dogane UE (pacchetto COM(2023) 258–260)
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="pnrr-italia-domani" data-norma-url="https://www.governo.it/sites/governo.it/files/PNRR.pdf">
+          <a class="norma-btn" href="javascript:void(0)" data-id="pnrr_italia_domani">
             PNRR – Italia Domani
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="pdnd" data-norma-url="https://www.agid.gov.it/it/infrastrutture/sistema-pubblico-connettivita/pdnd-interoperabilita">
+          <a class="norma-btn" href="javascript:void(0)" data-id="pdnd">
             PDND – Piattaforma Digitale Nazionale Dati
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="agid-linee-interoperabilita" data-norma-url="https://www.agid.gov.it/it/infrastrutture/sistema-pubblico-connettivita/il-nuovo-modello-interoperabilita">
+          <a class="norma-btn" href="javascript:void(0)" data-id="agid_linee_interoperabilita">
             AgID – Linee guida interoperabilità
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="cbam-2023-956" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32023R0956">
+          <a class="norma-btn" href="javascript:void(0)" data-id="cbam_2023_956">
             CBAM – Carbon Border Adjustment (Reg. UE 2023/956)
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="ets-revision-2023-959" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32023L0959">
+          <a class="norma-btn" href="javascript:void(0)" data-id="ets_revision_2023_959">
             ETS Revision – Sistema Scambio Emissioni (Dir. UE 2023/959)
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="csrd-2022-2464" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32022L2464">
+          <a class="norma-btn" href="javascript:void(0)" data-id="csrd_2022_2464">
             CSRD – Corporate Sustainability Reporting (Dir. UE 2022/2464)
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="ai-act-2024-1689" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=CELEX:32024R1689">
+          <a class="norma-btn" href="javascript:void(0)" data-id="ai_act_2024_1689">
             AI Act – Regolamento Intelligenza Artificiale (Reg. UE 2024/1689)
           </a>
         </div>
 
-        <section id="viewer" class="spot-viewer">
-          <header>
-            <strong>Anteprima documento</strong>
-            <a id="viewer-open" class="btn-norme" href="#" target="_blank" rel="noopener">Apri in nuova scheda ↗</a>
-          </header>
-          <iframe id="docFrame" title="Anteprima PDF"></iframe>
-        </section>
+        <!-- CTA esterna: colonna destra sotto i pulsanti -->
+        <div class="norme-cta-col">
+          <a id="cta-ufficiale"
+             class="btn-ufficiale"
+             data-ext="1"
+             target="_blank"
+             rel="noopener noreferrer">
+            Vai al sito ufficiale
+          </a>
+        </div>
+
+        <!-- Contenitore della scheda ricca -->
+        <div id="scheda-norma"></div>
       </section>
     </section>
   </div>
+
+<script type="application/json" id="NORME">
+[
+  {
+    "id": "sdg_2018_1724",
+    "titolo": "Single Digital Gateway – Once-Only (Reg. UE 2018/1724)",
+    "ministeri": ["PCM/PA Digitale","Regioni/Comuni","MIMIT"],
+    "perche_dms": "DMS è la porta locale dell'Once-Only: l'impresa consegna i dati una volta e DMS li riusa in pratiche e controlli negli HUB.",
+    "perche_adesso": "Finestre attuative aperte e pressione sui risultati visibili: servono sportelli locali realmente semplici.",
+    "abilita_dms": [
+      "Prefill automatico con atti già disponibili (SUAP, DURC, AE)",
+      "Riduzione tempi/errore per operatori e uffici",
+      "Tracciabilità completa degli scambi"
+    ],
+    "benefici_incrociati": [
+      "PCM/PA Digitale: semplificazione misurabile",
+      "MIMIT: onboarding imprese più rapido",
+      "Regioni/Comuni: meno sportelli fisici, più consenso"
+    ],
+    "nota_politica": "Chi parte ora conquista fiducia: una pratica che si compila da sola vale più di mille slide.",
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2018/1724/oj"
+  },
+  {
+    "id": "interoperable_europe_2024_903",
+    "titolo": "Interoperable Europe (Reg. UE 2024/903)",
+    "ministeri": ["PCM/PA","AgID","Regioni/Comuni"],
+    "perche_dms": "L'UE impone interoperabilità e riuso: DMS fornisce connettori standard (PDND/SSU) e modelli riusabili per mercati e tributi.",
+    "perche_adesso": "Quadro vincolante: chi standardizza oggi risparmia domani.",
+    "abilita_dms": [
+      "API e semantiche condivise",
+      "Template per anagrafiche, concessioni, presenze, pagamenti",
+      "Governance e metriche by-design"
+    ],
+    "benefici_incrociati": [
+      "AgID: riuso e riduzione lock-in",
+      "Regioni: scalabilità su più territori",
+      "Comuni: time-to-service dimezzato"
+    ],
+    "nota_politica": "Standard prima del budget: ogni euro speso diventa riuso, non personalizzazione.",
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2024/903/oj"
+  },
+  {
+    "id": "eidas2_2024_1183",
+    "titolo": "eIDAS 2 – EU Digital Identity Wallet (Reg. UE 2024/1183)",
+    "ministeri": ["Innovazione/AgID","Interno","Lavoro"],
+    "perche_dms": "Attributi verificati e deleghe sicure: con DMS titolari e dipendenti operano senza frizioni e con responsabilità chiare.",
+    "perche_adesso": "Fase attuativa avviata: adeguarsi ora evita rincorse costose.",
+    "abilita_dms": [
+      "Login forte (SPID/CIE/Wallet) e deleghe impresa-dipendente",
+      "Badge/credenziali verificabili per presenze e subentri",
+      "Audit sugli accessi"
+    ],
+    "benefici_incrociati": [
+      "Interno/Polizia Locale: meno abusi",
+      "Lavoro/INPS: coerenza posizioni",
+      "Comuni: meno contenziosi"
+    ],
+    "nota_politica": "La delega digitale taglia code e conflitti: chi firma e perché è tutto chiaro.",
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2024/1183/oj"
+  },
+  {
+    "id": "espr_dpp_2024_1781",
+    "titolo": "ESPR & Digital Product Passport (Reg. UE 2024/1781)",
+    "ministeri": ["Ambiente","MIMIT","Dogane","Salute"],
+    "perche_dms": "Il DPP porta tracciabilità e sicurezza al banco: DMS legge QR/NFC, avvisa su ritiri e valorizza il Made in Italy.",
+    "perche_adesso": "Prime categorie in arrivo (dal 2026): servono processi e strumenti già pronti.",
+    "abilita_dms": [
+      "Lettura DPP e segnalazioni automatiche",
+      "Vetrine green e premi comportamentali",
+      "Tracciabilità per controlli e marketing territoriale"
+    ],
+    "benefici_incrociati": [
+      "Dogane/MEF: anti-contraffazione",
+      "Ambiente: filiere pulite",
+      "Salute: sicurezza prodotto",
+      "Turismo/Cultura: storytelling di qualità"
+    ],
+    "nota_politica": "Il mercato diventa vetrina di legalità e qualità: una leva anche comunicativa.",
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2024/1781/oj"
+  },
+  {
+    "id": "dir_servizi_2006_123_ce",
+    "titolo": "Direttiva Servizi 2006/123/CE (Bolkestein)",
+    "ministeri": ["MIMIT","Regioni","Comuni"],
+    "perche_dms": "Concessioni e bandi devono essere trasparenti: DMS rende criteri e graduatorie comparabili e pubblicabili.",
+    "perche_adesso": "Pressione su concorrenza leale e tempi certi: servono strumenti pronti e neutri.",
+    "abilita_dms": [
+      "Fascicolo concessioni e storico atti",
+      "Cruscotti per commissioni e pareri",
+      "Notifiche automatiche e scadenze"
+    ],
+    "benefici_incrociati": [
+      "Antitrust/Consumatori: correttezza",
+      "Regioni: uniformità bandi",
+      "Comuni: meno ricorsi"
+    ],
+    "nota_politica": "Regole chiare = meno contenziosi e più fiducia nel mercato.",
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/dir/2006/123/oj"
+  },
+  {
+    "id": "dpr160_2010",
+    "titolo": "SUAP – DPR 160/2010",
+    "ministeri": ["MIMIT","Regioni/Comuni","Interno"],
+    "perche_dms": "DMS mette a terra lo sportello unico negli HUB: pratica digitale, pareri endo-procedimentali, pagamento e rilascio nello stesso flusso.",
+    "perche_adesso": "Il quadro è in vigore: oggi conta l'esperienza reale dell'utente.",
+    "abilita_dms": [
+      "Fascicolo impresa/mercato unico",
+      "Integrazione FO/BO/Enti terzi via SSU/PDND",
+      "Avvisi e scadenze automatizzate"
+    ],
+    "benefici_incrociati": [
+      "Interno/Polizia Locale: controlli coordinati",
+      "MEF/Entrate: basi tributarie consistenti",
+      "Comuni: meno code, più servizi"
+    ],
+    "nota_politica": "Lo sportello unico non è uno slogan: con DMS si vede e si usa.",
+    "link_ufficiale": "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:2010-09-07;160"
+  },
+  {
+    "id": "riforma_dogane_com_2023_258_260",
+    "titolo": "Riforma Dogane UE – pacchetto COM(2023) 258–260",
+    "ministeri": ["MEF/Dogane","Ambiente","MIMIT"],
+    "perche_dms": "Controlli risk-based su dati reali: DMS incrocia merceologie, provenienze, DPP e comportamenti di mercato per allarmi mirati.",
+    "perche_adesso": "L'impianto si consolida: chi prepara i dati locali guida i controlli.",
+    "abilita_dms": [
+      "Lista alert e soglie di rischio",
+      "Storico operatori/lotti",
+      "Report pronti per l'autorità"
+    ],
+    "benefici_incrociati": [
+      "Dogane/GdF: efficacia operativa",
+      "Ambiente: tracciabilità materiali",
+      "Imprese: regole chiare e prevedibili"
+    ],
+    "nota_politica": "Controlli intelligenti = meno peso sui regolari, più focus su chi sgarra.",
+    "link_ufficiale": "https://commission.europa.eu/strategy-and-policy/customs/customs-union/customs-reform_en"
+  },
+  {
+    "id": "pnrr_italia_domani",
+    "titolo": "PNRR – Italia Domani",
+    "ministeri": ["PCM/PA","Regioni","Comuni"],
+    "perche_dms": "PNRR chiede servizi digitali di prossimità: DMS è la vetrina tangibile negli HUB (pratiche, pagamenti, presenze).",
+    "perche_adesso": "Milestone/target in chiusura: servono risultati visibili ai cittadini.",
+    "abilita_dms": [
+      "Messa a terra rapida",
+      "KPI pubblici e rendicontazione",
+      "Riuso componenti nazionali"
+    ],
+    "benefici_incrociati": [
+      "Regioni: scalabilità",
+      "Comuni: fiducia",
+      "Governo: deliverables reali"
+    ],
+    "nota_politica": "Mostrare ciò che funziona sul campo vale più di mille bandi vinti.",
+    "link_ufficiale": "https://italiadomani.gov.it/"
+  },
+  {
+    "id": "pdnd",
+    "titolo": "PDND – Piattaforma Digitale Nazionale Dati",
+    "ministeri": ["PCM/PA","AgID","Regioni/Comuni"],
+    "perche_dms": "Canale ufficiale e tracciato: DMS consuma e-service (SSU, DURC, AE) senza integrazioni punto-punto.",
+    "perche_adesso": "Catalogo attivo, attestazione e produzione operative.",
+    "abilita_dms": [
+      "Autorizzazioni e log by-design",
+      "Riduzione costi d'integrazione",
+      "Scalabilità multi-ente"
+    ],
+    "benefici_incrociati": [
+      "Sicurezza/Compliance",
+      "Governance dati",
+      "Riuso nazionale"
+    ],
+    "nota_politica": "Affidabilità prima della velocità: ogni scambio è autorizzato e tracciato.",
+    "link_ufficiale": "https://pdnd.gov.it/"
+  },
+  {
+    "id": "agid_linee_interoperabilita",
+    "titolo": "AgID – Linee guida Interoperabilità",
+    "ministeri": ["AgID/PA","Regioni/Comuni"],
+    "perche_dms": "Definiscono API, semantica e sicurezza: DMS nasce conforme e abbatte i tempi progetto.",
+    "perche_adesso": "Adozione progressiva in tutte le PA.",
+    "abilita_dms": [
+      "Modelli dati condivisi",
+      "Connettori riusabili",
+      "Certezza di scambio"
+    ],
+    "benefici_incrociati": [
+      "PA: riuso",
+      "Fornitori: meno custom",
+      "Amministratori: meno rischi"
+    ],
+    "nota_politica": "Conforme da subito = meno sorprese in audit.",
+    "link_ufficiale": "https://docs.italia.it/italia/piano-triennale-ict/lg-modellointeroperabilita-docs/it/stabile/"
+  },
+  {
+    "id": "cbam_2023_956",
+    "titolo": "CBAM – Carbon Border Adjustment (Reg. UE 2023/956)",
+    "ministeri": ["MEF","Ambiente","Trasporti"],
+    "perche_dms": "Responsabilizza le filiere su CO₂: DMS evidenzia categorie a rischio e incentiva operatori low-carbon.",
+    "perche_adesso": "Fase transitoria in corso; dal 2026 gli oneri diventano economici.",
+    "abilita_dms": [
+      "KPI ambientali su mercati/logistica",
+      "Percorsi a basse emissioni",
+      "Incentivi mirati"
+    ],
+    "benefici_incrociati": [
+      "Ambiente/Trasporti: piani aria e PUMS",
+      "MEF: policy basate sui dati"
+    ],
+    "nota_politica": "Premiare chi inquina meno porta consenso e risultati misurabili.",
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2023/956/oj"
+  },
+  {
+    "id": "ets_revision_2023_959",
+    "titolo": "ETS Revision – Sistema Scambio Emissioni (Dir. UE 2023/959)",
+    "ministeri": ["Ambiente","Trasporti","Comuni"],
+    "perche_dms": "L'ETS si allarga: DMS taglia le emissioni locali con logistica leggera e gestione rifiuti/packaging nei mercati.",
+    "perche_adesso": "Nuove coperture entrano a regime fino al 2027.",
+    "abilita_dms": [
+      "Cruscotti CO₂",
+      "Azioni a impatto immediato",
+      "Monitoraggio continuo"
+    ],
+    "benefici_incrociati": [
+      "Ambiente: target",
+      "Trasporti: PUMS",
+      "Comuni: risultati comunicabili"
+    ],
+    "nota_politica": "Ridurre CO₂ in mercati e consegne è un risultato che si vede e si comunica.",
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/dir/2023/959/oj"
+  },
+  {
+    "id": "csrd_2022_2464",
+    "titolo": "CSRD – Corporate Sustainability Reporting (Dir. UE 2022/2464)",
+    "ministeri": ["MEF","Ambiente","Regioni/Comuni"],
+    "perche_dms": "DMS produce dati primari di territorio (presenze, filiere, rifiuti, pagamenti) utili ai KPI ESRS di imprese e municipalizzate.",
+    "perche_adesso": "Prime rendicontazioni avviate: servono basi dati affidabili.",
+    "abilita_dms": [
+      "Export ESRS-ready",
+      "Tracciabilità filiere",
+      "Indicatori sociali/territoriali"
+    ],
+    "benefici_incrociati": [
+      "Finanza sostenibile",
+      "Piani ambientali",
+      "Brand territoriale"
+    ],
+    "nota_politica": "Dati locali = vantaggio competitivo per imprese e città.",
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/dir/2022/2464/oj"
+  },
+  {
+    "id": "ai_act_2024_1689",
+    "titolo": "AI Act – Regolamento Intelligenza Artificiale (Reg. UE 2024/1689)",
+    "ministeri": ["Innovazione","Imprese/Consumatori","PA"],
+    "perche_dms": "Gli HUB usano ranking e suggerimenti: DMS applica trasparenza, valutazione rischio e audit delle funzioni AI.",
+    "perche_adesso": "Scadenze progressive già avviate (divieti, GPAI, alti rischi).",
+    "abilita_dms": [
+      "Etichettatura e policy AI",
+      "Registro decisioni automatizzate",
+      "Mitigazioni by-design"
+    ],
+    "benefici_incrociati": [
+      "Consumatori/Antitrust: correttezza",
+      "PA: accountability",
+      "Imprese: regole chiare"
+    ],
+    "nota_politica": "Trasparenza AI oggi evita problemi domani: fiducia degli utenti e meno rischi legali.",
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
+  }
+]
+</script>
 
 <script>
   // Lista PDF completa organizzata per sezioni
