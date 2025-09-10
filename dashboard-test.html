@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard DMS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            padding: 2rem;
+        }
+        .test-button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 1rem;
+        }
+        .number-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #fbbf24;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚨 TEST DASHBOARD DMS</h1>
+    
+    <div class="number-value" data-target="245">0</div>
+    <p>MILIARDI € PERSI/ANNO</p>
+    
+    <button class="test-button" onclick="avviaContatori()">
+        🔢 AVVIA CONTATORI
+    </button>
+    
+    <button class="test-button" onclick="testAlert()">
+        🎯 TEST ALERT
+    </button>
+    
+    <button class="test-button" onclick="calcolaBenefici()">
+        💰 CALCOLA BENEFICI
+    </button>
+
+    <script>
+        console.log('🚀 Test Dashboard caricata!');
+        
+        function testAlert() {
+            alert('✅ JavaScript funziona!');
+            console.log('Alert test eseguito');
+        }
+        
+        function avviaContatori() {
+            console.log('🔢 Avvio contatori...');
+            const counter = document.querySelector('.number-value');
+            const target = parseInt(counter.getAttribute('data-target'));
+            const duration = 2000;
+            const increment = target / (duration / 16);
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                counter.textContent = Math.floor(current);
+            }, 16);
+        }
+        
+        function calcolaBenefici() {
+            console.log('💰 Calcola benefici...');
+            const membri = prompt('Quanti membri ha la tua famiglia?', '4');
+            if (membri && !isNaN(membri)) {
+                const beneficio = parseInt(membri) * 165;
+                alert(`La tua famiglia guadagnerà € ${beneficio}/anno con DMS!`);
+            }
+        }
+        
+        // Test automatico dopo 2 secondi
+        setTimeout(() => {
+            console.log('⏰ Test automatico contatori...');
+            avviaContatori();
+        }, 2000);
+    </script>
+</body>
+</html>
+
