@@ -1028,14 +1028,18 @@
         adm: ["Carbon Credit", "Bolkestein"]
       };
       
-      // Genera link con parametro ministero per evidenziazione blu
-      const spotUrl = `./spot.html?m=${slug}`;
+      // Genera link con evidenziazione corretta
+      const terms = (hotTerms[slug] || []).join(",");
+      const pdfUrl = terms ? 
+        `./spot.html?hot=${encodeURIComponent(terms)}` : 
+        `./spot.html`;
+      const normeUrl = `./spot.html?m=${slug}#riferimenti-normativi`;
       
       modalActions.innerHTML = `
-        <a href="${spotUrl}"
+        <a href="${pdfUrl}"
            class="btn btn-primary btn-go"
            role="button">vai a PDF pertinenti</a>
-        <a href="./spot.html#riferimenti-normativi"
+        <a href="${normeUrl}"
            class="btn btn-ghost btn-norme"
            role="button" aria-label="Riferimenti normativi e PNRR">Riferimenti normativi & PNRR</a>
       `;
