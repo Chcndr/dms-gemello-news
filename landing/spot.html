@@ -473,16 +473,244 @@ window.DOC_MAP = {
   // 3c) Genera contenuto descrittivo per ogni norma
   function getNormaContent(normaId, title, url) {
     const descriptions = {
-      'sdg-2018-1724': 'Il Single Digital Gateway stabilisce un punto di accesso unico per cittadini e imprese per accedere ai servizi pubblici digitali in tutta l\'UE. Il DMS implementa questa direttiva fornendo un\'interfaccia unificata per tutti i servizi digitali ministeriali.',
-      'interop-europe-2024-903': 'Interoperable Europe promuove l\'interoperabilità tra i sistemi informatici pubblici europei. Il DMS adotta questi standard per garantire la compatibilità con altri sistemi europei.',
-      'eidas2-2024-1183': 'eIDAS 2 introduce il Digital Wallet europeo per l\'identità digitale. Il DMS integra questi standard per l\'autenticazione sicura degli utenti.',
-      'espr-dpp-2024-1781': 'Il Digital Product Passport traccia il ciclo di vita dei prodotti. Il DMS utilizza questi principi per la tracciabilità dei processi amministrativi.',
-      'direttiva-servizi-2006-123': 'La Direttiva Servizi (Bolkestein) semplifica l\'accesso ai servizi nel mercato interno UE. Il DMS implementa gli sportelli unici digitali richiesti.',
-      'suap-dpr-160-2010': 'Il SUAP (Sportello Unico Attività Produttive) centralizza le pratiche per le attività economiche. Il DMS estende questo modello a livello ministeriale.',
-      'dogane-com-2023-258-260': 'La riforma delle dogane UE digitalizza i processi doganali. Il DMS integra questi flussi per il commercio internazionale.',
-      'pnrr-italia-domani': 'Il PNRR finanzia la digitalizzazione della PA italiana. Il DMS è parte integrante di questa trasformazione digitale.',
-      'pdnd': 'La PDND facilita lo scambio sicuro di dati tra PA. Il DMS utilizza questa infrastruttura per l\'interoperabilità.',
-      'agid-linee-interoperabilita': 'Le linee guida AgID definiscono gli standard di interoperabilità. Il DMS implementa tutti questi requisiti tecnici.'
+      'sdg-2018-1724': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">PCM/PA Digitale</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Regioni/Comuni</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">MIMIT</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>DMS è la porta locale dell'Once-Only: l'impresa consegna i dati una volta e DMS li riusa in pratiche e controlli negli HUB.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Finestre attuative aperte e pressione sui risultati visibili: servono sportelli locali realmente semplici.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Prefill automatico con atti già disponibili (SUAP, DURC, AE)</li><li>Riduzione tempi/errore per operatori e uffici</li><li>Tracciabilità completa degli scambi</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>PCM/PA Digitale: semplificazione misurabile</li><li>MIMIT: onboarding imprese più rapido</li><li>Regioni/Comuni: meno sportelli fisici, più consenso</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Chi parte ora conquista fiducia: una pratica che si compila da sola vale più di mille slide.
+        </div>`,
+      'interoperable-europe-2024-903': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">PCM/PA</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">AgID</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Regioni/Comuni</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>L'UE impone interoperabilità e riuso: DMS fornisce connettori standard (PDND/SSU) e modelli riusabili per mercati e tributi.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Quadro vincolante: chi standardizza oggi risparmia domani.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>API e semantiche condivise</li><li>Template per anagrafiche, concessioni, presenze, pagamenti</li><li>Governance e metriche by-design</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>AgID: riuso e riduzione lock-in</li><li>Regioni: scalabilità su più territori</li><li>Comuni: time-to-service dimezzato</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Standard prima del budget: ogni euro speso diventa riuso, non personalizzazione.
+        </div>`,
+      'eidas2-2024-1183': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Innovazione/AgID</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Interno</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Lavoro</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>Attributi verificati e deleghe sicure: con DMS titolari e dipendenti operano senza frizioni e con responsabilità chiare.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Fase attuativa avviata: adeguarsi ora evita rincorse costose.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Login forte (SPID/CIE/Wallet) e deleghe impresa-dipendente</li><li>Badge/credenziali verificabili per presenze e subentri</li><li>Audit sugli accessi</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Interno/Polizia Locale: meno abusi</li><li>Lavoro/INPS: coerenza posizioni</li><li>Comuni: meno contenziosi</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> La delega digitale taglia code e conflitti: chi firma e perché è tutto chiaro.
+        </div>`,
+      'espr-dpp-2024-1781': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Ambiente</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">MIMIT</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Dogane</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Salute</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>Il DPP porta tracciabilità e sicurezza al banco: DMS legge QR/NFC, avvisa su ritiri e valorizza il Made in Italy.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Prime categorie in arrivo (dal 2026): servono processi e strumenti già pronti.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Lettura DPP e segnalazioni automatiche</li><li>Vetrine green e premi comportamentali</li><li>Tracciabilità per controlli e marketing territoriale</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Dogane/MEF: anti-contraffazione</li><li>Ambiente: filiere pulite</li><li>Salute: sicurezza prodotto</li><li>Turismo/Cultura: storytelling di qualità</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Il mercato diventa vetrina di legalità e qualità: una leva anche comunicativa.
+        </div>`,
+      'direttiva-servizi-2006-123': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">MIMIT</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Regioni</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Comuni</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>Concessioni e bandi devono essere trasparenti: DMS rende criteri e graduatorie comparabili e pubblicabili.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Pressione su concorrenza leale e tempi certi: servono strumenti pronti e neutri.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Fascicolo concessioni e storico atti</li><li>Cruscotti per commissioni e pareri</li><li>Notifiche automatiche e scadenze</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Antitrust/Consumatori: correttezza</li><li>Regioni: uniformità bandi</li><li>Comuni: meno ricorsi</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Regole chiare = meno contenziosi e più fiducia nel mercato.
+        </div>`,
+      'suap-dpr-160-2010': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">MIMIT</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Regioni/Comuni</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Interno</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>DMS mette a terra lo sportello unico negli HUB: pratica digitale, pareri endo-procedimentali, pagamento e rilascio nello stesso flusso.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Il quadro è in vigore: oggi conta l'esperienza reale dell'utente.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Fascicolo impresa/mercato unico</li><li>Integrazione FO/BO/Enti terzi via SSU/PDND</li><li>Avvisi e scadenze automatizzate</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Interno/Polizia Locale: controlli coordinati</li><li>MEF/Entrate: basi tributarie consistenti</li><li>Comuni: meno code, più servizi</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Lo sportello unico non è uno slogan: con DMS si vede e si usa.
+        </div>`,
+      'dogane-com-2023-258-260': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">MEF/Dogane</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Ambiente</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">MIMIT</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>Controlli risk-based su dati reali: DMS incrocia merceologie, provenienze, DPP e comportamenti di mercato per allarmi mirati.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>L'impianto si consolida: chi prepara i dati locali guida i controlli.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Lista alert e soglie di rischio</li><li>Storico operatori/lotti</li><li>Report pronti per l'autorità</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Dogane/GdF: efficacia operativa</li><li>Ambiente: tracciabilità materiali</li><li>Imprese: regole chiare e prevedibili</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Controlli intelligenti = meno peso sui regolari, più focus su chi sgarra.
+        </div>`,
+      'pnrr-italia-domani': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">PCM/PA</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Regioni</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Comuni</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>PNRR chiede servizi digitali di prossimità: DMS è la vetrina tangibile negli HUB (pratiche, pagamenti, presenze).</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Milestone/target in chiusura: servono risultati visibili ai cittadini.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Messa a terra rapida</li><li>KPI pubblici e rendicontazione</li><li>Riuso componenti nazionali</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Regioni: scalabilità</li><li>Comuni: fiducia</li><li>Governo: deliverables reali</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Mostrare ciò che funziona sul campo vale più di mille bandi vinti.
+        </div>`,
+      'pdnd': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">PCM/PA</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">AgID</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Regioni/Comuni</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>Canale ufficiale e tracciato: DMS consuma e-service (SSU, DURC, AE) senza integrazioni punto-punto.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Catalogo attivo, attestazione e produzione operative.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Autorizzazioni e log by-design</li><li>Riduzione costi d'integrazione</li><li>Scalabilità multi-ente</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Sicurezza/Compliance</li><li>Governance dati</li><li>Riuso nazionale</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Affidabilità prima della velocità: ogni scambio è autorizzato e tracciato.
+        </div>`,
+      'agid-linee-interoperabilita': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">AgID/PA</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Regioni/Comuni</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>Definiscono API, semantica e sicurezza: DMS nasce conforme e abbatte i tempi progetto.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Adozione progressiva in tutte le PA.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Modelli dati condivisi</li><li>Connettori riusabili</li><li>Certezza di scambio</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>PA: riuso</li><li>Fornitori: meno custom</li><li>Amministratori: meno rischi</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Conforme da subito = meno sorprese in audit.
+        </div>`,
+      'cbam-2023-956': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">MEF</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Ambiente</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Trasporti</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>Responsabilizza le filiere su CO₂: DMS evidenzia categorie a rischio e incentiva operatori low-carbon.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Fase transitoria in corso; dal 2026 gli oneri diventano economici.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>KPI ambientali su mercati/logistica</li><li>Percorsi a basse emissioni</li><li>Incentivi mirati</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Ambiente/Trasporti: piani aria e PUMS</li><li>MEF: policy basate sui dati</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Premiare chi inquina meno porta consenso e risultati misurabili.
+        </div>`,
+      'ets-revision-2023-959': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Ambiente</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Trasporti</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Comuni</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>L'ETS si allarga: DMS taglia le emissioni locali con logistica leggera e gestione rifiuti/packaging nei mercati.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Nuove coperture entrano a regime fino al 2027.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Cruscotti CO₂</li><li>Azioni a impatto immediato</li><li>Monitoraggio continuo</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Ambiente: target</li><li>Trasporti: PUMS</li><li>Comuni: risultati comunicabili</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Ridurre CO₂ in mercati e consegne è un risultato che si vede e si comunica.
+        </div>`,
+      'csrd-2022-2464': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">MEF</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Ambiente</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Regioni/Comuni</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>DMS produce dati primari di territorio (presenze, filiere, rifiuti, pagamenti) utili ai KPI ESRS di imprese e municipalizzate.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Prime rendicontazioni avviate: servono basi dati affidabili.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Export ESRS-ready</li><li>Tracciabilità filiere</li><li>Indicatori sociali/territoriali</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Finanza sostenibile</li><li>Piani ambientali</li><li>Brand territoriale</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Dati locali = vantaggio competitivo per imprese e città.
+        </div>`,
+      'ai-act-2024-1689': `
+        <div class="ministeri" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0;">
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Innovazione</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">Imprese/Consumatori</span>
+          <span class="chip" style="background: rgba(20,184,166,.2); color: #14b8a6; padding: 4px 12px; border-radius: 16px; font-size: 0.9rem; border: 1px solid rgba(20,184,166,.4);">PA</span>
+        </div>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché DMS risolve</h3>
+        <p>Gli HUB usano ranking e suggerimenti: DMS applica trasparenza, valutazione rischio e audit delle funzioni AI.</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Perché adesso</h3>
+        <p>Scadenze progressive già avviate (divieti, GPAI, alti rischi).</p>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Cosa abilita in DMS</h3>
+        <ul><li>Etichettatura e policy AI</li><li>Registro decisioni automatizzate</li><li>Mitigazioni by-design</li></ul>
+        <h3 style="color: #14b8a6; margin-top: 2rem;">Benefici incrociati</h3>
+        <ul><li>Consumatori/Antitrust: correttezza</li><li>PA: accountability</li><li>Imprese: regole chiare</li></ul>
+        <div style="background: rgba(251,191,36,.1); padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; color: #fbbf24; font-style: italic; margin-top: 2rem;">
+          <strong>Nota politica:</strong> Trasparenza AI oggi evita problemi domani: fiducia degli utenti e meno rischi legali.
+        </div>`
     };
 
     return `
@@ -493,22 +721,18 @@ window.DOC_MAP = {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${title}</title>
       <style>
-        body { font-family: system-ui, sans-serif; line-height: 1.6; padding: 20px; background: #0b1220; color: #e8fbff; }
-        h1 { color: #14b8a6; border-bottom: 2px solid #14b8a6; padding-bottom: 10px; }
+        body { 
+          font-family: system-ui, sans-serif; line-height: 1.6; padding: 20px; 
+          background: #071a1d; color: #e8fbff; margin: 0;
+        }
+        h1 { color: #14b8a6; border-bottom: 2px solid #14b8a6; padding-bottom: 10px; margin-top: 0; }
         .description { background: rgba(20,184,166,.1); padding: 15px; border-radius: 8px; margin: 20px 0; }
-        .cta { text-align: center; margin-top: 30px; }
-        .btn { display: inline-block; padding: 12px 24px; background: #14b8a6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
-        .btn:hover { background: #0f7a4c; }
       </style>
     </head>
     <body>
       <h1>${title}</h1>
       <div class="description">
-        <h3>Collegamento con il DMS</h3>
-        <p>${descriptions[normaId] || 'Questa normativa è fondamentale per il funzionamento del DMS e la digitalizzazione dei servizi pubblici.'}</p>
-      </div>
-      <div class="cta">
-        <a href="${url}" target="_blank" class="btn">Vai al testo ufficiale della normativa ↗</a>
+        ${descriptions[normaId] || 'Questa normativa è fondamentale per il funzionamento del DMS e la digitalizzazione dei servizi pubblici.'}
       </div>
     </body>
     </html>`;
