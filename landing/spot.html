@@ -838,6 +838,82 @@ function applyMinisterHighlight(mKey){
     document.body.appendChild(tag);
   }
 })();
+
+// FUNZIONE PER APRIRE NORMATIVE NEL VIEWER
+function openNormaInViewer(normaId, normaUrl, normaTitle) {
+  console.log('🔍 DEBUG: openNormaInViewer called with:', {normaId, normaUrl, normaTitle});
+  
+  const viewer = document.getElementById('viewer');
+  const iframe = document.getElementById('docFrame');
+  const openBtn = document.getElementById('viewer-open');
+  
+  if (!viewer || !iframe || !openBtn) {
+    console.error('Viewer elements not found');
+    return;
+  }
+  
+  // Ottieni il contenuto ricco per questa norma
+  const content = NORME_CONTENT[normaId];
+  
+  if (content) {
+    // Mostra contenuto ricco nel viewer
+    iframe.style.display = 'none';
+    
+    // Crea contenitore per il contenuto ricco se non esiste
+    let richContent = viewer.querySelector('.rich-content');
+    if (!richContent) {
+      richContent = document.createElement('div');
+      richContent.className = 'rich-content';
+      richContent.style.cssText = `
+        background: rgba(2,6,23,.6); 
+        border-radius: 8px; 
+        padding: 20px; 
+        color: var(--ink);
+        line-height: 1.6;
+        max-height: 72vh;
+        overflow-y: auto;
+      `;
+      viewer.appendChild(richContent);
+    }
+    
+    richContent.innerHTML = content;
+    richContent.style.display = 'block';
+    
+    // Aggiorna il pulsante per aprire il link esterno
+    openBtn.textContent = 'Vai al sito ↗';
+    openBtn.onclick = function(e) {
+      e.preventDefault();
+      window.open(normaUrl, '_blank', 'noopener,noreferrer');
+    };
+    
+  } else {
+    // Fallback: apri direttamente il link esterno
+    window.open(normaUrl, '_blank', 'noopener,noreferrer');
+  }
+  
+  // Mostra il viewer
+  viewer.style.display = 'block';
+  viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// GESTIONE CLICK SUI PULSANTI NORMATIVI
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.btn-norme[data-norma]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const normaId = this.getAttribute('data-norma');
+      const normaUrl = this.getAttribute('data-norma-url');
+      const normaTitle = this.textContent.trim();
+      
+      // Rimuovi highlighting da questo pulsante (ma mantieni gli altri)
+      this.classList.remove('is-min-hot');
+      
+      // Apri nel viewer
+      openNormaInViewer(normaId, normaUrl, normaTitle);
+    });
+  });
+});
 </script>
 
 </body>
