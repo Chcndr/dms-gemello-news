@@ -1571,6 +1571,185 @@ function applyMinisterHighlight(mKey){
 })();
 </script>
 
+<!-- DMS • SPOT • Fix scheda ricca persistente (alias + CTA same-tab + observer) -->
+<script>
+(function(){
+  if (window.__DMS_RICH_FIX_V5__) return; window.__DMS_RICH_FIX_V5__=true;
+
+  /* ===== 0) Alias robusti per Interoperable Europe 2024/903 ===== */
+  const ALIAS = {
+    "903":"interoperable-europe-2024-903",
+    "europe-2024-903":"interoperable-europe-2024-903",
+    "interoperableeurope-2024-903":"interoperable-europe-2024-903",
+    "interoperable_europe_2024_903":"interoperable-europe-2024-903"
+  };
+  const ID = s => {
+    let x=(s||'').toString().trim().toLowerCase().replace(/[\s_]+/g,'-').replace(/[^a-z0-9\-]/g,'');
+    return ALIAS[x] || x;
+  };
+
+  /* ===== 1) Dataset: assicurati che la norma ricca esista ===== */
+  const RICH_IE = {
+    id: "interoperable-europe-2024-903",
+    titolo: "Interoperable Europe (Reg. UE 2024/903)",
+    tag: ["Innovazione PA","Interoperabilità","PNRR"],
+    perche: "Rende obbligatorio lo scambio dati e il riuso tra PA su basi tecniche comuni. DMS abbatte i silos collegando mercati, imprese e PA su una lingua dati unica.",
+    adesso: "Quadro attuativo in arrivo: muoversi subito significa guidare i tavoli e ridurre i costi di integrazione.",
+    abilita: [
+      "Catalogo API affidabile (M2M)",
+      "Riuso componenti UE",
+      "Istruttorie e controlli più rapidi"
+    ],
+    incroci: [
+      "Coerente con SDG 2018/1724",
+      "Compatibile con eIDAS2 2024/1183",
+      "Supporta PDND e Linee guida AgID"
+    ],
+    link_ufficiale: "https://eur-lex.europa.eu/eli/reg/2024/903/oj"
+  };
+
+  function getTagNORME(){
+    let tag=document.getElementById('NORME');
+    if(!tag){ tag=document.createElement('script'); tag.id='NORME'; tag.type='application/json'; tag.textContent='[]'; document.body.appendChild(tag); }
+    return tag;
+  }
+  function readDataset(){ try{ return JSON.parse(getTagNORME().textContent||'[]'); }catch(_){ return []; } }
+  function writeDataset(arr){ getTagNORME().textContent = JSON.stringify(arr, null, 2); }
+
+  (function ensureRich(){
+    const arr=readDataset();
+    const i=arr.findIndex(x=>ID(x.id)==="interoperable-europe-2024-903");
+    if(i>=0) arr[i]={...arr[i], ...RICH_IE}; else arr.push(RICH_IE);
+    writeDataset(arr);
+  })();
+
+  /* ===== 2) CTA "Vai alla legge ufficiale" (stessa scheda, iPad-safe) ===== */
+  (function ensureCTA(){
+    let cta=document.getElementById('cta-ufficiale') || document.getElementById('viewer-open');
+    if(!cta){ cta=document.createElement('a'); (document.querySelector('.norme-cta-col')||document.querySelector('#riferimenti-normativi')||document.body).appendChild(cta); }
+    cta.id='cta-ufficiale';
+    cta.classList.remove('btn-norme');
+    cta.classList.add('btn-ufficiale');
+    cta.textContent='Vai alla legge ufficiale';
+    cta.removeAttribute('target');
+    cta.setAttribute('rel','noopener');
+    cta.addEventListener('click', function(ev){
+      const href=this.getAttribute('href')||'#';
+      if(href==='#'){ ev.preventDefault(); return; }
+      ev.stopImmediatePropagation(); ev.preventDefault();
+      window.location.assign(href);
+    }, true);
+  })();
+
+  /* ===== 3) Host sicuro per la scheda ricca (dentro il viewer) ===== */
+  function getHost(){
+    const viewer = document.getElementById('viewer') || document.querySelector('#riferimenti-normativi') || document.body;
+    let host = document.getElementById('card-rich-host');
+    if(!host){
+      host = document.createElement('section');
+      host.id='card-rich-host';
+      host.setAttribute('data-dms','rich-card');
+      viewer.appendChild(host);
+    }
+    host.style.display='block';
+    return host;
+  }
+
+  function datasetFind(id){ return readDataset().find(x=>ID(x.id)===id); }
+  function officialUrl(id, btn){
+    const viaBtn = btn?.getAttribute('data-norma-url'); if(viaBtn) return viaBtn;
+    const d = datasetFind(id); if(d?.link_ufficiale) return d.link_ufficiale;
+    const m = id.match(/(\d{4}).*?(\d{3,4})$/); if(m) return `https://eur-lex.europa.eu/eli/reg/${m[1]}/${parseInt(m[2],10)}/oj`;
+    return '#';
+  }
+
+  /* ===== 4) Render ricco + resilienza contro pulizie legacy ===== */
+  let LAST_ID=null;
+  function htmlCard(d,id){
+    const UL=a=>(a||[]).map(x=>`<li>${x}</li>`).join('');
+    const TG=a=>(a||[]).map(t=>`<span class="chip">${t}</span>`).join('');
+    return `
+      <div class="card-rich">
+        <h3 class="card-title">${d.titolo||id.replace(/-/g,' ')}</h3>
+        ${d.tag?`<div class="tag-row">${TG(d.tag)}</div>`:''}
+        ${d.perche?`<h4>Perché DMS risolve</h4><p>${d.perche}</p>`:''}
+        ${d.adesso?`<h4>Perché adesso</h4><p>${d.adesso}</p>`:''}
+        ${(d.abilita&&d.abilita.length)?`<h4>Cosa abilita in DMS</h4><ul>${UL(d.abilita)}</ul>`:''}
+        ${(d.incroci&&d.incroci.length)?`<h4>Benefici incrociati</h4><ul>${UL(d.incroci)}</ul>`:''}
+      </div>`;
+  }
+  function renderRich(id){
+    LAST_ID=id;
+    const d=datasetFind(id); const host=getHost();
+    host.innerHTML = d ? htmlCard(d,id) : '';
+    // se un legacy ti svuota, re-render dopo brevi intervalli
+    setTimeout(()=>{ if(host && !host.innerHTML.trim() && LAST_ID===id){ const dd=datasetFind(id); host.innerHTML=dd?htmlCard(dd,id):''; } }, 120);
+    setTimeout(()=>{ if(host && !host.innerHTML.trim() && LAST_ID===id){ const dd=datasetFind(id); host.innerHTML=dd?htmlCard(dd,id):''; } }, 360);
+  }
+
+  // Observer: se qualcuno rimuove il card-rich-host o lo svuota, ripristina
+  const viewerRoot = document.getElementById('viewer') || document.body;
+  const mo = new MutationObserver(()=>{ 
+    const host=document.getElementById('card-rich-host');
+    if(LAST_ID && (!host || !host.innerHTML.trim())) renderRich(LAST_ID);
+  });
+  mo.observe(viewerRoot, {subtree:true, childList:true});
+
+  /* ===== 5) Click pulsanti norme → render + CTA ===== */
+  document.addEventListener('click', function(e){
+    const btn=e.target.closest('.btn-norme[data-norma]');
+    if(!btn) return;
+    const id=ID(btn.getAttribute('data-norma'));
+    const href=officialUrl(id, btn);
+    const cta=document.getElementById('cta-ufficiale');
+    if(cta){
+      cta.setAttribute('href', href);
+      cta.classList.toggle('is-disabled', href==='#');
+      cta.setAttribute('aria-disabled', href==='#'?'true':'false');
+    }
+    renderRich(id);
+  }, {passive:true});
+
+  /* ===== 6) Apertura diretta da URL (?open=…) ===== */
+  (function initFromURL(){
+    const p=new URLSearchParams(location.search);
+    const raw=p.get('open'); const opn=ID(raw);
+    // badge avanzato
+    if (p.get('diag')==='1'){
+      const tag=document.createElement('div');
+      tag.style="position:fixed;left:10px;bottom:38px;background:#0b0f14;color:#ffd27a;padding:6px 10px;border-radius:6px;font:12px/1.2 system-ui;z-index:99999;opacity:.95";
+      tag.textContent=`diag • rich-v5 • open=${raw||'-'} • norm=${opn||'-'}`;
+      document.body.appendChild(tag);
+    }
+    if(!opn) return;
+    const btn=document.querySelector(`.btn-norme[data-norma="${opn}"]`) || null;
+    const href=officialUrl(opn, btn); const cta=document.getElementById('cta-ufficiale');
+    if(cta){
+      cta.setAttribute('href', href);
+      cta.classList.toggle('is-disabled', href==='#');
+      cta.setAttribute('aria-disabled', href==='#'?'true':'false');
+    }
+    renderRich(opn);
+    // porta in vista la sezione
+    (document.getElementById('viewer')||document.getElementById('card-rich-host'))?.scrollIntoView({behavior:'smooth',block:'start'});
+  })();
+
+  /* ===== 7) Stili minimi (un solo tag) ===== */
+  if(!document.getElementById('dms-rich-style-v5')){
+    const st=document.createElement('style'); st.id='dms-rich-style-v5';
+    st.textContent = `
+      #card-rich-host{padding:16px 14px}
+      .tag-row{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 1rem}
+      .chip{display:inline-block;padding:.18rem .5rem;border:1px solid rgba(148,163,184,.25);border-radius:999px;font-size:.8rem;opacity:.9}
+      .btn-ufficiale{display:inline-flex;align-items:center;gap:.5rem;padding:10px 14px;border-radius:10px;font-weight:700;border:1px solid rgba(148,163,184,.25);background:rgba(20,184,166,.10);text-decoration:none}
+      .btn-ufficiale:hover{background:rgba(20,184,166,.18)}
+      .btn-ufficiale.is-disabled{pointer-events:none;opacity:.55;filter:grayscale(.15)}
+    `;
+    document.head.appendChild(st);
+  }
+})();
+</script>
+
 </body>
 </html>
 
