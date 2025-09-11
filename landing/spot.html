@@ -975,6 +975,132 @@ function applyMinisterHighlight(mKey){
 .btn-ufficiale.is-disabled{ pointer-events:none;opacity:.55;filter:grayscale(.15) }
 </style>
 
+<!-- DMS • SPOT • Hotfix additivo post-rollback (safe, no style-closing dup) -->
+<script>
+(function(){
+  if (window.__DMS_SPOT_FIX_V2__) return; window.__DMS_SPOT_FIX_V2__=true;
+
+  const norm = s => (s||'').toString().trim().toLowerCase().replace(/_/g,'-');
+
+  /* 1) CTA "Vai alla legge ufficiale" — stessa scheda, NON intercettata dai delegati norme */
+  (function ensureCTA(){
+    let cta = document.getElementById('cta-ufficiale') || document.getElementById('viewer-open');
+    if (!cta){
+      cta = document.createElement('a');
+      (document.querySelector('.norme-cta-col') || document.body).appendChild(cta);
+    }
+    cta.id = 'cta-ufficiale';
+    cta.classList.remove('btn-norme');        // importante: non dev'essere catturata dal delegato delle norme
+    cta.classList.add('btn-ufficiale');
+    cta.removeAttribute('target');            // apri nella STESSA scheda
+    cta.setAttribute('rel','noopener');
+    cta.textContent = 'Vai alla legge ufficiale';
+    cta.addEventListener('click', function(ev){
+      const href = this.getAttribute('href') || '#';
+      if (href === '#'){ ev.preventDefault(); return; }
+      ev.stopImmediatePropagation(); ev.preventDefault();
+      window.location.assign(href);           // stessa scheda (iPad-safe)
+    }, true);
+  })();
+
+  /* 2) Ricava l'URL ufficiale: bottone → dataset #NORME → fallback EUR-Lex (ELI Regolamenti) */
+  function getOfficialUrl(nid, btn){
+    const a = btn?.getAttribute('data-norma-url'); if (a) return a;       // via bottone
+    try{
+      const raw = document.getElementById('NORME')?.textContent || '[]';   // via dataset
+      const arr = JSON.parse(raw);
+      const hit = arr.find(x => norm(x.id)===nid);
+      if (hit?.link_ufficiale) return hit.link_ufficiale;
+    }catch(_){}
+    // fallback ELI: /eli/reg/{anno}/{numero}/oj (es. 2024/903)
+    const m = nid.match(/(\d{4}).*?(\d{3,4})$/);
+    if (m) return `https://eur-lex.europa.eu/eli/reg/${m[1]}/${parseInt(m[2],10)}/oj`;
+    return '#';
+  }
+
+  /* 3) Click su una norma: aggiorna CTA + spegni SOLO quel bordo blu (gli altri restano) */
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.btn-norme[data-norma]');
+    if (!btn) return;
+
+    const id   = norm(btn.getAttribute('data-norma'));
+    const href = getOfficialUrl(id, btn);
+
+    const cta = document.getElementById('cta-ufficiale');
+    if (cta){
+      cta.setAttribute('href', href);
+      cta.classList.toggle('is-disabled', href==='#');
+      cta.setAttribute('aria-disabled', href==='#' ? 'true' : 'false');
+      cta.textContent = 'Vai alla legge ufficiale';
+    }
+    if (btn.classList.contains('is-min-hot')){
+      setTimeout(()=>btn.classList.remove('is-min-hot'), 0);
+    }
+  }, {passive:true});
+
+  /* 4) Inizializzazione da URL (?m, ?hot, ?open) — compatibile con underscore e trattini */
+  const MAP_MINISTERO = {
+    mef:["csrd-2022-2464","cbam-2023-956","riforma-dogane-com-2023-258-260","ets-revision-2023-959"],
+    mimit:["suap-dpr-160-2010","espr-dpp-2024-1781","direttiva-servizi-2006-123","pnrr-italia-domani"],
+    innovazione:["sdg-2018-1724","interoperable-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689","pdnd","agid-linee-interoperabilita"],
+    ambiente:["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464"],
+    dogane:["riforma-dogane-com-2023-258-260","espr-dpp-2024-1781"],
+    pa:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interoperable-europe-2024-903"],
+    interno_regioni:["suap-dpr-160-2010","pdnd","direttiva-servizi-2006-123"]
+  };
+  function applyBluFromMinister(mKey){
+    if (typeof window.applyMinisterHighlight === 'function') return window.applyMinisterHighlight(mKey);
+    const ids = new Set((MAP_MINISTERO[mKey]||[]).map(norm));
+    document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>{
+      b.classList.remove('is-min-hot');
+      if (ids.has(norm(b.getAttribute('data-norma')))) b.classList.add('is-min-hot');
+    });
+  }
+
+  (function initFromURL(){
+    const p   = new URLSearchParams(location.search);
+    const m   = p.get('m');
+    const hot = norm(p.get('hot'));
+    const opn = norm(p.get('open'));
+
+    if (m) applyBluFromMinister(m);
+    if (hot){
+      const b = document.querySelector(`.btn-norme[data-norma="${hot}"]`);
+      if (b) b.classList.add('is-min-hot');
+    }
+    if (opn){
+      const b = document.querySelector(`.btn-norme[data-norma="${opn}"]`);
+      const href = getOfficialUrl(opn, b);
+      const cta  = document.getElementById('cta-ufficiale');
+      if (cta){
+        cta.setAttribute('href', href);
+        cta.classList.toggle('is-disabled', href==='#');
+        cta.setAttribute('aria-disabled', href==='#' ? 'true' : 'false');
+      }
+      // lascia fare l'open legacy; se serve, forzalo dopo l'inizializzazione
+      if (typeof window.openNorma === 'function'){
+        setTimeout(()=>window.openNorma(opn, b?.textContent?.trim()||opn, b?.getAttribute('data-norma-url')||''), 0);
+      }
+    }
+
+    // badge diagnostico (facoltativo)
+    if (p.get('diag')==='1'){
+      const tag=document.createElement('div');
+      tag.style="position:fixed;left:10px;bottom:10px;background:#0b0f14;color:#9bd3ff;padding:6px 10px;border-radius:6px;font:12px/1.2 system-ui;z-index:99999;opacity:.9";
+      tag.textContent=`diag • m=${m||'-'} • hot=${hot||'-'} • open=${opn||'-'} • fix-v2`;
+      document.body.appendChild(tag);
+    }
+  })();
+
+  /* 5) Stile CTA sicuro: inserito UNA sola volta, con id */
+  if (!document.getElementById('dms-cta-style')){
+    const st=document.createElement('style'); st.id='dms-cta-style';
+    st.textContent = ".btn-ufficiale{display:inline-flex;align-items:center;gap:.5rem;padding:10px 14px;border-radius:10px;font-weight:700;border:1px solid rgba(148,163,184,.25);background:rgba(20,184,166,.10);color:inherit;text-decoration:none}.btn-ufficiale:hover{background:rgba(20,184,166,.18)}.btn-ufficiale.is-disabled{pointer-events:none;opacity:.55;filter:grayscale(.15)}";
+    document.head.appendChild(st);
+  }
+})();
+</script>
+
 </body>
 </html>
 
