@@ -975,228 +975,327 @@ function applyMinisterHighlight(mKey){
 .btn-ufficiale.is-disabled{ pointer-events:none;opacity:.55;filter:grayscale(.15) }
 </style>
 
-<!-- DMS • SPOT • Hotfix additivo post-rollback (safe, no style-closing dup) -->
-<script>
-(function(){
-  if (window.__DMS_SPOT_FIX_V2__) return; window.__DMS_SPOT_FIX_V2__=true;
-
-  const norm = s => (s||'').toString().trim().toLowerCase().replace(/_/g,'-');
-
-  /* 1) CTA "Vai alla legge ufficiale" — stessa scheda, NON intercettata dai delegati norme */
-  (function ensureCTA(){
-    let cta = document.getElementById('cta-ufficiale') || document.getElementById('viewer-open');
-    if (!cta){
-      cta = document.createElement('a');
-      (document.querySelector('.norme-cta-col') || document.body).appendChild(cta);
-    }
-    cta.id = 'cta-ufficiale';
-    cta.classList.remove('btn-norme');        // importante: non dev'essere catturata dal delegato delle norme
-    cta.classList.add('btn-ufficiale');
-    cta.removeAttribute('target');            // apri nella STESSA scheda
-    cta.setAttribute('rel','noopener');
-    cta.textContent = 'Vai alla legge ufficiale';
-    cta.addEventListener('click', function(ev){
-      const href = this.getAttribute('href') || '#';
-      if (href === '#'){ ev.preventDefault(); return; }
-      ev.stopImmediatePropagation(); ev.preventDefault();
-      window.location.assign(href);           // stessa scheda (iPad-safe)
-    }, true);
-  })();
-
-  /* 2) Ricava l'URL ufficiale: bottone → dataset #NORME → fallback EUR-Lex (ELI Regolamenti) */
-  function getOfficialUrl(nid, btn){
-    const a = btn?.getAttribute('data-norma-url'); if (a) return a;       // via bottone
-    try{
-      const raw = document.getElementById('NORME')?.textContent || '[]';   // via dataset
-      const arr = JSON.parse(raw);
-      const hit = arr.find(x => norm(x.id)===nid);
-      if (hit?.link_ufficiale) return hit.link_ufficiale;
-    }catch(_){}
-    // fallback ELI: /eli/reg/{anno}/{numero}/oj (es. 2024/903)
-    const m = nid.match(/(\d{4}).*?(\d{3,4})$/);
-    if (m) return `https://eur-lex.europa.eu/eli/reg/${m[1]}/${parseInt(m[2],10)}/oj`;
-    return '#';
-  }
-
-  /* 3) Click su una norma: aggiorna CTA + spegni SOLO quel bordo blu (gli altri restano) */
-  document.addEventListener('click', function(e){
-    const btn = e.target.closest('.btn-norme[data-norma]');
-    if (!btn) return;
-
-    const id   = norm(btn.getAttribute('data-norma'));
-    const href = getOfficialUrl(id, btn);
-
-    const cta = document.getElementById('cta-ufficiale');
-    if (cta){
-      cta.setAttribute('href', href);
-      cta.classList.toggle('is-disabled', href==='#');
-      cta.setAttribute('aria-disabled', href==='#' ? 'true' : 'false');
-      cta.textContent = 'Vai alla legge ufficiale';
-    }
-    if (btn.classList.contains('is-min-hot')){
-      setTimeout(()=>btn.classList.remove('is-min-hot'), 0);
-    }
-  }, {passive:true});
-
-  /* 4) Inizializzazione da URL (?m, ?hot, ?open) — compatibile con underscore e trattini */
-  const MAP_MINISTERO = {
-    mef:["csrd-2022-2464","cbam-2023-956","riforma-dogane-com-2023-258-260","ets-revision-2023-959"],
-    mimit:["suap-dpr-160-2010","espr-dpp-2024-1781","direttiva-servizi-2006-123","pnrr-italia-domani"],
-    innovazione:["sdg-2018-1724","interoperable-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689","pdnd","agid-linee-interoperabilita"],
-    ambiente:["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464"],
-    dogane:["riforma-dogane-com-2023-258-260","espr-dpp-2024-1781"],
-    pa:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interoperable-europe-2024-903"],
-    interno_regioni:["suap-dpr-160-2010","pdnd","direttiva-servizi-2006-123"]
-  };
-  function applyBluFromMinister(mKey){
-    if (typeof window.applyMinisterHighlight === 'function') return window.applyMinisterHighlight(mKey);
-    const ids = new Set((MAP_MINISTERO[mKey]||[]).map(norm));
-    document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>{
-      b.classList.remove('is-min-hot');
-      if (ids.has(norm(b.getAttribute('data-norma')))) b.classList.add('is-min-hot');
-    });
-  }
-
-  (function initFromURL(){
-    const p   = new URLSearchParams(location.search);
-    const m   = p.get('m');
-    const hot = norm(p.get('hot'));
-    const opn = norm(p.get('open'));
-
-    if (m) applyBluFromMinister(m);
-    if (hot){
-      const b = document.querySelector(`.btn-norme[data-norma="${hot}"]`);
-      if (b) b.classList.add('is-min-hot');
-    }
-    if (opn){
-      const b = document.querySelector(`.btn-norme[data-norma="${opn}"]`);
-      const href = getOfficialUrl(opn, b);
-      const cta  = document.getElementById('cta-ufficiale');
-      if (cta){
-        cta.setAttribute('href', href);
-        cta.classList.toggle('is-disabled', href==='#');
-        cta.setAttribute('aria-disabled', href==='#' ? 'true' : 'false');
-      }
-      // lascia fare l'open legacy; se serve, forzalo dopo l'inizializzazione
-      if (typeof window.openNorma === 'function'){
-        setTimeout(()=>window.openNorma(opn, b?.textContent?.trim()||opn, b?.getAttribute('data-norma-url')||''), 0);
-      }
-    }
-
-    // badge diagnostico (facoltativo)
-    if (p.get('diag')==='1'){
-      const tag=document.createElement('div');
-      tag.style="position:fixed;left:10px;bottom:10px;background:#0b0f14;color:#9bd3ff;padding:6px 10px;border-radius:6px;font:12px/1.2 system-ui;z-index:99999;opacity:.9";
-      tag.textContent=`diag • m=${m||'-'} • hot=${hot||'-'} • open=${opn||'-'} • fix-v2`;
-      document.body.appendChild(tag);
-    }
-  })();
-
-  /* 5) Stile CTA sicuro: inserito UNA sola volta, con id */
-  if (!document.getElementById('dms-cta-style')){
-    const st=document.createElement('style'); st.id='dms-cta-style';
-    st.textContent = ".btn-ufficiale{display:inline-flex;align-items:center;gap:.5rem;padding:10px 14px;border-radius:10px;font-weight:700;border:1px solid rgba(148,163,184,.25);background:rgba(20,184,166,.10);color:inherit;text-decoration:none}.btn-ufficiale:hover{background:rgba(20,184,166,.18)}.btn-ufficiale.is-disabled{pointer-events:none;opacity:.55;filter:grayscale(.15)}";
-    document.head.appendChild(st);
-  }
 })();
 </script>
 
-<!-- DMS • SPOT • Rich content dataset + renderer -->
-<script id="NORME_RICH" type="application/json">
+<!-- DMS • SPOT • Schede ricche + CTA stessa scheda (ADD-ONLY, safe con legacy) -->
+<script id="NORME_RICCHE_APPEND" type="application/json">
 [
+  {
+    "id": "sdg-2018-1724",
+    "titolo": "Single Digital Gateway (Reg. UE 2018/1724)",
+    "tag": ["Once-only","Servizi online","UE"],
+    "perche": "Uniforma l'accesso ai servizi pubblici e abilita lo scambio 'once-only'. DMS porta i processi locali dentro questo standard, riducendo code, errori e richieste duplicate.",
+    "adesso": "Le scadenze applicative sono in corso: chi integra ora riusa componenti e evita retrofit costosi.",
+    "abilita": ["Sportelli digitali unificati","Autocompilazione da fonti ufficiali","Riduzione oneri per imprese"],
+    "incroci": ["PDND / Linee guida AgID","EU Wallet (eIDAS2)","Sostegno PNRR"],
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2018/1724/oj"
+  },
   {
     "id": "interoperable-europe-2024-903",
     "titolo": "Interoperable Europe (Reg. UE 2024/903)",
     "tag": ["Innovazione PA","Interoperabilità","PNRR"],
-    "perche": "Rende obbligatorio lo scambio dati tra amministrazioni su basi tecniche comuni. DMS abbatte i silos locali e collega mercati, imprese e PA su un'unica lingua dati.",
-    "adesso": "Il quadro attuativo entra a regime nei prossimi mesi: chi si adegua subito anticipa costi e criticità e beneficia dei fondi ancora disponibili.",
-    "abilita": [
-      "Catalogo API e scambi M2M affidabili tra enti",
-      "Riuso di componenti UE e integrazione con PDND/AgID",
-      "Riduzione dei tempi/istruttorie per cittadini e imprese"
-    ],
-    "incroci": [
-      "Coerente con SDG (Reg. UE 2018/1724) per i servizi online \"once-only\"",
-      "Compatibile con eIDAS2 / EU Wallet (Reg. UE 2024/1183)",
-      "Supporta la Piattaforma Dati Nazionale (PDND) e le Linee guida AgID"
-    ],
+    "perche": "Rende obbligatorio lo scambio dati e il riuso tra PA su basi tecniche comuni. DMS abbatte i silos collegando mercati, imprese e PA su una lingua dati unica.",
+    "adesso": "Quadro attuativo in arrivo: muoversi subito significa guidare i tavoli e ridurre i costi di integrazione.",
+    "abilita": ["Catalogo API affidabile (M2M)","Riuso componenti UE","Istruttorie e controlli più rapidi"],
+    "incroci": ["Coerente con SDG 2018/1724","Compatibile con eIDAS2 2024/1183","Supporta PDND e Linee guida AgID"],
     "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2024/903/oj"
+  },
+  {
+    "id": "eidas2-2024-1183",
+    "titolo": "eIDAS 2 – EU Digital Wallet (Reg. UE 2024/1183)",
+    "tag": ["Identità digitale","Wallet UE"],
+    "perche": "Identità e attributi verificabili per imprese e operatori. DMS usa il wallet per accessi sicuri e prove digitali durante le pratiche.",
+    "adesso": "Piloti e schemi nazionali in avvio: partire ora consente interoperabilità immediata.",
+    "abilita": ["Login forte e deleghe","Titoli/concessioni come credenziali verificabili","Audit by design"],
+    "incroci": ["SDG e Interoperable Europe","SUAP DPR 160/2010","Registro Imprese / DURC"],
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2024/1183/oj"
+  },
+  {
+    "id": "espr-dpp-2024-1781",
+    "titolo": "ESPR & Digital Product Passport (Reg. UE 2024/1781)",
+    "tag": ["Prodotti","Tracciabilità","Sostenibilità"],
+    "perche": "Introduce passaporto digitale di prodotto e requisiti di sostenibilità. DMS rende tracciabili filiere, lotti e provenienze nei mercati.",
+    "adesso": "Regolamenti attuativi progressivi: iniziare ora evita blocchi di conformità.",
+    "abilita": ["DPP nelle schede merce","Alert requisiti ambientali","Report per controlli"],
+    "incroci": ["ADM (origini)","MASE (rifiuti/packaging)","PDND (dati abilitanti)"],
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2024/1781/oj"
+  },
+  {
+    "id": "direttiva-servizi-2006-123",
+    "titolo": "Direttiva Servizi (2006/123/CE – "Bolkestein")",
+    "tag": ["Servizi","Concorrenza","Mercato unico"],
+    "perche": "Quadro UE per libertà di stabilimento/servizi. DMS standardizza pratiche e pareri per mercati su area pubblica.",
+    "adesso": "Semplificazioni attese nei territori: occasione per uniformare davvero.",
+    "abilita": ["Workflow trasparenti","Riduzione discrezionalità locale","Monitor su tempi e oneri"],
+    "incroci": ["SUAP DPR 160/2010","PNRR semplificazioni","eIDAS2 per identità/deleghe"],
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/dir/2006/123/oj"
+  },
+  {
+    "id": "suap-dpr-160-2010",
+    "titolo": "SUAP – DPR 160/2010",
+    "tag": ["Imprese","Pratiche","Sportello Unico"],
+    "perche": "Porta unica per attività produttive. DMS orchestra SCIA, subingressi e volture con pareri endo-procedimentali.",
+    "adesso": "Digitalizzazione SUAP in corso: allineare i flussi elimina colli di bottiglia.",
+    "abilita": ["Istanze guidate e controlli formali","Integrazione con eService locali (tributi/mercati)","Tracciabilità endo-pareri"],
+    "incroci": ["Interoperable Europe / SDG","Registro Imprese / AE","PagoPA"],
+    "link_ufficiale": "https://www.normattiva.it/uri-res/N2Ls?urn:nir:presidente.repubblica:decreto:2010-09-07;160"
+  },
+  {
+    "id": "riforma-dogane-com-2023-258-260",
+    "titolo": "Riforma Dogane UE (pacchetto COM(2023) 258–260)",
+    "tag": ["Dogane","Rischi","Tracciabilità"],
+    "perche": "Controlli risk-based e dati anticipati. DMS incrocia merceologie, provenienze e DPP per allarmi mirati.",
+    "adesso": "Fasi progressivamente a regime: preparare i dati ora evita blocchi.",
+    "abilita": ["Soglie/alert rischio","Storico operatori/lotti","Report pronti per l'autorità"],
+    "incroci": ["ESPR/DPP","ADM – Agenzia Dogane","CBAM (import CO₂)"],
+    "link_ufficiale": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52023PC0258"
+  },
+  {
+    "id": "pnrr-italia-domani",
+    "titolo": "PNRR – Italia Domani",
+    "tag": ["Investimenti","Digitalizzazione","PA"],
+    "perche": "Finanzia transizioni digitale e verde. DMS canalizza progetti con impatti misurabili su mercati e servizi.",
+    "adesso": "Finestre e milestone in corso: agganciare ora permette cantieri rapidi e comunicabili.",
+    "abilita": ["Cruscotti KPI pubblicabili","Cantierizzazione per fasi","Allineamento linee guida PA"],
+    "incroci": ["Interoperable Europe / PDND","PagoPA","Linee guida AgID"],
+    "link_ufficiale": "https://italiadomani.gov.it/"
+  },
+  {
+    "id": "pdnd",
+    "titolo": "PDND – Piattaforma Digitale Nazionale Dati",
+    "tag": ["Dati pubblici","API","Interoperabilità"],
+    "perche": "Nodo nazionale di scambio dati. DMS lo usa per recuperare informazioni ufficiali e alimentare le pratiche.",
+    "adesso": "Catalogo in espansione: integrare subito riduce tempi e costi istruttorie.",
+    "abilita": ["Recupero automatico dati anagrafici/impresa","Verifiche documentali da fonte","Log e audit trail"],
+    "incroci": ["Linee guida AgID","SDG/Interoperable Europe","SUAP"],
+    "link_ufficiale": "https://pdnd.gov.it/"
+  },
+  {
+    "id": "agid-linee-interoperabilita",
+    "titolo": "AgID – Linee guida interoperabilità",
+    "tag": ["Standard","API","Qualità dati"],
+    "perche": "Definiscono regole tecniche e semantiche. DMS le applica per API, vocabolari e dataset riusabili.",
+    "adesso": "Aggiornamenti periodici: mettersi a norma oggi evita retrofit domani.",
+    "abilita": ["Contratti di interfaccia chiari","Vocabolari condivisi","Versioning controllato"],
+    "incroci": ["PDND","Interoperable Europe","PNRR"],
+    "link_ufficiale": "https://www.agid.gov.it/it/linee-guida"
+  },
+  {
+    "id": "cbam-2023-956",
+    "titolo": "CBAM – Carbon Border Adjustment (Reg. UE 2023/956)",
+    "tag": ["Clima","Import","CO₂"],
+    "perche": "Tassa il contenuto di CO₂ delle importazioni. DMS aiuta operatori e PA a monitorare e dichiarare le esposizioni.",
+    "adesso": "Fasi transitorie/definitive fino al 2027: prepararsi evita sanzioni e blocchi.",
+    "abilita": ["Cruscotti CO₂ per filiere","Azioni a impatto immediato","Monitoraggio continuo"],
+    "incroci": ["ETS / CSRD","Dogane/ADM","MASE (ambiente)"],
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2023/956/oj"
+  },
+  {
+    "id": "ets-revision-2023-959",
+    "titolo": "ETS Revision – Sistema Scambio Emissioni (Dir. UE 2023/959)",
+    "tag": ["CO₂","Permessi","Industrie"],
+    "perche": "Riforma il mercato dei permessi di emissione. DMS mappa attività locali e impatti, facilitando piani di riduzione.",
+    "adesso": "Nuove regole in rollout: servono dati solidi e tracciabili.",
+    "abilita": ["Inventario emissioni locali","Azioni e target per PUMS","Reportistica comunicabile"],
+    "incroci": ["CBAM/CSRD","PNRR – transizione verde","Logistica urbana"],
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/dir/2023/959/oj"
+  },
+  {
+    "id": "csrd-2022-2464",
+    "titolo": "CSRD – Corporate Sustainability Reporting (Dir. UE 2022/2464)",
+    "tag": ["ESG","Bilanci","Catena fornitura"],
+    "perche": "Estende il reporting di sostenibilità lungo la filiera. DMS raccoglie dati di campo utili alle imprese locali.",
+    "adesso": "Entrate in vigore scaglionate: creare pipeline dati evita corse a fine anno.",
+    "abilita": ["KPI ambientali/sociali dai mercati","Tracciabilità e audit","Export verso standard ESRS"],
+    "incroci": ["CBAM/ETS","ESPR/DPP","PNRR comunicazione impatti"],
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/dir/2022/2464/oj"
+  },
+  {
+    "id": "ai-act-2024-1689",
+    "titolo": "AI Act – Regolamento Intelligenza Artificiale (Reg. UE 2024/1689)",
+    "tag": ["AI","Rischio","Trasparenza"],
+    "perche": "Introduce obblighi per i sistemi AI (valutazione rischio, log, trasparenza). DMS incapsula AI 'a norma' per controlli e servizi.",
+    "adesso": "Transizione già avviata: conviene impostare ora governance e registri.",
+    "abilita": ["Registro sistemi AI e dataset","Audit e logging","UX trasparente per cittadini"],
+    "incroci": ["PDND/Interoperable Europe","CSRD (governance)","SUAP (decisioni assistite)"],
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
   }
 ]
 </script>
 
 <script>
-/* DMS • Rich card renderer per contenuti dettagliati */
 (function(){
-  if (window.__DMS_RICH_RENDERER__) return; window.__DMS_RICH_RENDERER__=true;
+  if (window.__DMS_SPOT_RICCHE_V4__) return; window.__DMS_SPOT_RICCHE_V4__ = true;
 
-  const norm = s => (s||'').toString().trim().toLowerCase().replace(/_/g,'-');
+  const $  = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const N  = s => (s||'').toString().trim().toLowerCase().replace(/_/g,'-');
 
-  /* Renderer della scheda ricca con contenuti completi */
-  function renderRichCard(id){
-    const raw = document.getElementById('NORME_RICH')?.textContent || '[]';
-    let data = null;
-    try { 
-      const arr = JSON.parse(raw);
-      data = arr.find(x => norm(x.id) === id) || null; 
-    } catch(_){}
-    
+  /* Merge dataset ricco con eventuale #NORME già presente (senza perdere i dati legacy) */
+  (function mergeRich(){
+    const addRaw = document.getElementById('NORME_RICCHE_APPEND')?.textContent || '[]';
+    let add = []; try{ add = JSON.parse(addRaw) }catch(_){}
+    let tag = document.getElementById('NORME');
+    if(!tag){
+      tag = document.createElement('script'); tag.id='NORME'; tag.type='application/json';
+      tag.textContent = JSON.stringify(add, null, 2);
+      document.body.appendChild(tag);
+      return;
+    }
+    try{
+      const cur = JSON.parse(tag.textContent||'[]'); const map = Object.fromEntries(cur.map(x=>[N(x.id),x]));
+      add.forEach(x => map[N(x.id)] = {...(map[N(x.id)]||{}), ...x});
+      tag.textContent = JSON.stringify(Object.values(map), null, 2);
+    }catch(_){ tag.textContent = addRaw; }
+  })();
+
+  /* CTA nella STESSA scheda (iPad-safe) */
+  (function ensureCTA(){
+    let cta = document.getElementById('cta-ufficiale') || document.getElementById('viewer-open');
+    if(!cta){
+      cta = document.createElement('a');
+      (document.querySelector('.norme-cta-col') || document.querySelector('#riferimenti-normativi') || document.body).appendChild(cta);
+    }
+    cta.id='cta-ufficiale';
+    cta.classList.remove('btn-norme');
+    cta.classList.add('btn-ufficiale');
+    cta.textContent='Vai alla legge ufficiale';
+    cta.removeAttribute('target');
+    cta.setAttribute('rel','noopener');
+    cta.addEventListener('click', function(ev){
+      const href = this.getAttribute('href') || '#';
+      if(href==='#'){ ev.preventDefault(); return; }
+      ev.stopImmediatePropagation(); ev.preventDefault();
+      window.location.assign(href);
+    }, true);
+  })();
+
+  function dataset(){ try{ return JSON.parse(document.getElementById('NORME')?.textContent||'[]') }catch(_){ return [] } }
+  function officialUrl(id, btn){
+    const viaBtn = btn?.getAttribute('data-norma-url'); if(viaBtn) return viaBtn;
+    const hit = dataset().find(x=>N(x.id)===id);
+    if(hit?.link_ufficiale) return hit.link_ufficiale;
+    const m = id.match(/(\d{4}).*?(\d{3,4})$/);
+    if(m) return `https://eur-lex.europa.eu/eli/reg/${m[1]}/${parseInt(m[2],10)}/oj`;
+    return '#';
+  }
+
+  /* Renderer scheda ricca (indipendente dal legacy, ma convive) */
+  function renderCardRich(id){
+    const d = dataset().find(x=>N(x.id)===id);
     const box = document.getElementById('scheda-norma') || document.getElementById('viewer');
-    if (!box || !data) return;
-
-    const mkList = arr => (arr||[]).map(x=>`<li>${x}</li>`).join('');
-    const mkTag  = arr => (arr||[]).map(t=>`<span class="rich-chip">${t}</span>`).join('');
-
+    if(!box || !d) return;
+    const UL = a => (a||[]).map(x=>`<li>${x}</li>`).join('');
+    const TG = a => (a||[]).map(t=>`<span class="chip">${t}</span>`).join('');
     box.classList.remove('norma-empty');
     box.innerHTML = `
-      <div class="rich-card">
-        <h3 class="rich-title">${data.titolo || id.replace(/-/g,' ')}</h3>
-        ${data.tag ? `<div class="rich-tags">${mkTag(data.tag)}</div>` : ``}
-        ${data.perche ? `<h4>Perché DMS risolve</h4><p>${data.perche}</p>` : ``}
-        ${data.adesso ? `<h4>Perché adesso</h4><p>${data.adesso}</p>` : ``}
-        ${(data.abilita && data.abilita.length) ? `<h4>Cosa abilita in DMS</h4><ul>${mkList(data.abilita)}</ul>` : ``}
-        ${(data.incroci && data.incroci.length) ? `<h4>Benefici incrociati</h4><ul>${mkList(data.incroci)}</ul>` : ``}
-      </div>
-    `;
+      <div class="card-rich">
+        <h3 class="card-title">${d.titolo||id.replace(/-/g,' ')}</h3>
+        ${d.tag?`<div class="tag-row">${TG(d.tag)}</div>`:''}
+        ${d.perche?`<h4>Perché DMS risolve</h4><p>${d.perche}</p>`:''}
+        ${d.adesso?`<h4>Perché adesso</h4><p>${d.adesso}</p>`:''}
+        ${(d.abilita&&d.abilita.length)?`<h4>Cosa abilita in DMS</h4><ul>${UL(d.abilita)}</ul>`:''}
+        ${(d.incroci&&d.incroci.length)?`<h4>Benefici incrociati</h4><ul>${UL(d.incroci)}</ul>`:''}
+      </div>`;
   }
 
-  /* Stile per la scheda ricca */
-  if (!document.getElementById('rich-card-style')){
-    const css = document.createElement('style'); 
-    css.id = 'rich-card-style';
-    css.textContent = `
-      .rich-card { padding: 1rem; }
-      .rich-title { margin: 0 0 .75rem; font-size: 1.25rem; font-weight: 700; }
-      .rich-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 1rem; }
-      .rich-chip { 
-        display: inline-block; padding: .2rem .6rem; 
-        border: 1px solid rgba(148,163,184,.3); border-radius: 999px; 
-        font-size: .8rem; opacity: .9; background: rgba(20,184,166,.08);
+  /* Normalizza il bottone Interoperable Europe se manca data-norma/URL */
+  function normalizeButtons(){
+    document.querySelectorAll('.btn-norme').forEach(b=>{
+      const txt=(b.textContent||'').toLowerCase();
+      if(txt.includes('interoperable europe') && txt.includes('2024') && txt.includes('903')){
+        if(!b.hasAttribute('data-norma')) b.setAttribute('data-norma','interoperable-europe-2024-903');
+        if(!b.getAttribute('data-norma-url')) b.setAttribute('data-norma-url','https://eur-lex.europa.eu/eli/reg/2024/903/oj');
       }
-      .rich-card h4 { margin: 1.5rem 0 .5rem; font-size: 1rem; font-weight: 600; color: #14b8a6; }
-      .rich-card p { margin: 0 0 1rem; line-height: 1.5; }
-      .rich-card ul { margin: 0 0 1rem; padding-left: 1.5rem; }
-      .rich-card li { margin: .25rem 0; line-height: 1.4; }
-    `;
-    document.head.appendChild(css);
+    });
   }
+  document.addEventListener('DOMContentLoaded', normalizeButtons); normalizeButtons();
 
-  /* Intercetta click su normative e renderizza scheda ricca */
+  /* Delegazione click sui pulsanti norme */
   document.addEventListener('click', function(e){
     const btn = e.target.closest('.btn-norme[data-norma]');
-    if (!btn) return;
-    const id = norm(btn.getAttribute('data-norma'));
-    setTimeout(() => renderRichCard(id), 50); // dopo il legacy
-  }, {passive:true});
+    if(!btn) return;
+    e.preventDefault();
 
-  /* Inizializzazione da URL (?open=...) */
-  (function initRichFromURL(){
-    const p = new URLSearchParams(location.search);
-    const opn = norm(p.get('open'));
-    if (opn) {
-      setTimeout(() => renderRichCard(opn), 100); // dopo l'init legacy
+    const id = N(btn.getAttribute('data-norma'));
+    // se esiste un renderer legacy, lascialo fare; in ogni caso rendi la card ricca
+    if (typeof window.openNormaInViewer === 'function') {
+      const url = officialUrl(id, btn);
+      window.openNormaInViewer(id, url, (btn.textContent||id).trim());
+    }
+    renderCardRich(id);
+
+    const cta = document.getElementById('cta-ufficiale');
+    const href= officialUrl(id, btn);
+    if(cta){
+      cta.setAttribute('href', href);
+      cta.classList.toggle('is-disabled', href==='#');
+      cta.setAttribute('aria-disabled', href==='#'?'true':'false');
+    }
+
+    $$('.btn-norme').forEach(b=>b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    if(btn.classList.contains('is-min-hot')) setTimeout(()=>btn.classList.remove('is-min-hot'), 0);
+    (document.getElementById('viewer')||document.getElementById('scheda-norma'))?.scrollIntoView({behavior:'smooth',block:'start'});
+  }, {passive:false});
+
+  /* Evidenziazione iniziale da URL (?m, ?hot) + apertura scheda (?open) */
+  const MAP_MIN = {
+    mef:["csrd-2022-2464","cbam-2023-956","riforma-dogane-com-2023-258-260","ets-revision-2023-959"],
+    mimit:["suap-dpr-160-2010","espr-dpp-2024-1781","direttiva-servizi-2006-123","pnrr-italia-domani"],
+    innovazione:["sdg-2018-1724","interoperable-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689","pdnd","agid-linee-interoperabilita"],
+    ambiente:["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464"],
+    dogane:["riforma-dogane-com-2023-258-260","espr-dpp-2024-1781","cbam-2023-956"],
+    pa:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interoperable-europe-2024-903"],
+    interno_regioni:["suap-dpr-160-2010","pdnd","direttiva-servizi-2006-123"]
+  };
+
+  (function initFromURL(){
+    const p=new URLSearchParams(location.search);
+    const m=p.get('m'); const hot=N(p.get('hot')); const opn=N(p.get('open'));
+
+    if(m && MAP_MIN[m]){
+      const set=new Set(MAP_MIN[m].map(N));
+      $$('.btn-norme[data-norma]').forEach(b=>{
+        b.classList.remove('is-min-hot');
+        if(set.has(N(b.getAttribute('data-norma')))) b.classList.add('is-min-hot');
+      });
+    }
+    if(hot){
+      const b=$$(`.btn-norme[data-norma="${hot}"]`)[0];
+      if(b) b.classList.add('is-min-hot');
+    }
+    if(opn){
+      const b=$$(`.btn-norme[data-norma="${opn}"]`)[0];
+      if(b){
+        renderCardRich(opn);
+        const href=officialUrl(opn,b);
+        const cta=$('#cta-ufficiale');
+        if(cta){
+          cta.setAttribute('href',href);
+          cta.classList.toggle('is-disabled',href==='#');
+          cta.setAttribute('aria-disabled',href==='#'?'true':'false');
+        }
+        b.classList.add('is-active');
+        setTimeout(()=>(document.getElementById('viewer')||document.getElementById('scheda-norma'))?.scrollIntoView({behavior:'smooth',block:'start'}),100);
+      }
+    }
+
+    if(p.get('diag')==='1'){
+      const tag=document.createElement('div');
+      tag.style="position:fixed;left:10px;bottom:10px;background:#0b0f14;color:#9bd3ff;padding:6px 10px;border-radius:6px;font:12px/1.2 system-ui;z-index:99999;opacity:.9";
+      tag.textContent=`diag • m=${m||'-'} • hot=${hot||'-'} • open=${opn||'-'} • ricche-v4`;
+      document.body.appendChild(tag);
     }
   })();
+
+  /* Stili per schede ricche e CTA (con ID per evitare duplicazioni) */
+  if(!document.getElementById('dms-ricche-style')){
+    const st=document.createElement('style'); st.id='dms-ricche-style';
+    st.textContent=`.card-rich{padding:1rem}.card-title{margin:0 0 .75rem;font-size:1.25rem;font-weight:700}.tag-row{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 1rem}.chip{display:inline-block;padding:.2rem .6rem;border:1px solid rgba(148,163,184,.3);border-radius:999px;font-size:.8rem;opacity:.9;background:rgba(20,184,166,.08)}.card-rich h4{margin:1.5rem 0 .5rem;font-size:1rem;font-weight:600;color:#14b8a6}.card-rich p{margin:0 0 1rem;line-height:1.5}.card-rich ul{margin:0 0 1rem;padding-left:1.5rem}.card-rich li{margin:.25rem 0;line-height:1.4}.btn-ufficiale{display:inline-flex;align-items:center;gap:.5rem;padding:10px 14px;border-radius:10px;font-weight:700;border:1px solid rgba(148,163,184,.25);background:rgba(20,184,166,.10);color:inherit;text-decoration:none}.btn-ufficiale:hover{background:rgba(20,184,166,.18)}.btn-ufficiale.is-disabled{pointer-events:none;opacity:.55;filter:grayscale(.15)}`;
+    document.head.appendChild(st);
+  }
 })();
 </script>
 
