@@ -1299,6 +1299,97 @@ function applyMinisterHighlight(mKey){
 })();
 </script>
 
+<!-- DMS • SPOT • Highlight per Ministero (alias + URL + sessionStorage) • ADD-ONLY -->
+<script>
+(function(){
+  if (window.__DMS_MIN_MAP_V1__) return; window.__DMS_MIN_MAP_V1__=true;
+
+  const N = s => (s||'').toString().trim().toLowerCase()
+                  .replace(/\s+/g,'-').replace(/[_.]+/g,'-').replace(/[^a-z0-9\-]/g,'');
+
+  // 1) MAPPING UFFICIALE: ministero → lista ID norme (data-norma)
+  const MAP = {
+    mef: ["csrd-2022-2464","cbam-2023-956","ets-revision-2023-959","riforma-dogane-com-2023-258-260"],
+    mimit: ["suap-dpr-160-2010","direttiva-servizi-2006-123","espr-dpp-2024-1781","pnrr-italia-domani"],
+    innovazione: ["sdg-2018-1724","interoperable-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689","pdnd","agid-linee-interoperabilita"],
+    ambiente: ["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464"],
+    dogane: ["riforma-dogane-com-2023-258-260","espr-dpp-2024-1781","cbam-2023-956"],
+    pa: ["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interoperable-europe-2024-903"],
+    interno_regioni: ["suap-dpr-160-2010","pdnd","direttiva-servizi-2006-123"]
+  };
+
+  // 2) ALIAS ROBUSTI: accetta sinonimi dall'altra pagina (mappa) o link esterni
+  const ALIAS = {
+    mef: ["mef","economia","finanze","ministero-economia-finanze","m.e.f"],
+    mimit: ["mimit","made-in-italy","imprese","sviluppo-economico","mise"],
+    innovazione: ["innovazione","innovazione-digitale","trasformazione-digitale","mitd","digitale","ministero-innovazione"],
+    ambiente: ["ambiente","mase","transizione-ecologica","ecologia","min-ambiente"],
+    dogane: ["dogane","adm","agenzia-dogane","agenzia-dogane-monopoli","monopoli"],
+    pa: ["pa","funzione-pubblica","ministero-pa","pubblica-amministrazione"],
+    interno_regioni: ["interno","regioni","autonomie-locali","enti-locali","regioni-interno","interno-regioni"]
+  };
+
+  function resolveKey(k){
+    if (!k) return null;
+    const x = N(k);
+    // match diretto
+    if (MAP[x]) return x;
+    // cerca negli alias
+    for (const std in ALIAS){
+      if (ALIAS[std].some(a => N(a)===x)) return std;
+    }
+    return null;
+  }
+
+  // 3) Applica l'highlight ai pulsanti norme
+  function highlightByMinister(key){
+    const std = resolveKey(key);
+    // reset
+    document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>b.classList.remove('is-min-hot'));
+    if (!std) return;
+    const set = new Set(MAP[std].map(N));
+    document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>{
+      const id = N(b.getAttribute('data-norma'));
+      if (set.has(id)) b.classList.add('is-min-hot');
+    });
+  }
+
+  // 4) Inizializza da URL (?m=...) oppure da sessionStorage (handoff dalla mappa)
+  const p = new URLSearchParams(location.search);
+  const mUrl = p.get('m');
+  const mStore = sessionStorage.getItem('DMS_MINISTERO') || localStorage.getItem('DMS_MINISTERO');
+  if (mUrl) highlightByMinister(mUrl);
+  else if (mStore) highlightByMinister(mStore);
+
+  // 5) Ascolta aggiornamenti runtime (se la mappa imposta lo storage o emette un evento)
+  window.addEventListener('storage', e=>{
+    if (e.key==='DMS_MINISTERO' && e.newValue) highlightByMinister(e.newValue);
+  });
+  window.addEventListener('dms:ministro', e=>{
+    const k = e.detail?.key || e.detail; if (k) highlightByMinister(k);
+  }, false);
+
+  // 6) Esporta una funzione globale per compatibilità con codice legacy
+  window.applyMinisterHighlight = highlightByMinister;
+
+  // 7) (Qualora mancasse il data-norma su Interoperable Europe 2024/903)
+  document.querySelectorAll('.btn-norme').forEach(b=>{
+    const txt=(b.textContent||'').toLowerCase();
+    if(txt.includes('interoperable europe') && txt.includes('2024') && txt.includes('903')){
+      if(!b.hasAttribute('data-norma')) b.setAttribute('data-norma','interoperable-europe-2024-903');
+    }
+  });
+
+  // 8) Diagnostica lieve (attiva con &diag=1)
+  if (p.get('diag')==='1'){
+    const tag=document.createElement('div');
+    tag.style="position:fixed;left:10px;bottom:10px;background:#0b0f14;color:#9bd3ff;padding:6px 10px;border-radius:6px;font:12px/1.2 system-ui;z-index:99999;opacity:.92";
+    tag.textContent=`diag • min-map v1 • mUrl=${mUrl||'-'} • mStore=${mStore||'-'}`;
+    document.body.appendChild(tag);
+  }
+})();
+</script>
+
 </body>
 </html>
 
