@@ -1101,6 +1101,105 @@ function applyMinisterHighlight(mKey){
 })();
 </script>
 
+<!-- DMS • SPOT • Rich content dataset + renderer -->
+<script id="NORME_RICH" type="application/json">
+[
+  {
+    "id": "interoperable-europe-2024-903",
+    "titolo": "Interoperable Europe (Reg. UE 2024/903)",
+    "tag": ["Innovazione PA","Interoperabilità","PNRR"],
+    "perche": "Rende obbligatorio lo scambio dati tra amministrazioni su basi tecniche comuni. DMS abbatte i silos locali e collega mercati, imprese e PA su un'unica lingua dati.",
+    "adesso": "Il quadro attuativo entra a regime nei prossimi mesi: chi si adegua subito anticipa costi e criticità e beneficia dei fondi ancora disponibili.",
+    "abilita": [
+      "Catalogo API e scambi M2M affidabili tra enti",
+      "Riuso di componenti UE e integrazione con PDND/AgID",
+      "Riduzione dei tempi/istruttorie per cittadini e imprese"
+    ],
+    "incroci": [
+      "Coerente con SDG (Reg. UE 2018/1724) per i servizi online \"once-only\"",
+      "Compatibile con eIDAS2 / EU Wallet (Reg. UE 2024/1183)",
+      "Supporta la Piattaforma Dati Nazionale (PDND) e le Linee guida AgID"
+    ],
+    "link_ufficiale": "https://eur-lex.europa.eu/eli/reg/2024/903/oj"
+  }
+]
+</script>
+
+<script>
+/* DMS • Rich card renderer per contenuti dettagliati */
+(function(){
+  if (window.__DMS_RICH_RENDERER__) return; window.__DMS_RICH_RENDERER__=true;
+
+  const norm = s => (s||'').toString().trim().toLowerCase().replace(/_/g,'-');
+
+  /* Renderer della scheda ricca con contenuti completi */
+  function renderRichCard(id){
+    const raw = document.getElementById('NORME_RICH')?.textContent || '[]';
+    let data = null;
+    try { 
+      const arr = JSON.parse(raw);
+      data = arr.find(x => norm(x.id) === id) || null; 
+    } catch(_){}
+    
+    const box = document.getElementById('scheda-norma') || document.getElementById('viewer');
+    if (!box || !data) return;
+
+    const mkList = arr => (arr||[]).map(x=>`<li>${x}</li>`).join('');
+    const mkTag  = arr => (arr||[]).map(t=>`<span class="rich-chip">${t}</span>`).join('');
+
+    box.classList.remove('norma-empty');
+    box.innerHTML = `
+      <div class="rich-card">
+        <h3 class="rich-title">${data.titolo || id.replace(/-/g,' ')}</h3>
+        ${data.tag ? `<div class="rich-tags">${mkTag(data.tag)}</div>` : ``}
+        ${data.perche ? `<h4>Perché DMS risolve</h4><p>${data.perche}</p>` : ``}
+        ${data.adesso ? `<h4>Perché adesso</h4><p>${data.adesso}</p>` : ``}
+        ${(data.abilita && data.abilita.length) ? `<h4>Cosa abilita in DMS</h4><ul>${mkList(data.abilita)}</ul>` : ``}
+        ${(data.incroci && data.incroci.length) ? `<h4>Benefici incrociati</h4><ul>${mkList(data.incroci)}</ul>` : ``}
+      </div>
+    `;
+  }
+
+  /* Stile per la scheda ricca */
+  if (!document.getElementById('rich-card-style')){
+    const css = document.createElement('style'); 
+    css.id = 'rich-card-style';
+    css.textContent = `
+      .rich-card { padding: 1rem; }
+      .rich-title { margin: 0 0 .75rem; font-size: 1.25rem; font-weight: 700; }
+      .rich-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 1rem; }
+      .rich-chip { 
+        display: inline-block; padding: .2rem .6rem; 
+        border: 1px solid rgba(148,163,184,.3); border-radius: 999px; 
+        font-size: .8rem; opacity: .9; background: rgba(20,184,166,.08);
+      }
+      .rich-card h4 { margin: 1.5rem 0 .5rem; font-size: 1rem; font-weight: 600; color: #14b8a6; }
+      .rich-card p { margin: 0 0 1rem; line-height: 1.5; }
+      .rich-card ul { margin: 0 0 1rem; padding-left: 1.5rem; }
+      .rich-card li { margin: .25rem 0; line-height: 1.4; }
+    `;
+    document.head.appendChild(css);
+  }
+
+  /* Intercetta click su normative e renderizza scheda ricca */
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.btn-norme[data-norma]');
+    if (!btn) return;
+    const id = norm(btn.getAttribute('data-norma'));
+    setTimeout(() => renderRichCard(id), 50); // dopo il legacy
+  }, {passive:true});
+
+  /* Inizializzazione da URL (?open=...) */
+  (function initRichFromURL(){
+    const p = new URLSearchParams(location.search);
+    const opn = norm(p.get('open'));
+    if (opn) {
+      setTimeout(() => renderRichCard(opn), 100); // dopo l'init legacy
+    }
+  })();
+})();
+</script>
+
 </body>
 </html>
 
