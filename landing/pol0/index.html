@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Politica 0 • Visione DMS</title>
+  <link rel="preload" as="image" href="../../assets/pol0/slide-01-dms-gemello-digitale.png?v=pol0-lock1">
   <style>
     :root{
       --bg:#0b3b3e; --fg:#f3e8c9; --muted:#a7cfc4; --accent:#34d1b6;
@@ -43,6 +44,12 @@
     body.boot main{visibility:hidden}
     /* attenua e blocca la griglia quando la lightbox è aperta */
     body.lb-open main{filter:blur(2px) brightness(.5); pointer-events:none;}
+    
+    @media (max-width: 900px){
+      .frame{max-width:98vw;max-height:82vh}
+      .ui{inset:auto 0 -46px 0}
+      .btn{padding:7px 10px;font-size:14px}
+    }
   </style>
 </head>
 <body class="boot">
@@ -82,7 +89,8 @@
       {file:'slide-05-dms-al-centro.png', title:'DMS al centro di tutto — interoperabilità'},
       {file:'slide-06-gis-del-commercio.png', title:'GIS del Commercio — digitalizza → connette → abilita'}
     ];
-    // index.html sta in /landing/pol0 → risalgo di 2 cartelle
+    
+    const V = 'pol0-lock1';              // bump se cambi asset
     const base = '../../assets/pol0/';
 
     const params = new URLSearchParams(location.search);
@@ -102,7 +110,7 @@
       slides.forEach((s,i)=>{
         const card = document.createElement('article');
         card.className='card';
-        card.innerHTML = `<img loading="lazy" src="${base + s.file}" alt="${s.title}">
+        card.innerHTML = `<img loading="lazy" src="${base + s.file}?v=${V}" alt="${s.title}">
                           <div class="caption"><span class="dot"></span>${s.title}</div>`;
         card.onclick = ()=> openLb(i);
         if (hoverMode && matchMedia('(pointer:fine)').matches){
@@ -125,7 +133,7 @@
     function openLb(i){
       idx=i; scale=1;
       full.style.transform='scale(1)';
-      full.src = base + slides[idx].file;
+      full.src = `${base + slides[idx].file}?v=${V}`;
       lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
       document.body.classList.add('lb-open');
     }
@@ -133,7 +141,7 @@
       lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
       document.body.classList.remove('lb-open');
     }
-    function nav(d){ idx=(idx+d+slides.length)%slides.length; scale=1; full.style.transform='scale(1)'; full.src=base+slides[idx].file; }
+    function nav(d){ idx=(idx+d+slides.length)%slides.length; scale=1; full.style.transform='scale(1)'; full.src=`${base+slides[idx].file}?v=${V}`; }
 
     document.getElementById('close').onclick=closeLb;
     document.getElementById('prev').onclick = ()=>nav(-1);
@@ -165,21 +173,20 @@
 
     // Boot: preload 1ª slide → apri subito → poi costruisci griglia e pre-carica le altre
     (async function boot(){
-      await preload(base + slides[0].file);
+      await preload(`${base + slides[0].file}?v=${V}`);
       if (openAuto) openLb(0);
       buildGrid();
       // Preload silenzioso delle altre per cambio istantaneo
-      slides.slice(1).forEach(s=>preload(base + s.file));
+      slides.slice(1).forEach(s=>preload(`${base + s.file}?v=${V}`));
       document.body.classList.remove('boot');
     })();
 
-    // Preload + apertura rapida della prima slide per evitare secondo "vuoto" iniziale
+    // Apertura diretta della slide principale (senza vedere la griglia prima)
     window.addEventListener('load', () => {
       const img0 = new Image();
-      img0.src = base + slides[0].file;
+      img0.src = `${base}slide-01-dms-gemello-digitale.png?v=${V}`;
       img0.onload = () => { if (openAuto && !lb.classList.contains('on')) openLb(0); };
-      // Fallback se la CDN è lenta
-      setTimeout(() => { if (openAuto && !lb.classList.contains('on')) openLb(0); }, 2000);
+      setTimeout(() => { if (openAuto && !lb.classList.contains('on')) openLb(0); }, 1800); // fallback
     });
   </script>
 </body>
