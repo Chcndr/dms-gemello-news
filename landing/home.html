@@ -887,6 +887,26 @@ document.addEventListener('click', function(e){
   }
 })();
   </script>
+
+<script>
+/* Collega bottone "0 • Politica" alla pagina stand-alone */
+document.addEventListener('DOMContentLoaded', function() {
+  const btnPolitica = document.querySelector('.node[data-i="0"]');
+  if (btnPolitica) {
+    // Rimuovi i listener esistenti clonando il bottone
+    const newBtn = btnPolitica.cloneNode(true);
+    btnPolitica.parentNode.replaceChild(newBtn, btnPolitica);
+    
+    // Aggiungi il nuovo listener per aprire Politica 0
+    newBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      window.top.location.href = '/dms-gemello-news/landing/pol0/?open=1&v=pol0-001';
+    }, {capture: true});
+  }
+});
+</script>
+
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
 </body>
 </html>
