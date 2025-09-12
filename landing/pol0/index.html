@@ -66,7 +66,7 @@
       <div class="ui">
         <button class="btn" id="zIn">Zoom +</button>
         <button class="btn" id="zOut">Zoom −</button>
-        <button class="btn" id="zReset">Adatta</button>
+        <button class="btn" id="backHome">← Torna all'orologio</button>
       </div>
     </div>
   </div>
@@ -88,6 +88,9 @@
     const params = new URLSearchParams(location.search);
     const openAuto = params.get('open') !== '0';            // default: apri subito
     const hoverMode = params.get('mode') === 'hover';       // opzionale: apri su hover (desktop)
+
+    // URL della pagina orologio
+    const BACK_URL = 'https://chcndr.github.io/dms-gemello-news/landing/home.html';
 
     const grid = document.getElementById('grid');
     const lb   = document.getElementById('lb');
@@ -137,7 +140,9 @@
     document.getElementById('next').onclick = ()=>nav(+1);
     document.getElementById('zIn').onclick = ()=>{ scale=Math.min(3, scale+0.2); full.style.transform=`scale(${scale})`; };
     document.getElementById('zOut').onclick= ()=>{ scale=Math.max(1, scale-0.2); full.style.transform=`scale(${scale})`; };
-    document.getElementById('zReset').onclick= ()=>{ scale=1; full.style.transform='scale(1)'; };
+    document.getElementById('backHome').onclick = () => {
+      window.location.href = BACK_URL;
+    };
     full.ondblclick = ()=>{ scale = (scale===1? 1.8:1); full.style.transform=`scale(${scale})`; };
 
     // Tasti & swipe
@@ -167,6 +172,15 @@
       slides.slice(1).forEach(s=>preload(base + s.file));
       document.body.classList.remove('boot');
     })();
+
+    // Preload + apertura rapida della prima slide per evitare secondo "vuoto" iniziale
+    window.addEventListener('load', () => {
+      const img0 = new Image();
+      img0.src = base + slides[0].file;
+      img0.onload = () => { if (openAuto && !lb.classList.contains('on')) openLb(0); };
+      // Fallback se la CDN è lenta
+      setTimeout(() => { if (openAuto && !lb.classList.contains('on')) openLb(0); }, 2000);
+    });
   </script>
 </body>
 </html>
