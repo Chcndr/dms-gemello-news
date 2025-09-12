@@ -27,7 +27,8 @@
     .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
 
     /* Lightbox full-screen */
-    .lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);
+    .lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+      background:rgba(11,59,62,.96);
       z-index:50;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
     .lightbox.on{display:flex}
     .frame{max-width:min(96vw,1600px);max-height:86vh;position:relative}
@@ -50,6 +51,8 @@
       .x{top:-50px}
       .hint{font-size:11px}
     }
+    
+    body.lb-open main{filter:blur(2px) brightness(.5); pointer-events:none;}
   </style>
 </head>
 <body>
@@ -94,7 +97,8 @@
       {file:'slide-05-dms-al-centro.png', title:'DMS al centro di tutto — interoperabilità'},
       {file:'slide-06-gis-del-commercio.png', title:'GIS del Commercio — digitalizza → connette → abilita'}
     ];
-    const base = '/assets/pol0/';
+    // index.html sta in /landing/pol0 → risalgo di 2 cartelle
+    const base = '../../assets/pol0/';
     const grid = document.getElementById('grid');
 
     /* Popola griglia */
@@ -113,11 +117,17 @@
     const frame = document.getElementById('frame');
     let idx=0, scale=1;
 
-    function openLb(i){ idx=i; scale=1; full.style.transform='scale(1)';
+    function openLb(i){
+      idx=i; scale=1;
+      full.style.transform='scale(1)';
       full.src = base + slides[idx].file;
       lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
+      document.body.classList.add('lb-open');
     }
-    function closeLb(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true'); }
+    function closeLb(){
+      lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
+      document.body.classList.remove('lb-open');
+    }
     function nav(d){ idx = (idx + d + slides.length) % slides.length; scale=1; full.style.transform='scale(1)'; full.src = base + slides[idx].file; }
 
     document.getElementById('close').onclick=closeLb;
@@ -162,7 +172,10 @@
         if(fi>=0) startIndex = fi;
       }
     }
-    if(!startGrid){ openLb(startIndex); }
+    if(!startGrid){ 
+      // aspetta un tick e apri direttamente la slide
+      setTimeout(()=>openLb(startIndex), 0);
+    }
 
     // Pulsante "Mostra griglia"
     document.getElementById('showGrid').onclick = ()=>{ closeLb(); scrollTo({top:0,behavior:'smooth'}); };
