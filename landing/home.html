@@ -897,53 +897,76 @@ document.addEventListener('click', function(e){
     openPanelByIndex(i, accent, null); 
   }
 
-  // FORCE AUTOPLAY - Gestione aggressiva per Safari/iOS
+  // FORCE AUTOPLAY + AUDIO - Gestione aggressiva per Safari/iOS
   const video = document.getElementById('heroVideo');
   if (video) {
-    // Prova autoplay immediato
-    const tryAutoplay = () => {
+    // Rimuovi muted dall'HTML e forza audio
+    video.muted = false;
+    video.volume = 0.8;
+    
+    // Prova autoplay immediato con audio
+    const tryAutoplayWithAudio = () => {
       video.muted = false;
       video.volume = 0.8;
-      const playPromise = video.play();
       
+      const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           console.log('✅ Autoplay riuscito con audio');
+          // Assicurati che l'audio sia attivo
+          if (video.muted) {
+            video.muted = false;
+            video.volume = 0.8;
+          }
         }).catch(() => {
-          // Fallback: prova con muted
-          video.muted = true;
-          video.play().then(() => {
-            console.log('⚠️ Autoplay riuscito solo muted');
-            // Dopo 1 secondo prova a riattivare audio
-            setTimeout(() => {
-              video.muted = false;
-              video.volume = 0.8;
-            }, 1000);
-          }).catch(() => {
-            console.log('❌ Autoplay fallito completamente');
-          });
+          console.log('⚠️ Autoplay con audio bloccato, forzo comunque');
+          // Forza play anche se bloccato
+          setTimeout(() => {
+            video.muted = false;
+            video.volume = 0.8;
+            video.play().catch(() => {
+              // Ultimo tentativo con user interaction
+              console.log('❌ Serve interazione utente per audio');
+            });
+          }, 100);
         });
       }
     };
 
-    // Prova autoplay su eventi diversi
-    video.addEventListener('loadeddata', tryAutoplay);
-    video.addEventListener('canplay', tryAutoplay);
+    // Prova su tutti gli eventi possibili
+    video.addEventListener('loadeddata', tryAutoplayWithAudio);
+    video.addEventListener('canplay', tryAutoplayWithAudio);
+    video.addEventListener('loadedmetadata', tryAutoplayWithAudio);
     
-    // Prova anche su primo click/touch della pagina
-    const enableAutoplay = () => {
-      tryAutoplay();
-      document.removeEventListener('click', enableAutoplay);
-      document.removeEventListener('touchstart', enableAutoplay);
+    // Forza audio su primo click/touch
+    const forceAudioOnInteraction = () => {
+      video.muted = false;
+      video.volume = 0.8;
+      video.play();
+      console.log('🔊 Audio forzato su interazione utente');
     };
     
-    document.addEventListener('click', enableAutoplay, { once: true });
-    document.addEventListener('touchstart', enableAutoplay, { once: true });
+    document.addEventListener('click', forceAudioOnInteraction, { once: true });
+    document.addEventListener('touchstart', forceAudioOnInteraction, { once: true });
+    document.addEventListener('touchend', forceAudioOnInteraction, { once: true });
     
-    // Prova immediata se già caricato
-    if (video.readyState >= 3) {
-      tryAutoplay();
+    // Prova immediata se video già pronto
+    if (video.readyState >= 2) {
+      tryAutoplayWithAudio();
     }
+    
+    // Forza ogni secondo per i primi 5 secondi
+    let attempts = 0;
+    const forceInterval = setInterval(() => {
+      if (video.paused && attempts < 5) {
+        video.muted = false;
+        video.volume = 0.8;
+        video.play().catch(() => {});
+        attempts++;
+      } else {
+        clearInterval(forceInterval);
+      }
+    }, 1000);
   }
 })();
   </script>
