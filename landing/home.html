@@ -896,6 +896,55 @@ document.addEventListener('click', function(e){
     const accent = '#14b8a6'; // colore di default per test
     openPanelByIndex(i, accent, null); 
   }
+
+  // FORCE AUTOPLAY - Gestione aggressiva per Safari/iOS
+  const video = document.getElementById('heroVideo');
+  if (video) {
+    // Prova autoplay immediato
+    const tryAutoplay = () => {
+      video.muted = false;
+      video.volume = 0.8;
+      const playPromise = video.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('✅ Autoplay riuscito con audio');
+        }).catch(() => {
+          // Fallback: prova con muted
+          video.muted = true;
+          video.play().then(() => {
+            console.log('⚠️ Autoplay riuscito solo muted');
+            // Dopo 1 secondo prova a riattivare audio
+            setTimeout(() => {
+              video.muted = false;
+              video.volume = 0.8;
+            }, 1000);
+          }).catch(() => {
+            console.log('❌ Autoplay fallito completamente');
+          });
+        });
+      }
+    };
+
+    // Prova autoplay su eventi diversi
+    video.addEventListener('loadeddata', tryAutoplay);
+    video.addEventListener('canplay', tryAutoplay);
+    
+    // Prova anche su primo click/touch della pagina
+    const enableAutoplay = () => {
+      tryAutoplay();
+      document.removeEventListener('click', enableAutoplay);
+      document.removeEventListener('touchstart', enableAutoplay);
+    };
+    
+    document.addEventListener('click', enableAutoplay, { once: true });
+    document.addEventListener('touchstart', enableAutoplay, { once: true });
+    
+    // Prova immediata se già caricato
+    if (video.readyState >= 3) {
+      tryAutoplay();
+    }
+  }
 })();
   </script>
 
