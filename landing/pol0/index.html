@@ -29,8 +29,8 @@
       background:rgba(11,59,62,.96);z-index:50;padding:env(safe-area-inset-top) env(safe-area-inset-right)
       calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left)}
     .lightbox.on{display:flex}
-    .frame{max-width:min(96vw,1600px);max-height:calc(100dvh - 100px);position:relative}
-    .frame img{max-width:100%;max-height:calc(100dvh - 140px);border-radius:14px;box-shadow:var(--shadow);
+    .frame{max-width:min(90vw,1200px);max-height:calc(90vw * 2/3, 800px);position:relative;aspect-ratio:3/2}
+    .frame img{width:100%;height:100%;object-fit:contain;border-radius:14px;box-shadow:var(--shadow);
       transform-origin:center center;transition:transform .2s ease}
     .ui{position:absolute;left:0;right:0;bottom:-48px;display:flex;gap:8px;justify-content:center}
     .btn{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);
@@ -46,7 +46,7 @@
     body.lb-open main{filter:blur(2px) brightness(.5); pointer-events:none;}
     
     @media (max-width: 900px){
-      .frame{max-width:98vw;max-height:82vh}
+      .frame{max-width:95vw;aspect-ratio:3/2}
       .ui{inset:auto 0 -46px 0}
       .btn{padding:7px 10px;font-size:14px}
     }
