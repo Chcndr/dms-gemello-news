@@ -50,6 +50,30 @@
       .ui{inset:auto 0 -46px 0}
       .btn{padding:7px 10px;font-size:14px}
     }
+
+    /* FIX RAPIDO - Lightbox responsivo */
+    .lb--open { overflow: hidden; }
+    .lb { position: fixed; inset: 0; display: none; z-index: 9999;
+          background: rgba(0,0,0,.9); }
+    .lb.is-visible { display: flex; align-items: center; justify-content: center; }
+
+    .lb__frame { position: relative; max-width: min(1200px, 96vw);
+                 max-height: 96vh; display: flex; align-items: center; justify-content: center; }
+
+    .lb__img { max-width: 100%; max-height: 96vh; width: auto; height: auto;
+               object-fit: contain; border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+
+    /* Pulsanti */
+    .lb__btn { position: absolute; top: 12px; background: rgba(0,0,0,.55);
+               color: #fff; border: 0; width: 44px; height: 44px; border-radius: 8px;
+               display: grid; place-items: center; cursor: pointer; }
+    .lb__close { right: 12px; }
+    .lb__prev  { left: 12px; top: 50%; transform: translateY(-50%); }
+    .lb__next  { right: 12px; top: 50%; transform: translateY(-50%); }
+
+    @media (max-width: 768px){
+      .lb__frame { max-width: 96vw; }
+    }
   </style>
 </head>
 <body class="boot">
@@ -78,6 +102,66 @@
     </div>
   </div>
   <div class="hint">Gesti: swipe ◀ ▶ per cambiare, doppio tap per zoom. Esc per chiudere.</div>
+
+  <!-- FIX RAPIDO - Nuovo lightbox responsivo -->
+  <div class="lb" id="lbNew" aria-modal="true" role="dialog" aria-label="Slide">
+    <div class="lb__frame">
+      <img class="lb__img" id="lbImg" alt="">
+      <button class="lb__btn lb__close" id="lbClose" aria-label="Chiudi">✕</button>
+      <button class="lb__btn lb__prev"  id="lbPrev"  aria-label="Precedente">‹</button>
+      <button class="lb__btn lb__next"  id="lbNext"  aria-label="Successiva">›</button>
+    </div>
+  </div>
+
+  <script>
+    // FIX RAPIDO - JavaScript minimale per nuovo lightbox
+    (() => {
+      const thumbs = Array.from(document.querySelectorAll('.card'));
+      if (!thumbs.length) return;
+
+      const modal = document.getElementById('lbNew');
+      const img   = document.getElementById('lbImg');
+      const btnX  = document.getElementById('lbClose');
+      const btnP  = document.getElementById('lbPrev');
+      const btnN  = document.getElementById('lbNext');
+
+      let i = 0;
+
+      const show = (k) => {
+        i = (k + thumbs.length) % thumbs.length;
+        const slideData = slides[i];
+        const src = `${base}${slideData.file}?v=${V}`;
+        img.src = src;
+        modal.classList.add('is-visible');
+        document.body.classList.add('lb--open');
+      };
+
+      const hide = () => {
+        modal.classList.remove('is-visible');
+        document.body.classList.remove('lb--open');
+        img.removeAttribute('src');
+      };
+
+      const next = () => show(i + 1);
+      const prev = () => show(i - 1);
+
+      thumbs.forEach((t, k) => t.addEventListener('click', (e) => {
+        e.preventDefault(); show(k);
+      }));
+
+      btnX.addEventListener('click', hide);
+      btnN.addEventListener('click', next);
+      btnP.addEventListener('click', prev);
+      modal.addEventListener('click', (e) => { if (e.target === modal) hide(); });
+
+      window.addEventListener('keydown', (e) => {
+        if (!modal.classList.contains('is-visible')) return;
+        if (e.key === 'Escape') hide();
+        if (e.key === 'ArrowRight') next();
+        if (e.key === 'ArrowLeft')  prev();
+      });
+    })();
+  </script>
 
   <script>
     // Elenco slide
