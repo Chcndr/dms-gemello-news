@@ -24,20 +24,34 @@
     .card:hover img{transform:scale(1.03)}
     .caption{padding:10px 12px;color:var(--muted);font-size:14px;display:flex;align-items:center;gap:8px}
     .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
-    /* Lightbox */
-    .lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-      background:rgba(11,59,62,.96);z-index:50;padding:env(safe-area-inset-top) env(safe-area-inset-right)
-      calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left)}
-    .lightbox.on{display:flex}
-    .frame{max-width:min(95vw,1400px);max-height:calc(95vh - 100px);position:relative}
-    .frame img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px;box-shadow:var(--shadow);
-      transform-origin:center center;transition:transform .2s ease}
+    /* Overlay full screen */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:9999}
+    .lightbox.on{display:grid}
+    .lightbox:not(.on){display:none}
+    
+    /* Cornice del media: si adatta a viewport, niente padding/riquadri */
+    .frame{
+      width:min(96vw,1280px);
+      height:min(90vh,1280px);
+      display:grid;place-items:center;
+      background:#0e3b3f;           /* colore brand (sostituisce "bande") */
+      border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.35);
+      padding:0;margin:0
+    }
+    /* L'immagine si contiene nel frame senza tagli né deformazioni */
+    .frame img{
+      max-width:100%;max-height:100%;
+      width:auto;height:auto;object-fit:contain;display:block;background:transparent
+    }
+    /* Pulsanti */
+    .x{position:absolute;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));
+      background:rgba(0,0,0,.55);color:#fff;border:0;border-radius:10px;padding:8px 12px;cursor:pointer}
+    .navL,.navR{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);color:#fff;border:0;
+      border-radius:10px;width:42px;height:56px;cursor:pointer;font-size:22px}
+    .navL{left:10px}.navR{right:10px}
     .ui{position:absolute;left:0;right:0;bottom:-48px;display:flex;gap:8px;justify-content:center}
     .btn{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);
       padding:8px 12px;border-radius:10px;cursor:pointer}
-    .x{position:absolute;top:-44px;right:0}
-    .navL,.navR{position:absolute;top:50%;transform:translateY(-50%);font-size:22px}
-    .navL{left:-42px}.navR{right:-42px}
     .hint{position:fixed;left:12px;bottom:10px;color:var(--muted);font-size:12px;opacity:.85}
     a{color:var(--accent);text-decoration:none}
     /* niente flash della griglia durante il boot */
@@ -46,9 +60,10 @@
     body.lb-open main{filter:blur(2px) brightness(.5); pointer-events:none;}
     
     @media (max-width: 900px){
-      .frame{max-width:98vw;max-height:calc(90vh - 80px)}
+      .frame{width:min(98vw,1280px);height:min(85vh,1280px)}
       .ui{inset:auto 0 -46px 0}
       .btn{padding:7px 10px;font-size:14px}
+      .navL,.navR{width:38px;height:50px}
     }
   </style>
 </head>
