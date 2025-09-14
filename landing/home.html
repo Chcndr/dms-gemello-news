@@ -428,8 +428,13 @@ addEventListener('click', function (e) {
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
     <video id="heroVideo" src="/dms-gemello-news/videos/video-hero.mp4"
-      muted playsinline webkit-playsinline preload="metadata" autoplay loop
-      poster="/dms-gemello-news/assets/poster-hero.jpg"></video>
+      playsinline webkit-playsinline preload="metadata" autoplay loop controls
+      poster="/dms-gemello-news/assets/poster-hero.jpg"
+      style="cursor: pointer;"
+      onloadstart="this.muted=false; this.volume=0.8;"
+      oncanplay="this.muted=false; this.play();"
+      onmouseover="this.setAttribute('controls', 'controls');"
+      onmouseleave="setTimeout(() => { if (!this.paused) this.removeAttribute('controls'); }, 2000);"></video>
     
     <!-- PANEL dentro lo stesso viewport del video -->
     <!-- MOD-00 START -->
