@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Politica 0 • Visione DMS</title>
-  <link rel="preload" as="image" href="../../assets/pol0/slide-01-emergenza-commercio.jpg?v=pol0-compressed">
   <style>
     :root{
       --bg:#0b3b3e; --fg:#f3e8c9; --muted:#a7cfc4; --accent:#34d1b6;
@@ -44,36 +43,6 @@
     body.boot main{visibility:hidden}
     /* attenua e blocca la griglia quando la lightbox è aperta */
     body.lb-open main{filter:blur(2px) brightness(.5); pointer-events:none;}
-    
-    @media (max-width: 900px){
-      .frame{max-width:98vw;max-height:82vh}
-      .ui{inset:auto 0 -46px 0}
-      .btn{padding:7px 10px;font-size:14px}
-    }
-
-    /* FIX RAPIDO - Lightbox responsivo */
-    .lb--open { overflow: hidden; }
-    .lb { position: fixed; inset: 0; display: none; z-index: 9999;
-          background: rgba(0,0,0,.9); }
-    .lb.is-visible { display: flex; align-items: center; justify-content: center; }
-
-    .lb__frame { position: relative; max-width: min(1200px, 96vw);
-                 max-height: 96vh; display: flex; align-items: center; justify-content: center; }
-
-    .lb__img { max-width: 100%; max-height: 96vh; width: auto; height: auto;
-               object-fit: contain; border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
-
-    /* Pulsanti */
-    .lb__btn { position: absolute; top: 12px; background: rgba(0,0,0,.55);
-               color: #fff; border: 0; width: 44px; height: 44px; border-radius: 8px;
-               display: grid; place-items: center; cursor: pointer; }
-    .lb__close { right: 12px; }
-    .lb__prev  { left: 12px; top: 50%; transform: translateY(-50%); }
-    .lb__next  { right: 12px; top: 50%; transform: translateY(-50%); }
-
-    @media (max-width: 768px){
-      .lb__frame { max-width: 96vw; }
-    }
   </style>
 </head>
 <body class="boot">
@@ -103,79 +72,17 @@
   </div>
   <div class="hint">Gesti: swipe ◀ ▶ per cambiare, doppio tap per zoom. Esc per chiudere.</div>
 
-  <!-- FIX RAPIDO - Nuovo lightbox responsivo -->
-  <div class="lb" id="lbNew" aria-modal="true" role="dialog" aria-label="Slide">
-    <div class="lb__frame">
-      <img class="lb__img" id="lbImg" alt="">
-      <button class="lb__btn lb__close" id="lbClose" aria-label="Chiudi">✕</button>
-      <button class="lb__btn lb__prev"  id="lbPrev"  aria-label="Precedente">‹</button>
-      <button class="lb__btn lb__next"  id="lbNext"  aria-label="Successiva">›</button>
-    </div>
-  </div>
-
-  <script>
-    // FIX RAPIDO - JavaScript minimale per nuovo lightbox
-    (() => {
-      const thumbs = Array.from(document.querySelectorAll('.card'));
-      if (!thumbs.length) return;
-
-      const modal = document.getElementById('lbNew');
-      const img   = document.getElementById('lbImg');
-      const btnX  = document.getElementById('lbClose');
-      const btnP  = document.getElementById('lbPrev');
-      const btnN  = document.getElementById('lbNext');
-
-      let i = 0;
-
-      const show = (k) => {
-        i = (k + thumbs.length) % thumbs.length;
-        const slideData = slides[i];
-        const src = `${base}${slideData.file}?v=${V}`;
-        img.src = src;
-        modal.classList.add('is-visible');
-        document.body.classList.add('lb--open');
-      };
-
-      const hide = () => {
-        modal.classList.remove('is-visible');
-        document.body.classList.remove('lb--open');
-        img.removeAttribute('src');
-      };
-
-      const next = () => show(i + 1);
-      const prev = () => show(i - 1);
-
-      thumbs.forEach((t, k) => t.addEventListener('click', (e) => {
-        e.preventDefault(); show(k);
-      }));
-
-      btnX.addEventListener('click', hide);
-      btnN.addEventListener('click', next);
-      btnP.addEventListener('click', prev);
-      modal.addEventListener('click', (e) => { if (e.target === modal) hide(); });
-
-      window.addEventListener('keydown', (e) => {
-        if (!modal.classList.contains('is-visible')) return;
-        if (e.key === 'Escape') hide();
-        if (e.key === 'ArrowRight') next();
-        if (e.key === 'ArrowLeft')  prev();
-      });
-    })();
-  </script>
-
   <script>
     // Elenco slide
     const slides = [
-      {file:'slide-01-emergenza-commercio.jpg',  title:'Italia — Emergenza Commercio'},
-      {file:'slide-02-dms-gemello-digitale.jpg',  title:'DMS — Gemello Digitale del Commercio'},
-      {file:'slide-03-governance-bandi-bolkestein.jpg', title:'Governance • Bandi • Criteri Bolkestein'},
-      {file:'slide-04-carbon-credit-doganale.jpg', title:'Crediti di Carbonio — univoco doganale'},
-      {file:'slide-05-indicatori-economici.jpg', title:'Indicatori economici: Stato • Imprese • Cittadini'},
-      {file:'slide-06-dms-al-centro.jpg', title:'DMS al centro di tutto — interoperabilità'},
-      {file:'slide-07-gis-del-commercio.jpg', title:'GIS del Commercio — digitalizza → connette → abilita'}
+      {file:'slide-01-dms-gemello-digitale.png',  title:'DMS — Gemello Digitale del Commercio'},
+      {file:'slide-02-governance-bandi-bolkestein.png', title:'Governance • Bandi • Criteri Bolkestein'},
+      {file:'slide-03-carbon-credit-doganale.png', title:'Crediti di Carbonio — univoco doganale'},
+      {file:'slide-04-indicatori-economici.png', title:'Indicatori economici: Stato • Imprese • Cittadini'},
+      {file:'slide-05-dms-al-centro.png', title:'DMS al centro di tutto — interoperabilità'},
+      {file:'slide-06-gis-del-commercio.png', title:'GIS del Commercio — digitalizza → connette → abilita'}
     ];
-    
-    const V = 'pol0-compressed';              // bump se cambi asset
+    // index.html sta in /landing/pol0 → risalgo di 2 cartelle
     const base = '../../assets/pol0/';
 
     const params = new URLSearchParams(location.search);
@@ -195,7 +102,7 @@
       slides.forEach((s,i)=>{
         const card = document.createElement('article');
         card.className='card';
-        card.innerHTML = `<img loading="lazy" src="${base + s.file}?v=${V}" alt="${s.title}">
+        card.innerHTML = `<img loading="lazy" src="${base + s.file}" alt="${s.title}">
                           <div class="caption"><span class="dot"></span>${s.title}</div>`;
         card.onclick = ()=> openLb(i);
         if (hoverMode && matchMedia('(pointer:fine)').matches){
@@ -218,7 +125,7 @@
     function openLb(i){
       idx=i; scale=1;
       full.style.transform='scale(1)';
-      full.src = `${base + slides[idx].file}?v=${V}`;
+      full.src = base + slides[idx].file;
       lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
       document.body.classList.add('lb-open');
     }
@@ -226,7 +133,7 @@
       lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
       document.body.classList.remove('lb-open');
     }
-    function nav(d){ idx=(idx+d+slides.length)%slides.length; scale=1; full.style.transform='scale(1)'; full.src=`${base+slides[idx].file}?v=${V}`; }
+    function nav(d){ idx=(idx+d+slides.length)%slides.length; scale=1; full.style.transform='scale(1)'; full.src=base+slides[idx].file; }
 
     document.getElementById('close').onclick=closeLb;
     document.getElementById('prev').onclick = ()=>nav(-1);
@@ -258,20 +165,21 @@
 
     // Boot: preload 1ª slide → apri subito → poi costruisci griglia e pre-carica le altre
     (async function boot(){
-      await preload(`${base + slides[0].file}?v=${V}`);
+      await preload(base + slides[0].file);
       if (openAuto) openLb(0);
       buildGrid();
       // Preload silenzioso delle altre per cambio istantaneo
-      slides.slice(1).forEach(s=>preload(`${base + s.file}?v=${V}`));
+      slides.slice(1).forEach(s=>preload(base + s.file));
       document.body.classList.remove('boot');
     })();
 
-    // Apertura diretta della slide principale (senza vedere la griglia prima)
+    // Preload + apertura rapida della prima slide per evitare secondo "vuoto" iniziale
     window.addEventListener('load', () => {
       const img0 = new Image();
-      img0.src = `${base}slide-01-dms-gemello-digitale.png?v=${V}`;
+      img0.src = base + slides[0].file;
       img0.onload = () => { if (openAuto && !lb.classList.contains('on')) openLb(0); };
-      setTimeout(() => { if (openAuto && !lb.classList.contains('on')) openLb(0); }, 1800); // fallback
+      // Fallback se la CDN è lenta
+      setTimeout(() => { if (openAuto && !lb.classList.contains('on')) openLb(0); }, 2000);
     });
   </script>
 </body>
