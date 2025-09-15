@@ -6,9 +6,9 @@
 <style>
   :root { --bg:#000; --fg:#fff; }
   html,body { height:100%; margin:0; background:var(--bg); color:var(--fg); }
-  #pages{ position:fixed; inset:0; overflow:auto; -webkit-overflow-scrolling:touch; padding:24px 0; }
-  .page{ display:flex; justify-content:center; margin:0 0 12px; }
-  canvas{ width:min(100vw, 1100px); height:auto; background:#111; box-shadow:0 2px 24px rgba(0,0,0,.35)}
+  #pages{ position:fixed; inset:0; overflow:auto; -webkit-overflow-scrolling:touch; padding:12px 0; }
+  .page{ display:flex; justify-content:center; margin:0 0 8px; }
+  canvas{ width:100vw; max-width:none; height:auto; background:#111; box-shadow:0 2px 24px rgba(0,0,0,.35)}
 </style>
 </head>
 <body>
@@ -26,13 +26,11 @@
   } else {
     const container = document.getElementById('pages');
     
-    // Calcolo zoom automatico basato sulla larghezza viewport
+    // Calcolo zoom automatico per riempire sempre tutta la larghezza
     const getAutoScale = () => {
       const vw = window.innerWidth;
-      if (vw <= 480) return 0.8;      // mobile piccolo
-      if (vw <= 768) return 1.0;      // mobile/tablet
-      if (vw <= 1024) return 1.2;     // tablet grande
-      return 1.4;                     // desktop
+      // Scala basata sulla larghezza per riempire sempre tutto lo schermo
+      return vw / 595; // 595 è la larghezza standard di una pagina PDF in punti
     };
 
     const renderDoc = async () => {
