@@ -1816,7 +1816,7 @@ function applyMinisterHighlight(mKey){
 <script>
 (function(){
   // Config base
-  const VIEWER = '/dms-gemello-news/landing/viewer/'; // non spostare
+  const VIEWER = '/dms-gemello-news/landing/viewer/lite.html'; // viewer lite con PDF.js
   const TOKEN  = ''; // opzionale: es. 'TOK1ABC' se usi whitelist.json
 
   const lb   = document.getElementById('pdfLightbox');
@@ -1827,7 +1827,7 @@ function applyMinisterHighlight(mKey){
   function openPdf(src){
     const u = new URL(VIEWER, location.origin);
     u.searchParams.set('src', src);
-    u.searchParams.set('v', 'lb1');
+    u.searchParams.set('v', 'lite1');
     if (TOKEN) u.searchParams.set('token', TOKEN);
 
     fr.src = u.toString();
