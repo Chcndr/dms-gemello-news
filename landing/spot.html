@@ -42,6 +42,32 @@
   video{width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.18); display:block}
   @media (max-width:900px){ .wrap{grid-template-columns: 1fr} }
 </style>
+
+<style>
+/* — Lightbox fullscreen — */
+#pdfLightbox{
+  position:fixed; inset:0; z-index:9999;
+  display:none; opacity:0; transition:opacity .18s ease;
+  background:rgba(10,10,14,.76); backdrop-filter:saturate(1.1) blur(6px);
+}
+#pdfLightbox.show{ display:block; opacity:1; }
+#pdfFrame{
+  position:absolute; inset:0;
+  width:100vw; height:100dvh; border:0; background:#000;
+}
+#pdfClose{
+  position:fixed; top:12px; right:12px;
+  width:44px; height:44px; border-radius:10px; border:0;
+  font:700 28px/44px system-ui; color:#fff; background:rgba(0,0,0,.35);
+  backdrop-filter: blur(4px);
+  cursor:pointer; z-index:10000;
+}
+#pdfClose:hover{ background:rgba(0,0,0,.5); }
+body.modal-open{ overflow:hidden; touch-action:none; }
+@media (prefers-reduced-motion: reduce){
+  #pdfLightbox{ transition:none; }
+}
+</style>
 <link rel="stylesheet" href="./assets/theme-green.css">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
 <style id="theme-green">
@@ -306,7 +332,7 @@
       docs: [
         ["App DMS Assistente","/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"],
         ["DMS Locandina","/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"],
-        ["DMS Set v2","/dms-gemello-news/landing/viewer/?src=/dms-gemello-news/assets/doc/DMSSSET%282%29.pdf&v=pilot1"]
+        ["DMS Set v2","/dms-gemello-news/assets/doc/DMSSSET(2).pdf","data-pdf"]
       ]
     }
   ];
@@ -322,12 +348,20 @@
     list.appendChild(sectionTitle);
     
     // Aggiungi documenti della sezione
-    section.docs.forEach(([title, href]) => {
+    section.docs.forEach(([title, href, useLightbox]) => {
       const a = document.createElement('a');
       a.className = 'doc';
-      a.href = href;
-      a.target = '_blank';
-      a.rel = 'noopener';
+      
+      if (useLightbox === 'data-pdf') {
+        // Usa lightbox per PDF protetto
+        a.setAttribute('data-pdf', href);
+        a.href = '#';
+      } else {
+        // Link normale
+        a.href = href;
+        a.target = '_blank';
+        a.rel = 'noopener';
+      }
       
       // Aggiungo data-doc per evidenziazione hash e data-spot + id per evidenziazione rossa
       const slug = title.toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]/g,'');
@@ -1770,6 +1804,78 @@ function applyMinisterHighlight(mKey){
      b.textContent='diag • stable-lock • 2025-09-11';
      document.body.appendChild(b);
   }
+})();
+</script>
+
+<!-- ⬇️ LIGHTBOX PDF FULLSCREEN -->
+<div id="pdfLightbox" aria-hidden="true">
+  <button id="pdfClose" aria-label="Chiudi PDF">×</button>
+  <iframe id="pdfFrame" title="Documento PDF" allow="fullscreen"></iframe>
+</div>
+
+<script>
+(function(){
+  // Config base
+  const VIEWER = '/dms-gemello-news/landing/viewer/'; // non spostare
+  const TOKEN  = ''; // opzionale: es. 'TOK1ABC' se usi whitelist.json
+
+  const lb   = document.getElementById('pdfLightbox');
+  const fr   = document.getElementById('pdfFrame');
+  const btnX = document.getElementById('pdfClose');
+
+  // Apri lightbox con viewer protetto (src = percorso reale in /docs/…)
+  function openPdf(src){
+    const u = new URL(VIEWER, location.origin);
+    u.searchParams.set('src', src);
+    u.searchParams.set('v', 'lb1');
+    if (TOKEN) u.searchParams.set('token', TOKEN);
+
+    fr.src = u.toString();
+    lb.classList.add('show');
+    document.body.classList.add('modal-open');
+    lb.setAttribute('aria-hidden','false');
+
+    // history: back = chiudi
+    history.pushState({pdf:true}, '', '#pdf');
+    // focus sul close per accessibilità
+    setTimeout(()=>btnX.focus(), 0);
+  }
+
+  // Chiudi lightbox
+  function closePdf(){
+    lb.classList.remove('show');
+    document.body.classList.remove('modal-open');
+    lb.setAttribute('aria-hidden','true');
+    // svuota iframe per evitare "share → cattura PDF"
+    fr.src = 'about:blank';
+    // ripristina URL senza hash
+    if (location.hash === '#pdf') history.back();
+  }
+
+  // Bind pulsante chiudi + ESC + click backdrop
+  btnX.addEventListener('click', closePdf);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && lb.classList.contains('show')) closePdf();
+  });
+  lb.addEventListener('click', e => {
+    if (e.target === lb) closePdf();
+  });
+
+  // Intercetta click sui link/tasti PDF: aggiungi data-pdf con il percorso reale del file in /docs/
+  // Esempio <a class="open-pdf" data-pdf="/dms-gemello-news/docs/CARBON%20CREDIT%20DMS.pdf">PDF</a>
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-pdf]');
+    if (!a) return;
+    e.preventDefault();
+    const src = a.getAttribute('data-pdf').trim();
+    if (!src) return;
+    openPdf(src);
+  });
+
+  // Se si arriva con #pdf (es. refresh), chiudi per sicurezza
+  window.addEventListener('popstate', () => {
+    if (lb.classList.contains('show')) closePdf();
+  });
 })();
 </script>
 
