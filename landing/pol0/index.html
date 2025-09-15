@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Politica 0 — Visione DMS</title>
+  <link rel="preload" as="image" href="slides/01.jpg?v=pol0-lock2">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -151,7 +152,7 @@
   </style>
 </head>
 <body>
-  <a href="../../orologio/" class="back-link">← Torna all'Orologio</a>
+     <a href="../home.html" class="back-link">← Torna all'orologio</a>
   
   <div class="header">
     <h1>Politica 0 — Visione DMS</h1>
@@ -253,6 +254,11 @@
     
     // Monta il lightbox dopo aver creato la griglia
     window.addEventListener('DOMContentLoaded', () => LB.mount());
+    
+    // Apertura immediata slide 1
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => { openLightbox(0); }, 100);
+    });
   </script>
 </body>
 </html>
