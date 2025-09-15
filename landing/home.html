@@ -1002,34 +1002,30 @@ document.addEventListener('click', function(e){
 </div>
 
 <script>
-/* ===== DMS PDF Lightbox – HOME Orlogio ===== */
+/* ===== DMS PDF Lightbox – HOME (fix robusto) ===== */
 (function(){
-  if (window.DMSPDF) return;  // guard per non duplicare
-  window.DMSPDF = true;
+  if (window.DMSPDF_HOME) return; 
+  window.DMSPDF_HOME = true;
 
-  const VIEWER = '/dms-gemello-news/landing/viewer/lite.html'; // viewer scrollabile
+  const VIEWER = '/dms-gemello-news/landing/viewer/lite.html';
   const lb   = document.getElementById('pdfLightbox');
   const fr   = document.getElementById('pdfFrame');
   const btnX = document.getElementById('pdfClose');
 
-  // Normalizza href verso /dms-gemello-news/docs/...
-  const normHref = (href) => {
-    const u = new URL(href, location.href);
-    let p = u.pathname;
-    if (p.startsWith('/docs/')) p = '/dms-gemello-news' + p;
-    return p + (u.search||'') + (u.hash||'');
-  };
-
   function openPdf(src){
-    const u = new URL(VIEWER, location.origin);
-    u.searchParams.set('src', normHref(src));
-    u.searchParams.set('v', 'lite1'); // bust cache
-    fr.src = u.toString();
-    lb.classList.add('show');
-    document.body.classList.add('modal-open');
-    lb.setAttribute('aria-hidden','false');
-    history.pushState({pdf:true}, '', '#pdf');
-    setTimeout(()=>btnX.focus(), 0);
+    try{
+      const u = new URL(VIEWER, location.origin);
+      // Passa sempre URL assoluto del PDF (qualsiasi percorso: /docs/, /assets/doc/, ecc.)
+      const abs = new URL(src, location.href).href;
+      u.searchParams.set('src', abs);
+      u.searchParams.set('v', 'lite2');
+      fr.src = u.toString();
+      lb.classList.add('show');
+      document.body.classList.add('modal-open');
+      lb.setAttribute('aria-hidden','false');
+      history.pushState({pdf:true}, '', '#pdf');
+      setTimeout(()=>btnX.focus(), 0);
+    }catch(e){ console.warn('openPdf error', e); }
   }
 
   function closePdf(){
@@ -1040,24 +1036,73 @@ document.addEventListener('click', function(e){
     if (location.hash === '#pdf') history.back();
   }
 
+  // Chiudi: X, ESC, backdrop, back
   btnX.addEventListener('click', closePdf);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('show')) closePdf(); });
   lb.addEventListener('click', e => { if (e.target === lb) closePdf(); });
   window.addEventListener('popstate', () => { if (lb.classList.contains('show')) closePdf(); });
 
-  // ➊ Delego: qualsiasi click su <a> che punti a /docs/..pdf o /dms-gemello-news/docs/..pdf o /assets/doc/..pdf
-  document.addEventListener('click', e => {
-    const a = e.target.closest('a[href]');
-    if (!a) return;
-    const href = a.getAttribute('href');
-    if (!href) return;
-    const isPdf = /\.pdf(\?|#|$)/i.test(href);
-    const isDocs = href.startsWith('/docs/') || href.includes('/dms-gemello-news/docs/') || href.includes('/assets/doc/');
-    if (isPdf && isDocs) { e.preventDefault(); openPdf(href); }
-  });
+  // ---------- INTERCETTORE ROBUSTO ----------
+  // capture:true batte stopPropagation; composedPath() attraversa shadowDOM
+  function isPdfUrl(href){
+    try {
+      const u = new URL(href, location.href);
+      // intercetta qualunque .pdf (anche con query/hash), locale o assoluto su github.io
+      return /\.pdf(\?|#|$)/i.test(u.pathname);
+    } catch { return false; }
+  }
 
-  // esponi funzione globale se vuoi aprire da JS
+  document.addEventListener('click', (e) => {
+    const path = (e.composedPath && e.composedPath()) || [e.target];
+    const a = path.find(el => el && el.tagName === 'A' && el.href);
+    if (!a) return;
+
+    const href = a.getAttribute('href') || a.href;
+    if (!href) return;
+    if (!isPdfUrl(href)) return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation(); // impedisce handlers downstream
+    openPdf(href);
+  }, { capture:true, passive:false });
+
+  // ---------- REWIRE PROATTIVO ----------
+  // Trasforma tutti gli <a href="*.pdf"> in bottoni che invocano openPdf()
+  function rewire(container=document){
+    container.querySelectorAll('a[href]').forEach(a=>{
+      const href = a.getAttribute('href');
+      if (!href || !isPdfUrl(href)) return;
+      // evito doppie modifiche
+      if (a.dataset.dmsPdf === '1') return;
+      a.dataset.dmsPdf = '1';
+      const target = a.getAttribute('target'); if (target) a.removeAttribute('target');
+      a.addEventListener('click', (ev)=>{ ev.preventDefault(); openPdf(href); }, {passive:false});
+      a.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); openPdf(href); }});
+      a.setAttribute('role','button'); a.tabIndex = a.tabIndex || 0;
+    });
+  }
+
+  // 1) al DOM pronto
+  const onReady = () => rewire(document);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onReady, {once:true});
+  } else { onReady(); }
+
+  // 2) retry perché l'orologio potrebbe montare dopo
+  setTimeout(()=>rewire(document), 250);
+  setTimeout(()=>rewire(document), 1000);
+
+  // 3) osserva aggiunte dinamiche (schede, popover, ecc.)
+  const mo = new MutationObserver(muts=>{
+    for (const m of muts) {
+      m.addedNodes.forEach(n => { if (n.nodeType===1) rewire(n); });
+    }
+  });
+  mo.observe(document.documentElement, {childList:true, subtree:true});
+
+  // esponi per debug
   window.openDMSPDF = openPdf;
+  window._dmsRewirePdf = () => rewire(document);
 })();
 </script>
 
