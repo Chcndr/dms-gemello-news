@@ -28,15 +28,15 @@
       background:rgba(11,59,62,.96);z-index:50;padding:env(safe-area-inset-top) env(safe-area-inset-right)
       calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left)}
     .lightbox.on{display:flex}
-    .frame{max-width:min(96vw,1600px);max-height:calc(100dvh - 100px);position:relative;display:flex;align-items:center;justify-content:center}
-    .frame img{max-width:100%;max-height:calc(100vh - 2rem);height:auto;width:auto;object-fit:contain;border-radius:14px;box-shadow:var(--shadow);
+    .frame{width:100vw;height:100vh;position:relative;display:flex;align-items:center;justify-content:center;padding:2rem}
+    .frame img{width:calc(100% - 4rem);height:calc(100% - 4rem);object-fit:cover;border-radius:14px;box-shadow:var(--shadow);
       transform-origin:center center;transition:transform .2s ease}
-    .ui{position:absolute;left:0;right:0;bottom:-48px;display:flex;gap:8px;justify-content:center}
+    .ui{position:absolute;left:0;right:0;bottom:1rem;display:flex;gap:8px;justify-content:center;z-index:10}
     .btn{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);
       padding:8px 12px;border-radius:10px;cursor:pointer}
-    .x{position:absolute;top:-44px;right:0}
-    .navL,.navR{position:absolute;top:50%;transform:translateY(-50%);font-size:22px}
-    .navL{left:-42px}.navR{right:-42px}
+    .x{position:absolute;top:1rem;right:1rem;z-index:10}
+    .navL,.navR{position:absolute;top:50%;transform:translateY(-50%);font-size:22px;z-index:10}
+    .navL{left:1rem}.navR{right:1rem}
     .hint{position:fixed;left:12px;bottom:10px;color:var(--muted);font-size:12px;opacity:.85}
     a{color:var(--accent);text-decoration:none}
     /* niente flash della griglia durante il boot */
