@@ -733,15 +733,6 @@ body.modal-open{ overflow:hidden; touch-action:none; }
   Apri PDF (test diretto)
 </a>`;
         }
-        // Pilota viewer protetto per "DMS Sistema Completo"
-        if(label === 'DMS Sistema Completo') {
-          return `<a class="action spot test-viewer"
-   href="/dms-gemello-news/landing/viewer/?src=/dms-gemello-news/assets/doc/DMSSSET.pdf&v=pilot1"
-   target="_top" rel="noopener"
-   >
-  Apri PDF (viewer protetto)
-</a>`;
-        }
         return `<a class="action spot" href="${safeHref(href)}" target="_top" rel="noopener">${label}</a>`;
       }
     }).join(' ');
@@ -1054,14 +1045,14 @@ document.addEventListener('click', function(e){
   lb.addEventListener('click', e => { if (e.target === lb) closePdf(); });
   window.addEventListener('popstate', () => { if (lb.classList.contains('show')) closePdf(); });
 
-  // ➊ Delego: qualsiasi click su <a> che punti a /docs/..pdf o /dms-gemello-news/docs/..pdf
+  // ➊ Delego: qualsiasi click su <a> che punti a /docs/..pdf o /dms-gemello-news/docs/..pdf o /assets/doc/..pdf
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href]');
     if (!a) return;
     const href = a.getAttribute('href');
     if (!href) return;
     const isPdf = /\.pdf(\?|#|$)/i.test(href);
-    const isDocs = href.startsWith('/docs/') || href.includes('/dms-gemello-news/docs/');
+    const isDocs = href.startsWith('/docs/') || href.includes('/dms-gemello-news/docs/') || href.includes('/assets/doc/');
     if (isPdf && isDocs) { e.preventDefault(); openPdf(href); }
   });
 
