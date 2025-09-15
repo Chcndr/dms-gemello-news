@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Politica 0 — Visione DMS</title>
-  <link rel="preload" as="image" href="slides/01.jpg?v=pol0-lock2">
+  <link rel="preload" as="image" href="slides/01.jpg?v=stable-news-001">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -152,7 +152,7 @@
   </style>
 </head>
 <body>
-     <a href="../home.html" class="back-link">← Torna all'orologio</a>
+     <a href="../home.html?v=stable-news-001" class="back-link">← Torna all'orologio</a>
   
   <div class="header">
     <h1>Politica 0 — Visione DMS</h1>
@@ -243,7 +243,7 @@
     
     grid.innerHTML = Array.from({length: NUM}, (_, i) => {
       const n = String(i + 1).padStart(2, '0');
-      const src = `slides/${n}.jpg`;
+      const src = `slides/${n}.jpg?v=stable-news-001`;
       const title = slideNames[i] || `Slide ${n}`;
       return `
         <figure class="card">

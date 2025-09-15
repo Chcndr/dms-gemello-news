@@ -427,9 +427,9 @@ addEventListener('click', function (e) {
   <!-- Layers -->
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
-    <video id="heroVideo" src="/dms-gemello-news/videos/video-hero.mp4"
+    <video id="heroVideo" src="/dms-gemello-news/videos/video-hero.mp4?v=stable-news-001"
       playsinline webkit-playsinline preload="metadata" autoplay loop controls
-      poster="/dms-gemello-news/assets/poster-hero.jpg"
+      poster="/dms-gemello-news/assets/poster-hero.jpg?v=stable-news-001"
       style="cursor: pointer;"
       onloadstart="this.muted=false; this.volume=0.8;"
       oncanplay="this.muted=false; this.play();"
@@ -806,7 +806,7 @@ document.addEventListener('click', function(e){
   window.openPanelByIndex = function(i, accent, data){
     // Intercetta il bottone "0 • Politica" per reindirizzare alla pagina stand-alone
     if(i === 0) {
-      window.top.location.href = '/dms-gemello-news/landing/pol0/?open=1&v=pol0-001';
+      window.top.location.href = '/dms-gemello-news/landing/pol0/?open=1&v=stable-news-001';
       return;
     }
     
