@@ -28,8 +28,8 @@
       background:rgba(11,59,62,.96);z-index:50;padding:env(safe-area-inset-top) env(safe-area-inset-right)
       calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left)}
     .lightbox.on{display:flex}
-    .frame{max-width:min(96vw,1600px);max-height:calc(100dvh - 100px);position:relative}
-    .frame img{max-width:100%;max-height:calc(100dvh - 140px);border-radius:14px;box-shadow:var(--shadow);
+    .frame{max-width:min(96vw,1600px);max-height:calc(100dvh - 100px);position:relative;display:flex;align-items:center;justify-content:center}
+    .frame img{max-width:100%;max-height:calc(100vh - 2rem);height:auto;width:auto;object-fit:contain;border-radius:14px;box-shadow:var(--shadow);
       transform-origin:center center;transition:transform .2s ease}
     .ui{position:absolute;left:0;right:0;bottom:-48px;display:flex;gap:8px;justify-content:center}
     .btn{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);
@@ -43,6 +43,13 @@
     body.boot main{visibility:hidden}
     /* attenua e blocca la griglia quando la lightbox è aperta */
     body.lb-open main{filter:blur(2px) brightness(.5); pointer-events:none;}
+    
+    @media (max-width: 900px){
+      .frame{max-width:98vw;max-height:calc(100vh - 120px)}
+      .frame img{max-height:calc(100vh - 160px)}
+      .ui{bottom:-40px}
+      .navL{left:-35px}.navR{right:-35px}
+    }
   </style>
 </head>
 <body class="boot">
@@ -128,12 +135,37 @@
       full.src = base + slides[idx].file;
       lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
       document.body.classList.add('lb-open');
+      // Forza il ricalcolo delle dimensioni dopo l'apertura
+      setTimeout(adjustImageSize, 50);
     }
     function closeLb(){
       lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
       document.body.classList.remove('lb-open');
     }
-    function nav(d){ idx=(idx+d+slides.length)%slides.length; scale=1; full.style.transform='scale(1)'; full.src=base+slides[idx].file; }
+    function nav(d){ 
+      idx=(idx+d+slides.length)%slides.length; 
+      scale=1; 
+      full.style.transform='scale(1)'; 
+      full.src=base+slides[idx].file;
+      // Ricalcola le dimensioni per la nuova immagine
+      setTimeout(adjustImageSize, 50);
+    }
+
+    // Funzione per regolare dinamicamente le dimensioni dell'immagine
+    function adjustImageSize() {
+      if (!lb.classList.contains('on')) return;
+      
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const isMobile = viewportWidth <= 900;
+      
+      // Calcola l'altezza massima disponibile
+      const maxHeight = isMobile ? viewportHeight - 160 : viewportHeight - 32;
+      const maxWidth = isMobile ? viewportWidth * 0.98 : Math.min(viewportWidth * 0.96, 1600);
+      
+      full.style.maxHeight = maxHeight + 'px';
+      full.style.maxWidth = maxWidth + 'px';
+    }
 
     document.getElementById('close').onclick=closeLb;
     document.getElementById('prev').onclick = ()=>nav(-1);
@@ -172,6 +204,16 @@
       slides.slice(1).forEach(s=>preload(base + s.file));
       document.body.classList.remove('boot');
     })();
+
+    // Gestione ridimensionamento finestra e rotazione iPad
+    window.addEventListener('resize', () => {
+      adjustImageSize();
+    });
+    
+    // Gestione orientamento per dispositivi mobili
+    window.addEventListener('orientationchange', () => {
+      setTimeout(adjustImageSize, 100);
+    });
 
     // Preload + apertura rapida della prima slide per evitare secondo "vuoto" iniziale
     window.addEventListener('load', () => {
