@@ -1,282 +1,258 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Politica 0 • Visione DMS</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Politica 0 — Visione DMS</title>
   <style>
-    :root{
-      --bg:#0b3b3e; --fg:#f3e8c9; --muted:#a7cfc4; --accent:#34d1b6;
-      --thumb:#0f4a4e; --shadow:0 10px 30px rgba(0,0,0,.25)
-    }
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
-    header{position:sticky;top:0;background:linear-gradient(180deg,rgba(11,59,62,.95),rgba(11,59,62,.6) 80%,transparent);
-      -webkit-backdrop-filter:saturate(140%) blur(6px);backdrop-filter:saturate(140%) blur(6px);
-      padding:14px 20px;z-index:5;border-bottom:1px solid rgba(255,255,255,.06)}
-    h1{margin:0;font-size:clamp(20px,2.8vw,28px);letter-spacing:.4px}
-    .sub{opacity:.8;font-size:clamp(12px,2vw,14px)}
-    .wrap{max-width:1400px;margin:24px auto;padding:0 16px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-    .card{background:var(--thumb);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);cursor:zoom-in;border:1px solid rgba(255,255,255,.06)}
-    .card img{width:100%;height:220px;object-fit:cover;display:block;transition:transform .35s ease}
-    .card:hover img{transform:scale(1.03)}
-    .caption{padding:10px 12px;color:var(--muted);font-size:14px;display:flex;align-items:center;gap:8px}
-    .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
-    /* Lightbox */
-    .lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-      background:rgba(11,59,62,.96);z-index:50;padding:env(safe-area-inset-top) env(safe-area-inset-right)
-      calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left)}
-    .lightbox.on{display:flex}
-    .frame{max-width:min(96vw,1600px);max-height:calc(100dvh - 100px);position:relative;display:flex;align-items:center;justify-content:center}
-    .frame img{max-width:100%;max-height:calc(100vh - 2rem);height:auto;width:auto;object-fit:contain;border-radius:14px;box-shadow:var(--shadow);
-      transform-origin:center center;transition:transform .2s ease}
-    .ui{position:absolute;left:0;right:0;bottom:-48px;display:flex;gap:8px;justify-content:center}
-    .btn{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);
-      padding:8px 12px;border-radius:10px;cursor:pointer}
-    .x{position:absolute;top:-44px;right:0}
-    .navL,.navR{position:absolute;top:50%;transform:translateY(-50%);font-size:22px}
-    .navL{left:-42px}.navR{right:-42px}
-    .hint{position:fixed;left:12px;bottom:10px;color:var(--muted);font-size:12px;opacity:.85}
-    a{color:var(--accent);text-decoration:none}
-    /* niente flash della griglia durante il boot */
-    body.boot main{visibility:hidden}
-    /* attenua e blocca la griglia quando la lightbox è aperta */
-    body.lb-open main{filter:blur(2px) brightness(.5); pointer-events:none;}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    @media (max-width: 900px){
-      .frame{max-width:98vw;max-height:calc(100vh - 120px)}
-      .frame img{max-height:calc(100vh - 160px)}
-      .ui{bottom:-40px}
-      .navL{left:-35px}.navR{right:-35px}
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a2e2e 0%, #1a4a4a 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+    
+    .header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(0,0,0,0.3);
+    }
+    
+    .header h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      margin-bottom: 0.5rem;
+      color: #f0f8f8;
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+    
+    .card figcaption {
+      padding: 1rem;
+      font-size: 0.9rem;
+      text-align: center;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    /* Lightbox CSS (no ratio fisso) */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(8,28,28,.86);
+      padding: clamp(8px,2vh,24px);
+    }
+    
+    .lightbox.open {
+      display: flex;
+    }
+    
+    .lightbox__img {
+      max-width: min(96vw, 1600px);
+      max-height: calc(100dvh - 2*clamp(8px,2vh,24px));
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      background: transparent;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    
+    .lb-close, .lb-prev, .lb-next {
+      position: absolute;
+      background: rgba(0,0,0,.45);
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: .6rem .8rem;
+      font-size: 16px;
+      backdrop-filter: saturate(1.4) blur(6px);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    
+    .lb-close:hover, .lb-prev:hover, .lb-next:hover {
+      background: rgba(0,0,0,.65);
+    }
+    
+    .lb-close {
+      top: 10px;
+      right: 10px;
+    }
+    
+    .lb-prev {
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .lb-next {
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .back-link {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      backdrop-filter: blur(10px);
+      transition: background 0.2s ease;
+    }
+    
+    .back-link:hover {
+      background: rgba(0,0,0,0.7);
     }
   </style>
 </head>
-<body class="boot">
-  <header>
-    <div class="wrap">
-      <h1>Politica 0 — Visione DMS</h1>
-      <div class="sub">Si apre direttamente la slide principale. "Mostra griglia" per vedere tutte le infografiche.</div>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <section class="grid" id="grid"></section>
-  </main>
-
-  <div class="lightbox" id="lb" aria-hidden="true">
-    <div class="frame">
-      <button class="btn x" id="close">Chiudi ✕</button>
-      <button class="btn navL" id="prev">‹</button>
-      <img id="full" alt="" />
-      <button class="btn navR" id="next">›</button>
-      <div class="ui">
-        <button class="btn" id="zIn">Zoom +</button>
-        <button class="btn" id="zOut">Zoom −</button>
-        <button class="btn" id="backHome">← Torna all'orologio</button>
-      </div>
-    </div>
+<body>
+  <a href="../../orologio/" class="back-link">← Torna all'Orologio</a>
+  
+  <div class="header">
+    <h1>Politica 0 — Visione DMS</h1>
+    <p>Esplora le slide della strategia DMS per il rilancio del commercio italiano</p>
   </div>
-  <div class="hint">Gesti: swipe ◀ ▶ per cambiare, doppio tap per zoom. Esc per chiudere.</div>
+  
+  <section id="gallery" class="grid"></section>
+  
+  <!-- Lightbox -->
+  <div class="lightbox" id="lb" aria-hidden="true">
+    <button class="lb-close" aria-label="Chiudi" onclick="LB.close()">Chiudi ×</button>
+    <img class="lightbox__img" id="lb-img" alt="">
+    <button class="lb-prev" aria-label="Precedente" onclick="LB.prev()">‹</button>
+    <button class="lb-next" aria-label="Successiva" onclick="LB.next()">›</button>
+  </div>
 
   <script>
-    // Elenco slide - TUTTE le 60 slide esistenti
-    const slides = [
-      {file:'slide-01-emergenza-commercio.jpg?v=pol0-lock8',  title:'Emergenza Commercio — Visione DMS'},
-      {file:'slide-02-new.jpg?v=pol0-lock7', title:'Gettito Progressivo — Strategia Carbon Credit'},
-      {file:'slide-03-new.jpg?v=pol0-lock7', title:'Redistribuzione Benefici — Famiglia Italiana'},
-      {file:'slide-04-new.jpg?v=pol0-lock7', title:'Impatti Economici — PMI e Posti Lavoro'},
-      {file:'slide-05-new.jpg?v=pol0-lock7', title:'Timeline Implementazione — DMS + UE'},
-      {file:'slide-06-new.jpg?v=pol0-lock7', title:'Confronto Scenari — Attuale vs DMS 2030'},
-      {file:'slide-07-new.jpg?v=pol0-lock7', title:'DMS — Gemello Digitale del Commercio'},
-      {file:'slide-08-new.jpg?v=pol0-lock7', title:'Governance • Bandi • Criteri Bolkestein'},
-      {file:'slide-08.jpg?v=pol0-lock7', title:'Slide 09'},
-      {file:'slide-09.jpg?v=pol0-lock7', title:'Slide 10'},
-      {file:'slide-10.jpg?v=pol0-lock7', title:'Slide 11'},
-      {file:'slide-11.jpg?v=pol0-lock7', title:'Slide 12'},
-      {file:'slide-12.jpg?v=pol0-lock7', title:'Slide 13'},
-      {file:'slide-13.jpg?v=pol0-lock7', title:'Slide 14'},
-      {file:'slide-14.jpg?v=pol0-lock7', title:'Slide 15'},
-      {file:'slide-15.jpg?v=pol0-lock7', title:'Slide 16'},
-      {file:'slide-16.jpg?v=pol0-lock7', title:'Slide 17'},
-      {file:'slide-17.jpg?v=pol0-lock7', title:'Slide 18'},
-      {file:'slide-18.jpg?v=pol0-lock7', title:'Slide 19'},
-      {file:'slide-19.jpg?v=pol0-lock7', title:'Slide 20'},
-      {file:'slide-20.jpg?v=pol0-lock7', title:'Slide 21'},
-      {file:'slide-21.jpg?v=pol0-lock7', title:'Slide 22'},
-      {file:'slide-22.jpg?v=pol0-lock7', title:'Slide 23'},
-      {file:'slide-23.jpg?v=pol0-lock7', title:'Slide 24'},
-      {file:'slide-24.jpg?v=pol0-lock7', title:'Slide 25'},
-      {file:'slide-25.jpg?v=pol0-lock7', title:'Slide 26'},
-      {file:'slide-26.jpg?v=pol0-lock7', title:'Slide 27'},
-      {file:'slide-27.jpg?v=pol0-lock7', title:'Slide 28'},
-      {file:'slide-28.jpg?v=pol0-lock7', title:'Slide 29'},
-      {file:'slide-29.jpg?v=pol0-lock7', title:'Slide 30'},
-      {file:'slide-30.jpg?v=pol0-lock7', title:'Slide 31'},
-      {file:'slide-31.jpg?v=pol0-lock7', title:'Slide 32'},
-      {file:'slide-32.jpg?v=pol0-lock7', title:'Slide 33'},
-      {file:'slide-33.jpg?v=pol0-lock7', title:'Slide 34'},
-      {file:'slide-34.jpg?v=pol0-lock7', title:'Slide 35'},
-      {file:'slide-35.jpg?v=pol0-lock7', title:'Slide 36'},
-      {file:'slide-36.jpg?v=pol0-lock7', title:'Slide 37'},
-      {file:'slide-37.jpg?v=pol0-lock7', title:'Slide 38'},
-      {file:'slide-38.jpg?v=pol0-lock7', title:'Slide 39'},
-      {file:'slide-39.jpg?v=pol0-lock7', title:'Slide 40'},
-      {file:'slide-40.jpg?v=pol0-lock7', title:'Slide 41'},
-      {file:'slide-41.jpg?v=pol0-lock7', title:'Slide 42'},
-      {file:'slide-42.jpg?v=pol0-lock7', title:'Slide 43'},
-      {file:'slide-43.jpg?v=pol0-lock7', title:'Slide 44'},
-      {file:'slide-44.jpg?v=pol0-lock7', title:'Slide 45'},
-      {file:'slide-45.jpg?v=pol0-lock7', title:'Slide 46'},
-      {file:'slide-46.jpg?v=pol0-lock7', title:'Slide 47'},
-      {file:'slide-47.jpg?v=pol0-lock7', title:'Slide 48'},
-      {file:'slide-48.jpg?v=pol0-lock7', title:'Slide 49'},
-      {file:'slide-49.jpg?v=pol0-lock7', title:'Slide 50'},
-      {file:'slide-50.jpg?v=pol0-lock7', title:'Slide 51'},
-      {file:'slide-51.jpg?v=pol0-lock7', title:'Slide 52'},
-      {file:'slide-52.jpg?v=pol0-lock7', title:'Slide 53'},
-      {file:'slide-53.jpg?v=pol0-lock7', title:'Slide 54'},
-      {file:'slide-54.jpg?v=pol0-lock7', title:'Slide 55'},
-      {file:'slide-55.jpg?v=pol0-lock7', title:'Slide 56'},
-      {file:'slide-56.jpg?v=pol0-lock7', title:'Slide 57'},
-      {file:'slide-57.jpg?v=pol0-lock7', title:'Slide 58'},
-      {file:'slide-58.jpg?v=pol0-lock7', title:'Slide 59'},
-      {file:'slide-59.jpg?v=pol0-lock7', title:'Slide 60'}
-    ];
-    // index.html sta in /landing/pol0 → risalgo di 2 cartelle
-    const base = '../../assets/pol0/';
+    // Lightbox minimale
+    const LB = (() => {
+      let i = 0, slides = [];
+      const lb = document.getElementById('lb');
+      const img = document.getElementById('lb-img');
 
-    const params = new URLSearchParams(location.search);
-    const openAuto = params.get('open') !== '0';            // default: apri subito
-    const hoverMode = params.get('mode') === 'hover';       // opzionale: apri su hover (desktop)
-
-    // URL della pagina orologio
-    const BACK_URL = 'https://chcndr.github.io/dms-gemello-news/landing/home.html';
-
-    const grid = document.getElementById('grid');
-    const lb   = document.getElementById('lb');
-    const full = document.getElementById('full');
-    let idx=0, scale=1;
-
-    // Build griglia
-    function buildGrid(){
-      slides.forEach((s,i)=>{
-        const card = document.createElement('article');
-        card.className='card';
-        card.innerHTML = `<img loading="lazy" src="${base + s.file}" alt="${s.title}">
-                          <div class="caption"><span class="dot"></span>${s.title}</div>`;
-        card.onclick = ()=> openLb(i);
-        if (hoverMode && matchMedia('(pointer:fine)').matches){
-          card.onmouseenter = ()=> openLb(i);
-        }
-        grid.appendChild(card);
-      });
-    }
-
-    // Preload immagini
-    const preload = src => new Promise(res=>{
-      const link = document.createElement('link');
-      link.rel='preload'; link.as='image'; link.href=src;
-      document.head.appendChild(link);
-      const img = new Image();
-      img.onload=()=>res(); img.onerror=()=>res(); img.src=src;
-    });
-
-    // Lightbox
-    function openLb(i){
-      idx=i; scale=1;
-      full.style.transform='scale(1)';
-      full.src = base + slides[idx].file;
-      lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
-      document.body.classList.add('lb-open');
-      // Forza il ricalcolo delle dimensioni dopo l'apertura
-      setTimeout(adjustImageSize, 50);
-    }
-    function closeLb(){
-      lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
-      document.body.classList.remove('lb-open');
-    }
-    function nav(d){ 
-      idx=(idx+d+slides.length)%slides.length; 
-      scale=1; 
-      full.style.transform='scale(1)'; 
-      full.src=base+slides[idx].file;
-      // Ricalcola le dimensioni per la nuova immagine
-      setTimeout(adjustImageSize, 50);
-    }
-
-    // Funzione per regolare dinamicamente le dimensioni dell'immagine
-    function adjustImageSize() {
-      if (!lb.classList.contains('on')) return;
+      function open(idx) {
+        i = idx;
+        const s = slides[i];
+        img.src = s.src;
+        img.alt = s.alt || '';
+        lb.classList.add('open');
+        lb.setAttribute('aria-hidden', 'false');
+      }
       
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const isMobile = viewportWidth <= 900;
+      function close() {
+        lb.classList.remove('open');
+        lb.setAttribute('aria-hidden', 'true');
+        img.removeAttribute('src');
+      }
       
-      // Calcola l'altezza massima disponibile
-      const maxHeight = isMobile ? viewportHeight - 160 : viewportHeight - 32;
-      const maxWidth = isMobile ? viewportWidth * 0.98 : Math.min(viewportWidth * 0.96, 1600);
+      function next() {
+        i = (i + 1) % slides.length;
+        open(i);
+      }
       
-      full.style.maxHeight = maxHeight + 'px';
-      full.style.maxWidth = maxWidth + 'px';
-    }
+      function prev() {
+        i = (i - 1 + slides.length) % slides.length;
+        open(i);
+      }
 
-    document.getElementById('close').onclick=closeLb;
-    document.getElementById('prev').onclick = ()=>nav(-1);
-    document.getElementById('next').onclick = ()=>nav(+1);
-    document.getElementById('zIn').onclick = ()=>{ scale=Math.min(3, scale+0.2); full.style.transform=`scale(${scale})`; };
-    document.getElementById('zOut').onclick= ()=>{ scale=Math.max(1, scale-0.2); full.style.transform=`scale(${scale})`; };
-    document.getElementById('backHome').onclick = () => {
-      window.location.href = BACK_URL;
-    };
-    full.ondblclick = ()=>{ scale = (scale===1? 1.8:1); full.style.transform=`scale(${scale})`; };
-
-    // Tasti & swipe
-    window.addEventListener('keydown',e=>{
-      if(!lb.classList.contains('on')) return;
-      if(e.key==='Escape') closeLb();
-      if(e.key==='ArrowRight') nav(+1);
-      if(e.key==='ArrowLeft')  nav(-1);
-      if(e.key==='+' || e.key==='=') document.getElementById('zIn').click();
-      if(e.key==='-') document.getElementById('zOut').click();
-    });
-    let touchX=null;
-    lb.addEventListener('touchstart',e=>{touchX=e.touches[0].clientX;},{passive:true});
-    lb.addEventListener('touchend',e=>{
-      if(touchX===null) return;
-      const dx = e.changedTouches[0].clientX - touchX;
-      if(Math.abs(dx)>40) nav(dx<0?+1:-1);
-      touchX=null;
-    });
-
-    // Boot: preload 1ª slide → apri subito → poi costruisci griglia e pre-carica le altre
-    (async function boot(){
-      await preload(base + slides[0].file);
-      if (openAuto) openLb(0);
-      buildGrid();
-      // Preload silenzioso delle altre per cambio istantaneo
-      slides.slice(1).forEach(s=>preload(base + s.file));
-      document.body.classList.remove('boot');
+      function mount() {
+        slides = [...document.querySelectorAll('[data-slide]')].map((el, idx) => {
+          el.addEventListener('click', () => open(idx));
+          return { src: el.dataset.src, alt: el.dataset.alt || ('Slide ' + (idx + 1)) };
+        });
+        
+        lb.addEventListener('click', e => {
+          if (e.target === lb) close();
+        });
+        
+        document.addEventListener('keydown', e => {
+          if (!lb.classList.contains('open')) return;
+          if (e.key === 'Escape') close();
+          if (e.key === 'ArrowRight') next();
+          if (e.key === 'ArrowLeft') prev();
+        });
+      }
+      
+      return { mount, open, close, next, prev };
     })();
 
-    // Gestione ridimensionamento finestra e rotazione iPad
-    window.addEventListener('resize', () => {
-      adjustImageSize();
-    });
+    // Griglia autogenerata (47 slide)
+    const NUM = 47;
+    const grid = document.getElementById('gallery');
     
-    // Gestione orientamento per dispositivi mobili
-    window.addEventListener('orientationchange', () => {
-      setTimeout(adjustImageSize, 100);
-    });
-
-    // Preload + apertura rapida della prima slide per evitare secondo "vuoto" iniziale
-    window.addEventListener('load', () => {
-      const img0 = new Image();
-      img0.src = base + slides[0].file;
-      img0.onload = () => { if (openAuto && !lb.classList.contains('on')) openLb(0); };
-      // Fallback se la CDN è lenta
-      setTimeout(() => { if (openAuto && !lb.classList.contains('on')) openLb(0); }, 2000);
-    });
+    const slideNames = [
+      'ITALIA — Emergenza Commercio',
+      'DMS — Gemello Digitale del Commercio', 
+      'Governance • Bandi • Criteri Bolkestein',
+      'Crediti di Carbonio — Univoco Doganale',
+      'Indicatori Economici',
+      'DMS al Centro di Tutto',
+      'GIS del Commercio — DMS',
+      'Gettito Progressivo — Strategia Carbon Credit',
+      'Redistribuzione Benefici — Famiglia Italiana',
+      'Impatti Economici — PMI e Posti Lavoro',
+      'Timeline Implementazione — DMS + UE',
+      'Confronto Scenari — Attuale vs DMS 2030'
+    ];
+    
+    grid.innerHTML = Array.from({length: NUM}, (_, i) => {
+      const n = String(i + 1).padStart(2, '0');
+      const src = `slides/${n}.jpg`;
+      const title = slideNames[i] || `Slide ${n}`;
+      return `
+        <figure class="card">
+          <img src="${src}" alt="${title}" data-slide data-src="${src}" data-alt="${title}" loading="lazy">
+          <figcaption>${title}</figcaption>
+        </figure>`;
+    }).join('');
+    
+    // Monta il lightbox dopo aver creato la griglia
+    window.addEventListener('DOMContentLoaded', () => LB.mount());
   </script>
 </body>
 </html>
