@@ -409,6 +409,28 @@ addEventListener('click', function (e) {
     /* niente tag "PDF/INFO" */
     .node .tag{ display:none; }
   </style>
+
+<style>
+#pdfLightbox{
+  position:fixed; inset:0; z-index:9999;
+  display:none; opacity:0; transition:opacity .18s ease;
+  background:rgba(10,10,14,.76); backdrop-filter:saturate(1.1) blur(6px);
+}
+#pdfLightbox.show{ display:block; opacity:1; }
+#pdfFrame{
+  position:absolute; inset:0; width:100vw; height:100dvh;
+  border:0; background:#000; display:block;
+}
+#pdfClose{
+  position:fixed; top:12px; right:12px; z-index:10000;
+  width:44px; height:44px; border:0; border-radius:10px;
+  font:700 28px/44px system-ui; color:#fff; cursor:pointer;
+  background:rgba(0,0,0,.35); backdrop-filter:blur(4px);
+}
+#pdfClose:hover{ background:rgba(0,0,0,.5); }
+body.modal-open{ overflow:hidden; touch-action:none; }
+@media (prefers-reduced-motion: reduce){ #pdfLightbox{ transition:none; } }
+</style>
 </head>
 <body>
   <!-- Nav -->
@@ -981,6 +1003,73 @@ document.addEventListener('click', function(e){
   </script>
 
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
+
+<!-- ⬇️ LIGHTBOX PDF FULLSCREEN (HOME) -->
+<div id="pdfLightbox" aria-hidden="true">
+  <button id="pdfClose" aria-label="Chiudi PDF">×</button>
+  <iframe id="pdfFrame" title="Documento PDF" allow="fullscreen"></iframe>
+</div>
+
+<script>
+/* ===== DMS PDF Lightbox – HOME Orlogio ===== */
+(function(){
+  if (window.DMSPDF) return;  // guard per non duplicare
+  window.DMSPDF = true;
+
+  const VIEWER = '/dms-gemello-news/landing/viewer/lite.html'; // viewer scrollabile
+  const lb   = document.getElementById('pdfLightbox');
+  const fr   = document.getElementById('pdfFrame');
+  const btnX = document.getElementById('pdfClose');
+
+  // Normalizza href verso /dms-gemello-news/docs/...
+  const normHref = (href) => {
+    const u = new URL(href, location.href);
+    let p = u.pathname;
+    if (p.startsWith('/docs/')) p = '/dms-gemello-news' + p;
+    return p + (u.search||'') + (u.hash||'');
+  };
+
+  function openPdf(src){
+    const u = new URL(VIEWER, location.origin);
+    u.searchParams.set('src', normHref(src));
+    u.searchParams.set('v', 'lite1'); // bust cache
+    fr.src = u.toString();
+    lb.classList.add('show');
+    document.body.classList.add('modal-open');
+    lb.setAttribute('aria-hidden','false');
+    history.pushState({pdf:true}, '', '#pdf');
+    setTimeout(()=>btnX.focus(), 0);
+  }
+
+  function closePdf(){
+    lb.classList.remove('show');
+    document.body.classList.remove('modal-open');
+    lb.setAttribute('aria-hidden','true');
+    fr.src = 'about:blank';
+    if (location.hash === '#pdf') history.back();
+  }
+
+  btnX.addEventListener('click', closePdf);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('show')) closePdf(); });
+  lb.addEventListener('click', e => { if (e.target === lb) closePdf(); });
+  window.addEventListener('popstate', () => { if (lb.classList.contains('show')) closePdf(); });
+
+  // ➊ Delego: qualsiasi click su <a> che punti a /docs/..pdf o /dms-gemello-news/docs/..pdf
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href) return;
+    const isPdf = /\.pdf(\?|#|$)/i.test(href);
+    const isDocs = href.startsWith('/docs/') || href.includes('/dms-gemello-news/docs/');
+    if (isPdf && isDocs) { e.preventDefault(); openPdf(href); }
+  });
+
+  // esponi funzione globale se vuoi aprire da JS
+  window.openDMSPDF = openPdf;
+})();
+</script>
+
 </body>
 </html>
 
