@@ -1002,10 +1002,9 @@ document.addEventListener('click', function(e){
 </div>
 
 <script>
-/* ===== DMS PDF Lightbox – HOME (fix robusto) ===== */
+/* ===== DMS PDF Lightbox – HOME (hook in iframe + patch window.open) ===== */
 (function(){
-  if (window.DMSPDF_HOME) return; 
-  window.DMSPDF_HOME = true;
+  if (window.DMSPDF_HOME_V2) return; window.DMSPDF_HOME_V2 = true;
 
   const VIEWER = '/dms-gemello-news/landing/viewer/lite.html';
   const lb   = document.getElementById('pdfLightbox');
@@ -1014,9 +1013,8 @@ document.addEventListener('click', function(e){
 
   function openPdf(src){
     try{
-      const u = new URL(VIEWER, location.origin);
-      // Passa sempre URL assoluto del PDF (qualsiasi percorso: /docs/, /assets/doc/, ecc.)
-      const abs = new URL(src, location.href).href;
+      const abs = new URL(src, location.href).href;          // assolutizza qualunque href
+      const u   = new URL(VIEWER, location.origin);
       u.searchParams.set('src', abs);
       u.searchParams.set('v', 'lite2');
       fr.src = u.toString();
@@ -1027,7 +1025,6 @@ document.addEventListener('click', function(e){
       setTimeout(()=>btnX.focus(), 0);
     }catch(e){ console.warn('openPdf error', e); }
   }
-
   function closePdf(){
     lb.classList.remove('show');
     document.body.classList.remove('modal-open');
@@ -1035,74 +1032,87 @@ document.addEventListener('click', function(e){
     fr.src = 'about:blank';
     if (location.hash === '#pdf') history.back();
   }
-
-  // Chiudi: X, ESC, backdrop, back
   btnX.addEventListener('click', closePdf);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('show')) closePdf(); });
   lb.addEventListener('click', e => { if (e.target === lb) closePdf(); });
   window.addEventListener('popstate', () => { if (lb.classList.contains('show')) closePdf(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('show')) closePdf(); });
 
-  // ---------- INTERCETTORE ROBUSTO ----------
-  // capture:true batte stopPropagation; composedPath() attraversa shadowDOM
-  function isPdfUrl(href){
-    try {
-      const u = new URL(href, location.href);
-      // intercetta qualunque .pdf (anche con query/hash), locale o assoluto su github.io
-      return /\.pdf(\?|#|$)/i.test(u.pathname);
-    } catch { return false; }
+  window.openDMSPDF = openPdf; // utile da iframe
+
+  const isPdfUrl = (href)=>{
+    try { return /\.pdf(\?|#|$)/i.test(new URL(href, location.href).pathname); }
+    catch { return false; }
+  };
+
+  // Hook generico per una finestra (principale o iframe stessa origine)
+  function hookWindow(win){
+    try{
+      const doc = win.document; if (!doc) return;
+
+      // 1) Rewire di tutti gli anchor *.pdf presenti (e futuri)
+      const rewire = (root = doc)=>{
+        root.querySelectorAll('a[href]').forEach(a=>{
+          const href = a.getAttribute('href'); if (!href || !isPdfUrl(href)) return;
+          if (a.dataset.dmsPdf === '1') return;
+          a.dataset.dmsPdf = '1';
+          a.removeAttribute('target');
+          ['click','pointerup','touchend'].forEach(t=>{
+            a.addEventListener(t, ev=>{
+              ev.preventDefault(); ev.stopImmediatePropagation();
+              top.openDMSPDF(new URL(href, win.location.href).href);
+            }, {capture:true, passive:false});
+          });
+          a.setAttribute('role','button'); a.tabIndex = a.tabIndex || 0;
+        });
+      };
+      rewire();
+
+      // 2) Intercetta eventi anche se non passano dagli <a> (JS custom nelle schede)
+      ['click','pointerup','touchend'].forEach(type=>{
+        doc.addEventListener(type, e=>{
+          const path = (e.composedPath && e.composedPath()) || [e.target];
+          const a = path.find(el => el && el.tagName === 'A' && el.getAttribute && el.getAttribute('href'));
+          if (!a) return;
+          const href = a.getAttribute('href'); if (!href || !isPdfUrl(href)) return;
+          e.preventDefault(); e.stopImmediatePropagation();
+          top.openDMSPDF(new URL(href, win.location.href).href);
+        }, {capture:true, passive:false});
+      });
+
+      // 3) Patch window.open dentro quella finestra (se qualcuno fa window.open('*.pdf'))
+      const origOpen = win.open;
+      win.open = function(u, n, s){
+        try{
+          if (u && isPdfUrl(u)) { top.openDMSPDF(new URL(u, win.location.href).href); return null; }
+        }catch(_){}
+        return origOpen.apply(this, arguments);
+      };
+
+      // 4) Osserva aggiunte dinamiche (schede/DOM aggiornati)
+      const mo = new win.MutationObserver(muts=>{
+        muts.forEach(m=>m.addedNodes.forEach(n=>{ if (n.nodeType===1) rewire(n); }));
+      });
+      mo.observe(doc.documentElement, {childList:true, subtree:true});
+    }catch(e){ /* cross-origin: ignora */ }
   }
 
-  document.addEventListener('click', (e) => {
-    const path = (e.composedPath && e.composedPath()) || [e.target];
-    const a = path.find(el => el && el.tagName === 'A' && el.href);
-    if (!a) return;
+  // Hook finestra principale
+  hookWindow(window);
 
-    const href = a.getAttribute('href') || a.href;
-    if (!href) return;
-    if (!isPdfUrl(href)) return;
-
-    e.preventDefault();
-    e.stopImmediatePropagation(); // impedisce handlers downstream
-    openPdf(href);
-  }, { capture:true, passive:false });
-
-  // ---------- REWIRE PROATTIVO ----------
-  // Trasforma tutti gli <a href="*.pdf"> in bottoni che invocano openPdf()
-  function rewire(container=document){
-    container.querySelectorAll('a[href]').forEach(a=>{
-      const href = a.getAttribute('href');
-      if (!href || !isPdfUrl(href)) return;
-      // evito doppie modifiche
-      if (a.dataset.dmsPdf === '1') return;
-      a.dataset.dmsPdf = '1';
-      const target = a.getAttribute('target'); if (target) a.removeAttribute('target');
-      a.addEventListener('click', (ev)=>{ ev.preventDefault(); openPdf(href); }, {passive:false});
-      a.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); openPdf(href); }});
-      a.setAttribute('role','button'); a.tabIndex = a.tabIndex || 0;
+  // Hook su TUTTI gli iframe stessa origine (schede orologio)
+  function hookAllIframes(){
+    document.querySelectorAll('iframe').forEach(ifr=>{
+      try{
+        const w = ifr.contentWindow; const d = ifr.contentDocument;
+        if (!d) return;
+        if (w.__dmsHooked) return; w.__dmsHooked = true;
+        if (d.readyState !== 'complete') ifr.addEventListener('load', ()=>hookWindow(w), {once:true});
+        else hookWindow(w);
+      }catch(e){ /* iframe cross-origin, non gestibile */ }
     });
   }
-
-  // 1) al DOM pronto
-  const onReady = () => rewire(document);
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', onReady, {once:true});
-  } else { onReady(); }
-
-  // 2) retry perché l'orologio potrebbe montare dopo
-  setTimeout(()=>rewire(document), 250);
-  setTimeout(()=>rewire(document), 1000);
-
-  // 3) osserva aggiunte dinamiche (schede, popover, ecc.)
-  const mo = new MutationObserver(muts=>{
-    for (const m of muts) {
-      m.addedNodes.forEach(n => { if (n.nodeType===1) rewire(n); });
-    }
-  });
-  mo.observe(document.documentElement, {childList:true, subtree:true});
-
-  // esponi per debug
-  window.openDMSPDF = openPdf;
-  window._dmsRewirePdf = () => rewire(document);
+  hookAllIframes();
+  new MutationObserver(()=>hookAllIframes()).observe(document.documentElement, {childList:true, subtree:true});
 })();
 </script>
 
