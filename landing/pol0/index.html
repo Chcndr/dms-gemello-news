@@ -28,15 +28,15 @@
       background:rgba(11,59,62,.96);z-index:50;padding:env(safe-area-inset-top) env(safe-area-inset-right)
       calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left)}
     .lightbox.on{display:flex}
-    .frame{width:100vw;height:100vh;position:relative;display:flex;align-items:center;justify-content:center;padding:2rem}
-    .frame img{width:calc(100% - 4rem);height:calc(100% - 4rem);object-fit:cover;border-radius:14px;box-shadow:var(--shadow);
+    .frame{max-width:min(96vw,1600px);max-height:calc(100dvh - 100px);position:relative;display:flex;align-items:center;justify-content:center}
+    .frame img{max-width:100%;max-height:calc(100vh - 2rem);height:auto;width:auto;object-fit:contain;border-radius:14px;box-shadow:var(--shadow);
       transform-origin:center center;transition:transform .2s ease}
-    .ui{position:absolute;left:0;right:0;bottom:1rem;display:flex;gap:8px;justify-content:center;z-index:10}
+    .ui{position:absolute;left:0;right:0;bottom:-48px;display:flex;gap:8px;justify-content:center}
     .btn{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);
       padding:8px 12px;border-radius:10px;cursor:pointer}
-    .x{position:absolute;top:1rem;right:1rem;z-index:10}
-    .navL,.navR{position:absolute;top:50%;transform:translateY(-50%);font-size:22px;z-index:10}
-    .navL{left:1rem}.navR{right:1rem}
+    .x{position:absolute;top:-44px;right:0}
+    .navL,.navR{position:absolute;top:50%;transform:translateY(-50%);font-size:22px}
+    .navL{left:-42px}.navR{right:-42px}
     .hint{position:fixed;left:12px;bottom:10px;color:var(--muted);font-size:12px;opacity:.85}
     a{color:var(--accent);text-decoration:none}
     /* niente flash della griglia durante il boot */
@@ -80,15 +80,16 @@
   <div class="hint">Gesti: swipe ◀ ▶ per cambiare, doppio tap per zoom. Esc per chiudere.</div>
 
   <script>
-    // Elenco slide
+    // Elenco slide - ordine logico corretto
     const slides = [
-      {file:'slide-01-emergenza-commercio.jpg?v=pol0-lock3',  title:'Emergenza Commercio — Visione DMS'},
-      {file:'slide-02-dms-gemello-digitale.jpg?v=pol0-lock3', title:'DMS — Gemello Digitale del Commercio'},
-      {file:'slide-03-governance-bandi-bolkestein.jpg?v=pol0-lock3', title:'Governance • Bandi • Criteri Bolkestein'},
-      {file:'slide-04-carbon-credit-doganale.jpg?v=pol0-lock3', title:'Crediti di Carbonio — univoco doganale'},
-      {file:'slide-05-indicatori-economici.jpg?v=pol0-lock3', title:'Indicatori economici: Stato • Imprese • Cittadini'},
-      {file:'slide-06-dms-al-centro.jpg?v=pol0-lock3', title:'DMS al centro di tutto — interoperabilità'},
-      {file:'slide-07-gis-del-commercio.jpg?v=pol0-lock3', title:'GIS del Commercio — digitalizza → connette → abilita'}
+      {file:'slide-01-emergenza-commercio.jpg?v=pol0-lock5',  title:'Emergenza Commercio — Visione DMS'},
+      {file:'slide-02-new.jpg?v=pol0-lock5', title:'Gettito Progressivo — Strategia Carbon Credit'},
+      {file:'slide-03-new.jpg?v=pol0-lock5', title:'Redistribuzione Benefici — Famiglia Italiana'},
+      {file:'slide-04-new.jpg?v=pol0-lock5', title:'Impatti Economici — PMI e Posti Lavoro'},
+      {file:'slide-05-new.jpg?v=pol0-lock5', title:'Timeline Implementazione — DMS + UE'},
+      {file:'slide-06-new.jpg?v=pol0-lock5', title:'Confronto Scenari — Attuale vs DMS 2030'},
+      {file:'slide-07-new.jpg?v=pol0-lock5', title:'DMS — Gemello Digitale del Commercio'},
+      {file:'slide-08-new.jpg?v=pol0-lock5', title:'Governance • Bandi • Criteri Bolkestein'}
     ];
     // index.html sta in /landing/pol0 → risalgo di 2 cartelle
     const base = '../../assets/pol0/';
