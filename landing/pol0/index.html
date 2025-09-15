@@ -255,9 +255,9 @@
     // Monta il lightbox dopo aver creato la griglia
     window.addEventListener('DOMContentLoaded', () => LB.mount());
     
-    // Apertura immediata slide 1
+    // Apertura immediata slide 1 (rossa)
     window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => { openLightbox(0); }, 100);
+      setTimeout(() => { LB.open(0); }, 150);
     });
   </script>
 </body>
