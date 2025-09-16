@@ -309,6 +309,45 @@
   } catch(_) {}
 })();
 </script>
+
+<script>
+/* — Anti tasto destro / salva / ispeziona — */
+(function(){
+  const msg = document.getElementById('print-block'); // riuso del messaggio
+  const show = (text) => {
+    if (!msg) return;
+    const old = msg.textContent;
+    if (text) msg.textContent = text;
+    msg.style.display = 'flex';
+    setTimeout(()=>{ msg.style.display='none'; if (text) msg.textContent = old; }, 1800);
+  };
+  const kill = e => { e.preventDefault(); e.stopPropagation(); return false; };
+
+  // Blocca menu contestuale e selezione/drag immagini
+  document.addEventListener('contextmenu', e => { show('Azione disabilitata.'); return kill(e); }, {capture:true});
+  document.addEventListener('selectstart', kill, {capture:true});
+  document.addEventListener('dragstart', kill, {capture:true});
+
+  // Blocca combinazioni comuni (salva, sorgente, devtools)
+  document.addEventListener('keydown', e => {
+    const k = e.key?.toLowerCase();
+    const meta = e.ctrlKey || e.metaKey;
+    if (meta && (k === 's' || k === 'u' || k === 'o')) { show('Azione disabilitata.'); return kill(e); }
+    if (k === 'f12' || (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k))) { show('Azione disabilitata.'); return kill(e); }
+  }, {capture:true});
+
+  // iOS: gesture share/quick-actions su immagini
+  ['touchstart','gesturestart'].forEach(ev => {
+    document.addEventListener(ev, e => {
+      if (e.target.closest('img, video, canvas')) { e.preventDefault(); }
+    }, {passive:false});
+  });
+
+  // Piccolo rinforzo CSS runtime (niente selezione)
+  document.documentElement.style.setProperty('user-select','none');
+  document.documentElement.style.setProperty('-webkit-user-select','none');
+})();
+</script>
 </body>
 </html>
 
