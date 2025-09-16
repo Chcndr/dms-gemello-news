@@ -1,0 +1,31 @@
+name: Cleanup whitelist
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # ogni 10 min
+  workflow_dispatch:
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Purge expired
+        run: |
+          node -e '
+          const fs=require("fs");
+          const p="landing/viewer/whitelist.json";
+          if(!fs.existsSync(p)) process.exit(0);
+          const d=JSON.parse(fs.readFileSync(p,"utf8"));
+          const now=new Date().toISOString();
+          const before=d.sessions.length;
+          d.sessions=d.sessions.filter(s=>s.expires>now);
+          if(d.sessions.length!==before){
+            fs.writeFileSync(p, JSON.stringify(d,null,2));
+            console.log("Removed expired:", before-d.sessions.length);
+          } else { console.log("No changes"); }
+          '
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(auth): cleanup expired sessions"
+          file_pattern: "landing/viewer/whitelist.json"
+
