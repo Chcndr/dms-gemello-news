@@ -619,6 +619,7 @@ body.modal-open{ overflow:hidden; touch-action:none; }
       poster="/dms-gemello-news/assets/poster-hero.jpg?v=stable-news-001"
       style="cursor: pointer;"
       onloadstart="this.muted=false; this.volume=0.8;"
+      onloadedmetadata="this.currentTime=2;"
       onmouseover="this.setAttribute('controls', 'controls');"
       onmouseleave="setTimeout(() => { if (!this.paused) this.removeAttribute('controls'); }, 2000);"></video>
     
@@ -1089,6 +1090,20 @@ document.addEventListener('click', function(e){
     // Configura audio per quando l'utente avvia manualmente
     video.muted = false;
     video.volume = 0.8;
+    
+    // Mostra anteprima al secondo 2 quando i metadata sono caricati
+    const showPreview = () => {
+      if (video.readyState >= 1) { // HAVE_METADATA
+        video.currentTime = 2; // Mostra frame al secondo 2
+        console.log('🎬 Anteprima video impostata al secondo 2');
+      }
+    };
+    
+    // Prova a impostare l'anteprima
+    video.addEventListener('loadedmetadata', showPreview);
+    if (video.readyState >= 1) {
+      showPreview(); // Se già caricato
+    }
     
     // Forza audio su primo click/touch del video
     const enableAudioOnPlay = () => {
