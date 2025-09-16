@@ -1879,6 +1879,23 @@ function applyMinisterHighlight(mKey){
 })();
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // elimina text-node "orfani" tipo );, });, ecc. fuori da <script>/<style>
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const kill = [];
+  while (walker.nextNode()) {
+    const t = walker.currentNode;
+    if (!t.nodeValue) continue;
+    const s = t.nodeValue.trim();
+    const looksLikeCode = /^[()\{\}\[\];]+$/.test(s) || /^(?:\}\)\;|\)\;|\}\;)$/.test(s);
+    const insideCode = t.parentElement && (t.parentElement.closest('script,style'));
+    if (looksLikeCode && !insideCode) kill.push(t);
+  }
+  kill.forEach(n => n.remove());
+});
+</script>
+
 <!-- Cache refresh fix -->
 </body>
 </html>
