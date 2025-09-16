@@ -615,11 +615,10 @@ body.modal-open{ overflow:hidden; touch-action:none; }
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
     <video id="heroVideo" src="/dms-gemello-news/videos/video-hero.mp4?v=stable-news-001"
-      playsinline webkit-playsinline preload="metadata" autoplay loop controls
+      playsinline webkit-playsinline preload="metadata" loop controls
       poster="/dms-gemello-news/assets/poster-hero.jpg?v=stable-news-001"
       style="cursor: pointer;"
       onloadstart="this.muted=false; this.volume=0.8;"
-      oncanplay="this.muted=false; this.play();"
       onmouseover="this.setAttribute('controls', 'controls');"
       onmouseleave="setTimeout(() => { if (!this.paused) this.removeAttribute('controls'); }, 2000);"></video>
     
@@ -1084,76 +1083,23 @@ document.addEventListener('click', function(e){
     openPanelByIndex(i, accent, null); 
   }
 
-  // FORCE AUTOPLAY + AUDIO - Gestione aggressiva per Safari/iOS
+  // VIDEO SETUP - Solo configurazione, NO autoplay
   const video = document.getElementById('heroVideo');
   if (video) {
-    // Rimuovi muted dall'HTML e forza audio
+    // Configura audio per quando l'utente avvia manualmente
     video.muted = false;
     video.volume = 0.8;
     
-    // Prova autoplay immediato con audio
-    const tryAutoplayWithAudio = () => {
+    // Forza audio su primo click/touch del video
+    const enableAudioOnPlay = () => {
       video.muted = false;
       video.volume = 0.8;
-      
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          console.log('✅ Autoplay riuscito con audio');
-          // Assicurati che l'audio sia attivo
-          if (video.muted) {
-            video.muted = false;
-            video.volume = 0.8;
-          }
-        }).catch(() => {
-          console.log('⚠️ Autoplay con audio bloccato, forzo comunque');
-          // Forza play anche se bloccato
-          setTimeout(() => {
-            video.muted = false;
-            video.volume = 0.8;
-            video.play().catch(() => {
-              // Ultimo tentativo con user interaction
-              console.log('❌ Serve interazione utente per audio');
-            });
-          }, 100);
-        });
-      }
-    };
-
-    // Prova su tutti gli eventi possibili
-    video.addEventListener('loadeddata', tryAutoplayWithAudio);
-    video.addEventListener('canplay', tryAutoplayWithAudio);
-    video.addEventListener('loadedmetadata', tryAutoplayWithAudio);
-    
-    // Forza audio su primo click/touch
-    const forceAudioOnInteraction = () => {
-      video.muted = false;
-      video.volume = 0.8;
-      video.play();
-      console.log('🔊 Audio forzato su interazione utente');
+      console.log('🔊 Audio attivato su play manuale');
     };
     
-    document.addEventListener('click', forceAudioOnInteraction, { once: true });
-    document.addEventListener('touchstart', forceAudioOnInteraction, { once: true });
-    document.addEventListener('touchend', forceAudioOnInteraction, { once: true });
-    
-    // Prova immediata se video già pronto
-    if (video.readyState >= 2) {
-      tryAutoplayWithAudio();
-    }
-    
-    // Forza ogni secondo per i primi 5 secondi
-    let attempts = 0;
-    const forceInterval = setInterval(() => {
-      if (video.paused && attempts < 5) {
-        video.muted = false;
-        video.volume = 0.8;
-        video.play().catch(() => {});
-        attempts++;
-      } else {
-        clearInterval(forceInterval);
-      }
-    }, 1000);
+    video.addEventListener('play', enableAudioOnPlay);
+    video.addEventListener('click', enableAudioOnPlay);
+    video.addEventListener('touchstart', enableAudioOnPlay);
   }
 })();
   </script>
