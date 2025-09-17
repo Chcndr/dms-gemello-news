@@ -1,0 +1,11 @@
+- name: type:feat
+  color: 1d76db
+- name: type:fix
+  color: d73a4a
+- name: status:needs-review
+  color: fbca04
+- name: status:ready-to-merge
+  color: 0e8a16
+- name: priority:high
+  color: b60205
+
