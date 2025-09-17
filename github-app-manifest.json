@@ -1,0 +1,25 @@
+{
+  "name": "dms-gpt-agent",
+  "url": "https://chcndr.github.io/dms-gemello-news",
+  "hook_attributes": { 
+    "url": "https://dms-mcp-connector.manus.space/github-webhook" 
+  },
+  "redirect_url": "https://dms-mcp-connector.manus.space/oauth/callback",
+  "public": false,
+  "default_permissions": {
+    "contents": "write",
+    "pull_requests": "write",
+    "issues": "read",
+    "metadata": "read",
+    "statuses": "write",
+    "actions": "write"
+  },
+  "default_events": [
+    "push",
+    "pull_request", 
+    "workflow_run",
+    "issues",
+    "issue_comment"
+  ]
+}
+
