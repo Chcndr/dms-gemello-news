@@ -409,9 +409,9 @@ addEventListener('click', function (e) {
   <!-- Layers -->
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
-    <video id="heroVideo" src="/dms-gemello-news/videos/video-hero.mp4"
+    <video id="heroVideo" src="../videos/video-hero.mp4"
       muted playsinline webkit-playsinline preload="metadata" autoplay loop
-      poster="/dms-gemello-news/assets/poster-hero.jpg"></video>
+      poster="../assets/poster-hero.jpg"></video>
     
     <!-- PANEL dentro lo stesso viewport del video -->
     <!-- MOD-00 START -->
@@ -870,6 +870,7 @@ document.addEventListener('click', function(e){
   }
 })();
   </script>
+<script defer src="assets/js/path-hotfix.js?v=finale-002"></script>
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
 </body>
 </html>
