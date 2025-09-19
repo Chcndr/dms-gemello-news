@@ -903,103 +903,46 @@ addEventListener('click', function (e) {
 
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
 
-<!-- Script per aprire PDF in modal interno -->
+<!-- Script shim robusto per PDF e pagine HTML -->
 <script>
 (function(){
-  // Crea modal per PDF
-  function createPDFModal(viewerUrl) {
-    // Rimuovi modal esistente se presente
-    const existingModal = document.getElementById('pdf-modal');
-    if (existingModal) existingModal.remove();
-    
-    // Crea modal
-    const modal = document.createElement('div');
-    modal.id = 'pdf-modal';
-    modal.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-    `;
-    
-    // Crea header con pulsante chiudi
-    const header = document.createElement('div');
-    header.style.cssText = `
-      background: #1a1a1a;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #333;
-    `;
-    
-    const title = document.createElement('span');
-    title.textContent = 'Visualizzatore PDF';
-    title.style.color = '#fff';
-    
-    const closeBtn = document.createElement('button');
-    closeBtn.textContent = '✕ Chiudi';
-    closeBtn.style.cssText = `
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-    `;
-    closeBtn.onclick = () => modal.remove();
-    
-    header.appendChild(title);
-    header.appendChild(closeBtn);
-    
-    // Crea iframe per il viewer
-    const iframe = document.createElement('iframe');
-    iframe.src = viewerUrl;
-    iframe.style.cssText = `
-      flex: 1;
-      border: none;
-      width: 100%;
-      background: #000;
-    `;
-    
-    modal.appendChild(header);
-    modal.appendChild(iframe);
-    document.body.appendChild(modal);
-    
-    // Chiudi con ESC
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') {
-        modal.remove();
-        document.removeEventListener('keydown', handleEsc);
-      }
-    };
-    document.addEventListener('keydown', handleEsc);
-  }
-  
-  // Intercetta click sui PDF
+  // Regole:
+  // - Se <a> ha data-pdf="…", apri QUEL PDF in viewer nero.
+  // - Altrimenti, se href termina con .pdf, apri in viewer nero.
+  // - Altrimenti, lascia passare (pagine HTML normali).
+
+  var VIEWER = 'landing/pdfjs-lite/';
+
   function toViewer(url){
     var sep = url.indexOf('?')>-1 ? '&' : '?';
-    var cb = '_cb=' + Date.now().toString(36);
-    return '/dms-gemello-news/landing/pdfjs-lite/?src=' + encodeURIComponent(url + sep + cb) + '&v=finale-009';
+    var cb  = '_cb=' + Date.now().toString(36);
+    return VIEWER + '?src=' + encodeURIComponent(url + sep + cb) + '&v=finale-010';
   }
-  
+
   document.addEventListener('click', function(e){
     var a = e.target.closest('a');
     if(!a) return;
-    var href = a.getAttribute('href') || '';
-    if(/\.pdf(\?|#|$)/i.test(href)){
+
+    // 1) data-pdf ha priorità: forza l'apertura del PDF indicato
+    var dataPdf = a.getAttribute('data-pdf');
+    if (dataPdf) {
       e.preventDefault();
-      var url = a.href;
-      if(!/pdfjs-lite\/\?src=/i.test(url)){
-        var viewer = toViewer(href);
-        createPDFModal(viewer);
-      }
+      var url = toViewer(dataPdf);
+      (a.target === '_blank') ? window.open(url, '_blank', 'noopener') : (window.location.href = url);
+      return;
     }
+
+    // 2) href che punta direttamente a un PDF
+    var href = a.getAttribute('href') || '';
+    if (/\.pdf(\?|#|$)/i.test(href)) {
+      e.preventDefault();
+      var abs = a.href; // assolutizza se relativo
+      var url = toViewer(abs);
+      (a.target === '_blank') ? window.open(url, '_blank', 'noopener') : (window.location.href = url);
+      return;
+    }
+
+    // 3) Tutto il resto (HTML, /pol0/, /spot.html, ecc.) passa liscio
   }, true);
 })();
 </script>
