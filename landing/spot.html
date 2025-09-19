@@ -1774,6 +1774,35 @@ function applyMinisterHighlight(mKey){
 })();
 </script>
 
+<!-- Script shim per forzare apertura PDF tramite viewer interno -->
+<script>
+(function(){
+  // Qualsiasi <a> che punti a un .pdf viene reindirizzato al viewer PDF.js Lite
+  function toViewer(url){
+    // Mantiene query esistente e aggiunge cache-buster
+    var sep = url.indexOf('?')>-1 ? '&' : '?';
+    var cb = '_cb=' + Date.now().toString(36);
+    return 'pdfjs-lite/?src=' + encodeURIComponent(url + sep + cb) + '&v=finale-006';
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a');
+    if(!a) return;
+    var href = a.getAttribute('href') || '';
+    if(/\.pdf(\?|#|$)/i.test(href)){
+      e.preventDefault();
+      var url = a.href; // assolutizza
+      // se l'href non è già il viewer, reindirizza
+      if(!/pdfjs-lite\/\?src=/i.test(url)){
+        var viewer = toViewer(href);
+        // apre come voleva l'utente (stessa scheda o nuova)
+        if(a.target === '_blank') window.open(viewer, '_blank', 'noopener');
+        else window.location.href = viewer;
+      }
+    }
+  }, true);
+})();
+</script>
+
 </body>
 </html>
 
