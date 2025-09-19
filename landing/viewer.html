@@ -21,6 +21,18 @@
       height:100%;
       border:0;
       background:#000;              /* nero sotto il PDF */
+      user-select: none;            /* blocca selezione */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      pointer-events: auto;
+    }
+    /* Blocca selezione globale */
+    * {
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
     }
   </style>
   
@@ -40,6 +52,11 @@
           e.preventDefault(); e.stopPropagation();
           alert('Stampa disabilitata.');
         }
+        // Blocca scorciatoie download (Ctrl+S, Ctrl+Shift+S)
+        if ((e.ctrlKey || e.metaKey) && (k === 's' || e.keyCode === 83)) {
+          e.preventDefault(); e.stopPropagation();
+          alert('Download disabilitato.');
+        }
       });
       // Disattiva menu tasto destro
       document.addEventListener('contextmenu', e => e.preventDefault());
@@ -48,6 +65,11 @@
         document.body.innerHTML = '';
         setTimeout(() => location.replace('about:blank'), 0);
       };
+      // Blocca drag & drop
+      document.addEventListener('dragstart', e => e.preventDefault());
+      document.addEventListener('drop', e => e.preventDefault());
+      // Disabilita selezione testo
+      document.addEventListener('selectstart', e => e.preventDefault());
     })();
   </script>
 </head>
