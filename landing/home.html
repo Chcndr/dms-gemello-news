@@ -944,46 +944,50 @@ addEventListener('click', function (e) {
     if (VERBOSE) console.log('[PDF ENFORCER] rewrite', href, '→', v);
   }
 
-  function scan(root){
-    (root.querySelectorAll ? root.querySelectorAll('a[href]') : []).forEach(rewriteAnchor);
-  }
-
-  // Prima passata quando il DOM è pronto
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){ scan(document); });
-  } else {
-    scan(document);
-  }
-
-  // Osserva aggiunte/modifiche future (es. Orologio che inietta link dopo)
-  var mo = new MutationObserver(function(muts){
-    muts.forEach(function(m){
-      if (m.type === 'childList') {
-        m.addedNodes.forEach(function(n){
-          if (n.nodeType === 1) {
-            if (n.matches && n.matches('a[href]')) rewriteAnchor(n);
-            scan(n);
-          }
-        });
-      } else if (m.type === 'attributes' && m.target && m.target.matches && m.target.matches('a[href]')) {
-        rewriteAnchor(m.target);
-      }
-    });
-  });
-  mo.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:['href'] });
-
-  // (Facoltativo) Ultima rete di sicurezza: intercetta click residui
+  // EVENT DELEGATION - Intercetta TUTTI i click sui PDF (più robusto)
   document.addEventListener('click', function(e){
     var a = e.target.closest ? e.target.closest('a[href]') : null;
     if(!a) return;
+    
     var href = a.getAttribute('href') || '';
-    // Se è ancora un .pdf diretto (non riscritto per qualche motivo), forza qui
-    if (isPdfHref(href) && !/\/pdfjs-lite\/\?src=/i.test(href)){
+    
+    // Se è un PDF → forza sempre il viewer
+    if (isPdfHref(href)) {
       e.preventDefault();
-      var v = toViewer(a.href);
-      window.open(v, a.getAttribute('target')==='_blank' ? '_blank' : '_self', 'noopener');
+      e.stopPropagation();
+      
+      var abs = a.href;  // URL assoluto
+      var v = toViewer(abs);
+      
+      if (VERBOSE) console.log('[PDF ENFORCER] click intercept', href, '→', v);
+      
+      // Apri nel viewer (sempre nuova scheda per compatibilità iOS)
+      window.open(v, '_blank', 'noopener');
+      return false;
     }
   }, true);
+
+  // Scansione iniziale per riscrivere href esistenti (opzionale, per debug)
+  function scanAndRewrite(){
+    document.querySelectorAll('a[href]').forEach(function(a){
+      var href = a.getAttribute('href') || '';
+      if (isPdfHref(href) && !a.dataset[MARKER]) {
+        var abs = a.href;
+        var v = toViewer(abs);
+        a.dataset.originalHref = href;
+        a.setAttribute('href', v);
+        a.dataset[MARKER] = '1';
+        if (VERBOSE) console.log('[PDF ENFORCER] rewrite', href, '→', v);
+      }
+    });
+  }
+
+  // Esegui scansione quando DOM è pronto
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scanAndRewrite);
+  } else {
+    scanAndRewrite();
+  }
 
   // Beacon di presenza per debug visivo rapido (disattiva dopo i test)
   if (VERBOSE) {
