@@ -902,26 +902,97 @@ addEventListener('click', function (e) {
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
 
 <script>
+/* PDF VIEWER ENFORCER – v=f006-rewrite */
 (function(){
-  var VIEWER = 'landing/pdfjs-lite/';
-  function toViewer(url){
-    var sep = url.indexOf('?')>-1 ? '&' : '?';
-    return VIEWER + '?src=' + encodeURIComponent(url + sep + '_cb=' + Date.now().toString(36)) + '&v=finale-006';
+  var VIEWER_PATH = 'landing/pdfjs-lite/';                 // percorso viewer interno
+  var VERSION     = 'finale-006';                          // per cache-busting coerente
+  var MARKER      = 'pdfjs-enforced';                      // flag per idempotenza
+  var VERBOSE     = true;                                  // true per log
+
+  function toViewer(urlAbs){
+    try{
+      var u = new URL(urlAbs, location.href);
+      // evita doppi passaggi se già nel viewer
+      if (u.pathname.replace(/\/+$/,'').endsWith('/'+VIEWER_PATH.replace(/\/+$/,''))) return urlAbs;
+      // cache buster coerente
+      var pdfUrl = u.href + (u.search ? '&' : '?') + '_cb=' + Date.now().toString(36);
+      return VIEWER_PATH + '?src=' + encodeURIComponent(pdfUrl) + '&v=' + VERSION;
+    }catch(e){ return urlAbs; }
   }
-  document.addEventListener('click', function(e){
-    var a = e.target.closest('a'); if(!a) return;
+
+  function isPdfHref(href){
+    if (!href) return false;
+    // riconosce .pdf anche con query/hash
+    return /\.pdf(\?|#|$)/i.test(href);
+  }
+
+  function rewriteAnchor(a){
+    if (!a || a.dataset && a.dataset[MARKER]) return;
     var href = a.getAttribute('href') || '';
-    // Se il link punta ad un PDF → apri nel viewer nero
-    if (/\.pdf(\?|#|$)/i.test(href)) {
+    if (!isPdfHref(href)) return;
+
+    // calcola assoluto, costruisce viewer e riscrive href
+    var abs = a.href;                      // assolutizza rispetto alla pagina
+    var v   = toViewer(abs);
+    a.dataset.originalHref = href;         // per debug eventuale
+    a.setAttribute('href', v);
+    a.dataset[MARKER] = '1';
+    // opzionale: assicura new tab (su iOS evita handler strani del viewer nativo)
+    if (!a.hasAttribute('target')) a.setAttribute('target','_blank');
+    a.setAttribute('rel','noopener');
+
+    if (VERBOSE) console.log('[PDF ENFORCER] rewrite', href, '→', v);
+  }
+
+  function scan(root){
+    (root.querySelectorAll ? root.querySelectorAll('a[href]') : []).forEach(rewriteAnchor);
+  }
+
+  // Prima passata quando il DOM è pronto
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ scan(document); });
+  } else {
+    scan(document);
+  }
+
+  // Osserva aggiunte/modifiche future (es. Orologio che inietta link dopo)
+  var mo = new MutationObserver(function(muts){
+    muts.forEach(function(m){
+      if (m.type === 'childList') {
+        m.addedNodes.forEach(function(n){
+          if (n.nodeType === 1) {
+            if (n.matches && n.matches('a[href]')) rewriteAnchor(n);
+            scan(n);
+          }
+        });
+      } else if (m.type === 'attributes' && m.target && m.target.matches && m.target.matches('a[href]')) {
+        rewriteAnchor(m.target);
+      }
+    });
+  });
+  mo.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:['href'] });
+
+  // (Facoltativo) Ultima rete di sicurezza: intercetta click residui
+  document.addEventListener('click', function(e){
+    var a = e.target.closest ? e.target.closest('a[href]') : null;
+    if(!a) return;
+    var href = a.getAttribute('href') || '';
+    // Se è ancora un .pdf diretto (non riscritto per qualche motivo), forza qui
+    if (isPdfHref(href) && !/\/pdfjs-lite\/\?src=/i.test(href)){
       e.preventDefault();
-      var abs = a.href;                      // URL assoluto
-      var url = toViewer(abs);               // passa dal viewer
-      (a.target === '_blank')
-        ? window.open(url, '_blank', 'noopener')
-        : (window.location.href = url);
+      var v = toViewer(a.href);
+      window.open(v, a.getAttribute('target')==='_blank' ? '_blank' : '_self', 'noopener');
     }
-    // Le pagine HTML passano liscio
   }, true);
+
+  // Beacon di presenza per debug visivo rapido (disattiva dopo i test)
+  if (VERBOSE) {
+    var b = document.createElement('div');
+    b.textContent = 'PDF ENFORCER ' + VERSION;
+    Object.assign(b.style,{position:'fixed',bottom:'6px',left:'6px',padding:'4px 6px',font:'11px/1.2 monospace',
+      color:'#9cf',background:'#102030',border:'1px solid #214',borderRadius:'6px',zIndex:2147483647,opacity:.9});
+    document.body.appendChild(b);
+  }
 })();
 </script>
 </body>
