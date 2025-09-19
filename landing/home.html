@@ -825,18 +825,9 @@ addEventListener('click', function (e) {
         data.pdfs.forEach((pdf, idx) => {
           const btn = document.createElement('a');
           btn.className = 'btn btn--accent action';
-          
-          // Gestisci il prefisso data-pdf:
-          if(pdf.file.startsWith('data-pdf:')) {
-            const pdfPath = pdf.file.replace('data-pdf:', '');
-            btn.href = '#'; // href placeholder
-            btn.setAttribute('data-pdf', pdfPath);
-          } else {
-            btn.href = pdf.file;
-            btn.target = '_blank';
-            btn.rel = 'noopener';
-          }
-          
+          btn.href = pdf.file;
+          btn.target = '_blank';
+          btn.rel = 'noopener';
           btn.textContent = pdf.label;
           actionsDiv.insertBefore(btn, closeBtn);
         });
