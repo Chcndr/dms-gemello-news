@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DMS Viewer</title>
+  
+  <!-- Patch anti-stampa: Forza sfondo NERO a tutta pagina -->
+  <style>
+    html, body {
+      background:#000 !important;   /* forza il nero */
+      color:#fff;
+      height:100%;
+      margin:0;
+    }
+    /* il contenitore/iframe del documento */
+    #frame, .viewer-frame {
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      border:0;
+      background:#000;              /* nero sotto il PDF */
+    }
+  </style>
+  
+  <!-- Anti-stampa "duro" (CSS + JS) -->
+  <style>
+    /* Niente stampa: pagina vuota */
+    @media print {
+      * { display:none !important; }
+    }
+  </style>
+  <script>
+    (function(){
+      // Blocca scorciatoie stampa
+      document.addEventListener('keydown', function(e){
+        const k = (e.key||'').toLowerCase();
+        if ((e.ctrlKey || e.metaKey) && (k === 'p' || e.keyCode === 80)) {
+          e.preventDefault(); e.stopPropagation();
+          alert('Stampa disabilitata.');
+        }
+      });
+      // Disattiva menu tasto destro
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      // Se parte la stampa (hook browser), svuota pagina
+      window.onbeforeprint = () => {
+        document.body.innerHTML = '';
+        setTimeout(() => location.replace('about:blank'), 0);
+      };
+    })();
+  </script>
+</head>
+<body>
+  <!-- Iframe per il caricamento del PDF -->
+  <iframe id="frame" class="viewer-frame" allowfullscreen></iframe>
+  
+  <!-- Script per caricamento da query ?src=... -->
+  <script>
+    const params = new URLSearchParams(location.search);
+    const src = params.get('src');
+    if (src) document.getElementById('frame').src = src;
+  </script>
+</body>
+</html>
