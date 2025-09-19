@@ -21,117 +21,143 @@
 <div id="error" style="display:none">Errore nel caricamento del PDF</div>
 <div id="wrap"></div>
 
-<!-- PDF.js core (CDN) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js" crossorigin="anonymous"></script>
+<!-- Prova multipli CDN per PDF.js -->
 <script>
 (async function(){
-  try {
-    const qs=new URLSearchParams(location.search);
-    const src=(qs.get('src')||'').trim();
-    
-    if(!src){
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('error').innerHTML = 'Nessun file specificato. Usa: <code>?src=path/file.pdf</code>';
-      document.getElementById('error').style.display = 'block';
-      return;
-    }
-    
-    // Costruisci URL assoluto
-    const baseUrl = window.location.origin + '/dms-gemello-news/';
-    let pdfUrl;
-    if(src.startsWith('http')) {
-      pdfUrl = src;
-    } else if(src.startsWith('/')) {
-      pdfUrl = window.location.origin + src;
-    } else {
-      pdfUrl = baseUrl + src;
-    }
-    
-    console.log('Caricamento PDF da:', pdfUrl);
-    document.getElementById('open-ext').href = pdfUrl;
-
-    // Cache-buster
-    const cb = Date.now().toString(36);
-    const finalUrl = pdfUrl + (pdfUrl.includes('?')?'&':'?') + '_cb='+cb;
-
-    const wrap=document.getElementById('wrap');
-    const loading=document.getElementById('loading');
-    const error=document.getElementById('error');
-
-    // Verifica che PDF.js sia caricato
-    if(typeof pdfjsLib === 'undefined') {
-      throw new Error('PDF.js non caricato');
-    }
-
-    // PDF.js config
-    const ver = '4.5.136';
-    const CMAP_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${ver}/cmaps/`;
-    const STANDARD_FONT_DATA_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${ver}/standard_fonts/`;
-
-    console.log('Inizializzazione PDF.js...');
-    const doc = await pdfjsLib.getDocument({
-      url: finalUrl,
-      cMapUrl: CMAP_URL, 
-      cMapPacked: true,
-      standardFontDataUrl: STANDARD_FONT_DATA_URL
-    }).promise;
-
-    console.log('PDF caricato, pagine:', doc.numPages);
-    loading.style.display = 'none';
-
-    // Render pagine
-    const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    for(let p=1; p<=doc.numPages; p++){
-      console.log('Rendering pagina', p);
-      const page = await doc.getPage(p);
-      
-      const baseViewport = page.getViewport({ scale: 1 });
-      const containerWidth = Math.min(document.documentElement.clientWidth - 40, 1200);
-      const scale = (containerWidth / baseViewport.width) * DPR;
-
-      const viewport = page.getViewport({ scale });
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d', { alpha:false });
-      
-      canvas.width  = Math.floor(viewport.width);
-      canvas.height = Math.floor(viewport.height);
-      canvas.style.width = (canvas.width / DPR) + 'px';
-      canvas.style.height = (canvas.height / DPR) + 'px';
-
-      wrap.appendChild(canvas);
-      await page.render({ canvasContext: ctx, viewport }).promise;
-      console.log('Pagina', p, 'renderizzata');
-    }
-
-    console.log('Tutte le pagine renderizzate');
-
-  } catch(err) {
-    console.error('Errore PDF.js:', err);
+  const qs=new URLSearchParams(location.search);
+  const src=(qs.get('src')||'').trim();
+  
+  if(!src){
     document.getElementById('loading').style.display = 'none';
-    document.getElementById('error').innerHTML = 'Errore: ' + err.message;
+    document.getElementById('error').innerHTML = 'Nessun file specificato. Usa: <code>?src=path/file.pdf</code>';
     document.getElementById('error').style.display = 'block';
+    return;
+  }
+  
+  // Costruisci URL assoluto
+  const baseUrl = window.location.origin + '/dms-gemello-news/';
+  let pdfUrl;
+  if(src.startsWith('http')) {
+    pdfUrl = src;
+  } else if(src.startsWith('/')) {
+    pdfUrl = window.location.origin + src;
+  } else {
+    pdfUrl = baseUrl + src;
+  }
+  
+  console.log('Caricamento PDF da:', pdfUrl);
+  document.getElementById('open-ext').href = pdfUrl;
+
+  const wrap=document.getElementById('wrap');
+  const loading=document.getElementById('loading');
+  const error=document.getElementById('error');
+
+  // Prova a caricare PDF.js da diversi CDN
+  const cdnUrls = [
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+    'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js',
+    'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js'
+  ];
+
+  let pdfjsLib = null;
+  
+  for(const url of cdnUrls) {
+    try {
+      console.log('Tentativo caricamento PDF.js da:', url);
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.onload = resolve;
+        script.onerror = reject;
+        script.src = url;
+        document.head.appendChild(script);
+      });
+      
+      if(window.pdfjsLib) {
+        pdfjsLib = window.pdfjsLib;
+        console.log('PDF.js caricato con successo da:', url);
+        break;
+      }
+    } catch(e) {
+      console.warn('Fallito caricamento da:', url, e);
+    }
   }
 
-  // Protezioni anti-stampa
-  document.addEventListener('contextmenu', e=>e.preventDefault(), true);
-  document.addEventListener('keydown', e=>{
-    const k=(e.key||'').toLowerCase();
-    if((e.ctrlKey||e.metaKey)&&(k==='p'||e.keyCode===80)){
-      e.preventDefault(); e.stopPropagation();
-      alert('Stampa disabilitata.');
-      return false;
-    }
-    if((e.ctrlKey||e.metaKey)&&(k==='s'||e.keyCode===83)){
-      e.preventDefault(); e.stopPropagation();
-      alert('Salvataggio disabilitato.');
-      return false;
-    }
-  }, true);
+  if(!pdfjsLib) {
+    throw new Error('Impossibile caricare PDF.js da nessun CDN');
+  }
+
+  // Cache-buster
+  const cb = Date.now().toString(36);
+  const finalUrl = pdfUrl + (pdfUrl.includes('?')?'&':'?') + '_cb='+cb;
+
+  console.log('Inizializzazione PDF.js...');
   
-  window.onbeforeprint=()=>{ 
-    document.body.innerHTML='<div style="color:#fff;padding:50px;text-align:center">Stampa non disponibile</div>'; 
-  };
-})();
+  // Configurazione PDF.js
+  const workerSrc = pdfjsLib.GlobalWorkerOptions.workerSrc || 
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+
+  const doc = await pdfjsLib.getDocument({
+    url: finalUrl,
+    disableAutoFetch: false,
+    disableStream: false
+  }).promise;
+
+  console.log('PDF caricato, pagine:', doc.numPages);
+  loading.style.display = 'none';
+
+  // Render pagine
+  const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  for(let p=1; p<=doc.numPages; p++){
+    console.log('Rendering pagina', p);
+    const page = await doc.getPage(p);
+    
+    const baseViewport = page.getViewport({ scale: 1 });
+    const containerWidth = Math.min(document.documentElement.clientWidth - 40, 1200);
+    const scale = (containerWidth / baseViewport.width) * DPR;
+
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { alpha:false });
+    
+    canvas.width  = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    canvas.style.width = (canvas.width / DPR) + 'px';
+    canvas.style.height = (canvas.height / DPR) + 'px';
+
+    wrap.appendChild(canvas);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    console.log('Pagina', p, 'renderizzata');
+  }
+
+  console.log('Tutte le pagine renderizzate');
+
+})().catch(err => {
+  console.error('Errore PDF.js:', err);
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('error').innerHTML = 'Errore: ' + err.message;
+  document.getElementById('error').style.display = 'block';
+});
+
+// Protezioni anti-stampa
+document.addEventListener('contextmenu', e=>e.preventDefault(), true);
+document.addEventListener('keydown', e=>{
+  const k=(e.key||'').toLowerCase();
+  if((e.ctrlKey||e.metaKey)&&(k==='p'||e.keyCode===80)){
+    e.preventDefault(); e.stopPropagation();
+    alert('Stampa disabilitata.');
+    return false;
+  }
+  if((e.ctrlKey||e.metaKey)&&(k==='s'||e.keyCode===83)){
+    e.preventDefault(); e.stopPropagation();
+    alert('Salvataggio disabilitato.');
+    return false;
+  }
+}, true);
+
+window.onbeforeprint=()=>{ 
+  document.body.innerHTML='<div style="color:#fff;padding:50px;text-align:center">Stampa non disponibile</div>'; 
+};
 </script>
 </body>
 </html>
