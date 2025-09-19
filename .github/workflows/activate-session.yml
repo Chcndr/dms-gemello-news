@@ -1,0 +1,51 @@
+name: Activate session (60m)
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: "Email dell'utente"
+        required: true
+        type: string
+      token:
+        description: "Token link inviato"
+        required: true
+        type: string
+      minutes:
+        description: "Durata (min) - default 60"
+        required: false
+        default: "60"
+        type: string
+
+jobs:
+  update_whitelist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update whitelist.json
+        run: |
+          node -e '
+          const fs=require("fs");
+          const path="landing/viewer/whitelist.json";
+          const email=process.env.EMAIL.toLowerCase().trim();
+          const token=process.env.TOKEN.trim();
+          const minutes=parseInt(process.env.MINUTES||"60",10);
+          const expires=new Date(Date.now()+minutes*60000).toISOString();
+          const ua=null; // opzionale: puoi incollare un ua hash noto
+
+          const data=fs.existsSync(path)?JSON.parse(fs.readFileSync(path,"utf8")):{sessions:[]};
+          const i=data.sessions.findIndex(s=>s.email.toLowerCase()===email && s.token===token);
+          if(i>=0){ data.sessions[i].expires=expires; if(ua) data.sessions[i].ua=ua; }
+          else { data.sessions.push({email, token, expires, ...(ua?{ua}: {})}); }
+          fs.writeFileSync(path, JSON.stringify(data,null,2));
+          console.log("Activated:", email, token, expires);
+          '
+        env:
+          EMAIL: ${{ inputs.email }}
+          TOKEN: ${{ inputs.token }}
+          MINUTES: ${{ inputs.minutes }}
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(auth): activate ${{ inputs.email }} for ${{ inputs.minutes }}m"
+          file_pattern: "landing/viewer/whitelist.json"
+

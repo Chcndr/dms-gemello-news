@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Politica 0 — Visione DMS</title>
-  <link rel="preload" as="image" href="slides/01.jpg?v=pol0-lock2">
+  <link rel="preload" as="image" href="slides/01.jpg?v=stable-news-001">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -149,10 +149,29 @@
     .back-link:hover {
       background: rgba(0,0,0,0.7);
     }
+
+/* Messaggio nascosto a schermo, visibile su stampa */
+#print-block{
+  display:none; position:fixed; inset:0; z-index:99999;
+  align-items:center; justify-content:center;
+  background:rgba(0,0,0,.92); color:#fff; text-align:center;
+  padding:24px; font:700 18px/1.4 system-ui;
+}
+
+/* In modalità stampa: nascondi tutto e mostra SOLO il messaggio */
+@media print {
+  body * { visibility: hidden !important; }
+  #print-block{
+    display:flex !important; visibility:visible !important;
+  }
+}
   </style>
 </head>
 <body>
-     <a href="../home.html" class="back-link">← Torna all'orologio</a>
+  <!-- DMS Auth Gate -->
+  <script src="/dms-gemello-news/landing/common/auth-gate.js?v=STABLE1"></script>
+  
+  <a href="../home.html?v=stable-news-001" class="back-link">← Torna all'orologio</a>
   
   <div class="header">
     <h1>Politica 0 — Visione DMS</h1>
@@ -243,7 +262,7 @@
     
     grid.innerHTML = Array.from({length: NUM}, (_, i) => {
       const n = String(i + 1).padStart(2, '0');
-      const src = `slides/${n}.jpg`;
+      const src = `slides/${n}.jpg?v=stable-news-001`;
       const title = slideNames[i] || `Slide ${n}`;
       return `
         <figure class="card">
@@ -260,6 +279,78 @@
       setTimeout(() => { LB.open(0); }, 150);
     });
   </script>
+
+<!-- Messaggio unico -->
+<div id="print-block">Stampa/Esporta disabilitata su questo contenuto.</div>
+
+<script>
+(function(){
+  const msg = document.getElementById('print-block');
+  const show = () => {
+    if (!msg) return;
+    msg.style.display = 'flex';
+    // dopo 2,5s lo nascondo a schermo (in stampa resta visibile per via di @media print)
+    setTimeout(()=>{ msg.style.display = 'none'; }, 2500);
+  };
+  const kill = e => { e.preventDefault(); e.stopPropagation(); return false; };
+
+  // Blocca Ctrl/⌘+P e mostra il messaggio
+  document.addEventListener('keydown', e=>{
+    const k = e.key?.toLowerCase();
+    const meta = e.ctrlKey || e.metaKey;
+    if (meta && k === 'p') { kill(e); show(); }
+  }, {capture:true});
+
+  // Se qualcuno apre la stampa "in altri modi", intercettiamo l'evento di sistema
+  try {
+    const mm = window.matchMedia('print');
+    if (mm && mm.addEventListener) {
+      mm.addEventListener('change', m => { if (m.matches) show(); });
+    } else if ('onbeforeprint' in window) {
+      window.onbeforeprint = show;
+    }
+  } catch(_) {}
+})();
+</script>
+
+<script>
+/* — Anti tasto destro / salva / ispeziona — */
+(function(){
+  const msg = document.getElementById('print-block'); // riuso del messaggio
+  const show = (text) => {
+    if (!msg) return;
+    const old = msg.textContent;
+    if (text) msg.textContent = text;
+    msg.style.display = 'flex';
+    setTimeout(()=>{ msg.style.display='none'; if (text) msg.textContent = old; }, 1800);
+  };
+  const kill = e => { e.preventDefault(); e.stopPropagation(); return false; };
+
+  // Blocca menu contestuale e selezione/drag immagini
+  document.addEventListener('contextmenu', e => { show('Azione disabilitata.'); return kill(e); }, {capture:true});
+  document.addEventListener('selectstart', kill, {capture:true});
+  document.addEventListener('dragstart', kill, {capture:true});
+
+  // Blocca combinazioni comuni (salva, sorgente, devtools)
+  document.addEventListener('keydown', e => {
+    const k = e.key?.toLowerCase();
+    const meta = e.ctrlKey || e.metaKey;
+    if (meta && (k === 's' || k === 'u' || k === 'o')) { show('Azione disabilitata.'); return kill(e); }
+    if (k === 'f12' || (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k))) { show('Azione disabilitata.'); return kill(e); }
+  }, {capture:true});
+
+  // iOS: gesture share/quick-actions su immagini
+  ['touchstart','gesturestart'].forEach(ev => {
+    document.addEventListener(ev, e => {
+      if (e.target.closest('img, video, canvas')) { e.preventDefault(); }
+    }, {passive:false});
+  });
+
+  // Piccolo rinforzo CSS runtime (niente selezione)
+  document.documentElement.style.setProperty('user-select','none');
+  document.documentElement.style.setProperty('-webkit-user-select','none');
+})();
+</script>
 </body>
 </html>
 

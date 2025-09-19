@@ -6,9 +6,8 @@
 <title>PDF.js Lite</title>
 <style>
   html,body{height:100%;margin:0;background:#000!important;color:#fff}
-  #topbar{position:fixed;top:10px;right:10px;z-index:9;background:#0b0b0b;border:1px solid #2a2a2a;border-radius:10px;padding:8px 12px}
-  #topbar a{color:#fff;text-decoration:none}
-  #wrap{position:fixed;inset:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:60px 20px 20px 20px}
+
+  #wrap{position:fixed;inset:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:20px}
   #loading{color:#fff;text-align:center;padding:50px;font-family:Arial,sans-serif}
   #error{color:#ff6b6b;text-align:center;padding:50px;font-family:Arial,sans-serif}
   canvas{display:block;margin:0 auto 12px auto;max-width:100%;height:auto;background:#000;border:1px solid #333}
@@ -16,9 +15,8 @@
 </style>
 </head>
 <body>
-<div id="topbar"><a id="open-ext" target="_blank" rel="noopener">Apri in nuova scheda ↗</a></div>
-<div id="loading">Caricamento PDF in corso...</div>
-<div id="error" style="display:none">Errore nel caricamento del PDF</div>
+
+
 <div id="wrap"></div>
 
 <!-- Prova multipli CDN per PDF.js -->
@@ -27,12 +25,7 @@
   const qs=new URLSearchParams(location.search);
   const src=(qs.get('src')||'').trim();
   
-  if(!src){
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error').innerHTML = 'Nessun file specificato. Usa: <code>?src=path/file.pdf</code>';
-    document.getElementById('error').style.display = 'block';
-    return;
-  }
+  if(!src) return;
   
   // Costruisci URL assoluto
   const baseUrl = window.location.origin + '/dms-gemello-news/';
@@ -46,11 +39,8 @@
   }
   
   console.log('Caricamento PDF da:', pdfUrl);
-  document.getElementById('open-ext').href = pdfUrl;
 
   const wrap=document.getElementById('wrap');
-  const loading=document.getElementById('loading');
-  const error=document.getElementById('error');
 
   // Prova a caricare PDF.js da diversi CDN
   const cdnUrls = [
@@ -104,7 +94,6 @@
   }).promise;
 
   console.log('PDF caricato, pagine:', doc.numPages);
-  loading.style.display = 'none';
 
   // Render pagine
   const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
@@ -134,9 +123,6 @@
 
 })().catch(err => {
   console.error('Errore PDF.js:', err);
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('error').innerHTML = 'Errore: ' + err.message;
-  document.getElementById('error').style.display = 'block';
 });
 
 // Protezioni anti-stampa

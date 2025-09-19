@@ -705,12 +705,12 @@ addEventListener('click', function (e) {
         if(label === 'Dossier nazionale') {
           return `<a class="action spot test-direct"
    href="https://chcndr.github.io/dms-gemello-news/docs/dossier-nazionale.pdf"
-   target="_top" rel="noopener"
+   rel="noopener"
    >
   Apri PDF (test diretto)
 </a>`;
         }
-        return `<a class="action spot" href="${safeHref(href)}" target="_top" rel="noopener">${label}</a>`;
+        return `<a class="action spot" href="${safeHref(href)}" rel="noopener">${label}</a>`;
       }
     }).join(' ');
   }
@@ -740,16 +740,7 @@ addEventListener('click', function (e) {
 })();
 </script>
 
-<script>
-/* Priorità massima (capture): i click su .test-direct non possono essere "hijackati" */
-document.addEventListener('click', function(e){
-  const a = e.target.closest('a.test-direct');
-  if(!a) return;
-  e.stopImmediatePropagation();   // blocca altri listener
-  e.preventDefault();             // evita qualunque preventDefault altrui
-  window.top.location.href = a.href; // navigazione forzata al PDF
-}, {capture:true});
-</script>
+
 
 <script>
 // Integrazione click nodi con pannelli
@@ -834,9 +825,18 @@ document.addEventListener('click', function(e){
         data.pdfs.forEach((pdf, idx) => {
           const btn = document.createElement('a');
           btn.className = 'btn btn--accent action';
-          btn.href = pdf.file;
-          btn.target = '_blank';
-          btn.rel = 'noopener';
+          
+          // Gestisci il prefisso data-pdf:
+          if(pdf.file.startsWith('data-pdf:')) {
+            const pdfPath = pdf.file.replace('data-pdf:', '');
+            btn.href = '#'; // href placeholder
+            btn.setAttribute('data-pdf', pdfPath);
+          } else {
+            btn.href = pdf.file;
+            btn.target = '_blank';
+            btn.rel = 'noopener';
+          }
+          
           btn.textContent = pdf.label;
           actionsDiv.insertBefore(btn, closeBtn);
         });
