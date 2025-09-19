@@ -910,6 +910,28 @@ document.addEventListener('click', function(e){
   </script>
 
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
+
+<script>
+(function(){
+  var VIEWER = 'landing/pdfjs-lite/';
+  function toViewer(url){
+    var sep = url.indexOf('?')>-1 ? '&' : '?';
+    return VIEWER + '?src=' + encodeURIComponent(url + sep + '_cb=' + Date.now().toString(36)) + '&v=finale-006';
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a'); if(!a) return;
+    var href = a.getAttribute('href') || '';
+    // Se è un PDF → apri nel viewer nero
+    if (/\.pdf(\?|#|$)/i.test(href)) {
+      e.preventDefault();
+      var abs = a.href;
+      var url = toViewer(abs);
+      (a.target === '_blank') ? window.open(url, '_blank', 'noopener') : (window.location.href = url);
+    }
+    // Altrimenti (pagine HTML) lascia passare
+  }, true);
+})();
+</script>
 </body>
 </html>
 
