@@ -705,12 +705,12 @@ addEventListener('click', function (e) {
         if(label === 'Dossier nazionale') {
           return `<a class="action spot test-direct"
    href="https://chcndr.github.io/dms-gemello-news/docs/dossier-nazionale.pdf"
-   target="_top" rel="noopener"
+   rel="noopener"
    >
   Apri PDF (test diretto)
 </a>`;
         }
-        return `<a class="action spot" href="${safeHref(href)}" target="_top" rel="noopener">${label}</a>`;
+        return `<a class="action spot" href="${safeHref(href)}" rel="noopener">${label}</a>`;
       }
     }).join(' ');
   }
@@ -835,7 +835,7 @@ document.addEventListener('click', function(e){
           const btn = document.createElement('a');
           btn.className = 'btn btn--accent action';
           btn.href = pdf.file;
-          btn.target = '_blank';
+
           btn.rel = 'noopener';
           btn.textContent = pdf.label;
           actionsDiv.insertBefore(btn, closeBtn);
