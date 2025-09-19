@@ -907,7 +907,8 @@ addEventListener('click', function (e) {
   var VIEWER = 'landing/pdfjs-lite/';
   function toViewer(url){
     var sep = url.indexOf('?')>-1 ? '&' : '?';
-    return VIEWER + '?src=' + encodeURIComponent(url + sep + '_cb=' + Date.now().toString(36)) + '&v=finale-006';
+    var cb  = '_cb=' + Date.now().toString(36);
+    return VIEWER + '?src=' + encodeURIComponent(url + sep + cb) + '&v=finale-010';
   }
   document.addEventListener('click', function(e){
     var a = e.target.closest('a'); if(!a) return;
