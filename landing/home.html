@@ -985,6 +985,18 @@ addEventListener('click', function (e) {
     }
   }, true);
 
+  // CORREZIONE: Trigger riscansione quando si aprono pannelli orologio
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest ? e.target.closest('button') : null;
+    if (btn && btn.textContent && btn.textContent.includes('Q')) {
+      // È un pulsante dell'orologio (contiene "Q1 2025", "Q2 2025", etc.)
+      setTimeout(function(){
+        scan(document); // Riscansiona tutti i link dopo che il pannello si è aperto
+        if (VERBOSE) console.log('[PDF ENFORCER] rescan after clock button click');
+      }, 100);
+    }
+  });
+
   // Beacon di presenza per debug visivo rapido (disattiva dopo i test)
   if (VERBOSE) {
     var b = document.createElement('div');
