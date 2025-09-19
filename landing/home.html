@@ -740,16 +740,7 @@ addEventListener('click', function (e) {
 })();
 </script>
 
-<script>
-/* Priorità massima (capture): i click su .test-direct non possono essere "hijackati" */
-document.addEventListener('click', function(e){
-  const a = e.target.closest('a.test-direct');
-  if(!a) return;
-  e.stopImmediatePropagation();   // blocca altri listener
-  e.preventDefault();             // evita qualunque preventDefault altrui
-  window.top.location.href = a.href; // navigazione forzata al PDF
-}, {capture:true});
-</script>
+
 
 <script>
 // Integrazione click nodi con pannelli
@@ -836,6 +827,7 @@ document.addEventListener('click', function(e){
           btn.className = 'btn btn--accent action';
           btn.href = pdf.file;
 
+          btn.target = '_blank';
           btn.rel = 'noopener';
           btn.textContent = pdf.label;
           actionsDiv.insertBefore(btn, closeBtn);
@@ -911,36 +903,33 @@ document.addEventListener('click', function(e){
 
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
 
-<!-- Script shim per intercettare PDF dell'orologio -->
+<!-- Script shim per forzare apertura PDF tramite viewer interno -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Intercetta tutti i click sui link PDF dell'orologio
-  document.addEventListener('click', function(e) {
-    const link = e.target.closest('a[href*=".pdf"]');
-    if (link && link.href.includes('.pdf')) {
+(function(){
+  // Qualsiasi <a> che punti a un .pdf viene reindirizzato al viewer PDF.js Lite
+  function toViewer(url){
+    // Mantiene query esistente e aggiunge cache-buster
+    var sep = url.indexOf('?')>-1 ? '&' : '?';
+    var cb = '_cb=' + Date.now().toString(36);
+    return 'pdfjs-lite/?src=' + encodeURIComponent(url + sep + cb) + '&v=finale-008';
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a');
+    if(!a) return;
+    var href = a.getAttribute('href') || '';
+    if(/\.pdf(\?|#|$)/i.test(href)){
       e.preventDefault();
-      e.stopPropagation();
-      
-      // Costruisci URL per PDF.js Lite
-      const pdfUrl = link.href;
-      const baseUrl = window.location.origin + '/dms-gemello-news/';
-      let relativePath = pdfUrl;
-      
-      // Converti in percorso relativo se necessario
-      if (pdfUrl.startsWith(baseUrl)) {
-        relativePath = pdfUrl.substring(baseUrl.length);
-      } else if (pdfUrl.startsWith(window.location.origin)) {
-        relativePath = pdfUrl.substring(window.location.origin.length + 1);
+      var url = a.href; // assolutizza
+      // se l'href non è già il viewer, reindirizza
+      if(!/pdfjs-lite\/\?src=/i.test(url)){
+        var viewer = toViewer(href);
+        // apre come voleva l'utente (stessa scheda o nuova)
+        if(a.target === '_blank') window.open(viewer, '_blank', 'noopener');
+        else window.location.href = viewer;
       }
-      
-      // Apri nel viewer interno
-      const viewerUrl = '/dms-gemello-news/landing/pdfjs-lite/?src=' + encodeURIComponent(relativePath) + '&v=finale-007';
-      window.open(viewerUrl, '_blank', 'noopener');
-      
-      console.log('PDF intercettato:', pdfUrl, '→', viewerUrl);
     }
   }, true);
-});
+})();
 </script>
 
 </body>
