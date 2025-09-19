@@ -797,7 +797,7 @@ document.addEventListener('click', function(e){
   // Anti-flicker: non cambiare layout; il video resta montato, solo opacity
   if(hero){
     hero.preload = hero.preload || 'metadata';
-    if(!hero.poster) hero.poster = './assets/poster-hero.jpg'; // se esiste
+    // Poster rimosso per mostrare prima frame del video (slide rossa)
     hero.muted = true; hero.playsInline = true;
   }
 
