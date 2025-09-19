@@ -1,87 +1,79 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DMS Viewer</title>
   
-  <!-- Patch anti-stampa: Forza sfondo NERO a tutta pagina -->
+  <!-- Stili: full-screen, scroll iOS, sfondo nero -->
   <style>
     html, body {
-      background:#000 !important;   /* forza il nero */
-      color:#fff;
-      height:100%;
-      margin:0;
+      height: 100%;
+      margin: 0;
+      background: #000;            /* nero pieno */
+      color: #fff;
     }
-    /* il contenitore/iframe del documento */
-    #frame, .viewer-frame {
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      border:0;
-      background:#000;              /* nero sotto il PDF */
-      user-select: none;            /* blocca selezione */
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      pointer-events: auto;
+    /* wrapper scrollabile (iOS richiede overflow su un contenitore) */
+    #wrap {
+      position: fixed;
+      inset: 0;
+      overflow: auto;               /* abilita lo scroll */
+      -webkit-overflow-scrolling: touch;  /* inerzia su iOS */
+      background: #000;
     }
-    /* Blocca selezione globale */
-    * {
-      user-select: none !important;
-      -webkit-user-select: none !important;
-      -moz-user-select: none !important;
-      -ms-user-select: none !important;
+    /* iframe a tutta pagina */
+    #pdf {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
     }
+    /* anti-stampa minimale */
+    @media print { * { display:none !important; } }
   </style>
-  
-  <!-- Anti-stampa "duro" (CSS + JS) -->
-  <style>
-    /* Niente stampa: pagina vuota */
-    @media print {
-      * { display:none !important; }
-    }
-  </style>
+</head>
+<body>
+  <!-- Wrapper + iframe -->
+  <div id="wrap">
+    <iframe id="pdf" allowfullscreen></iframe>
+  </div>
+
+  <!-- Fallback apertura esterna (opzionale, in alto a dx) -->
+  <a id="open-ext" target="_blank" rel="noopener"
+     style="position:fixed;top:8px;right:10px;z-index:9;font:14px system-ui;
+            background:#111;border:1px solid #333;border-radius:8px;
+            padding:6px 10px;text-decoration:none;color:#fff;opacity:.9">
+    Apri in nuova scheda ↗
+  </a>
+
+  <!-- JS: carica il PDF dalla query string ?src=... -->
   <script>
     (function(){
+      const p = new URLSearchParams(location.search);
+      let src = p.get('src') || '';
+      // Se serve, aggiungi parametri PDF per migliorare la vista
+      if (src && !src.includes('#')) {
+        src += '#toolbar=1&navpanes=0&view=FitH';
+      }
+      const frame = document.getElementById('pdf');
+      frame.src = src;
+
+      // Fallback button
+      const ext = document.getElementById('open-ext');
+      if (ext) ext.href = src.replace(/#.*$/, '');
+
       // Blocca scorciatoie stampa
-      document.addEventListener('keydown', function(e){
-        const k = (e.key||'').toLowerCase();
-        if ((e.ctrlKey || e.metaKey) && (k === 'p' || e.keyCode === 80)) {
+      document.addEventListener('keydown', e=>{
+        const k=(e.key||'').toLowerCase();
+        if((e.metaKey||e.ctrlKey)&&(k==='p'||e.keyCode===80)){
           e.preventDefault(); e.stopPropagation();
           alert('Stampa disabilitata.');
         }
-        // Blocca scorciatoie download (Ctrl+S, Ctrl+Shift+S)
-        if ((e.ctrlKey || e.metaKey) && (k === 's' || e.keyCode === 83)) {
-          e.preventDefault(); e.stopPropagation();
-          alert('Download disabilitato.');
-        }
       });
-      // Disattiva menu tasto destro
-      document.addEventListener('contextmenu', e => e.preventDefault());
-      // Se parte la stampa (hook browser), svuota pagina
-      window.onbeforeprint = () => {
-        document.body.innerHTML = '';
-        setTimeout(() => location.replace('about:blank'), 0);
-      };
-      // Blocca drag & drop
-      document.addEventListener('dragstart', e => e.preventDefault());
-      document.addEventListener('drop', e => e.preventDefault());
-      // Disabilita selezione testo
-      document.addEventListener('selectstart', e => e.preventDefault());
+      document.addEventListener('contextmenu', e=>e.preventDefault());
+      window.onbeforeprint = ()=>{ document.body.innerHTML=''; };
     })();
-  </script>
-</head>
-<body>
-  <!-- Iframe per il caricamento del PDF -->
-  <iframe id="frame" class="viewer-frame" allowfullscreen></iframe>
-  
-  <!-- Script per caricamento da query ?src=... -->
-  <script>
-    const params = new URLSearchParams(location.search);
-    const src = params.get('src');
-    if (src) document.getElementById('frame').src = src;
   </script>
 </body>
 </html>
