@@ -1786,8 +1786,7 @@ function applyMinisterHighlight(mKey){
 
   function toViewer(url){
     var sep = url.indexOf('?')>-1 ? '&' : '?';
-    var cb  = '_cb=' + Date.now().toString(36);
-    return VIEWER + '?src=' + encodeURIComponent(url + sep + cb) + '&v=finale-010';
+    return VIEWER + '?src=' + encodeURIComponent(url + sep + '_cb=' + Date.now().toString(36)) + '&v=finale-006';
   }
 
   document.addEventListener('click', function(e){
@@ -1805,15 +1804,16 @@ function applyMinisterHighlight(mKey){
 
     // 2) href che punta direttamente a un PDF
     var href = a.getAttribute('href') || '';
+    // Se il link punta ad un PDF → apri nel viewer nero
     if (/\.pdf(\?|#|$)/i.test(href)) {
       e.preventDefault();
-      var abs = a.href; // assolutizza se relativo
-      var url = toViewer(abs);
-      (a.target === '_blank') ? window.open(url, '_blank', 'noopener') : (window.location.href = url);
-      return;
+      var abs = a.href;                      // URL assoluto
+      var url = toViewer(abs);               // passa dal viewer
+      (a.target === '_blank')
+        ? window.open(url, '_blank', 'noopener')
+        : (window.location.href = url);
     }
-
-    // 3) Tutto il resto (HTML, /pol0/, /spot.html, ecc.) passa liscio
+    // Le pagine HTML passano liscio
   }, true);
 })();
 </script>

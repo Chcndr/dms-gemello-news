@@ -907,20 +907,21 @@ addEventListener('click', function (e) {
   var VIEWER = 'landing/pdfjs-lite/';
   function toViewer(url){
     var sep = url.indexOf('?')>-1 ? '&' : '?';
-    var cb  = '_cb=' + Date.now().toString(36);
-    return VIEWER + '?src=' + encodeURIComponent(url + sep + cb) + '&v=finale-010';
+    return VIEWER + '?src=' + encodeURIComponent(url + sep + '_cb=' + Date.now().toString(36)) + '&v=finale-006';
   }
   document.addEventListener('click', function(e){
     var a = e.target.closest('a'); if(!a) return;
     var href = a.getAttribute('href') || '';
-    // Se è un PDF → apri nel viewer nero
+    // Se il link punta ad un PDF → apri nel viewer nero
     if (/\.pdf(\?|#|$)/i.test(href)) {
       e.preventDefault();
-      var abs = a.href;
-      var url = toViewer(abs);
-      (a.target === '_blank') ? window.open(url, '_blank', 'noopener') : (window.location.href = url);
+      var abs = a.href;                      // URL assoluto
+      var url = toViewer(abs);               // passa dal viewer
+      (a.target === '_blank')
+        ? window.open(url, '_blank', 'noopener')
+        : (window.location.href = url);
     }
-    // Altrimenti (pagine HTML) lascia passare
+    // Le pagine HTML passano liscio
   }, true);
 })();
 </script>
