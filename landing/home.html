@@ -911,50 +911,27 @@ addEventListener('click', function (e) {
 
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
 
-<!-- Script shim robusto per PDF e pagine HTML -->
 <script>
 (function(){
-  // Regole:
-  // - Se <a> ha data-pdf="…", apri QUEL PDF in viewer nero.
-  // - Altrimenti, se href termina con .pdf, apri in viewer nero.
-  // - Altrimenti, lascia passare (pagine HTML normali).
-
   var VIEWER = 'landing/pdfjs-lite/';
-
   function toViewer(url){
     var sep = url.indexOf('?')>-1 ? '&' : '?';
-    var cb  = '_cb=' + Date.now().toString(36);
-    return VIEWER + '?src=' + encodeURIComponent(url + sep + cb) + '&v=finale-010';
+    return VIEWER + '?src=' + encodeURIComponent(url + sep + '_cb=' + Date.now().toString(36)) + '&v=finale-006';
   }
-
   document.addEventListener('click', function(e){
-    var a = e.target.closest('a');
-    if(!a) return;
-
-    // 1) data-pdf ha priorità: forza l'apertura del PDF indicato
-    var dataPdf = a.getAttribute('data-pdf');
-    if (dataPdf) {
-      e.preventDefault();
-      var url = toViewer(dataPdf);
-      (a.target === '_blank') ? window.open(url, '_blank', 'noopener') : (window.location.href = url);
-      return;
-    }
-
-    // 2) href che punta direttamente a un PDF
+    var a = e.target.closest('a'); if(!a) return;
     var href = a.getAttribute('href') || '';
+    // Se è un PDF → apri nel viewer nero
     if (/\.pdf(\?|#|$)/i.test(href)) {
       e.preventDefault();
-      var abs = a.href; // assolutizza se relativo
+      var abs = a.href;
       var url = toViewer(abs);
       (a.target === '_blank') ? window.open(url, '_blank', 'noopener') : (window.location.href = url);
-      return;
     }
-
-    // 3) Tutto il resto (HTML, /pol0/, /spot.html, ecc.) passa liscio
+    // Altrimenti (pagine HTML) lascia passare
   }, true);
 })();
 </script>
-
 </body>
 </html>
 
