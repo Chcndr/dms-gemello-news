@@ -910,6 +910,39 @@ document.addEventListener('click', function(e){
   </script>
 
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
+
+<!-- Script shim per intercettare PDF dell'orologio -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Intercetta tutti i click sui link PDF dell'orologio
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('a[href*=".pdf"]');
+    if (link && link.href.includes('.pdf')) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Costruisci URL per PDF.js Lite
+      const pdfUrl = link.href;
+      const baseUrl = window.location.origin + '/dms-gemello-news/';
+      let relativePath = pdfUrl;
+      
+      // Converti in percorso relativo se necessario
+      if (pdfUrl.startsWith(baseUrl)) {
+        relativePath = pdfUrl.substring(baseUrl.length);
+      } else if (pdfUrl.startsWith(window.location.origin)) {
+        relativePath = pdfUrl.substring(window.location.origin.length + 1);
+      }
+      
+      // Apri nel viewer interno
+      const viewerUrl = '/dms-gemello-news/landing/pdfjs-lite/?src=' + encodeURIComponent(relativePath) + '&v=finale-007';
+      window.open(viewerUrl, '_blank', 'noopener');
+      
+      console.log('PDF intercettato:', pdfUrl, '→', viewerUrl);
+    }
+  }, true);
+});
+</script>
+
 </body>
 </html>
 

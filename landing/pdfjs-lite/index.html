@@ -17,8 +17,7 @@
 </head>
 <body>
 <div id="topbar"><a id="open-ext" target="_blank" rel="noopener">Apri in nuova scheda ↗</a></div>
-<div id="loading">Caricamento PDF in corso...</div>
-<div id="error" style="display:none">Errore nel caricamento del PDF</div>
+
 <div id="wrap"></div>
 
 <!-- Prova multipli CDN per PDF.js -->
@@ -27,12 +26,7 @@
   const qs=new URLSearchParams(location.search);
   const src=(qs.get('src')||'').trim();
   
-  if(!src){
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error').innerHTML = 'Nessun file specificato. Usa: <code>?src=path/file.pdf</code>';
-    document.getElementById('error').style.display = 'block';
-    return;
-  }
+  if(!src) return;
   
   // Costruisci URL assoluto
   const baseUrl = window.location.origin + '/dms-gemello-news/';
@@ -49,8 +43,6 @@
   document.getElementById('open-ext').href = pdfUrl;
 
   const wrap=document.getElementById('wrap');
-  const loading=document.getElementById('loading');
-  const error=document.getElementById('error');
 
   // Prova a caricare PDF.js da diversi CDN
   const cdnUrls = [
@@ -104,7 +96,6 @@
   }).promise;
 
   console.log('PDF caricato, pagine:', doc.numPages);
-  loading.style.display = 'none';
 
   // Render pagine
   const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
@@ -134,9 +125,6 @@
 
 })().catch(err => {
   console.error('Errore PDF.js:', err);
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('error').innerHTML = 'Errore: ' + err.message;
-  document.getElementById('error').style.display = 'block';
 });
 
 // Protezioni anti-stampa
