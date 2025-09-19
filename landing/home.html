@@ -826,8 +826,7 @@ addEventListener('click', function (e) {
           const btn = document.createElement('a');
           btn.className = 'btn btn--accent action';
           btn.href = pdf.file;
-          btn.target = '_blank';
-          btn.rel = 'noopener';
+          // Rimuovi target="_blank" per permettere allo script shim di intercettare
           btn.textContent = pdf.label;
           actionsDiv.insertBefore(btn, closeBtn);
         });
