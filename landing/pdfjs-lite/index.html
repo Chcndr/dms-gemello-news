@@ -5,78 +5,132 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PDF.js Lite</title>
 <style>
-  html,body{height:100%;margin:0;background:#000;color:#fff}
+  html,body{height:100%;margin:0;background:#000!important;color:#fff}
   #topbar{position:fixed;top:10px;right:10px;z-index:9;background:#0b0b0b;border:1px solid #2a2a2a;border-radius:10px;padding:8px 12px}
   #topbar a{color:#fff;text-decoration:none}
-  #wrap{position:fixed;inset:0;overflow:auto;-webkit-overflow-scrolling:touch}
-  canvas{display:block;margin:0 auto 12px auto;max-width:100%;height:auto;background:#000}
+  #wrap{position:fixed;inset:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:60px 20px 20px 20px}
+  #loading{color:#fff;text-align:center;padding:50px;font-family:Arial,sans-serif}
+  #error{color:#ff6b6b;text-align:center;padding:50px;font-family:Arial,sans-serif}
+  canvas{display:block;margin:0 auto 12px auto;max-width:100%;height:auto;background:#000;border:1px solid #333}
   @media print{*{display:none!important}}
 </style>
 </head>
 <body>
 <div id="topbar"><a id="open-ext" target="_blank" rel="noopener">Apri in nuova scheda ↗</a></div>
+<div id="loading">Caricamento PDF in corso...</div>
+<div id="error" style="display:none">Errore nel caricamento del PDF</div>
 <div id="wrap"></div>
 
 <!-- PDF.js core (CDN) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js" crossorigin="anonymous"></script>
 <script>
 (async function(){
-  const qs=new URLSearchParams(location.search);
-  const url=(qs.get('src')||'').trim();
-  if(!url){
-    document.body.innerHTML='<div style="padding:24px">Nessun file. Usa: <code>?src=landing/pdf/NOME.pdf</code></div>';
-    return;
+  try {
+    const qs=new URLSearchParams(location.search);
+    const src=(qs.get('src')||'').trim();
+    
+    if(!src){
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').innerHTML = 'Nessun file specificato. Usa: <code>?src=path/file.pdf</code>';
+      document.getElementById('error').style.display = 'block';
+      return;
+    }
+    
+    // Costruisci URL assoluto
+    const baseUrl = window.location.origin + '/dms-gemello-news/';
+    let pdfUrl;
+    if(src.startsWith('http')) {
+      pdfUrl = src;
+    } else if(src.startsWith('/')) {
+      pdfUrl = window.location.origin + src;
+    } else {
+      pdfUrl = baseUrl + src;
+    }
+    
+    console.log('Caricamento PDF da:', pdfUrl);
+    document.getElementById('open-ext').href = pdfUrl;
+
+    // Cache-buster
+    const cb = Date.now().toString(36);
+    const finalUrl = pdfUrl + (pdfUrl.includes('?')?'&':'?') + '_cb='+cb;
+
+    const wrap=document.getElementById('wrap');
+    const loading=document.getElementById('loading');
+    const error=document.getElementById('error');
+
+    // Verifica che PDF.js sia caricato
+    if(typeof pdfjsLib === 'undefined') {
+      throw new Error('PDF.js non caricato');
+    }
+
+    // PDF.js config
+    const ver = '4.5.136';
+    const CMAP_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${ver}/cmaps/`;
+    const STANDARD_FONT_DATA_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${ver}/standard_fonts/`;
+
+    console.log('Inizializzazione PDF.js...');
+    const doc = await pdfjsLib.getDocument({
+      url: finalUrl,
+      cMapUrl: CMAP_URL, 
+      cMapPacked: true,
+      standardFontDataUrl: STANDARD_FONT_DATA_URL
+    }).promise;
+
+    console.log('PDF caricato, pagine:', doc.numPages);
+    loading.style.display = 'none';
+
+    // Render pagine
+    const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    for(let p=1; p<=doc.numPages; p++){
+      console.log('Rendering pagina', p);
+      const page = await doc.getPage(p);
+      
+      const baseViewport = page.getViewport({ scale: 1 });
+      const containerWidth = Math.min(document.documentElement.clientWidth - 40, 1200);
+      const scale = (containerWidth / baseViewport.width) * DPR;
+
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d', { alpha:false });
+      
+      canvas.width  = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      canvas.style.width = (canvas.width / DPR) + 'px';
+      canvas.style.height = (canvas.height / DPR) + 'px';
+
+      wrap.appendChild(canvas);
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      console.log('Pagina', p, 'renderizzata');
+    }
+
+    console.log('Tutte le pagine renderizzate');
+
+  } catch(err) {
+    console.error('Errore PDF.js:', err);
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error').innerHTML = 'Errore: ' + err.message;
+    document.getElementById('error').style.display = 'block';
   }
-  document.getElementById('open-ext').href=url;
 
-  // Cache-buster per aggirare CDN
-  const cb = Date.now().toString(36);
-  const pdfUrl = url + (url.includes('?')?'&':'?') + '_cb='+cb;
-
-  const wrap=document.getElementById('wrap');
-
-  // PDF.js config (CDN assets)
-  const ver = '4.5.136';
-  const CMAP_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${ver}/cmaps/`;
-  const STANDARD_FONT_DATA_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${ver}/standard_fonts/`;
-
-  const doc = await pdfjsLib.getDocument({
-    url: pdfUrl,
-    cMapUrl: CMAP_URL, cMapPacked: true,
-    standardFontDataUrl: STANDARD_FONT_DATA_URL
-  }).promise;
-
-  // Render pagina per pagina adattando alla larghezza viewport
-  const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1)); // limita memoria
-  for(let p=1; p<=doc.numPages; p++){
-    const page = await doc.getPage(p);
-    // Scala per adattare alla larghezza del wrapper
-    const baseViewport = page.getViewport({ scale: 1 });
-    const containerWidth = Math.min(document.documentElement.clientWidth, 1400); // cap
-    const scale = (containerWidth / baseViewport.width) * DPR;
-
-    const viewport = page.getViewport({ scale });
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d', { alpha:false });
-    canvas.width  = Math.floor(viewport.width);
-    canvas.height = Math.floor(viewport.height);
-    canvas.style.width = (canvas.width / DPR) + 'px';
-    canvas.style.height = (canvas.height / DPR) + 'px';
-
-    wrap.appendChild(canvas);
-    await page.render({ canvasContext: ctx, viewport }).promise;
-  }
-
-  // Blocchi best-effort
+  // Protezioni anti-stampa
   document.addEventListener('contextmenu', e=>e.preventDefault(), true);
   document.addEventListener('keydown', e=>{
     const k=(e.key||'').toLowerCase();
     if((e.ctrlKey||e.metaKey)&&(k==='p'||e.keyCode===80)){
       e.preventDefault(); e.stopPropagation();
       alert('Stampa disabilitata.');
+      return false;
+    }
+    if((e.ctrlKey||e.metaKey)&&(k==='s'||e.keyCode===83)){
+      e.preventDefault(); e.stopPropagation();
+      alert('Salvataggio disabilitato.');
+      return false;
     }
   }, true);
-  window.onbeforeprint=()=>{ document.body.innerHTML=''; };
+  
+  window.onbeforeprint=()=>{ 
+    document.body.innerHTML='<div style="color:#fff;padding:50px;text-align:center">Stampa non disponibile</div>'; 
+  };
 })();
 </script>
 </body>
