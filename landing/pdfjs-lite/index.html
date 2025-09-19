@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF.js Lite</title>
+<style>
+  html,body{height:100%;margin:0;background:#000;color:#fff}
+  #topbar{position:fixed;top:10px;right:10px;z-index:9;background:#0b0b0b;border:1px solid #2a2a2a;border-radius:10px;padding:8px 12px}
+  #topbar a{color:#fff;text-decoration:none}
+  #wrap{position:fixed;inset:0;overflow:auto;-webkit-overflow-scrolling:touch}
+  canvas{display:block;margin:0 auto 12px auto;max-width:100%;height:auto;background:#000}
+  @media print{*{display:none!important}}
+</style>
+</head>
+<body>
+<div id="topbar"><a id="open-ext" target="_blank" rel="noopener">Apri in nuova scheda ↗</a></div>
+<div id="wrap"></div>
+
+<!-- PDF.js core (CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js" crossorigin="anonymous"></script>
+<script>
+(async function(){
+  const qs=new URLSearchParams(location.search);
+  const url=(qs.get('src')||'').trim();
+  if(!url){
+    document.body.innerHTML='<div style="padding:24px">Nessun file. Usa: <code>?src=landing/pdf/NOME.pdf</code></div>';
+    return;
+  }
+  document.getElementById('open-ext').href=url;
+
+  // Cache-buster per aggirare CDN
+  const cb = Date.now().toString(36);
+  const pdfUrl = url + (url.includes('?')?'&':'?') + '_cb='+cb;
+
+  const wrap=document.getElementById('wrap');
+
+  // PDF.js config (CDN assets)
+  const ver = '4.5.136';
+  const CMAP_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${ver}/cmaps/`;
+  const STANDARD_FONT_DATA_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${ver}/standard_fonts/`;
+
+  const doc = await pdfjsLib.getDocument({
+    url: pdfUrl,
+    cMapUrl: CMAP_URL, cMapPacked: true,
+    standardFontDataUrl: STANDARD_FONT_DATA_URL
+  }).promise;
+
+  // Render pagina per pagina adattando alla larghezza viewport
+  const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1)); // limita memoria
+  for(let p=1; p<=doc.numPages; p++){
+    const page = await doc.getPage(p);
+    // Scala per adattare alla larghezza del wrapper
+    const baseViewport = page.getViewport({ scale: 1 });
+    const containerWidth = Math.min(document.documentElement.clientWidth, 1400); // cap
+    const scale = (containerWidth / baseViewport.width) * DPR;
+
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { alpha:false });
+    canvas.width  = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    canvas.style.width = (canvas.width / DPR) + 'px';
+    canvas.style.height = (canvas.height / DPR) + 'px';
+
+    wrap.appendChild(canvas);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+  }
+
+  // Blocchi best-effort
+  document.addEventListener('contextmenu', e=>e.preventDefault(), true);
+  document.addEventListener('keydown', e=>{
+    const k=(e.key||'').toLowerCase();
+    if((e.ctrlKey||e.metaKey)&&(k==='p'||e.keyCode===80)){
+      e.preventDefault(); e.stopPropagation();
+      alert('Stampa disabilitata.');
+    }
+  }, true);
+  window.onbeforeprint=()=>{ document.body.innerHTML=''; };
+})();
+</script>
+</body>
+</html>
