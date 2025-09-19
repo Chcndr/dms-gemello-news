@@ -899,73 +899,12 @@ document.addEventListener('click', function(e){
   // FORCE AUTOPLAY + AUDIO - Gestione aggressiva per Safari/iOS
   const video = document.getElementById('heroVideo');
   if (video) {
-    // Rimuovi muted dall'HTML e forza audio
+    // Configura audio per quando l'utente clicca play
     video.muted = false;
     video.volume = 0.8;
     
-    // Prova autoplay immediato con audio
-    const tryAutoplayWithAudio = () => {
-      video.muted = false;
-      video.volume = 0.8;
-      
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          console.log('✅ Autoplay riuscito con audio');
-          // Assicurati che l'audio sia attivo
-          if (video.muted) {
-            video.muted = false;
-            video.volume = 0.8;
-          }
-        }).catch(() => {
-          console.log('⚠️ Autoplay con audio bloccato, forzo comunque');
-          // Forza play anche se bloccato
-          setTimeout(() => {
-            video.muted = false;
-            video.volume = 0.8;
-            video.play().catch(() => {
-              // Ultimo tentativo con user interaction
-              console.log('❌ Serve interazione utente per audio');
-            });
-          }, 100);
-        });
-      }
-    };
-
-    // Prova su tutti gli eventi possibili
-    video.addEventListener('loadeddata', tryAutoplayWithAudio);
-    video.addEventListener('canplay', tryAutoplayWithAudio);
-    video.addEventListener('loadedmetadata', tryAutoplayWithAudio);
-    
-    // Forza audio su primo click/touch
-    const forceAudioOnInteraction = () => {
-      video.muted = false;
-      video.volume = 0.8;
-      video.play();
-      console.log('🔊 Audio forzato su interazione utente');
-    };
-    
-    document.addEventListener('click', forceAudioOnInteraction, { once: true });
-    document.addEventListener('touchstart', forceAudioOnInteraction, { once: true });
-    document.addEventListener('touchend', forceAudioOnInteraction, { once: true });
-    
-    // Prova immediata se video già pronto
-    if (video.readyState >= 2) {
-      tryAutoplayWithAudio();
-    }
-    
-    // Forza ogni secondo per i primi 5 secondi
-    let attempts = 0;
-    const forceInterval = setInterval(() => {
-      if (video.paused && attempts < 5) {
-        video.muted = false;
-        video.volume = 0.8;
-        video.play().catch(() => {});
-        attempts++;
-      } else {
-        clearInterval(forceInterval);
-      }
-    }, 1000);
+    // Il video resta in pausa con poster fino al click dell'utente
+    console.log('🎬 Video configurato con audio, in attesa di interazione utente');
   }
 })();
   </script>

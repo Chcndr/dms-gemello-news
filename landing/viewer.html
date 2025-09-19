@@ -5,74 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DMS Viewer</title>
   
-  <!-- Stili: full-screen, scroll iOS, sfondo nero -->
   <style>
     html, body {
       height: 100%;
       margin: 0;
-      background: #000;            /* nero pieno */
+      padding: 0;
+      background: #000 !important;
       color: #fff;
+      overflow: hidden;
     }
-    /* wrapper scrollabile (iOS richiede overflow su un contenitore) */
-    #wrap {
-      position: fixed;
-      inset: 0;
-      overflow: auto;               /* abilita lo scroll */
-      -webkit-overflow-scrolling: touch;  /* inerzia su iOS */
-      background: #000;
-    }
-    /* iframe a tutta pagina */
+    
     #pdf {
-      display: block;
-      width: 100%;
-      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       border: 0;
-      background: #000;
+      background: #000 !important;
     }
-    /* anti-stampa minimale */
-    @media print { * { display:none !important; } }
+    
+    /* Forza sfondo nero anche sull'iframe */
+    iframe {
+      background: #000 !important;
+    }
+    
+    /* Anti-stampa */
+    @media print { 
+      * { display: none !important; } 
+    }
   </style>
 </head>
 <body>
-  <!-- Wrapper + iframe -->
-  <div id="wrap">
-    <iframe id="pdf" allowfullscreen></iframe>
-  </div>
+  <iframe id="pdf" allowfullscreen></iframe>
 
-  <!-- Fallback apertura esterna (opzionale, in alto a dx) -->
-  <a id="open-ext" target="_blank" rel="noopener"
-     style="position:fixed;top:8px;right:10px;z-index:9;font:14px system-ui;
-            background:#111;border:1px solid #333;border-radius:8px;
-            padding:6px 10px;text-decoration:none;color:#fff;opacity:.9">
-    Apri in nuova scheda ↗
-  </a>
-
-  <!-- JS: carica il PDF dalla query string ?src=... -->
   <script>
     (function(){
-      const p = new URLSearchParams(location.search);
-      let src = p.get('src') || '';
-      // Se serve, aggiungi parametri PDF per migliorare la vista
-      if (src && !src.includes('#')) {
-        src += '#toolbar=1&navpanes=0&view=FitH';
+      const params = new URLSearchParams(location.search);
+      const src = params.get('src');
+      if (src) {
+        document.getElementById('pdf').src = src;
       }
-      const frame = document.getElementById('pdf');
-      frame.src = src;
-
-      // Fallback button
-      const ext = document.getElementById('open-ext');
-      if (ext) ext.href = src.replace(/#.*$/, '');
-
-      // Blocca scorciatoie stampa
-      document.addEventListener('keydown', e=>{
-        const k=(e.key||'').toLowerCase();
-        if((e.metaKey||e.ctrlKey)&&(k==='p'||e.keyCode===80)){
-          e.preventDefault(); e.stopPropagation();
+      
+      // Anti-stampa
+      document.addEventListener('keydown', function(e){
+        const k = (e.key||'').toLowerCase();
+        if ((e.ctrlKey || e.metaKey) && (k === 'p' || e.keyCode === 80)) {
+          e.preventDefault(); 
+          e.stopPropagation();
           alert('Stampa disabilitata.');
         }
+        // Anti-download
+        if ((e.ctrlKey || e.metaKey) && (k === 's' || e.keyCode === 83)) {
+          e.preventDefault(); 
+          e.stopPropagation();
+          alert('Download disabilitato.');
+        }
       });
-      document.addEventListener('contextmenu', e=>e.preventDefault());
-      window.onbeforeprint = ()=>{ document.body.innerHTML=''; };
+      
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      window.onbeforeprint = () => {
+        document.body.innerHTML = '';
+        setTimeout(() => location.replace('about:blank'), 0);
+      };
     })();
   </script>
 </body>
