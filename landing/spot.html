@@ -87,17 +87,25 @@
     background:rgba(20,184,166,.15);
   }
   
-  /* Evidenziazione rossa per pulsanti "hot" */
+  /* Evidenziazione rossa per pulsanti "hot" - TASTO COMPLETO ROSSO */
   .btn.is-hot, a.is-hot {
-    outline: 3px solid #e11d48;
-    box-shadow: 0 0 0 4px rgba(225,29,72,.25);
+    background: linear-gradient(135deg, #e11d48, #dc2626) !important;
+    border: 2px solid #f87171 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(225,29,72,.4), 0 0 0 2px rgba(225,29,72,.2);
     border-radius: 10px;
+    transform: scale(1.02);
+    transition: all 0.2s ease;
   }
 
-  /* Evidenziazione blu per normative ministeriali */
+  /* Evidenziazione blu per normative ministeriali - TASTO COMPLETO BLU */
   .btn-norme.is-min-hot {
-    outline: 2px solid #2d9cff;
-    box-shadow: 0 0 0 3px rgba(45,156,255,.25) inset;
+    background: linear-gradient(135deg, #2d9cff, #1d4ed8) !important;
+    border: 2px solid #60a5fa !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(45,156,255,.4), 0 0 0 2px rgba(45,156,255,.2);
+    transform: scale(1.02);
+    transition: all 0.2s ease;
   }
 
   /* Chip/button per Riferimenti Normativi – stesso colore dei PDF */
