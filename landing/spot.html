@@ -16,16 +16,10 @@
   }
   .top{display:flex; gap:10px; padding:18px}
   .btn{
-    appearance:none; border:2px solid rgba(255,255,255,.4);
-    background:linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
+    appearance:none; border:2px solid rgba(255,255,255,.2);
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
     color:var(--ink); padding:.55rem .9rem; border-radius:12px; font-weight:700;
     backdrop-filter:blur(6px); text-decoration:none; cursor:pointer;
-    display:inline-block; transition:all 0.2s ease;
-  }
-  .btn:hover{
-    border-color:rgba(255,255,255,.6);
-    background:linear-gradient(180deg, rgba(255,255,255,.25), rgba(255,255,255,.15));
-    transform:translateY(-1px);
   }
   .wrap{display:grid; grid-template-columns: minmax(260px, 520px) 1fr; gap:18px; padding:0 18px 28px}
   .panel{background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:14px}
@@ -47,32 +41,6 @@
   .videos{display:flex; flex-direction:column; gap:14px}
   video{width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.18); display:block}
   @media (max-width:900px){ .wrap{grid-template-columns: 1fr} }
-</style>
-
-<style>
-/* — Lightbox fullscreen — */
-#pdfLightbox{
-  position:fixed; inset:0; z-index:9999;
-  display:none; opacity:0; transition:opacity .18s ease;
-  background:rgba(10,10,14,.76); backdrop-filter:saturate(1.1) blur(6px);
-}
-#pdfLightbox.show{ display:block; opacity:1; }
-#pdfFrame{
-  position:absolute; inset:0;
-  width:100vw; height:100dvh; border:0; background:#000;
-}
-#pdfClose{
-  position:fixed; top:12px; right:12px;
-  width:44px; height:44px; border-radius:10px; border:0;
-  font:700 28px/44px system-ui; color:#fff; background:rgba(0,0,0,.35);
-  backdrop-filter: blur(4px);
-  cursor:pointer; z-index:10000;
-}
-#pdfClose:hover{ background:rgba(0,0,0,.5); }
-body.modal-open{ overflow:hidden; touch-action:none; }
-@media (prefers-reduced-motion: reduce){
-  #pdfLightbox{ transition:none; }
-}
 </style>
 <link rel="stylesheet" href="./assets/theme-green.css">
 <!-- THEME GREEN OVERRIDE (safe, removable) -->
@@ -169,13 +137,10 @@ body.modal-open{ overflow:hidden; touch-action:none; }
 </style>
 </head>
 <body>
-  <!-- DMS Auth Gate -->
-  <script src="common/auth-gate.js?v=STABLE1"></script>
-  
   <nav class="top">
-    <a href="../index.html" class="btn">Home</a>
-    <a href="./mappa-ministeri.html" class="btn">Mappa</a>
-    <a href="spot.html" class="btn">Spot</a>
+    <a href="/dms-gemello-news/landing/home.html" class="btn">Home</a>
+    <a href="/dms-gemello-news/landing/mappa-ministeri.html" class="btn">Mappa</a>
+    <a href="/dms-gemello-news/landing/spot.html" class="btn">Spot</a>
   </nav>
 
   <div class="wrap">
@@ -195,22 +160,22 @@ body.modal-open{ overflow:hidden; touch-action:none; }
         
         <div class="video-item">
           <h3>Riaccendiamo i mercati</h3>
-          <video controls preload="metadata" playsinline width="100%" poster="../assets/poster-riaccendiamo.jpg">
-            <source src="video/teaser-riaccendiamo.mp4?v=20250905a" type="video/mp4">
+          <video controls preload="metadata" playsinline width="100%" poster="/dms-gemello-news/assets/poster-riaccendiamo.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-riaccendiamo.mp4?v=20250905a" type="video/mp4">
           </video>
         </div>
 
         <div class="video-item">
           <h3>Hub Emilia Romagna</h3>
-          <video controls preload="metadata" playsinline width="100%" poster="../assets/poster-emilia-romagna.jpg">
-            <source src="video/teaser-emilia-romagna.mp4?v=20250905a" type="video/mp4">
+          <video controls preload="metadata" playsinline width="100%" poster="/dms-gemello-news/assets/poster-emilia-romagna.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-emilia-romagna.mp4?v=20250905a" type="video/mp4">
           </video>
         </div>
 
         <div class="video-item">
           <h3>Futuro con DMS</h3>
-          <video controls preload="metadata" playsinline width="100%" poster="../assets/poster-futuro.jpg">
-            <source src="video/teaser-23.mp4?v=20250905a" type="video/mp4">
+          <video controls preload="metadata" playsinline width="100%" poster="/dms-gemello-news/assets/poster-futuro.jpg">
+            <source src="/dms-gemello-news/landing/videos/teaser-23.mp4?v=20250905a" type="video/mp4">
           </video>
         </div>
       </section>
@@ -239,7 +204,7 @@ body.modal-open{ overflow:hidden; touch-action:none; }
           <a class="btn-norme" href="javascript:void(0)" data-norma="dogane-com-2023-258-260" data-norma-url="https://eur-lex.europa.eu/legal-content/IT/TXT/?uri=COM:2023:258:FIN">
             Riforma Dogane UE (pacchetto COM(2023) 258–260)
           </a>
-          <a class="btn-norme" href="javascript:void(0)" data-norma="pnrr-italia-domani" data-norma-url="https://www.governo.it/sites/governo.it/files/PNRR.pdf">
+          <a class="btn-norme" href="/dms-gemello-news/landing/pdfjs-lite/?src=https%3A//www.governo.it/sites/governo.it/files/PNRR.pdf&v=finale-006" target="_blank" rel="noopener" data-norma="pnrr-italia-domani" data-norma-url="https://www.governo.it/sites/governo.it/files/PNRR.pdf">
             PNRR – Italia Domani
           </a>
           <a class="btn-norme" href="javascript:void(0)" data-norma="pdnd" data-norma-url="https://www.agid.gov.it/it/infrastrutture/sistema-pubblico-connettivita/pdnd-interoperabilita">
@@ -279,73 +244,69 @@ body.modal-open{ overflow:hidden; touch-action:none; }
     {
       title: "Documenti Base",
       docs: [
-        ["Hub Nazionale del Commercio","pdf/HUBNAZIONALEDELCOMMERCIO(2).pdf","data-pdf"],
-        ["DMS & CLUST-ER","pdf/DMSECLUST-ER(3).pdf","data-pdf"],
-        ["Dossier Nazionale","pdf/DOSSIERNAZIONALE(1).pdf","data-pdf"],
-        ["DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città","pdf/DMS-RiaccendiamoiMercatiRivitalizziamoleCittà.pdf","data-pdf"],
-        ["Passaporto EU","pdf/PASSAPORTOEU(3).pdf","data-pdf"],
-        ["Presentazione DMS (Bologna)","pdf/PRESENTAZIONEDMS-CITTAMETROPOLITANADIBOLOGNA-3.pdf","data-pdf"],
-        ["Hub Urbani e di Prossimità in Emilia-Romagna","pdf/HubUrbaniediProssimita-EmiliaRomagna-1.pdf","data-pdf"],
-        ["Gemello DMS","pdf/GEMELLOADMS(1).pdf","data-pdf"],
-        ["DMS ECC (narrativo)","pdf/DMSECC(3).pdf","data-pdf"],
-        ["DMS ECC (tecnico)","pdf/DMSECC-TECNICO(1).pdf","data-pdf"],
-        ["Carbon Credit – Logica","pdf/LOGICACARBONCREDIT(3).pdf","data-pdf"],
-        ["Carbon Credit DMS","pdf/CARBONCREDITDMS-4.pdf","data-pdf"],
-        ["Ecosistema Costi PA","pdf/EcosistemaDMS-hub-costiPA-2.pdf","data-pdf"],
-        ["Analisi & Soluzione DMS","pdf/ANALISIESOLUZIONEDMS(1).pdf","data-pdf"],
-        ["Scenario Futuro","pdf/ScenarioFuturo(3).pdf","data-pdf"],
-        ["Presentazione DMS Compressa","pdf/PRESENTAZIONE DMS -compressed.pdf","data-pdf"],
-        ["DMS ALL-IN-ONE","pdf/DMS         ALL-IN-ONE .pdf","data-pdf"],
-        ["DMS ONCE ONLY Single Digital Gateway","pdf/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf","data-pdf"],
-        ["Hub DMS Web3 Europa","pdf/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf","data-pdf"]
+        ["Hub Nazionale del Commercio","/dms-gemello-news/assets/doc/HUBNAZIONALEDELCOMMERCIO(2).pdf"],
+        ["DMS & CLUST-ER","/dms-gemello-news/assets/doc/DMSECLUST-ER(4).pdf"],
+        ["Dossier Nazionale","/dms-gemello-news/assets/doc/DOSSIERNAZIONALE(3).pdf"],
+        ["DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città","/dms-gemello-news/assets/doc/DMS-RiaccendiamoiMercati-RivitalizziamoleCitta.pdf"],
+        ["Passaporto EU","/dms-gemello-news/assets/doc/PASSAPORTOEU(3).pdf"],
+        ["Presentazione DMS (Bologna)","/dms-gemello-news/assets/doc/PRESENTAZIONEDMS-CITTAMETROPOLITANADIBOLOGNA-3.pdf"],
+        ["Hub Urbani e di Prossimità in Emilia-Romagna","/dms-gemello-news/assets/doc/HubUrbaniediProssimita-EmiliaRomagna-1.pdf"],
+        ["Gemello DMS","/dms-gemello-news/assets/doc/INFRASTRUTTURARETEDMSEUROPA.pdf"],
+        ["DMS ECC (narrativo)","/dms-gemello-news/assets/doc/EQUILIBRIOECOSOSTENIBILE.pdf"],
+        ["DMS ECC (tecnico)","/dms-gemello-news/assets/doc/DMSECC(3).pdf"],
+        ["Carbon Credit – Logica","/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"],
+        ["Carbon Credit DMS","/dms-gemello-news/assets/doc/CARBONCREDITDMS-4.pdf"],
+        ["Ecosistema Costi PA","/dms-gemello-news/assets/doc/EcosistemaDMS-hub-costiPA-2.pdf"],
+        ["Analisi & Soluzione DMS","/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"],
+        ["Scenario Futuro","/dms-gemello-news/assets/doc/ScenarioFuturo(3).pdf"]
       ]
     },
     {
       title: "Analisi e Ricerche",
       docs: [
-        ["Analisi Commercio Ambulante","pdf/Relazionecalocommercioambulante.pdf","data-pdf"],
-        ["Report Controlli PA","pdf/Relazionesuicontrolli(1).pdf","data-pdf"],
-        ["Analisi Dati Sistema","pdf/DATI.pdf","data-pdf"],
-        ["Mercato dell'Usato","pdf/USATO.pdf","data-pdf"],
-        ["Riequilibrio Economico","pdf/RIEQUILIBRIO.pdf","data-pdf"],
-        ["Relazione Approfondita DMS (102 pagine)","pdf/ANALISIESOLUZIONEDMS(1).pdf","data-pdf"]
+        ["Analisi Commercio Ambulante","/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"],
+        ["Report Controlli PA","/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"],
+        ["Analisi Dati Sistema","/dms-gemello-news/assets/doc/DATI.pdf"],
+        ["Mercato dell'Usato","/dms-gemello-news/assets/doc/USATO.pdf"],
+        ["Riequilibrio Economico","/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"],
+        ["Relazione Approfondita DMS (102 pagine)","/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"]
       ]
     },
     {
       title: "Implementazione Tecnica",
       docs: [
-        ["DMS Sistema Completo","pdf/DMScompleto2(1).pdf","data-pdf"],
-        ["Implementazioni Avanzate","pdf/IMPLEMENTAZIONI(1).pdf","data-pdf"],
-        ["DMS Offline con CIE","pdf/DMSofflineconCIE(1).pdf","data-pdf"],
-        ["Gestione Servizi Accessori","pdf/GESTIONESERVIZIACCESSORI(1).pdf","data-pdf"],
-        ["DMS al Centro di Tutto","pdf/DMSalCENTROdiTUTTO(1).pdf","data-pdf"],
-        ["Frammentazione Digitale PA","pdf/Vuoto1332(1).pdf","data-pdf"]
+        ["DMS Sistema Completo","/dms-gemello-news/assets/doc/DMScompleto2(1).pdf"],
+        ["Implementazioni Avanzate","/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"],
+        ["DMS Offline con CIE","/dms-gemello-news/assets/doc/DMSofflineconCIE(1).pdf"],
+        ["Gestione Servizi Accessori","/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"],
+        ["DMS al Centro di Tutto","/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf"],
+        ["Frammentazione Digitale PA","/dms-gemello-news/assets/doc/Vuoto1332(1).pdf"]
       ]
     },
     {
       title: "FinTech e Carbon Credit",
       docs: [
-        ["DMS FinTech","pdf/DMSFINTECH.pdf","data-pdf"],
-        ["Eco Carbon Credit","pdf/ECOCOCREDOIT.pdf","data-pdf"],
-        ["Logica Carbon Credit Avanzata","pdf/LOGICACARBONCREDIT(3).pdf","data-pdf"],
-        ["Eventi Straordinari","pdf/EVENTISTRAORDINARI(2).pdf","data-pdf"]
+        ["DMS FinTech","/dms-gemello-news/assets/doc/DMSFINTECH.pdf"],
+        ["Eco Carbon Credit","/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"],
+        ["Logica Carbon Credit Avanzata","/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"],
+        ["Eventi Straordinari","/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"]
       ]
     },
     {
       title: "Progetto Nazionale",
       docs: [
-        ["Progetto Nazionale","pdf/PROGETTONAZIONALE1(1).pdf","data-pdf"],
-        ["Hub DMS Web3 Europa","pdf/DMSWeb3-SmartContract(2).pdf","data-pdf"],
-        ["Premessa Politica","pdf/PREMESSAPOLITICA.pdf","data-pdf"],
-        ["Bolkestein Commercio","pdf/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf","data-pdf"]
+        ["Progetto Nazionale","/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"],
+        ["Hub DMS Web3 Europa","/dms-gemello-news/assets/doc/DMSWeb3-SmartContract(2).pdf"],
+        ["Premessa Politica","/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf"],
+        ["Bolkestein Commercio","/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"]
       ]
     },
     {
       title: "App e Strumenti",
       docs: [
-        ["App DMS Assistente","pdf/APPDMSAssistentePersonale.pdf","data-pdf"],
-        ["DMS Locandina","pdf/DMSLOCANDINA.pdf","data-pdf"],
-        ["DMS Set v2","pdf/DMSSSET(2).pdf","data-pdf"]
+        ["App DMS Assistente","/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"],
+        ["DMS Locandina","/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"],
+        ["DMS Set v2","/dms-gemello-news/assets/doc/DMSSSET(2).pdf"]
       ]
     }
   ];
@@ -361,20 +322,13 @@ body.modal-open{ overflow:hidden; touch-action:none; }
     list.appendChild(sectionTitle);
     
     // Aggiungi documenti della sezione
-    section.docs.forEach(([title, href, useLightbox]) => {
+    section.docs.forEach(([title, href]) => {
       const a = document.createElement('a');
       a.className = 'doc';
-      
-      if (useLightbox === 'data-pdf') {
-        // Usa lightbox per PDF protetto
-        a.setAttribute('data-pdf', href);
-        a.href = '#';
-      } else {
-        // Link normale
-        a.href = href;
-        a.target = '_blank';
-        a.rel = 'noopener';
-      }
+      // Usa PDF.js Lite per controllo completo rendering
+      a.href = `/dms-gemello-news/landing/pdfjs-lite/?src=${encodeURIComponent(href)}&v=finale-006`;
+      a.target = '_blank';
+      a.rel = 'noopener';
       
       // Aggiungo data-doc per evidenziazione hash e data-spot + id per evidenziazione rossa
       const slug = title.toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]/g,'');
@@ -1820,105 +1774,35 @@ function applyMinisterHighlight(mKey){
 })();
 </script>
 
-<!-- ⬇️ LIGHTBOX PDF FULLSCREEN -->
-<div id="pdfLightbox" aria-hidden="true">
-  <button id="pdfClose" aria-label="Chiudi PDF">×</button>
-  <iframe id="pdfFrame" title="Documento PDF" allow="fullscreen"></iframe>
-</div>
-
+<!-- Script shim per forzare apertura PDF tramite viewer interno -->
 <script>
 (function(){
-  // Config base
-  const VIEWER = 'landing/viewer/lite.html'; // viewer lite con PDF.js
-  const TOKEN  = ''; // opzionale: es. 'TOK1ABC' se usi whitelist.json
-
-  const lb   = document.getElementById('pdfLightbox');
-  const fr   = document.getElementById('pdfFrame');
-  const btnX = document.getElementById('pdfClose');
-
-  // STEP 2 - Viewer antistampa con percorsi corretti
-  function openPdf(src){
-    // Correggi il percorso per il viewer che si trova in landing/viewer/
-    // Da ../assets/doc/file.pdf (dalla pagina SPOT) a ../../assets/doc/file.pdf (dal viewer)
-    let viewerSrc = src;
-    if (src.startsWith('../assets/')) {
-      viewerSrc = '../' + src; // ../assets/doc/file.pdf -> ../../assets/doc/file.pdf
-    } else if (src.startsWith('../docs/')) {
-      viewerSrc = '../' + src; // ../docs/file.pdf -> ../../docs/file.pdf
+  // Qualsiasi <a> che punti a un .pdf viene reindirizzato al viewer PDF.js Lite
+  function toViewer(url){
+    // Mantiene query esistente e aggiunge cache-buster
+    var sep = url.indexOf('?')>-1 ? '&' : '?';
+    var cb = '_cb=' + Date.now().toString(36);
+    return 'pdfjs-lite/?src=' + encodeURIComponent(url + sep + cb) + '&v=finale-006';
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a');
+    if(!a) return;
+    var href = a.getAttribute('href') || '';
+    if(/\.pdf(\?|#|$)/i.test(href)){
+      e.preventDefault();
+      var url = a.href; // assolutizza
+      // se l'href non è già il viewer, reindirizza
+      if(!/pdfjs-lite\/\?src=/i.test(url)){
+        var viewer = toViewer(href);
+        // apre come voleva l'utente (stessa scheda o nuova)
+        if(a.target === '_blank') window.open(viewer, '_blank', 'noopener');
+        else window.location.href = viewer;
+      }
     }
-    
-    const u = new URL(VIEWER, location.origin);
-    u.searchParams.set('src', viewerSrc);
-    u.searchParams.set('v', 'lite1');
-    if (TOKEN) u.searchParams.set('token', TOKEN);
-
-    fr.src = u.toString();
-    lb.classList.add('show');
-    document.body.classList.add('modal-open');
-    lb.setAttribute('aria-hidden','false');
-
-    // history: back = chiudi
-    history.pushState({pdf:true}, '', '#pdf');
-    // focus sul close per accessibilità
-    setTimeout(()=>btnX.focus(), 0);
-  }
-
-  // Chiudi lightbox
-  function closePdf(){
-    lb.classList.remove('show');
-    document.body.classList.remove('modal-open');
-    lb.setAttribute('aria-hidden','true');
-    // svuota iframe per evitare "share → cattura PDF"
-    fr.src = 'about:blank';
-    // ripristina URL senza hash
-    if (location.hash === '#pdf') history.back();
-  }
-
-  // Bind pulsante chiudi + ESC + click backdrop
-  btnX.addEventListener('click', closePdf);
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && lb.classList.contains('show')) closePdf();
-  });
-  lb.addEventListener('click', e => {
-    if (e.target === lb) closePdf();
-  });
-
-  // Intercetta click sui link/tasti PDF: aggiungi data-pdf con il percorso reale del file in /docs/
-  // Esempio <a class="open-pdf" data-pdf="docs/CARBON%20CREDIT%20DMS.pdf">PDF</a>
-  document.addEventListener('click', e => {
-    const a = e.target.closest('[data-pdf]');
-    if (!a) return;
-    e.preventDefault();
-    const src = a.getAttribute('data-pdf').trim();
-    if (!src) return;
-    openPdf(src);
-  });
-
-  // Se si arriva con #pdf (es. refresh), chiudi per sicurezza
-  window.addEventListener('popstate', () => {
-    if (lb.classList.contains('show')) closePdf();
-  });
+  }, true);
 })();
 </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  // elimina text-node "orfani" tipo );, });, ecc. fuori da <script>/<style>
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-  const kill = [];
-  while (walker.nextNode()) {
-    const t = walker.currentNode;
-    if (!t.nodeValue) continue;
-    const s = t.nodeValue.trim();
-    const looksLikeCode = /^[()\{\}\[\];]+$/.test(s) || /^(?:\}\)\;|\)\;|\}\;)$/.test(s);
-    const insideCode = t.parentElement && (t.parentElement.closest('script,style'));
-    if (looksLikeCode && !insideCode) kill.push(t);
-  }
-  kill.forEach(n => n.remove());
-});
-</script>
-
-<!-- Cache refresh fix -->
 </body>
 </html>
 
