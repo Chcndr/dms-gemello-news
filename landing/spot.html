@@ -1878,9 +1878,15 @@ function applyMinisterHighlight(mKey){
       e.stopPropagation();
       e.stopImmediatePropagation(); // Blocca tutti gli altri handler
       
-      var cb = (link.href.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
-      var viewerUrl = VIEWER + '?src=' + encodeURIComponent(link.href + cb) + '&v=' + VERSION;
-      window.location.href = viewerUrl; // UNIFICATO: sempre stessa pagina
+      // Usa il modal interno invece del redirect
+      if (window.dmsPdfAutoFix && window.dmsPdfAutoFix.openPdfInModal) {
+        window.dmsPdfAutoFix.openPdfInModal(link.href);
+      } else {
+        // Fallback al sistema originale se il modal non è disponibile
+        var cb = (link.href.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
+        var viewerUrl = VIEWER + '?src=' + encodeURIComponent(link.href + cb) + '&v=' + VERSION;
+        window.location.href = viewerUrl;
+      }
       return false;
     }
   }, true); // Usa capture per intercettare prima di altri handler
@@ -1898,9 +1904,16 @@ function applyMinisterHighlight(mKey){
       
       var href = link.getAttribute('href');
       var abs = new URL(href, window.location.href).href;
-      var cb = (abs.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
-      var viewerUrl = VIEWER + '?src=' + encodeURIComponent(abs + cb) + '&v=' + VERSION;
-      window.location.href = viewerUrl;
+      
+      // Usa il modal interno invece del redirect
+      if (window.dmsPdfAutoFix && window.dmsPdfAutoFix.openPdfInModal) {
+        window.dmsPdfAutoFix.openPdfInModal(abs);
+      } else {
+        // Fallback al sistema originale se il modal non è disponibile
+        var cb = (abs.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
+        var viewerUrl = VIEWER + '?src=' + encodeURIComponent(abs + cb) + '&v=' + VERSION;
+        window.location.href = viewerUrl;
+      }
       return false;
     }
   }, false); // Usa bubbling come backup
