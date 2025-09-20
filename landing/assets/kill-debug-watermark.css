@@ -1,0 +1,100 @@
+/*
+ * Kill Debug Watermark - Rimuove completamente il testo "PDF ENFORCER finale-006"
+ * Applica regole CSS aggressive per nascondere tutti i possibili watermark di debug
+ */
+
+/* Nasconde elementi che contengono il testo PDF ENFORCER */
+div:contains("PDF ENFORCER"),
+span:contains("PDF ENFORCER"),
+p:contains("PDF ENFORCER"),
+[data-debug*="pdf"],
+[class*="pdf-enforcer"],
+[id*="pdf-enforcer"],
+.debug-badge,
+.watermark {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    z-index: -1 !important;
+}
+
+/* Nasconde elementi posizionati in basso a sinistra che potrebbero essere watermark */
+div[style*="position:fixed"][style*="bottom:"],
+div[style*="position:absolute"][style*="bottom:"],
+div[style*="left:6px"],
+div[style*="left:10px"] {
+    display: none !important;
+}
+
+/* Nasconde elementi con font monospace piccoli (tipici dei debug badge) */
+div[style*="font:11px"],
+div[style*="font:12px"],
+div[style*="monospace"],
+div[style*="system-ui"] {
+    display: none !important;
+}
+
+/* Nasconde elementi con colori tipici dei debug badge */
+div[style*="color:#9cf"],
+div[style*="background:#102030"],
+div[style*="background:#0b0f14"],
+div[style*="color:#ffd27a"],
+div[style*="color:#9bd3ff"] {
+    display: none !important;
+}
+
+/* Nasconde elementi con z-index molto alto (tipici dei debug overlay) */
+div[style*="z-index:2147483647"],
+div[style*="z-index:99999"] {
+    display: none !important;
+}
+
+/* Regola specifica per elementi che contengono "finale-006" */
+*:contains("finale-006") {
+    display: none !important;
+}
+
+/* Nasconde tutti gli elementi con testo che inizia con "PDF ENFORCER" */
+*[data-text^="PDF ENFORCER"],
+*[title^="PDF ENFORCER"] {
+    display: none !important;
+}
+
+/* Nasconde elementi con border-radius piccoli e padding piccoli (tipici badge) */
+div[style*="border-radius:6px"][style*="padding:4px"],
+div[style*="border-radius:6px"][style*="padding:6px"] {
+    display: none !important;
+}
+
+/* Regola catch-all per qualsiasi elemento che potrebbe essere un watermark */
+div[style*="position:fixed"][style*="opacity:.9"],
+div[style*="position:fixed"][style*="opacity:.92"],
+div[style*="position:fixed"][style*="opacity:.95"] {
+    display: none !important;
+}
+
+/* Nasconde elementi con dimensioni tipiche dei badge debug */
+div[style*="width:auto"][style*="height:auto"][style*="position:fixed"] {
+    display: none !important;
+}
+
+/* Regola specifica per il viewer PDF */
+.pdfViewer div[style*="position:fixed"],
+.viewer div[style*="position:fixed"],
+#viewer div[style*="position:fixed"] {
+    display: none !important;
+}
+
+/* Nasconde qualsiasi elemento che potrebbe contenere versioning */
+*[data-version],
+*[data-v],
+div:contains("v="),
+span:contains("v=") {
+    display: none !important;
+}
