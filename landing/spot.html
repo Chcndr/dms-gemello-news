@@ -1830,6 +1830,7 @@ function applyMinisterHighlight(mKey){
     a.dataset[MARKER] = '1';
     // UNIFICATO: tutti i PDF si aprono nella stessa pagina per coerenza
     a.removeAttribute('target'); // Rimuovi target per aprire nella stessa pagina
+    a.target = ''; // Forza rimozione target
     a.setAttribute('rel','noopener');
 
     if (VERBOSE) console.log('[PDF ENFORCER] rewrite', href, '→', v);
@@ -1863,18 +1864,46 @@ function applyMinisterHighlight(mKey){
   });
   mo.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:['href'] });
 
-  // (Facoltativo) Ultima rete di sicurezza: intercetta click residui
+  // INTERCETTAZIONE SUPER AGGRESSIVA: Cattura TUTTI i click sui PDF
   document.addEventListener('click', function(e){
-    var a = e.target.closest ? e.target.closest('a[href]') : null;
-    if(!a) return;
-    var href = a.getAttribute('href') || '';
-    // Se è ancora un .pdf diretto (non riscritto per qualche motivo), forza qui
-    if (isPdfHref(href) && !/\/pdfjs-lite\/\?src=/i.test(href)){
+    var link = e.target.closest('a');
+    if (link && link.href && /\.pdf(\?|#|$)/i.test(link.href)) {
+      if (VERBOSE) console.log('[PDF ENFORCER] PDF link clicked directly:', link.href);
+      
+      // FORZA rimozione target="_blank" al momento del click
+      link.removeAttribute('target');
+      link.target = '';
+      
       e.preventDefault();
-      var v = toViewer(a.href);
-      window.location.href = v; // UNIFICATO: sempre stessa pagina
+      e.stopPropagation();
+      e.stopImmediatePropagation(); // Blocca tutti gli altri handler
+      
+      var cb = (link.href.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
+      var viewerUrl = VIEWER + '?src=' + encodeURIComponent(link.href + cb) + '&v=' + VERSION;
+      window.location.href = viewerUrl; // UNIFICATO: sempre stessa pagina
+      return false;
     }
-  }, true);
+  }, true); // Usa capture per intercettare prima di altri handler
+  
+  // INTERCETTATORE BACKUP: Se il primo fallisce, questo cattura tutto
+  document.addEventListener('click', function(e){
+    var link = e.target.closest('a');
+    if (link && link.getAttribute('href') && /\.pdf(\?|#|$)/i.test(link.getAttribute('href'))) {
+      if (VERBOSE) console.log('[PDF ENFORCER] BACKUP intercept:', link.getAttribute('href'));
+      link.removeAttribute('target');
+      link.target = '';
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      var href = link.getAttribute('href');
+      var abs = new URL(href, window.location.href).href;
+      var cb = (abs.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
+      var viewerUrl = VIEWER + '?src=' + encodeURIComponent(abs + cb) + '&v=' + VERSION;
+      window.location.href = viewerUrl;
+      return false;
+    }
+  }, false); // Usa bubbling come backup
 
   // Beacon di presenza per debug visivo rapido (DISATTIVATO)
   if (false) { // VERBOSE disattivato
