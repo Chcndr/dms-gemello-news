@@ -1023,14 +1023,48 @@ addEventListener('click', function (e) {
     document.body.appendChild(b);
   }
   
-  // Kill-badge: rimuove qualsiasi scritta debug che appare
-  setInterval(function(){
-    document.querySelectorAll('*').forEach(function(el){
-      if(el.textContent && /PDF\s*ENFORCER|finale[-_]?\d+/i.test(el.textContent.trim())){
-        el.style.display = 'none';
-      }
+
+})();
+</script>
+
+<!-- DMS kill-badge v2 (safe) -->
+<style>
+  /* Nasconde SOLO badge noti, senza toccare altro */
+  #pdf-enforcer,
+  .pdf-enforcer,
+  .pdfEnforcer,
+  .print-guard,
+  .printGuard,
+  .pdf-watermark,
+  .viewer-status,
+  .debug-label {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+</style>
+<script>
+(function(){
+  // Rimuove solo elementi con i selettori noti (safe).
+  const SEL = [
+    '#pdf-enforcer','.pdf-enforcer','.pdfEnforcer',
+    '.print-guard','.printGuard','.pdf-watermark',
+    '.viewer-status','.debug-label'
+  ];
+  function clean(root=document){
+    SEL.forEach(s => root.querySelectorAll(s).forEach(n => n.remove()));
+  }
+  // 1) una passata all'avvio
+  clean();
+
+  // 2) (opzionale) se hai un iframe viewer stesso dominio, pulisci anche lì
+  ['#dmsMlFrame','#pdfFrame','#viewerFrame'].forEach(id=>{
+    const fr = document.querySelector(id);
+    if (!fr) return;
+    fr.addEventListener('load', ()=>{
+      try { clean(fr.contentDocument || fr.contentWindow.document); } catch(_) {}
     });
-  }, 1000);
+  });
 })();
 </script>
 </body>
