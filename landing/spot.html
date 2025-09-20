@@ -1828,8 +1828,8 @@ function applyMinisterHighlight(mKey){
     a.dataset.originalHref = href;         // per debug eventuale
     a.setAttribute('href', v);
     a.dataset[MARKER] = '1';
-    // opzionale: assicura new tab (su iOS evita handler strani del viewer nativo)
-    if (!a.hasAttribute('target')) a.setAttribute('target','_blank');
+    // UNIFICATO: tutti i PDF si aprono nella stessa pagina per coerenza
+    a.removeAttribute('target'); // Rimuovi target per aprire nella stessa pagina
     a.setAttribute('rel','noopener');
 
     if (VERBOSE) console.log('[PDF ENFORCER] rewrite', href, '→', v);
@@ -1872,7 +1872,7 @@ function applyMinisterHighlight(mKey){
     if (isPdfHref(href) && !/\/pdfjs-lite\/\?src=/i.test(href)){
       e.preventDefault();
       var v = toViewer(a.href);
-      window.open(v, a.getAttribute('target')==='_blank' ? '_blank' : '_self', 'noopener');
+      window.location.href = v; // UNIFICATO: sempre stessa pagina
     }
   }, true);
 

@@ -981,7 +981,7 @@ addEventListener('click', function (e) {
     if (isPdfHref(href) && !/\/pdfjs-lite\/\?src=/i.test(href)){
       e.preventDefault();
       var v = toViewer(a.href);
-      window.open(v, a.getAttribute('target')==='_blank' ? '_blank' : '_self', 'noopener');
+      window.location.href = v; // UNIFICATO: sempre stessa pagina
     }
   }, true);
 
@@ -1009,7 +1009,7 @@ addEventListener('click', function (e) {
       e.stopPropagation();
       var cb = (link.href.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
       var viewerUrl = VIEWER + '?src=' + encodeURIComponent(link.href + cb) + '&v=' + VERSION;
-      window.open(viewerUrl, link.target === '_blank' ? '_blank' : '_self', 'noopener');
+      window.location.href = viewerUrl; // UNIFICATO: sempre stessa pagina
       return false;
     }
   }, true); // Usa capture per intercettare prima di altri handler

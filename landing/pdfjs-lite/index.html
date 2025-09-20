@@ -5,9 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PDF.js Lite</title>
 <style>
-  html,body{height:100%;margin:0;background:#000!important;color:#fff}
+  html,body{height:100%;margin:0;background:#000!important;color:#fff;overflow:hidden}
 
-  #wrap{position:fixed;inset:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:20px}
+  #wrap{
+    position:fixed;inset:0;overflow:auto;padding:20px;
+    /* Disabilita pull-to-refresh e scroll elastico */
+    overscroll-behavior:none;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-y;
+  }
   
   /* Pulsante X per chiudere */
   #closeBtn{
