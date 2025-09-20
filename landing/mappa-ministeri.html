@@ -451,9 +451,6 @@
     /* Assicurati che NON ruoti mai col resto */
     #hubIcon { will-change: filter, opacity; }
   </style>
-  
-  <!-- DMS Modal Lite CSS -->
-  <link rel="stylesheet" href="./assets/dms-modal-lite.css?v=1">
 </head>
 <body>
   <!-- Navbar -->
@@ -1228,62 +1225,6 @@
   }
 })();
 </script>
-
-<!-- DMS Modal Lite - Markup -->
-<div id="dmsModalLite" class="dms-ml" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="dms-ml__backdrop"></div>
-  <div class="dms-ml__dialog" role="document">
-    <button class="dms-ml__close" aria-label="Chiudi">×</button>
-    <iframe id="dmsMlFrame" class="dms-ml__frame" title="Viewer"></iframe>
-  </div>
-</div>
-
-<!-- DMS Modal Lite JS -->
-<script src="./assets/dms-modal-lite.js?v=1" defer></script>
-
-<!-- DMS kill-badge: rimuove watermark/debug in basso a sinistra -->
-<style id="dms-kill-badge">
-  /* nasconde classici badge/tooltip/debug se presenti */
-  #pdf-enforcer, .pdf-enforcer, .pdfEnforcer,
-  .viewer-status, .debug, .debug-label,
-  .print-guard, .printGuard, .pdf-watermark,
-  .info, .tooltip, [data-tip] {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-</style>
-<script>
-(function(){
-  const BAD_SELECTORS = [
-    '#pdf-enforcer','.pdf-enforcer','.pdfEnforcer',
-    '.viewer-status','.debug','.debug-label',
-    '.print-guard','.printGuard','.pdf-watermark',
-    '.info','.tooltip','[data-tip]'
-  ];
-  const BAD_TEXT = /(PDF\s*ENFORCER|finale[-_ ]?\d+|anti.?stampa|print.?guard|watermark)/i;
-
-  function purge(root=document){
-    // 1) per selettori noti
-    BAD_SELECTORS.forEach(sel =>
-      root.querySelectorAll(sel).forEach(n => n.remove())
-    );
-    // 2) per elementi "furbi" senza classi: match sul testo visibile
-    root.querySelectorAll('*').forEach(n => {
-      try{
-        const t = (n.innerText||'').trim();
-        if (t && BAD_TEXT.test(t)) n.remove();
-      }catch(_){}
-    });
-  }
-
-  purge(); // subito
-  // osserva nuove iniezioni e le rimuove all'istante
-  const mo = new MutationObserver(m => purge());
-  mo.observe(document.documentElement, {childList:true, subtree:true});
-})();
-</script>
-
 </body>
 </html>
 
