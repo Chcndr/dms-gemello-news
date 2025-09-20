@@ -985,17 +985,34 @@ addEventListener('click', function (e) {
     }
   }, true);
 
-  // CORREZIONE: Trigger riscansione quando si aprono pannelli orologio
+  // CORREZIONE ROBUSTA: Trigger riscansione multipla quando si aprono pannelli orologio
   document.addEventListener('click', function(e){
     var btn = e.target.closest ? e.target.closest('button') : null;
     if (btn && btn.textContent && btn.textContent.includes('Q')) {
       // È un pulsante dell'orologio (contiene "Q1 2025", "Q2 2025", etc.)
-      setTimeout(function(){
-        scan(document); // Riscansiona tutti i link dopo che il pannello si è aperto
-        if (VERBOSE) console.log('[PDF ENFORCER] rescan after clock button click');
-      }, 100);
+      if (VERBOSE) console.log('[PDF ENFORCER] clock button clicked, scheduling rescans');
+      
+      // Scansioni multiple per catturare tutti i link generati dinamicamente
+      setTimeout(function(){ scan(document); }, 50);   // Prima scansione veloce
+      setTimeout(function(){ scan(document); }, 150);  // Seconda scansione
+      setTimeout(function(){ scan(document); }, 300);  // Terza scansione per sicurezza
+      setTimeout(function(){ scan(document); }, 500);  // Quarta scansione finale
     }
   });
+
+  // INTERCETTAZIONE AGGIUNTIVA: Cattura TUTTI i click sui PDF come fallback
+  document.addEventListener('click', function(e){
+    var link = e.target.closest('a');
+    if (link && link.href && /\.pdf(\?|#|$)/i.test(link.href)) {
+      if (VERBOSE) console.log('[PDF ENFORCER] PDF link clicked directly:', link.href);
+      e.preventDefault();
+      e.stopPropagation();
+      var cb = (link.href.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
+      var viewerUrl = VIEWER + '?src=' + encodeURIComponent(link.href + cb) + '&v=' + VERSION;
+      window.open(viewerUrl, link.target === '_blank' ? '_blank' : '_self', 'noopener');
+      return false;
+    }
+  }, true); // Usa capture per intercettare prima di altri handler
 
   // Beacon di presenza per debug visivo rapido (disattiva dopo i test)
   if (VERBOSE) {
