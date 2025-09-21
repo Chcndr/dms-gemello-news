@@ -4,7 +4,7 @@
       "id": "t1-hub-nazionale-del-commercio",
       "tasto": 1,
       "title": "Hub Nazionale del Commercio",
-      "filename": "HUB-NAZIONALE-DEL-COMMERCIO.pdf",
+      "filename": "HUB NAZIONALE DEL COMMERCIO.pdf",
       "url": "",
       "tags": [
         "t1"
@@ -15,7 +15,7 @@
       "id": "t1-dossier-nazionale",
       "tasto": 1,
       "title": "Dossier Nazionale",
-      "filename": "DOSSIER-NAZIONALE.pdf",
+      "filename": "DOSSIER NAZIONALE.pdf",
       "url": "",
       "tags": [
         "t1"
@@ -37,7 +37,7 @@
       "id": "t1-dms-ecc-eco-carbon-credit",
       "tasto": 1,
       "title": "DMS ECC (Eco Carbon Credit)",
-      "filename": "DMS-ECC-ECO-CARBON-CREDIT.pdf",
+      "filename": "DMS ECC.pdf",
       "url": "",
       "tags": [
         "t1"
@@ -48,7 +48,7 @@
       "id": "t2-analisi-ricerche-relazioni-problemi",
       "tasto": 2,
       "title": "Analisi (ricerche, relazioni, problemi)",
-      "filename": "ANALISI-RICERCHE-RELAZIONI-PROBLEMI.pdf",
+      "filename": "Analisi.pdf",
       "url": "",
       "tags": [
         "t2"
@@ -158,7 +158,7 @@
       "id": "t5-carbon-credit-dms-narrativo",
       "tasto": 5,
       "title": "Carbon Credit DMS (narrativo)",
-      "filename": "CARBON-CREDIT-DMS-NARRATIVO.pdf",
+      "filename": "CARBON CREDIT DMS.pdf",
       "url": "",
       "tags": [
         "t5"
@@ -169,7 +169,7 @@
       "id": "t5-carbon-credit-dms-tecnico-completo",
       "tasto": 5,
       "title": "Carbon Credit DMS (tecnico/completo)",
-      "filename": "CARBON-CREDIT-DMS-TECNICO-COMPLETO.pdf",
+      "filename": "CARBON CREDIT DMS.pdf",
       "url": "",
       "tags": [
         "t5"
@@ -191,7 +191,7 @@
       "id": "t5-riequilibrio-1",
       "tasto": 5,
       "title": "Riequilibrio 1",
-      "filename": "RIEQUILIBRIO-1.pdf",
+      "filename": "RIEQUILIBRIO.pdf",
       "url": "",
       "tags": [
         "t5"
@@ -290,7 +290,7 @@
       "id": "t8-app-dms-assistente-personale",
       "tasto": 8,
       "title": "App DMS Assistente Personale",
-      "filename": "APP-DMS-ASSISTENTE-PERSONALE.pdf",
+      "filename": "APP DMS Assistente Personale.pdf",
       "url": "",
       "tags": [
         "t8"
@@ -334,7 +334,7 @@
       "id": "t9-dossier-nazionale-lite",
       "tasto": 9,
       "title": "Dossier Nazionale (lite)",
-      "filename": "DOSSIER-NAZIONALE-LITE.pdf",
+      "filename": "DOSSIER NAZIONALE.pdf",
       "url": "",
       "tags": [
         "t9"
@@ -345,7 +345,7 @@
       "id": "t9-progetto-nazionale-2025",
       "tasto": 9,
       "title": "Progetto Nazionale 2025",
-      "filename": "PROGETTO-NAZIONALE-2025.pdf",
+      "filename": "PROGETTO NAZIONALE.pdf",
       "url": "",
       "tags": [
         "t9"
@@ -422,7 +422,7 @@
       "id": "t11-dms-spot-1",
       "tasto": 11,
       "title": "DMS SPOT 1",
-      "filename": "DMS-SPOT-1.pdf",
+      "filename": "DMS SPOT 1.pdf",
       "url": "",
       "tags": [
         "t11"
