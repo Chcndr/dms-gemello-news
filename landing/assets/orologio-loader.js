@@ -46,9 +46,7 @@
     let html = '';
     
     if (tasto.docs && tasto.docs.length > 0) {
-      tasto.docs.forEach(docObj => {
-        // docObj è un oggetto con {id, title}, non solo un ID
-        const docId = docObj.id;
+      tasto.docs.forEach(docId => {
         const doc = findDocById(docId);
         if (doc) {
           const pdfUrl = `./docs/${doc.filename}`;
@@ -65,19 +63,6 @@
               <span style="color: #14b8a6; font-weight: 600; font-size: 13px;">Apri ⤴</span>
             </a>
           `;
-        } else {
-          // Se il documento non esiste, usa il titolo dal JSON
-          html += `
-            <div style="
-              display: flex; align-items: center; justify-content: space-between;
-              padding: 12px 16px; margin: 8px 0; 
-              background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1);
-              border-radius: 8px; color: #9bd6de; opacity: 0.6;
-            ">
-              <span>${docObj.title}</span>
-              <span style="color: #f59e0b; font-weight: 600; font-size: 13px;">In preparazione</span>
-            </div>
-          `;
         }
       });
     }
@@ -91,13 +76,14 @@
 
   // Sovrascrivi la funzione openPanelByIndex originale
   function enhanceOpenPanelByIndex() {
-    // Forza override completo
+    const originalFunction = window.openPanelByIndex;
+    
     window.openPanelByIndex = function(i, accent, data) {
-      console.log(`[OROLOGIO LOADER] Tasto ${i} cliccato`);
-      
       // Tasto 0 (Dashboard Politica) mantiene il comportamento originale
       if (i === 0) {
-        window.top.location.href = '/dms-gemello-news/landing/pol0/?open=1&v=pol0-001';
+        if (originalFunction) {
+          return originalFunction.call(this, i, accent, data);
+        }
         return;
       }
 
@@ -107,6 +93,9 @@
 
       if (!tasto) {
         console.warn(`Tasto ${tastoNum} non trovato nei dati JSON`);
+        if (originalFunction) {
+          return originalFunction.call(this, i, accent, data);
+        }
         return;
       }
 
@@ -126,24 +115,15 @@
       const bodyEl = panel.querySelector('#panel-body');
 
       if (titleEl) titleEl.textContent = tasto.title || `Modulo ${tastoNum}`;
-      if (subEl) subEl.textContent = tasto.roadmap || 'In sviluppo';
-      if (bodyEl) {
-        const content = buildLinksForTasto(tastoNum);
-        bodyEl.innerHTML = content;
-        console.log(`Contenuto generato per tasto ${tastoNum}:`, content.length, 'caratteri');
-      }
+      if (subEl) subEl.textContent = tasto.when || tasto.desc || 'In sviluppo';
+      if (bodyEl) bodyEl.innerHTML = buildLinksForTasto(tastoNum);
 
       // Mostra il pannello
       panel.hidden = false;
       document.body.classList.add('panel-open');
 
-      console.log(`[OROLOGIO LOADER] Pannello aperto per tasto ${tastoNum}: ${tasto.title}`);
+      console.log(`Pannello aperto per tasto ${tastoNum}: ${tasto.title}`);
     };
-    
-    // Forza anche override di eventuali altre funzioni
-    if (window.__openPanelByIndex) {
-      window.__openPanelByIndex = window.openPanelByIndex;
-    }
   }
 
   // Inizializza quando i dati sono pronti
