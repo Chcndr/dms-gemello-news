@@ -3,6 +3,171 @@
 <head>
   <meta charset="utf-8"/>
   <script>
+/* DMS GUARDIAN — head early loader
+   Inserire questo script PRIMA di altri script nella pagina home.
+   Blocca ogni apertura diretta di *.pdf e forza openDMSPDF(...) */
+
+(function(){
+  if (window.__DMS_GUARDIAN__) return;
+  window.__DMS_GUARDIAN__ = true;
+
+  // --- Utility
+  const isPdf = (u) => {
+    try { return /\.pdf(\?|#|$)/i.test(new URL(u, location.href).pathname); }
+    catch { return false; }
+  };
+
+  // --- Hook per aprire lightbox (usa la tua funzione già esistente)
+  window.openDMSPDF = window.openDMSPDF || function(src){
+    // se la funzione non esiste ancora (es. verrà definita dopo), temporaneamente
+    // la memorizziamo e la invochiamo quando disponibile.
+    if (typeof window.__openDMSPending__ === 'undefined') window.__openDMSPending__ = [];
+    if (typeof window.openDMSPDF === 'function' && window.openDMSPDF !== arguments.callee) {
+      // se già definita (ridefinizione), chiamala
+      try { window.openDMSPDF(src); return; } catch(e){ /* pass */ }
+    }
+    // push per esecuzione successiva
+    window.__openDMSPending__.push(src);
+  };
+
+  // se openDMSPDF verrà definita dopo, la eseguiamo sulle pending
+  const runPending = () => {
+    if (!window.__openDMSPending__ || !window.openDMSPDF) return;
+    try {
+      window.__openDMSPending__.forEach(s => { try { window.openDMSPDF(s); } catch(_) {} });
+    } finally { window.__openDMSPending__ = []; }
+  };
+  // prova ogni 300ms fino a che openDMSPDF è definita (max 10s)
+  let _tries = 0;
+  const _int = setInterval(()=>{ _tries++; if (window.openDMSPDF && runPending){ runPending(); clearInterval(_int);} if(_tries>33) clearInterval(_int); }, 300);
+
+  // --- Override globali per bloccare aperture dirette verso PDF
+  const origOpen = window.open.bind(window);
+  window.open = function(u, name, specs){
+    try {
+      if (isPdf(u)) { window.openDMSPDF(new URL(u, location.href).href); return null; }
+    } catch(e){}
+    return origOpen(u, name, specs);
+  };
+
+  // Override location.assign/replace and href setter
+  const origAssign = window.location.assign.bind(window.location);
+  const origReplace = window.location.replace.bind(window.location);
+  window.location.assign = function(u){ if (isPdf(u)){ window.openDMSPDF(new URL(u, location.href).href); return; } return origAssign(u); };
+  window.location.replace = function(u){ if (isPdf(u)){ window.openDMSPDF(new URL(u, location.href).href); return; } return origReplace(u); };
+
+  // setter hack per location.href = '...'
+  try {
+    const locProto = Object.getOwnPropertyDescriptor(Location.prototype, 'href');
+    if (locProto && locProto.set) {
+      const origHrefSetter = locProto.set;
+      Object.defineProperty(window.location, 'href', {
+        configurable:true,
+        set: function(u){ if (isPdf(u)){ window.openDMSPDF(new URL(u, location.href).href); return; } return origHrefSetter.call(window.location, u); }
+      });
+    }
+  } catch(e){ /* non critico */ }
+
+  // --- Blocca submit di form che puntano a PDF
+  document.addEventListener('submit', function(ev){
+    try {
+      const action = ev.target && ev.target.getAttribute && ev.target.getAttribute('action');
+      if (action && isPdf(action)) { ev.preventDefault(); ev.stopImmediatePropagation(); window.openDMSPDF(new URL(action, location.href).href); }
+    } catch(e){}
+  }, true);
+
+  // --- Intercetta eventi in capture su mousedown/pointerdown/touchstart e click
+  const captureHandler = function(ev){
+    try {
+      const path = ev.composedPath ? ev.composedPath() : (ev.path || [ev.target]);
+      for (const node of path) {
+        if (!node) continue;
+        // anchor con href
+        if (node.tagName === 'A' && node.getAttribute) {
+          const href = node.getAttribute('href') || node.href;
+          if (href && isPdf(href)) {
+            ev.preventDefault(); ev.stopImmediatePropagation(); ev.stopImmediatePropagation && ev.stopImmediatePropagation();
+            // cambio immediato per evitare che altri handlers usino lo stesso evento
+            window.openDMSPDF(new URL(href, location.href).href);
+            return;
+          }
+        }
+        // elementi che mantengono data-dms-href (se li hai già rewrited)
+        if (node.dataset && node.dataset.dmsHref && isPdf(node.dataset.dmsHref)) {
+          ev.preventDefault(); ev.stopImmediatePropagation();
+          window.openDMSPDF(new URL(node.dataset.dmsHref, location.href).href);
+          return;
+        }
+      }
+    } catch(e){}
+  };
+
+  ['pointerdown','mousedown','touchstart','click'].forEach(evName=>{
+    document.documentElement.addEventListener(evName, captureHandler, {capture:true, passive:false});
+  });
+
+  // --- Rewire proattivo: sostituisce href di tutti gli <a> *.pdf con data-dms-href e href="#"
+  function rewire(root){
+    try {
+      const els = (root || document).querySelectorAll && (root || document).querySelectorAll('a[href]');
+      if (!els) return;
+      for (const a of els) {
+        const href = a.getAttribute('href');
+        if (!href) continue;
+        if (isPdf(href)) {
+          if (a.dataset && a.dataset.dmsRewired === '1') continue;
+          a.dataset.dmsHref = new URL(href, location.href).href;
+          a.dataset.dmsRewired = '1';
+          a.setAttribute('href', '#'); // neutralizziamo il link nativo
+          a.removeAttribute('target');
+          a.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopImmediatePropagation(); window.openDMSPDF(a.dataset.dmsHref); }, {capture:true, passive:false});
+        }
+      }
+    } catch(e){}
+  }
+
+  // Esegui subito e poi osserva il DOM (per framework che iniettano dopo)
+  rewire(document);
+  const mo = new MutationObserver(muts => { for (const m of muts) { for (const n of m.addedNodes) { if (n.nodeType===1) rewire(n); } } });
+  mo.observe(document.documentElement || document, { childList:true, subtree:true });
+
+  // --- Hook per iframe stessa origine (schede) — prova ad agganciarli appena disponibili
+  function attachToIframes(){
+    document.querySelectorAll('iframe').forEach(ifr => {
+      try {
+        const w = ifr.contentWindow;
+        if (!w || w.__dmsGuardianAttached__) return;
+        // iniettiamo lo stesso script nella iframe (se stessa origine)
+        w.__dmsGuardianAttached__ = true;
+        try {
+          // patch window.open in iframe
+          const orig = w.open.bind(w);
+          w.open = function(u, n, s){ if (isPdf(u)) { top.openDMSPDF(new URL(u, w.location.href).href); return null; } return orig(u,n,s); };
+        } catch(e){}
+        // add capture listener nel doc iframe
+        try {
+          w.document.documentElement.addEventListener('pointerdown', function(ev){
+            const path = ev.composedPath ? ev.composedPath() : (ev.path || [ev.target]);
+            for (const node of path) {
+              if (node && node.tagName === 'A' && node.getAttribute('href') && isPdf(node.getAttribute('href'))) {
+                ev.preventDefault(); ev.stopImmediatePropagation();
+                top.openDMSPDF(new URL(node.getAttribute('href'), w.location.href).href); return;
+              }
+            }
+          }, {capture:true, passive:false});
+        } catch(e){}
+      } catch(e){ /* cross-origin iframes are ignored */ }
+    });
+  }
+  attachToIframes();
+  new MutationObserver(attachToIframes).observe(document.documentElement||document, {childList:true, subtree:true});
+
+  // small debug helper
+  window.__dmsRewireNow = () => rewire(document);
+
+})();
+</script>
+  <script>
 /* Kill-switch: qualunque click su <a> che punterebbe a /landing/... viene corretto
    verso la root del repo; le ancore #doc-/#vid- vengono aperte fuori dall'iframe. */
 addEventListener('click', function (e) {
@@ -409,13 +574,38 @@ addEventListener('click', function (e) {
     /* niente tag "PDF/INFO" */
     .node .tag{ display:none; }
   </style>
+
+<style>
+#pdfLightbox{
+  position:fixed; inset:0; z-index:9999;
+  display:none; opacity:0; transition:opacity .18s ease;
+  background:rgba(10,10,14,.76); backdrop-filter:saturate(1.1) blur(6px);
+}
+#pdfLightbox.show{ display:block; opacity:1; }
+#pdfFrame{
+  position:absolute; inset:0; width:100vw; height:100dvh;
+  border:0; background:#000; display:block;
+}
+#pdfClose{
+  position:fixed; top:12px; right:12px; z-index:10000;
+  width:44px; height:44px; border:0; border-radius:10px;
+  font:700 28px/44px system-ui; color:#fff; cursor:pointer;
+  background:rgba(0,0,0,.35); backdrop-filter:blur(4px);
+}
+#pdfClose:hover{ background:rgba(0,0,0,.5); }
+body.modal-open{ overflow:hidden; touch-action:none; }
+@media (prefers-reduced-motion: reduce){ #pdfLightbox{ transition:none; } }
+</style>
 </head>
 <body>
+  <!-- DMS Auth Gate -->
+  <script src="common/auth-gate.js?v=STABLE1"></script>
+  
   <!-- Nav -->
   <nav class="top">
-    <a class="btn" href="/dms-gemello-news/landing/home.html">Home</a>
-    <a class="btn" href="/dms-gemello-news/landing/mappa-ministeri.html">Mappa</a>
-    <a class="btn" href="/dms-gemello-news/landing/spot.html">Spot</a>
+    <a class="btn" href="home.html">Home</a>
+    <a class="btn" href="mappa-ministeri.html">Mappa</a>
+    <a class="btn" href="spot.html">Spot</a>
   </nav>
 
   <!-- Claim -->
@@ -427,11 +617,12 @@ addEventListener('click', function (e) {
   <!-- Layers -->
   <svg id="ellipseLayer" aria-hidden="true"></svg>
   <div id="viewport" aria-label="contenuti">
-    <video id="heroVideo" src="/dms-gemello-news/videos/video-hero.mp4"
-      playsinline webkit-playsinline preload="auto" controls
-
+    <video id="heroVideo" src="/dms-gemello-news/videos/video-hero.mp4?v=stable-news-001"
+      playsinline webkit-playsinline preload="metadata" controls
+      poster="/dms-gemello-news/assets/poster-hero.jpg?v=stable-news-001"
       style="cursor: pointer;"
       onloadstart="this.muted=false; this.volume=0.8;"
+      onloadedmetadata="this.currentTime=2;"
       onmouseover="this.setAttribute('controls', 'controls');"
       onmouseleave="setTimeout(() => { if (!this.paused) this.removeAttribute('controls'); }, 2000);"></video>
     
@@ -704,13 +895,13 @@ addEventListener('click', function (e) {
         // Test diretto per "Dossier nazionale"
         if(label === 'Dossier nazionale') {
           return `<a class="action spot test-direct"
-   href="https://chcndr.github.io/dms-gemello-news/docs/dossier-nazionale.pdf"
-   rel="noopener"
+   href="#" data-pdf="/dms-gemello-news/docs/dossier-nazionale.pdf"
+   target="_top" rel="noopener"
    >
   Apri PDF (test diretto)
 </a>`;
         }
-        return `<a class="action spot" href="${safeHref(href)}" rel="noopener">${label}</a>`;
+        return `<a class="action spot" href="${safeHref(href)}" target="_top" rel="noopener">${label}</a>`;
       }
     }).join(' ');
   }
@@ -740,7 +931,16 @@ addEventListener('click', function (e) {
 })();
 </script>
 
-
+<script>
+/* Priorità massima (capture): i click su .test-direct non possono essere "hijackati" */
+document.addEventListener('click', function(e){
+  const a = e.target.closest('a.test-direct');
+  if(!a) return;
+  e.stopImmediatePropagation();   // blocca altri listener
+  e.preventDefault();             // evita qualunque preventDefault altrui
+  window.top.location.href = a.href; // navigazione forzata al PDF
+}, {capture:true});
+</script>
 
 <script>
 // Integrazione click nodi con pannelli
@@ -788,7 +988,7 @@ addEventListener('click', function (e) {
   // Anti-flicker: non cambiare layout; il video resta montato, solo opacity
   if(hero){
     hero.preload = hero.preload || 'metadata';
-    // Poster rimosso per mostrare prima frame del video (slide rossa)
+    if(!hero.poster) hero.poster = './assets/poster-hero.jpg'; // se esiste
     hero.muted = true; hero.playsInline = true;
   }
 
@@ -796,7 +996,7 @@ addEventListener('click', function (e) {
   window.openPanelByIndex = function(i, accent, data){
     // Intercetta il bottone "0 • Politica" per reindirizzare alla pagina stand-alone
     if(i === 0) {
-      window.top.location.href = '/dms-gemello-news/landing/pol0/?open=1&v=pol0-001';
+      window.top.location.href = '/dms-gemello-news/landing/pol0/?open=1&v=stable-news-001';
       return;
     }
     
@@ -826,7 +1026,8 @@ addEventListener('click', function (e) {
           const btn = document.createElement('a');
           btn.className = 'btn btn--accent action';
           btn.href = pdf.file;
-          // Rimuovi target="_blank" per permettere allo script shim di intercettare
+          btn.target = '_blank';
+          btn.rel = 'noopener';
           btn.textContent = pdf.label;
           actionsDiv.insertBefore(btn, closeBtn);
         });
@@ -886,219 +1087,170 @@ addEventListener('click', function (e) {
     openPanelByIndex(i, accent, null); 
   }
 
-  // FORCE AUTOPLAY + AUDIO - Gestione aggressiva per Safari/iOS
+  // VIDEO SETUP - Solo configurazione, NO autoplay
   const video = document.getElementById('heroVideo');
   if (video) {
-    // Configura audio per quando l'utente clicca play
+    // Configura audio per quando l'utente avvia manualmente
     video.muted = false;
     video.volume = 0.8;
     
-    // Il video resta in pausa con poster fino al click dell'utente
-    console.log('🎬 Video configurato con audio, in attesa di interazione utente');
+    // Mostra anteprima al secondo 2 quando i metadata sono caricati
+    const showPreview = () => {
+      if (video.readyState >= 1) { // HAVE_METADATA
+        video.currentTime = 2; // Mostra frame al secondo 2
+        console.log('🎬 Anteprima video impostata al secondo 2');
+      }
+    };
+    
+    // Prova a impostare l'anteprima
+    video.addEventListener('loadedmetadata', showPreview);
+    if (video.readyState >= 1) {
+      showPreview(); // Se già caricato
+    }
+    
+    // Quando il video finisce, torna all'anteprima
+    video.addEventListener('ended', () => {
+      video.currentTime = 2; // Torna al secondo 2 (anteprima)
+      console.log('🔄 Video finito, tornato all\'anteprima');
+    });
+    
+    // Forza audio su primo click/touch del video
+    const enableAudioOnPlay = () => {
+      video.muted = false;
+      video.volume = 0.8;
+      console.log('🔊 Audio attivato su play manuale');
+    };
+    
+    video.addEventListener('play', enableAudioOnPlay);
+    video.addEventListener('click', enableAudioOnPlay);
+    video.addEventListener('touchstart', enableAudioOnPlay);
   }
 })();
   </script>
 
 <script>navigator.serviceWorker?.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))</script>
 
-<script>
-/* PDF VIEWER ENFORCER – v=f006-rewrite */
-(function(){
-  var VIEWER_PATH = 'landing/pdfjs-lite/';                 // percorso viewer interno
-  var VERSION     = 'finale-006';                          // per cache-busting coerente
-  var MARKER      = 'pdfjs-enforced';                      // flag per idempotenza
-  var VERBOSE     = true;                                  // true per log
+<!-- ⬇️ LIGHTBOX PDF FULLSCREEN (HOME) -->
+<div id="pdfLightbox" aria-hidden="true">
+  <button id="pdfClose" aria-label="Chiudi PDF">×</button>
+  <iframe id="pdfFrame" title="Documento PDF" allow="fullscreen"></iframe>
+</div>
 
-  function toViewer(urlAbs){
+<script>
+/* ===== DMS PDF Lightbox – HOME (hook in iframe + patch window.open) ===== */
+(function(){
+  if (window.DMSPDF_HOME_V2) return; window.DMSPDF_HOME_V2 = true;
+
+  const VIEWER = '/dms-gemello-news/landing/viewer/lite.html';
+  const lb   = document.getElementById('pdfLightbox');
+  const fr   = document.getElementById('pdfFrame');
+  const btnX = document.getElementById('pdfClose');
+
+  function openPdf(src){
     try{
-      var u = new URL(urlAbs, location.href);
-      // evita doppi passaggi se già nel viewer
-      if (u.pathname.replace(/\/+$/,'').endsWith('/'+VIEWER_PATH.replace(/\/+$/,''))) return urlAbs;
-      // cache buster coerente
-      var pdfUrl = u.href + (u.search ? '&' : '?') + '_cb=' + Date.now().toString(36);
-      return VIEWER_PATH + '?src=' + encodeURIComponent(pdfUrl) + '&v=' + VERSION;
-    }catch(e){ return urlAbs; }
+      const abs = new URL(src, location.href).href;          // assolutizza qualunque href
+      const u   = new URL(VIEWER, location.origin);
+      u.searchParams.set('src', abs);
+      u.searchParams.set('v', 'lite2');
+      fr.src = u.toString();
+      lb.classList.add('show');
+      document.body.classList.add('modal-open');
+      lb.setAttribute('aria-hidden','false');
+      history.pushState({pdf:true}, '', '#pdf');
+      setTimeout(()=>btnX.focus(), 0);
+    }catch(e){ console.warn('openPdf error', e); }
   }
-
-  function isPdfHref(href){
-    if (!href) return false;
-    // riconosce .pdf anche con query/hash
-    return /\.pdf(\?|#|$)/i.test(href);
+  function closePdf(){
+    lb.classList.remove('show');
+    document.body.classList.remove('modal-open');
+    lb.setAttribute('aria-hidden','true');
+    fr.src = 'about:blank';
+    if (location.hash === '#pdf') history.back();
   }
+  btnX.addEventListener('click', closePdf);
+  lb.addEventListener('click', e => { if (e.target === lb) closePdf(); });
+  window.addEventListener('popstate', () => { if (lb.classList.contains('show')) closePdf(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('show')) closePdf(); });
 
-  function rewriteAnchor(a){
-    if (!a || a.dataset && a.dataset[MARKER]) return;
-    var href = a.getAttribute('href') || '';
-    if (!isPdfHref(href)) return;
+  window.openDMSPDF = openPdf; // utile da iframe
 
-    // calcola assoluto, costruisce viewer e riscrive href
-    var abs = a.href;                      // assolutizza rispetto alla pagina
-    var v   = toViewer(abs);
-    a.dataset.originalHref = href;         // per debug eventuale
-    a.setAttribute('href', v);
-    a.dataset[MARKER] = '1';
-    // opzionale: assicura new tab (su iOS evita handler strani del viewer nativo)
-    if (!a.hasAttribute('target')) a.setAttribute('target','_blank');
-    a.setAttribute('rel','noopener');
+  const isPdfUrl = (href)=>{
+    try { return /\.pdf(\?|#|$)/i.test(new URL(href, location.href).pathname); }
+    catch { return false; }
+  };
 
-    if (VERBOSE) console.log('[PDF ENFORCER] rewrite', href, '→', v);
-  }
+  // Hook generico per una finestra (principale o iframe stessa origine)
+  function hookWindow(win){
+    try{
+      const doc = win.document; if (!doc) return;
 
-  function scan(root){
-    (root.querySelectorAll ? root.querySelectorAll('a[href]') : []).forEach(rewriteAnchor);
-  }
-
-  // Prima passata quando il DOM è pronto
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){ scan(document); });
-  } else {
-    scan(document);
-  }
-
-  // Osserva aggiunte/modifiche future (es. Orologio che inietta link dopo)
-  var mo = new MutationObserver(function(muts){
-    muts.forEach(function(m){
-      if (m.type === 'childList') {
-        m.addedNodes.forEach(function(n){
-          if (n.nodeType === 1) {
-            if (n.matches && n.matches('a[href]')) rewriteAnchor(n);
-            scan(n);
-          }
+      // 1) Rewire di tutti gli anchor *.pdf presenti (e futuri)
+      const rewire = (root = doc)=>{
+        root.querySelectorAll('a[href]').forEach(a=>{
+          const href = a.getAttribute('href'); if (!href || !isPdfUrl(href)) return;
+          if (a.dataset.dmsPdf === '1') return;
+          a.dataset.dmsPdf = '1';
+          a.removeAttribute('target');
+          ['click','pointerup','touchend'].forEach(t=>{
+            a.addEventListener(t, ev=>{
+              ev.preventDefault(); ev.stopImmediatePropagation();
+              top.openDMSPDF(new URL(href, win.location.href).href);
+            }, {capture:true, passive:false});
+          });
+          a.setAttribute('role','button'); a.tabIndex = a.tabIndex || 0;
         });
-      } else if (m.type === 'attributes' && m.target && m.target.matches && m.target.matches('a[href]')) {
-        rewriteAnchor(m.target);
-      }
-    });
-  });
-  mo.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:['href'] });
+      };
+      rewire();
 
-  // (Facoltativo) Ultima rete di sicurezza: intercetta click residui
-  document.addEventListener('click', function(e){
-    var a = e.target.closest ? e.target.closest('a[href]') : null;
-    if(!a) return;
-    var href = a.getAttribute('href') || '';
-    // Se è ancora un .pdf diretto (non riscritto per qualche motivo), forza qui
-    if (isPdfHref(href) && !/\/pdfjs-lite\/\?src=/i.test(href)){
-      e.preventDefault();
-      var v = toViewer(a.href);
-      window.location.href = v; // UNIFICATO: sempre stessa pagina
-    }
-  }, true);
+      // 2) Intercetta eventi anche se non passano dagli <a> (JS custom nelle schede)
+      ['click','pointerup','touchend'].forEach(type=>{
+        doc.addEventListener(type, e=>{
+          const path = (e.composedPath && e.composedPath()) || [e.target];
+          const a = path.find(el => el && el.tagName === 'A' && el.getAttribute && el.getAttribute('href'));
+          if (!a) return;
+          const href = a.getAttribute('href'); if (!href || !isPdfUrl(href)) return;
+          e.preventDefault(); e.stopImmediatePropagation();
+          top.openDMSPDF(new URL(href, win.location.href).href);
+        }, {capture:true, passive:false});
+      });
 
-  // CORREZIONE ROBUSTA: Trigger riscansione multipla quando si aprono pannelli orologio
-  document.addEventListener('click', function(e){
-    var btn = e.target.closest ? e.target.closest('button') : null;
-    if (btn && btn.textContent && btn.textContent.includes('Q')) {
-      // È un pulsante dell'orologio (contiene "Q1 2025", "Q2 2025", etc.)
-      if (VERBOSE) console.log('[PDF ENFORCER] clock button clicked, scheduling rescans');
-      
-      // Scansioni multiple per catturare tutti i link generati dinamicamente
-      setTimeout(function(){ scan(document); }, 50);   // Prima scansione veloce
-      setTimeout(function(){ scan(document); }, 150);  // Seconda scansione
-      setTimeout(function(){ scan(document); }, 300);  // Terza scansione per sicurezza
-      setTimeout(function(){ scan(document); }, 500);  // Quarta scansione finale
-    }
-  });
+      // 3) Patch window.open dentro quella finestra (se qualcuno fa window.open('*.pdf'))
+      const origOpen = win.open;
+      win.open = function(u, n, s){
+        try{
+          if (u && isPdfUrl(u)) { top.openDMSPDF(new URL(u, win.location.href).href); return null; }
+        }catch(_){}
+        return origOpen.apply(this, arguments);
+      };
 
-  // INTERCETTAZIONE SUPER AGGRESSIVA: Cattura TUTTI i click sui PDF
-  document.addEventListener('click', function(e){
-    var link = e.target.closest('a');
-    if (link && link.href && /\.pdf(\?|#|$)/i.test(link.href)) {
-      if (VERBOSE) console.log('[PDF ENFORCER] PDF link clicked directly:', link.href);
-      
-      // FORZA rimozione target="_blank" al momento del click
-      link.removeAttribute('target');
-      link.target = '';
-      
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation(); // Blocca tutti gli altri handler
-      
-      var cb = (link.href.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
-      var viewerUrl = VIEWER + '?src=' + encodeURIComponent(link.href + cb) + '&v=' + VERSION;
-      window.location.href = viewerUrl; // UNIFICATO: sempre stessa pagina
-      return false;
-    }
-  }, true); // Usa capture per intercettare prima di altri handler
-  
-  // INTERCETTATORE BACKUP: Se il primo fallisce, questo cattura tutto
-  document.addEventListener('click', function(e){
-    var link = e.target.closest('a');
-    if (link && link.getAttribute('href') && /\.pdf(\?|#|$)/i.test(link.getAttribute('href'))) {
-      if (VERBOSE) console.log('[PDF ENFORCER] BACKUP intercept:', link.getAttribute('href'));
-      link.removeAttribute('target');
-      link.target = '';
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      
-      var href = link.getAttribute('href');
-      var abs = new URL(href, window.location.href).href;
-      var cb = (abs.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
-      var viewerUrl = VIEWER + '?src=' + encodeURIComponent(abs + cb) + '&v=' + VERSION;
-      window.location.href = viewerUrl;
-      return false;
-    }
-  }, false); // Usa bubbling come backup
-
-  // Beacon di presenza per debug visivo rapido (DISATTIVATO)
-  if (false) { // VERBOSE disattivato
-    var b = document.createElement('div');
-    b.textContent = 'PDF ENFORCER ' + VERSION;
-    Object.assign(b.style,{position:'fixed',bottom:'6px',left:'6px',padding:'4px 6px',font:'11px/1.2 monospace',
-      color:'#9cf',background:'#102030',border:'1px solid #214',borderRadius:'6px',zIndex:2147483647,opacity:.9});
-    document.body.appendChild(b);
+      // 4) Osserva aggiunte dinamiche (schede/DOM aggiornati)
+      const mo = new win.MutationObserver(muts=>{
+        muts.forEach(m=>m.addedNodes.forEach(n=>{ if (n.nodeType===1) rewire(n); }));
+      });
+      mo.observe(doc.documentElement, {childList:true, subtree:true});
+    }catch(e){ /* cross-origin: ignora */ }
   }
-  
 
+  // Hook finestra principale
+  hookWindow(window);
+
+  // Hook su TUTTI gli iframe stessa origine (schede orologio)
+  function hookAllIframes(){
+    document.querySelectorAll('iframe').forEach(ifr=>{
+      try{
+        const w = ifr.contentWindow; const d = ifr.contentDocument;
+        if (!d) return;
+        if (w.__dmsHooked) return; w.__dmsHooked = true;
+        if (d.readyState !== 'complete') ifr.addEventListener('load', ()=>hookWindow(w), {once:true});
+        else hookWindow(w);
+      }catch(e){ /* iframe cross-origin, non gestibile */ }
+    });
+  }
+  hookAllIframes();
+  new MutationObserver(()=>hookAllIframes()).observe(document.documentElement, {childList:true, subtree:true});
 })();
 </script>
 
-<!-- DMS kill-badge v2 (safe) -->
-<style>
-  /* Nasconde SOLO badge noti, senza toccare altro */
-  #pdf-enforcer,
-  .pdf-enforcer,
-  .pdfEnforcer,
-  .print-guard,
-  .printGuard,
-  .pdf-watermark,
-  .viewer-status,
-  .debug-label {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-</style>
-<script>
-(function(){
-  // Rimuove solo elementi con i selettori noti (safe).
-  const SEL = [
-    '#pdf-enforcer','.pdf-enforcer','.pdfEnforcer',
-    '.print-guard','.printGuard','.pdf-watermark',
-    '.viewer-status','.debug-label'
-  ];
-  function clean(root=document){
-    SEL.forEach(s => root.querySelectorAll(s).forEach(n => n.remove()));
-  }
-  // 1) una passata all'avvio
-  clean();
-
-  // 2) (opzionale) se hai un iframe viewer stesso dominio, pulisci anche lì
-  ['#dmsMlFrame','#pdfFrame','#viewerFrame'].forEach(id=>{
-    const fr = document.querySelector(id);
-    if (!fr) return;
-    fr.addEventListener('load', ()=>{
-      try { clean(fr.contentDocument || fr.contentWindow.document); } catch(_) {}
-    });
-  });
-})();
-</script>
-
-<!-- DMS PDF AutoFix - Soluzione stand-alone autoinstallante -->
-<script src="./assets/dms-pdf-autofix.js?v=2" defer></script>
-
-<script src="/assets/dms-spot-hardener.js?v=1" defer></script>
 </body>
 </html>
 
