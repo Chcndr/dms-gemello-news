@@ -1,0 +1,488 @@
+{
+  "docs": [
+    {
+      "id": "t1-hub-nazionale-del-commercio",
+      "tasto": 1,
+      "title": "Hub Nazionale del Commercio",
+      "filename": "HUB-NAZIONALE-DEL-COMMERCIO.pdf",
+      "url": "",
+      "tags": [
+        "t1"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t1-dossier-nazionale",
+      "tasto": 1,
+      "title": "Dossier Nazionale",
+      "filename": "DOSSIER-NAZIONALE.pdf",
+      "url": "",
+      "tags": [
+        "t1"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t1-dms-e-clust-er",
+      "tasto": 1,
+      "title": "DMS e CLUST-ER",
+      "filename": "DMS-E-CLUST-ER.pdf",
+      "url": "",
+      "tags": [
+        "t1"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t1-dms-ecc-eco-carbon-credit",
+      "tasto": 1,
+      "title": "DMS ECC (Eco Carbon Credit)",
+      "filename": "DMS-ECC-ECO-CARBON-CREDIT.pdf",
+      "url": "",
+      "tags": [
+        "t1"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t2-analisi-ricerche-relazioni-problemi",
+      "tasto": 2,
+      "title": "Analisi (ricerche, relazioni, problemi)",
+      "filename": "ANALISI-RICERCHE-RELAZIONI-PROBLEMI.pdf",
+      "url": "",
+      "tags": [
+        "t2"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t2-ecosistema-dms-hub-costi-pa",
+      "tasto": 2,
+      "title": "Ecosistema DMS – hub + costi PA",
+      "filename": "ECOSISTEMA-DMS-HUB-COSTI-PA.pdf",
+      "url": "",
+      "tags": [
+        "t2"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t3-presentazione-dms-compressed",
+      "tasto": 3,
+      "title": "Presentazione DMS (compressed)",
+      "filename": "PRESENTAZIONE-DMS-COMPRESSED.pdf",
+      "url": "",
+      "tags": [
+        "t3"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t3-slide-disegni-pdf-grafici",
+      "tasto": 3,
+      "title": "Slide/disegni (PDF grafici)",
+      "filename": "SLIDE-DISEGNI-PDF-GRAFICI.pdf",
+      "url": "",
+      "tags": [
+        "t3"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t3-analisi-soluzione-dms-102p",
+      "tasto": 3,
+      "title": "Analisi & Soluzione DMS (102p)",
+      "filename": "ANALISI-SOLUZIONE-DMS-102P.pdf",
+      "url": "",
+      "tags": [
+        "t3"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t3-dms-riaccendiamo-i-mercati",
+      "tasto": 3,
+      "title": "DMS – Riaccendiamo i Mercati",
+      "filename": "DMS-RIACCENDIAMO-I-MERCATI.pdf",
+      "url": "",
+      "tags": [
+        "t3"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t4-hub-urbani-e-di-prossimita-in-er-ver-1",
+      "tasto": 4,
+      "title": "Hub Urbani e di Prossimità in ER (ver.1)",
+      "filename": "HUB-URBANI-E-DI-PROSSIMITA-IN-ER-VER-1.pdf",
+      "url": "",
+      "tags": [
+        "t4"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t4-hub-urbani-e-di-prossimita-in-er-ver-2",
+      "tasto": 4,
+      "title": "Hub Urbani e di Prossimità in ER (ver.2)",
+      "filename": "HUB-URBANI-E-DI-PROSSIMITA-IN-ER-VER-2.pdf",
+      "url": "",
+      "tags": [
+        "t4"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t4-dms-e-clust-er",
+      "tasto": 4,
+      "title": "DMS e CLUST-ER",
+      "filename": "DMS-E-CLUST-ER.pdf",
+      "url": "",
+      "tags": [
+        "t4"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t4-presentazione-dms-citta-metropolitana-bologna",
+      "tasto": 4,
+      "title": "Presentazione DMS Città Metropolitana Bologna",
+      "filename": "PRESENTAZIONE-DMS-CITTA-METROPOLITANA-BOLOGNA.pdf",
+      "url": "",
+      "tags": [
+        "t4"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t5-carbon-credit-dms-narrativo",
+      "tasto": 5,
+      "title": "Carbon Credit DMS (narrativo)",
+      "filename": "CARBON-CREDIT-DMS-NARRATIVO.pdf",
+      "url": "",
+      "tags": [
+        "t5"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t5-carbon-credit-dms-tecnico-completo",
+      "tasto": 5,
+      "title": "Carbon Credit DMS (tecnico/completo)",
+      "filename": "CARBON-CREDIT-DMS-TECNICO-COMPLETO.pdf",
+      "url": "",
+      "tags": [
+        "t5"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t5-logica-carbon-credit",
+      "tasto": 5,
+      "title": "Logica Carbon Credit",
+      "filename": "LOGICA-CARBON-CREDIT.pdf",
+      "url": "",
+      "tags": [
+        "t5"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t5-riequilibrio-1",
+      "tasto": 5,
+      "title": "Riequilibrio 1",
+      "filename": "RIEQUILIBRIO-1.pdf",
+      "url": "",
+      "tags": [
+        "t5"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t6-bolkestein-commercio-su-area-pubblica",
+      "tasto": 6,
+      "title": "Bolkestein Commercio su Area Pubblica",
+      "filename": "BOLKESTEIN-COMMERCIO-SU-AREA-PUBBLICA.pdf",
+      "url": "",
+      "tags": [
+        "t6"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t6-commercio-ambulante",
+      "tasto": 6,
+      "title": "Commercio Ambulante",
+      "filename": "COMMERCIO-AMBULANTE.pdf",
+      "url": "",
+      "tags": [
+        "t6"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t6-implementazioni-ente-sussidiario-digitale",
+      "tasto": 6,
+      "title": "Implementazioni (Ente Sussidiario Digitale)",
+      "filename": "IMPLEMENTAZIONI-ENTE-SUSSIDIARIO-DIGITALE.pdf",
+      "url": "",
+      "tags": [
+        "t6"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t6-operativo-integrativo-selezione",
+      "tasto": 6,
+      "title": "Operativo integrativo (selezione)",
+      "filename": "OPERATIVO-INTEGRATIVO-SELEZIONE.pdf",
+      "url": "",
+      "tags": [
+        "t6"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t7-modello-gestione",
+      "tasto": 7,
+      "title": "Modello Gestione",
+      "filename": "MODELLO-GESTIONE.pdf",
+      "url": "",
+      "tags": [
+        "t7"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t7-vuoto-133-frammentazione-pa",
+      "tasto": 7,
+      "title": "Vuoto 133 (frammentazione PA)",
+      "filename": "VUOTO-133-FRAMMENTAZIONE-PA.pdf",
+      "url": "",
+      "tags": [
+        "t7"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t7-premessa-politica",
+      "tasto": 7,
+      "title": "Premessa Politica",
+      "filename": "PREMESSA-POLITICA.pdf",
+      "url": "",
+      "tags": [
+        "t7"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t7-allegato-tecnico-breve",
+      "tasto": 7,
+      "title": "Allegato tecnico breve",
+      "filename": "ALLEGATO-TECNICO-BREVE.pdf",
+      "url": "",
+      "tags": [
+        "t7"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t8-app-dms-assistente-personale",
+      "tasto": 8,
+      "title": "App DMS Assistente Personale",
+      "filename": "APP-DMS-ASSISTENTE-PERSONALE.pdf",
+      "url": "",
+      "tags": [
+        "t8"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t8-locandina-dms",
+      "tasto": 8,
+      "title": "Locandina DMS",
+      "filename": "LOCANDINA-DMS.pdf",
+      "url": "",
+      "tags": [
+        "t8"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t8-dms-offline-con-cie",
+      "tasto": 8,
+      "title": "DMS Offline con CIE",
+      "filename": "DMS-OFFLINE-CON-CIE.pdf",
+      "url": "",
+      "tags": [
+        "t8"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t8-implementazioni-moduli-app-servizi",
+      "tasto": 8,
+      "title": "Implementazioni (moduli App/Servizi)",
+      "filename": "IMPLEMENTAZIONI-MODULI-APP-SERVIZI.pdf",
+      "url": "",
+      "tags": [
+        "t8"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t9-dossier-nazionale-lite",
+      "tasto": 9,
+      "title": "Dossier Nazionale (lite)",
+      "filename": "DOSSIER-NAZIONALE-LITE.pdf",
+      "url": "",
+      "tags": [
+        "t9"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t9-progetto-nazionale-2025",
+      "tasto": 9,
+      "title": "Progetto Nazionale 2025",
+      "filename": "PROGETTO-NAZIONALE-2025.pdf",
+      "url": "",
+      "tags": [
+        "t9"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t9-premessa-politica",
+      "tasto": 9,
+      "title": "Premessa Politica",
+      "filename": "PREMESSA-POLITICA.pdf",
+      "url": "",
+      "tags": [
+        "t9"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t9-presentazione-dms-compressed",
+      "tasto": 9,
+      "title": "Presentazione DMS (compressed)",
+      "filename": "PRESENTAZIONE-DMS-COMPRESSED.pdf",
+      "url": "",
+      "tags": [
+        "t9"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t10-hub-dms-web3",
+      "tasto": 10,
+      "title": "Hub DMS Web3",
+      "filename": "HUB-DMS-WEB3.pdf",
+      "url": "",
+      "tags": [
+        "t10"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t10-dms-token-carbon-credit",
+      "tasto": 10,
+      "title": "DMS Token Carbon Credit",
+      "filename": "DMS-TOKEN-CARBON-CREDIT.pdf",
+      "url": "",
+      "tags": [
+        "t10"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t10-dms-web3-smart-contract",
+      "tasto": 10,
+      "title": "DMS Web3 – Smart Contract",
+      "filename": "DMS-WEB3-SMART-CONTRACT.pdf",
+      "url": "",
+      "tags": [
+        "t10"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t10-hub-dms-europa",
+      "tasto": 10,
+      "title": "Hub DMS Europa",
+      "filename": "HUB-DMS-EUROPA.pdf",
+      "url": "",
+      "tags": [
+        "t10"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t11-dms-spot-1",
+      "tasto": 11,
+      "title": "DMS SPOT 1",
+      "filename": "DMS-SPOT-1.pdf",
+      "url": "",
+      "tags": [
+        "t11"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t11-locandina-dms",
+      "tasto": 11,
+      "title": "Locandina DMS",
+      "filename": "LOCANDINA-DMS.pdf",
+      "url": "",
+      "tags": [
+        "t11"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t11-eventi-straordinari",
+      "tasto": 11,
+      "title": "Eventi Straordinari",
+      "filename": "EVENTI-STRAORDINARI.pdf",
+      "url": "",
+      "tags": [
+        "t11"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t11-dmsspot1-variante",
+      "tasto": 11,
+      "title": "DMSSPOT1 (variante)",
+      "filename": "DMSSPOT1-VARIANTE.pdf",
+      "url": "",
+      "tags": [
+        "t11"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t2-ricerche-territoriali-campioni-e-dataset",
+      "tasto": 2,
+      "title": "Ricerche territoriali (campioni e dataset)",
+      "filename": "RICERCHE-TERRITORIALI-CAMPIONI-E-DATASET.pdf",
+      "url": "",
+      "tags": [
+        "t2"
+      ],
+      "summary": ""
+    },
+    {
+      "id": "t2-relazioni-sullo-stato-attuale-del-commercio",
+      "tasto": 2,
+      "title": "Relazioni sullo stato attuale del commercio",
+      "filename": "RELAZIONI-SULLO-STATO-ATTUALE-DEL-COMMERCIO.pdf",
+      "url": "",
+      "tags": [
+        "t2"
+      ],
+      "summary": ""
+    }
+  ]
+}
