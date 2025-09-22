@@ -1,0 +1,267 @@
+=== CENSIMENTO COMPLETO TUTTI I PDF ===
+
+DIRECTORY ./pdf/ (89 file):
+./pdf/ANALISI E SOLUZIONE DMS.pdf
+./pdf/ANALISIESOLUZIONEDMS(1).pdf
+./pdf/APP DMS Assistente Personale.pdf
+./pdf/APPDMSAssistentePersonale.pdf
+./pdf/Analisi.pdf
+./pdf/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf
+./pdf/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf
+./pdf/CARBON CREDIT DMS.pdf
+./pdf/CARBONCREDITDMS-4.pdf
+./pdf/COSTI PA.pdf
+./pdf/DATI.pdf
+./pdf/DMS         ALL-IN-ONE .pdf
+./pdf/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf
+./pdf/DMS E CLUST-ER.pdf
+./pdf/DMS ECC.pdf
+./pdf/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf
+./pdf/DMS SPOT 1.pdf
+./pdf/DMS SSET.pdf
+./pdf/DMS-RiaccendiamoiMercati-RivitalizziamoleCitta.pdf
+./pdf/DMSECC(3).pdf
+./pdf/DMSECLUST-ER(4).pdf
+./pdf/DMSFINTECH.pdf
+./pdf/DMSLOCANDINA.pdf
+./pdf/DMSSSET(2).pdf
+./pdf/DMSSSET.pdf
+./pdf/DMSWeb3-SmartContract(2).pdf
+./pdf/DMSalCENTROdiTUTTO(1).pdf
+./pdf/DMScompleto2(1).pdf
+./pdf/DMSofflineconCIE(1).pdf
+./pdf/DOSSIER NAZIONALE.pdf
+./pdf/DOSSIERNAZIONALE(3).pdf
+./pdf/ECOCOCREDOIT.pdf
+./pdf/EQUILIBRIO ECOSOSTENIBILE.pdf
+./pdf/EQUILIBRIOECOSOSTENIBILE.pdf
+./pdf/EVENTISTRAORDINARI(2).pdf
+./pdf/EcosistemaDMS-hub+costiPA(2).pdf
+./pdf/EcosistemaDMS-hub-costiPA-2.pdf
+./pdf/GESTIONESERVIZIACCESSORI(1).pdf
+./pdf/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf
+./pdf/HUB NAZIONALE DEL COMMERCIO.pdf
+./pdf/HUB URBANI E DI PROSSIMITÀ.pdf
+./pdf/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf
+./pdf/HUBNAZIONALEDELCOMMERCIO(2).pdf
+./pdf/Hub Urbani e di Prossimità in Emilia-Romagna .pdf
+./pdf/HubUrbaniediProssimita-EmiliaRomagna-1.pdf
+./pdf/IMPLEMENTAZIONI(1).pdf
+./pdf/INFRASTRUTTURARETEDMSEUROPA.pdf
+./pdf/LOGICACARBONCREDIT(3).pdf
+./pdf/PASSAPORTOEU(3).pdf
+./pdf/PREMESSAPOLITICA.pdf
+./pdf/PRESENTAZIONE DMS -compressed.pdf
+./pdf/PRESENTAZIONEDMS-CITTAMETROPOLITANADIBOLOGNA-3.pdf
+./pdf/PRESENTAZIONEDMS-CITTÀMETROPOLITANADIBOLOGNA(3).pdf
+./pdf/PROGETTO NAZIONALE.pdf
+./pdf/PROGETTONAZIONALE1(1).pdf
+./pdf/RIEQUILIBRIO.pdf
+./pdf/Relazione sui controlli.pdf
+./pdf/Relazionecalocommercioambulante.pdf
+./pdf/Relazionesuicontrolli(1).pdf
+./pdf/ScenarioFuturo(3).pdf
+./pdf/USATO.pdf
+./pdf/Vuoto1332(1).pdf
+./pdf/analisi-soluzione-dms.pdf
+./pdf/analisi.pdf
+./pdf/app-dms-assistente.pdf
+./pdf/bolkestein-mercati.pdf
+./pdf/carbon-credit-dms.pdf
+./pdf/carbon-credit-logica.pdf
+./pdf/dms-all-in-one.pdf
+./pdf/dms-cluster-er.pdf
+./pdf/dms-ecc-narrativo.pdf
+./pdf/dms-ecc-tecnico.pdf
+./pdf/dms-spot-1.pdf
+./pdf/dms-sset.pdf
+./pdf/dossier-nazionale.pdf
+./pdf/ecosistema-costi-pa.pdf
+./pdf/equilibrio-ecosostenibile.pdf
+./pdf/gemello-dms.pdf
+./pdf/hub-nazionale-commercio.pdf
+./pdf/hub-urbani-prossimita-er.pdf
+./pdf/once-only-sdg.pdf
+./pdf/passaporto-eu.pdf
+./pdf/presentazione-dms-bologna.pdf
+./pdf/progetto-nazionale.pdf
+./pdf/relazione-controlli.pdf
+./pdf/riaccendiamo-il-commercio.pdf
+./pdf/riequilibrio-ecc.pdf
+./pdf/scenario-futuro.pdf
+./pdf/usato.pdf
+
+DIRECTORY ./assets/doc/ (40 file - UTILIZZATI):
+./assets/doc/ANALISIESOLUZIONEDMS(1).pdf
+./assets/doc/APPDMSAssistentePersonale.pdf
+./assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf
+./assets/doc/CARBONCREDITDMS-4.pdf
+./assets/doc/DATI.pdf
+./assets/doc/DMS-RiaccendiamoiMercati-RivitalizziamoleCitta.pdf
+./assets/doc/DMSECC(3).pdf
+./assets/doc/DMSECLUST-ER(4).pdf
+./assets/doc/DMSFINTECH.pdf
+./assets/doc/DMSLOCANDINA.pdf
+./assets/doc/DMSSSET(2).pdf
+./assets/doc/DMSSSET.pdf
+./assets/doc/DMSWeb3-SmartContract(2).pdf
+./assets/doc/DMSalCENTROdiTUTTO(1).pdf
+./assets/doc/DMScompleto2(1).pdf
+./assets/doc/DMSofflineconCIE(1).pdf
+./assets/doc/DOSSIERNAZIONALE(3).pdf
+./assets/doc/ECOCOCREDOIT.pdf
+./assets/doc/EQUILIBRIOECOSOSTENIBILE.pdf
+./assets/doc/EVENTISTRAORDINARI(2).pdf
+./assets/doc/EcosistemaDMS-hub+costiPA(2).pdf
+./assets/doc/EcosistemaDMS-hub-costiPA-2.pdf
+./assets/doc/GESTIONESERVIZIACCESSORI(1).pdf
+./assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf
+./assets/doc/HUBNAZIONALEDELCOMMERCIO(2).pdf
+./assets/doc/HubUrbaniediProssimita-EmiliaRomagna-1.pdf
+./assets/doc/IMPLEMENTAZIONI(1).pdf
+./assets/doc/INFRASTRUTTURARETEDMSEUROPA.pdf
+./assets/doc/LOGICACARBONCREDIT(3).pdf
+./assets/doc/PASSAPORTOEU(3).pdf
+./assets/doc/PREMESSAPOLITICA.pdf
+./assets/doc/PRESENTAZIONEDMS-CITTAMETROPOLITANADIBOLOGNA-3.pdf
+./assets/doc/PRESENTAZIONEDMS-CITTÀMETROPOLITANADIBOLOGNA(3).pdf
+./assets/doc/PROGETTONAZIONALE1(1).pdf
+./assets/doc/RIEQUILIBRIO.pdf
+./assets/doc/Relazionecalocommercioambulante.pdf
+./assets/doc/Relazionesuicontrolli(1).pdf
+./assets/doc/ScenarioFuturo(3).pdf
+./assets/doc/USATO.pdf
+./assets/doc/Vuoto1332(1).pdf
+
+DIRECTORY ./landing/docs/ (51 file):
+./landing/docs/ANALISI E SOLUZIONE DMS.pdf
+./landing/docs/APP DMS Assistente Personale.pdf
+./landing/docs/Analisi.pdf
+./landing/docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf
+./landing/docs/CARBON CREDIT DMS.pdf
+./landing/docs/COSTI PA.pdf
+./landing/docs/DMS         ALL-IN-ONE .pdf
+./landing/docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf
+./landing/docs/DMS E CLUST-ER.pdf
+./landing/docs/DMS ECC.pdf
+./landing/docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf
+./landing/docs/DMS SPOT 1.pdf
+./landing/docs/DMS SSET.pdf
+./landing/docs/DOSSIER NAZIONALE.pdf
+./landing/docs/EQUILIBRIO ECOSOSTENIBILE.pdf
+./landing/docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf
+./landing/docs/HUB NAZIONALE DEL COMMERCIO.pdf
+./landing/docs/HUB URBANI E DI PROSSIMITÀ.pdf
+./landing/docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf
+./landing/docs/PRESENTAZIONE DMS -compressed.pdf
+./landing/docs/PROGETTO NAZIONALE.pdf
+./landing/docs/RIEQUILIBRIO.pdf
+./landing/docs/Relazione sui controlli.pdf
+./landing/docs/USATO.pdf
+./landing/docs/analisi-soluzione-dms.pdf
+./landing/docs/analisi.pdf
+./landing/docs/app-dms-assistente.pdf
+./landing/docs/bolkestein-mercati.pdf
+./landing/docs/carbon-credit-dms.pdf
+./landing/docs/carbon-credit-logica.pdf
+./landing/docs/dms-all-in-one.pdf
+./landing/docs/dms-cluster-er.pdf
+./landing/docs/dms-ecc-narrativo.pdf
+./landing/docs/dms-ecc-tecnico.pdf
+./landing/docs/dms-spot-1.pdf
+./landing/docs/dms-sset.pdf
+./landing/docs/dossier-nazionale.pdf
+./landing/docs/ecosistema-costi-pa.pdf
+./landing/docs/equilibrio-ecosostenibile.pdf
+./landing/docs/gemello-dms.pdf
+./landing/docs/hub-nazionale-commercio.pdf
+./landing/docs/hub-urbani-prossimita-er.pdf
+./landing/docs/once-only-sdg.pdf
+./landing/docs/passaporto-eu.pdf
+./landing/docs/presentazione-dms-bologna.pdf
+./landing/docs/progetto-nazionale.pdf
+./landing/docs/relazione-controlli.pdf
+./landing/docs/riaccendiamo-il-commercio.pdf
+./landing/docs/riequilibrio-ecc.pdf
+./landing/docs/scenario-futuro.pdf
+./landing/docs/usato.pdf
+
+DIRECTORY ./docs/ (51 file):
+./docs/ANALISI E SOLUZIONE DMS.pdf
+./docs/APP DMS Assistente Personale.pdf
+./docs/Analisi.pdf
+./docs/BOLKESTEIN  COMMERCIO SU AREA PUBBLICA.pdf
+./docs/CARBON CREDIT DMS.pdf
+./docs/COSTI PA.pdf
+./docs/DMS         ALL-IN-ONE .pdf
+./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf
+./docs/DMS E CLUST-ER.pdf
+./docs/DMS ECC.pdf
+./docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf
+./docs/DMS SPOT 1.pdf
+./docs/DMS SSET.pdf
+./docs/DOSSIER NAZIONALE.pdf
+./docs/EQUILIBRIO ECOSOSTENIBILE.pdf
+./docs/HUB DMS The First Web3-Ready Public Market Platform in Europe.pdf
+./docs/HUB NAZIONALE DEL COMMERCIO.pdf
+./docs/HUB URBANI E DI PROSSIMITÀ.pdf
+./docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf
+./docs/PRESENTAZIONE DMS -compressed.pdf
+./docs/PROGETTO NAZIONALE.pdf
+./docs/RIEQUILIBRIO.pdf
+./docs/Relazione sui controlli.pdf
+./docs/USATO.pdf
+./docs/analisi-soluzione-dms.pdf
+./docs/analisi.pdf
+./docs/app-dms-assistente.pdf
+./docs/bolkestein-mercati.pdf
+./docs/carbon-credit-dms.pdf
+./docs/carbon-credit-logica.pdf
+./docs/dms-all-in-one.pdf
+./docs/dms-cluster-er.pdf
+./docs/dms-ecc-narrativo.pdf
+./docs/dms-ecc-tecnico.pdf
+./docs/dms-spot-1.pdf
+./docs/dms-sset.pdf
+./docs/dossier-nazionale.pdf
+./docs/ecosistema-costi-pa.pdf
+./docs/equilibrio-ecosostenibile.pdf
+./docs/gemello-dms.pdf
+./docs/hub-nazionale-commercio.pdf
+./docs/hub-urbani-prossimita-er.pdf
+./docs/once-only-sdg.pdf
+./docs/passaporto-eu.pdf
+./docs/presentazione-dms-bologna.pdf
+./docs/progetto-nazionale.pdf
+./docs/relazione-controlli.pdf
+./docs/riaccendiamo-il-commercio.pdf
+./docs/riequilibrio-ecc.pdf
+./docs/scenario-futuro.pdf
+./docs/usato.pdf
+
+DIRECTORY ./docs_raw/ (18 file):
+./docs_raw/ANALISIESOLUZIONEDMS.pdf
+./docs_raw/CARBONCREDITDMS(2).pdf
+./docs_raw/DMS-RiaccendiamoiMercatiRivitalizziamoleCittà.pdf
+./docs_raw/DMSECC(1).pdf
+./docs_raw/DMSECLUST-ER(3).pdf
+./docs_raw/DOSSIERNAZIONALE(1).pdf
+./docs_raw/EQUILIBRIOECOSOSTENIBILE.pdf
+./docs_raw/EcosistemaDMS-hub+costiPA.pdf
+./docs_raw/HUBNAZIONALEDELCOMMERCIO(1).pdf
+./docs_raw/HubUrbaniinEmiliaRomagna(1).pdf
+./docs_raw/LOGICACARBONCREDIT(1).pdf
+./docs_raw/PASSAPORTOEU(1).pdf
+./docs_raw/PRESENTAZIONEDMS-CITTÀMETROPOLITANADIBOLOGNA(1).pdf
+./docs_raw/PRESENTAZIONEDMS-compressed(7).pdf
+./docs_raw/PRESENTAZIONEDMS-compressed(8).pdf
+./docs_raw/ScenarioFuturo(1).pdf
+./docs_raw/dms-cluster.pdf
+./docs_raw/hub-nazionale.pdf
+
+DIRECTORY ./ ROOT (3 file):
+./README_ROUTES.pdf
+./RELAZIONE_COLLAUDO_COMPLETA.pdf
+./RELAZIONE_SINTETICA_FUNZIONAMENTO.pdf
+
+TOTALE: 252 PDF
