@@ -33,11 +33,13 @@
   },
   {
     "id": 3,
-    "title": "03 • Pagamenti & PDND (Once-Only)",
-    "sub": "Amplia: Q1 2026",
+    "title": "03 • Mercato Pilota Grosseto",
+    "sub": "Pilota • Amplia: Q1 2026",
     "pdfs": [
-      {"label": "DMS Once Only Single Digital Gateway", "file": "./docs/DMS ONCE ONLY SINGLE DIGITAL GATEWAY.pdf"},
-      {"label": "DMS SSET", "file": "#"}
+      {"label": "Presentazione DMS", "file": "./docs/PRESENTAZIONE DMS -compressed.pdf"},
+      {"label": "Riaccendiamo il Commercio", "file": "./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf"},
+      {"label": "Documento Tecnico Avanzato", "file": "./docs/Documento_Tecnico_Avanzato.pdf"},
+      {"label": "DMS al Centro di Tutto", "file": "./docs/DMS_al_Centro_di_Tutto.pdf"}
     ]
   },
   {
