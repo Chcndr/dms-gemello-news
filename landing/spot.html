@@ -342,7 +342,7 @@
       a.className = 'doc';
       // Usa PDF.js Lite per controllo completo rendering
       a.href = `/dms-gemello-news/landing/pdfjs-lite/?src=${encodeURIComponent(href)}&v=finale-006`;
-      a.target = '_blank';
+      // RIMOSSO target="_blank" per aprire nel modal interno
       a.rel = 'noopener';
       
       // Aggiungo data-doc per evidenziazione hash e data-spot + id per evidenziazione rossa
