@@ -1071,6 +1071,35 @@ addEventListener('click', function (e) {
   });
 })();
 </script>
+
+<!-- PATCH: Intercettazione specifica per PDF delle schede orologio -->
+<script>
+(function(){
+  // Intercetta click sui PDF nelle schede dell'orologio
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link || !link.href) return;
+    
+    // Solo per PDF nelle schede dell'orologio (dentro #panel)
+    var panel = link.closest('#panel');
+    if (!panel) return;
+    
+    // Solo per PDF
+    if (!/\.pdf(\?|#|$)/i.test(link.href)) return;
+    
+    console.log('[PATCH] Intercettando PDF scheda:', link.href);
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Reindirizza al viewer interno
+    var cb = (link.href.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
+    var viewerUrl = '/dms-gemello-news/landing/pdfjs-lite/?src=' + encodeURIComponent(link.href + cb) + '&v=finale-006';
+    window.location.href = viewerUrl;
+    
+    return false;
+  }, true); // capture per intercettare prima
+})();
+</script>
 </body>
 </html>
 
