@@ -7,7 +7,7 @@
     "pdfs": [
       {"label": "DMS Locandina", "file": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"},
       {"label": "DMS - Riaccendiamo i Mercati", "file": "/dms-gemello-news/assets/doc/DMS-RiaccendiamoiMercati-RivitalizziamoleCitta.pdf"},
-      {"label": "Ecosistema Costi PA", "file": "/dms-gemello-news/assets/doc/EcosistemaDMS-hub-costiPA-2.pdf"},
+      {"label": "Dati e Costi PA", "file": "/dms-gemello-news/assets/doc/DATI.pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
@@ -66,7 +66,7 @@
     "desc": "Interoperabilità e Once-Only: il gemello digitale del commercio per standardizzare dati e servizi.",
     "pdfs": [
       {"label": "DMS al Centro di Tutto", "file": "/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf"},
-      {"label": "Gemello DMS", "file": "/dms-gemello-news/assets/doc/INFRASTRUTTURARETEDMSEUROPA.pdf"},
+      {"label": "Gemello DMS", "file": "/dms-gemello-news/assets/doc/GemelloDMS(1).pdf"},
       {"label": "DMS ECC", "file": "/dms-gemello-news/assets/doc/DMSECC(3).pdf"},
       {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"}
     ]
@@ -78,9 +78,9 @@
     "desc": "Servizi transazionali e integrazioni PA: SPID/CIE, pagoPA, app e dashboard operative.",
     "pdfs": [
       {"label": "App DMS Assistente Personale", "file": "/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"},
+      {"label": "Gemello DMS", "file": "/dms-gemello-news/assets/doc/GemelloDMS(1).pdf"},
       {"label": "DMS Offline con CIE", "file": "/dms-gemello-news/assets/doc/DMSofflineconCIE(1).pdf"},
-      {"label": "Gestione Servizi Accessori", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"},
-      {"label": "Modulo GIS", "file": "/dms-gemello-news/assets/doc/MODULOGIS(1).pdf"}
+      {"label": "Gestione Servizi Accessori", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"}
     ]
   },
   {
@@ -92,7 +92,7 @@
       {"label": "Logica Carbon Credit", "file": "/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"},
       {"label": "Eco Carbon Credit", "file": "/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"},
       {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"},
-      {"label": "Passaporto EU", "file": "/dms-gemello-news/assets/doc/PASSAPORTOEU(3).pdf"}
+      {"label": "Passaporto EU", "file": "/dms-gemello-news/assets/doc/PDND-DPP.pdf"}
     ]
   },
   {
@@ -113,9 +113,9 @@
     "sub": "Q4 2027",
     "desc": "Scalabilità nazionale, accordi quadro e governo dei dati—una piattaforma, molti servizi.",
     "pdfs": [
-      {"label": "DMS FinTech 2", "file": "/dms-gemello-news/assets/doc/DMSFINTECH2_compressed.pdf"},
+      {"label": "DMS FinTech", "file": "/dms-gemello-news/assets/doc/DMSFINTECH.pdf"},
       {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
-      {"label": "DMS Completo v1", "file": "/dms-gemello-news/assets/doc/DMScompleto1(1).pdf"},
+      {"label": "Premessa Politica", "file": "/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf"},
       {"label": "Analisi & Soluzione DMS", "file": "/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"}
     ]
   },
@@ -125,10 +125,10 @@
     "sub": "Q1 2028",
     "desc": "Mercati digitali trasparenti: token di servizio, tracciabilità end-to-end, tutela del consumatore.",
     "pdfs": [
-      {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/DMSWeb3-SmartContract(2).pdf"},
+      {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
       {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"},
-      {"label": "IoT Civico", "file": "/dms-gemello-news/assets/doc/IoTCivico(1).pdf"},
-      {"label": "DMS Catalogo", "file": "/dms-gemello-news/assets/doc/DMSCATALOGO_compressed.pdf"}
+      {"label": "IoT Civico", "file": "/dms-gemello-news/assets/doc/IoTCivico.pdf"},
+      {"label": "DMS FinTech 2", "file": "/dms-gemello-news/assets/doc/DMSFINTECH2_compressed.pdf"}
     ]
   },
   {
@@ -140,7 +140,7 @@
       {"label": "DMS Locandina", "file": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"},
       {"label": "DMS Set v2", "file": "/dms-gemello-news/assets/doc/DMSSSET(2).pdf"},
       {"label": "Eventi Straordinari", "file": "/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"},
-      {"label": "Idee per Hub", "file": "/dms-gemello-news/assets/doc/IDEEPERHUB(1).pdf"}
+      {"label": "Idee per Hub", "file": "/dms-gemello-news/assets/doc/IDEEPERHUB.pdf"}
     ]
   }
 ]
