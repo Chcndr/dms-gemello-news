@@ -39,14 +39,14 @@
   },
   {
     "id": 3,
-    "title": "03 • Pilota Mercato — Avvio integrazione",
-    "sub": "Q2 2026",
+    "title": "03 • Mercato Pilota Grosseto",
+    "sub": "Pilota • Amplia: Q1 2026",
     "desc": "Avvio del mercato/hub pilota e raccolta feedback per la stabilizzazione del modello.",
     "pdfs": [
-      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
-      {"label": "Commercio Ambulante", "file": "/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"},
-      {"label": "Implementazioni Avanzate", "file": "/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"},
-      {"label": "Riferimenti normativi & PNRR", "file": "#"}
+      {"label": "Presentazione DMS", "file": "./docs/PRESENTAZIONE DMS -compressed.pdf"},
+      {"label": "Riaccendiamo il Commercio", "file": "./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf"},
+      {"label": "Documento Tecnico Avanzato", "file": "./docs/Documento_Tecnico_Avanzato.pdf"},
+      {"label": "DMS al Centro di Tutto", "file": "./docs/DMS_al_Centro_di_Tutto.pdf"}
     ]
   },
   {
