@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF.js Lite</title>
+<style>
+  html,body{height:100%;margin:0;background:#000!important;color:#fff;overflow:hidden}
+
+  #wrap{
+    position:fixed;inset:0;overflow:auto;padding:20px;
+    /* Disabilita pull-to-refresh e scroll elastico */
+    overscroll-behavior:none;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-y;
+  }
+  
+  /* Pulsante X per chiudere */
+  #closeBtn{
+    position:fixed;top:15px;right:15px;z-index:9999;
+    width:40px;height:40px;border-radius:50%;
+    background:rgba(255,255,255,0.9);color:#000;
+    border:none;font-size:20px;font-weight:bold;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.3);
+    transition:all 0.2s ease;
+  }
+  #closeBtn:hover{
+    background:#fff;transform:scale(1.1);
+  }
+  #loading{color:#fff;text-align:center;padding:50px;font-family:Arial,sans-serif}
+  #error{color:#ff6b6b;text-align:center;padding:50px;font-family:Arial,sans-serif}
+  canvas{display:block;margin:0 auto 12px auto;max-width:100%;height:auto;background:#000;border:1px solid #333}
+  @media print{*{display:none!important}}
+</style>
+</head>
+<body>
+
+<button id="closeBtn" onclick="window.close(); history.back();" title="Chiudi visualizzatore">×</button>
+
+<div id="wrap"></div>
+
+<!-- Prova multipli CDN per PDF.js -->
+<script>
+(async function(){
+  const qs=new URLSearchParams(location.search);
+  const src=(qs.get('src')||'').trim();
+  
+  if(!src) return;
+  
+  // Costruisci URL assoluto
+  const baseUrl = window.location.origin + '/dms-gemello-news/';
+  let pdfUrl;
+  if(src.startsWith('http')) {
+    pdfUrl = src;
+  } else if(src.startsWith('/')) {
+    pdfUrl = window.location.origin + src;
+  } else {
+    pdfUrl = baseUrl + src;
+  }
+  
+  console.log('Caricamento PDF da:', pdfUrl);
+
+  const wrap=document.getElementById('wrap');
+
+  // Prova a caricare PDF.js da diversi CDN
+  const cdnUrls = [
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+    'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js',
+    'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js'
+  ];
+
+  let pdfjsLib = null;
+  
+  for(const url of cdnUrls) {
+    try {
+      console.log('Tentativo caricamento PDF.js da:', url);
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.onload = resolve;
+        script.onerror = reject;
+        script.src = url;
+        document.head.appendChild(script);
+      });
+      
+      if(window.pdfjsLib) {
+        pdfjsLib = window.pdfjsLib;
+        console.log('PDF.js caricato con successo da:', url);
+        break;
+      }
+    } catch(e) {
+      console.warn('Fallito caricamento da:', url, e);
+    }
+  }
+
+  if(!pdfjsLib) {
+    throw new Error('Impossibile caricare PDF.js da nessun CDN');
+  }
+
+  // Cache-buster
+  const cb = Date.now().toString(36);
+  const finalUrl = pdfUrl + (pdfUrl.includes('?')?'&':'?') + '_cb='+cb;
+
+  console.log('Inizializzazione PDF.js...');
+  
+  // Configurazione PDF.js
+  const workerSrc = pdfjsLib.GlobalWorkerOptions.workerSrc || 
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+
+  const doc = await pdfjsLib.getDocument({
+    url: finalUrl,
+    disableAutoFetch: false,
+    disableStream: false
+  }).promise;
+
+  console.log('PDF caricato, pagine:', doc.numPages);
+
+  // Render pagine
+  const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  for(let p=1; p<=doc.numPages; p++){
+    console.log('Rendering pagina', p);
+    const page = await doc.getPage(p);
+    
+    const baseViewport = page.getViewport({ scale: 1 });
+    const containerWidth = Math.min(document.documentElement.clientWidth - 40, 1200);
+    const scale = (containerWidth / baseViewport.width) * DPR;
+
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { alpha:false });
+    
+    canvas.width  = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    canvas.style.width = (canvas.width / DPR) + 'px';
+    canvas.style.height = (canvas.height / DPR) + 'px';
+
+    wrap.appendChild(canvas);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    console.log('Pagina', p, 'renderizzata');
+  }
+
+  console.log('Tutte le pagine renderizzate');
+
+})().catch(err => {
+  console.error('Errore PDF.js:', err);
+});
+
+// Protezioni anti-stampa
+document.addEventListener('contextmenu', e=>e.preventDefault(), true);
+document.addEventListener('keydown', e=>{
+  const k=(e.key||'').toLowerCase();
+  if((e.ctrlKey||e.metaKey)&&(k==='p'||e.keyCode===80)){
+    e.preventDefault(); e.stopPropagation();
+    alert('Stampa disabilitata.');
+    return false;
+  }
+  if((e.ctrlKey||e.metaKey)&&(k==='s'||e.keyCode===83)){
+    e.preventDefault(); e.stopPropagation();
+    alert('Salvataggio disabilitato.');
+    return false;
+  }
+}, true);
+
+window.onbeforeprint=()=>{ 
+  document.body.innerHTML='<div style="color:#fff;padding:50px;text-align:center">Stampa non disponibile</div>'; 
+};
+</script>
+</body>
+</html>
