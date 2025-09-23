@@ -21,6 +21,9 @@
       {"label": "Dossier Nazionale", "file": "/dms-gemello-news/assets/doc/DOSSIERNAZIONALE(3).pdf"},
       {"label": "DMS e CLUST-ER", "file": "/dms-gemello-news/assets/doc/DMSECLUST-ER(4).pdf"},
       {"label": "DMS ECC", "file": "/dms-gemello-news/assets/doc/DMSECC(3).pdf"},
+      {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"},
+      {"label": "Eco Carbon Credit", "file": "/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"},
+      {"label": "Passaporto EU", "file": "/dms-gemello-news/assets/doc/PDND-DPP.pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
@@ -34,6 +37,8 @@
       {"label": "Analisi Commercio Ambulante", "file": "/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"},
       {"label": "Relazione sui Controlli", "file": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"},
       {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"},
+      {"label": "IoT Civico", "file": "/dms-gemello-news/assets/doc/IoTCivico.pdf"},
+      {"label": "DMS FinTech 2", "file": "/dms-gemello-news/assets/doc/DMSFINTECH2_compressed.pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
@@ -68,8 +73,11 @@
     "desc": "Interoperabilità e Once-Only: il gemello digitale del commercio per standardizzare dati e servizi.",
     "pdfs": [
       {"label": "DMS al Centro di Tutto", "file": "/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf"},
-      {"label": "DMS Sistema Completo", "file": "/dms-gemello-news/assets/doc/DMSSSET.pdf"},
+      {"label": "Gemello DMS", "file": "/dms-gemello-news/assets/doc/GemelloDMS(1).pdf"},
       {"label": "DMS ECC", "file": "/dms-gemello-news/assets/doc/DMSECC(3).pdf"},
+      {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"},
+      {"label": "Eco Carbon Credit", "file": "/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"},
+      {"label": "Passaporto EU", "file": "/dms-gemello-news/assets/doc/PDND-DPP.pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
@@ -80,8 +88,9 @@
     "desc": "Servizi transazionali e integrazioni PA: SPID/CIE, pagoPA, app e dashboard operative.",
     "pdfs": [
       {"label": "App DMS Assistente Personale", "file": "/dms-gemello-news/assets/doc/APPDMSAssistentePersonale.pdf"},
-      {"label": "DMS Sistema Completo", "file": "/dms-gemello-news/assets/doc/DMSSSET.pdf"},
+      {"label": "Gemello DMS", "file": "/dms-gemello-news/assets/doc/GemelloDMS(1).pdf"},
       {"label": "DMS Offline con CIE", "file": "/dms-gemello-news/assets/doc/DMSofflineconCIE(1).pdf"},
+      {"label": "Gestione Servizi Accessori", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
@@ -94,6 +103,8 @@
       {"label": "Logica Carbon Credit", "file": "/dms-gemello-news/assets/doc/LOGICACARBONCREDIT(3).pdf"},
       {"label": "Eco Carbon Credit", "file": "/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"},
       {"label": "Riequilibrio Economico", "file": "/dms-gemello-news/assets/doc/RIEQUILIBRIO.pdf"},
+      {"label": "Eco Carbon Credit", "file": "/dms-gemello-news/assets/doc/ECOCOCREDOIT.pdf"},
+      {"label": "Passaporto EU", "file": "/dms-gemello-news/assets/doc/PDND-DPP.pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
@@ -105,6 +116,8 @@
     "pdfs": [
       {"label": "Bolkestein Commercio su Area Pubblica", "file": "/dms-gemello-news/assets/doc/BOLKESTEINCOMMERCIOSUAREAPUBBLICA.pdf"},
       {"label": "Relazione sui Controlli", "file": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"},
+      {"label": "Mercati in Italia", "file": "/dms-gemello-news/assets/doc/MERCATIINITALIA.pdf"},
+      {"label": "Implementazioni Avanzate", "file": "/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
@@ -117,6 +130,7 @@
       {"label": "DMS FinTech", "file": "/dms-gemello-news/assets/doc/DMSFINTECH.pdf"},
       {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
       {"label": "Premessa Politica", "file": "/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf"},
+      {"label": "Analisi & Soluzione DMS", "file": "/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
@@ -128,6 +142,8 @@
     "pdfs": [
       {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
       {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"},
+      {"label": "IoT Civico", "file": "/dms-gemello-news/assets/doc/IoTCivico.pdf"},
+      {"label": "DMS FinTech 2", "file": "/dms-gemello-news/assets/doc/DMSFINTECH2_compressed.pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   },
@@ -140,6 +156,7 @@
       {"label": "DMS Locandina", "file": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"},
       {"label": "DMS Set v2", "file": "/dms-gemello-news/assets/doc/DMSSSET(2).pdf"},
       {"label": "Eventi Straordinari", "file": "/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"},
+      {"label": "Idee per Hub", "file": "/dms-gemello-news/assets/doc/IDEEPERHUB.pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
     ]
   }
