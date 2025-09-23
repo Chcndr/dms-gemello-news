@@ -30,7 +30,7 @@
     "sub": "Q1 2026",
     "desc": "Le criticità dell'esistente: costi per la PA, inefficienze, controlli e usato. Evidenze e soluzioni DMS.",
     "pdfs": [
-      {"label": "Scenario Futuro", "file": "./docs/scenario-futuro.pdf"},
+      {"label": "Scenario Futuro", "file": "/dms-gemello-news/assets/doc/ScenarioFuturo(3).pdf"},
       {"label": "Analisi Commercio Ambulante", "file": "/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"},
       {"label": "Relazione sui Controlli", "file": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"},
       {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"}
@@ -42,10 +42,10 @@
     "sub": "Pilota • Amplia: Q1 2026",
     "desc": "Avvio del mercato/hub pilota e raccolta feedback per la stabilizzazione del modello.",
     "pdfs": [
-      {"label": "Presentazione DMS", "file": "./docs/PRESENTAZIONE DMS -compressed.pdf"},
-      {"label": "Riaccendiamo il Commercio", "file": "./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf"},
-      {"label": "Mercato Connesso", "file": "./docs/Documento_Tecnico_Avanzato.pdf"},
-      {"label": "DMS al Centro di Tutto", "file": "./docs/DMS_al_Centro_di_Tutto.pdf"},
+      {"label": "Presentazione DMS Compressed", "file": "/dms-gemello-news/assets/doc/PRESENTAZIONEDMS-compressed.pdf"},
+      {"label": "DMS - Riaccendiamo i Mercati", "file": "/dms-gemello-news/assets/doc/DMS-RiaccendiamoiMercati-RivitalizziamoleCitta.pdf"},
+      {"label": "Mercato Connesso", "file": "/dms-gemello-news/assets/doc/Senzatitolo79(3).pdf"},
+      {"label": "DMS al Centro di Tutto", "file": "/dms-gemello-news/assets/doc/DMSalCENTROdiTUTTO(1).pdf"},
       {"label": "DMS Completo v1", "file": "/dms-gemello-news/assets/doc/DMScompleto1(1).pdf"},
       {"label": "DMS Offline con CIE", "file": "/dms-gemello-news/assets/doc/DMSofflineconCIE(1).pdf"}
     ]
@@ -56,10 +56,10 @@
     "sub": "Q3 2026",
     "desc": "Replicabilità in altri mercati per validare processi, KPI e sostenibilità economica.",
     "pdfs": [
-      {"label": "DMS e CLUST-ER", "file": "./docs/DMS E CLUST-ER.pdf"},
-      {"label": "Hub Urbani e di Prossimità in Emilia-Romagna", "file": "./docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf"},
-      {"label": "Presentazione DMS Bologna", "file": "./docs/presentazione-dms-bologna.pdf"},
-      {"label": "Ecosistema Costi PA", "file": "./docs/COSTI PA.pdf"}
+      {"label": "DMS & CLUST-ER", "file": "/dms-gemello-news/assets/doc/DMSECLUST-ER(4).pdf"},
+      {"label": "Hub Urbani e di Prossimità in Emilia-Romagna", "file": "/dms-gemello-news/assets/doc/HubUrbaniediProssimita-EmiliaRomagna-1.pdf"},
+      {"label": "Presentazione DMS (Bologna)", "file": "/dms-gemello-news/assets/doc/PRESENTAZIONEDMS-CITTAMETROPOLITANADIBOLOGNA-3.pdf"},
+      {"label": "Ecosistema Costi PA", "file": "/dms-gemello-news/assets/doc/EcosistemaDMS-hub-costiPA-2.pdf"}
     ]
   },
   {
