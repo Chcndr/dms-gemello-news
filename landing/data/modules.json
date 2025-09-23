@@ -45,7 +45,7 @@
     "pdfs": [
       {"label": "Presentazione DMS", "file": "./docs/PRESENTAZIONE DMS -compressed.pdf"},
       {"label": "Riaccendiamo il Commercio", "file": "./docs/DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città.pdf"},
-      {"label": "Documento Tecnico Avanzato", "file": "./docs/Documento_Tecnico_Avanzato.pdf"},
+      {"label": "Mercato Connesso", "file": "./docs/Documento_Tecnico_Avanzato.pdf"},
       {"label": "DMS al Centro di Tutto", "file": "./docs/DMS_al_Centro_di_Tutto.pdf"}
     ]
   },
@@ -55,9 +55,10 @@
     "sub": "Q3 2026",
     "desc": "Replicabilità in altri mercati per validare processi, KPI e sostenibilità economica.",
     "pdfs": [
-      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
-      {"label": "Gestione Servizi Accessori", "file": "/dms-gemello-news/assets/doc/GESTIONESERVIZIACCESSORI(1).pdf"},
-      {"label": "Riferimenti normativi & PNRR", "file": "#"}
+      {"label": "DMS e CLUST-ER", "file": "./docs/DMS E CLUST-ER.pdf"},
+      {"label": "Hub Urbani e di Prossimità in Emilia-Romagna", "file": "./docs/Hub Urbani e di Prossimità in Emilia-Romagna .pdf"},
+      {"label": "Presentazione DMS Bologna", "file": "./docs/presentazione-dms-bologna.pdf"},
+      {"label": "Ecosistema Costi PA", "file": "./docs/COSTI PA.pdf"}
     ]
   },
   {
