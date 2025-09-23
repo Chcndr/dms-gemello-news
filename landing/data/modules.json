@@ -30,8 +30,8 @@
     "sub": "Q1 2026",
     "desc": "Le criticità dell'esistente: costi per la PA, inefficienze, controlli e usato. Evidenze e soluzioni DMS.",
     "pdfs": [
-      {"label": "Analisi e Soluzione DMS (102 pagine)", "file": "/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"},
-      {"label": "Dati e Costi PA", "file": "/dms-gemello-news/assets/doc/DATI.pdf"},
+      {"label": "Scenario Futuro", "file": "./docs/scenario-futuro.pdf"},
+      {"label": "Analisi Commercio Ambulante", "file": "/dms-gemello-news/assets/doc/Relazionecalocommercioambulante.pdf"},
       {"label": "Relazione sui Controlli", "file": "/dms-gemello-news/assets/doc/Relazionesuicontrolli(1).pdf"},
       {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"},
       {"label": "Riferimenti normativi & PNRR", "file": "#"}
