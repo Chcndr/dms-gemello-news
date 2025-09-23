@@ -829,8 +829,20 @@ addEventListener('click', function (e) {
         data.pdfs.forEach((pdf, idx) => {
           const btn = document.createElement('a');
           btn.className = 'btn btn--accent action';
-          btn.href = pdf.file;
-          // Rimuovi target="_blank" per permettere allo script shim di intercettare
+          
+          // FORZA apertura nel viewer interno per tutti i PDF
+          if (pdf.file && pdf.file.endsWith('.pdf')) {
+            btn.href = '#';
+            btn.addEventListener('click', function(e) {
+              e.preventDefault();
+              var cb = '_cb=' + Date.now().toString(36);
+              var viewerUrl = '/dms-gemello-news/landing/pdfjs-lite/?src=' + encodeURIComponent(pdf.file + '?' + cb) + '&v=finale-006';
+              window.location.href = viewerUrl;
+            });
+          } else {
+            btn.href = pdf.file;
+          }
+          
           btn.textContent = pdf.label;
           actionsDiv.insertBefore(btn, closeBtn);
         });
