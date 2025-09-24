@@ -849,10 +849,10 @@ function applyMinisterHighlight(mKey){
   const m=p.get('m'), hot=p.get('hot'), open=p.get('open');
   console.log('🔍 DEBUG: initNorme started', {m, hot, open});
   
-  if(m) {
-    console.log('🔍 DEBUG: Applying highlight for ministry:', m);
-    applyMinisterHighlight(m);
-  }
+  // if(m) {
+  //   console.log('🔍 DEBUG: Applying highlight for ministry:', m);
+  //   applyMinisterHighlight(m);
+  // } // DISABILITATO - usa MAP_MIN invece
   if(hot){ 
     const btn=document.querySelector(`.btn-norme[data-norma="${hot}"]`); 
     console.log('🔍 DEBUG: Hot button found:', btn);
@@ -978,7 +978,7 @@ function applyMinisterHighlight(mKey){
     const hot = norm(p.get('hot'));
     const opn = norm(p.get('open'));
 
-    if (m) applyBluFromMinister(m);
+    // if (m) applyBluFromMinister(m); // DISABILITATO - usa MAP_MIN invece
     if (hot){
       const b = document.querySelector(`.btn-norme[data-norma="${hot}"]`);
       if (b) b.classList.add('is-min-hot');
