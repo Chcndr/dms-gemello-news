@@ -1389,8 +1389,28 @@ function applyMinisterHighlight(mKey){
   const p = new URLSearchParams(location.search);
   const mUrl = p.get('m');
   const mStore = sessionStorage.getItem('DMS_MINISTERO') || localStorage.getItem('DMS_MINISTERO');
-  if (mUrl) highlightByMinister(mUrl);
-  else if (mStore) highlightByMinister(mStore);
+  
+  // DEBUG VISIBILE - Badge che mostra cosa succede
+  const debugBadge = document.createElement('div');
+  debugBadge.style = 'position:fixed;top:10px;right:10px;background:#000;color:#0ff;padding:8px 12px;border-radius:6px;font:12px/1.2 monospace;z-index:99999;max-width:300px;';
+  debugBadge.innerHTML = `
+    <div>🔍 DEBUG MINISTERI:</div>
+    <div>URL param ?m = "${mUrl || 'NONE'}"</div>
+    <div>Storage = "${mStore || 'NONE'}"</div>
+    <div>MAP_MIN keys = ${Object.keys(MAP_MIN).length}</div>
+    <div>Pulsanti .btn-norme = ${document.querySelectorAll('.btn-norme[data-norma]').length}</div>
+  `;
+  document.body.appendChild(debugBadge);
+  
+  if (mUrl) {
+    debugBadge.innerHTML += `<div>⚡ Calling highlightByMinister("${mUrl}")</div>`;
+    highlightByMinister(mUrl);
+  } else if (mStore) {
+    debugBadge.innerHTML += `<div>⚡ Calling highlightByMinister("${mStore}")</div>`;
+    highlightByMinister(mStore);
+  } else {
+    debugBadge.innerHTML += `<div>❌ No ministry parameter found</div>`;
+  }
 
   // 5) Ascolta aggiornamenti runtime (se la mappa imposta lo storage o emette un evento)
   window.addEventListener('storage', e=>{
