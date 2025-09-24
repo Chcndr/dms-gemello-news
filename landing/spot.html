@@ -1251,25 +1251,23 @@ function applyMinisterHighlight(mKey){
   const N  = s => (s||'').toString().trim().toLowerCase().replace(/_/g,'-');
   
   const MAP_MIN = {
-    // Mappature esistenti ottimizzate
-    mef:["csrd-2022-2464","cbam-2023-956","dogane-com-2023-258-260","ets-revision-2023-959","pnrr-italia-domani"],
-    mimit:["suap-dpr-160-2010","espr-dpp-2024-1781","direttiva-servizi-2006-123","pnrr-italia-domani"],
-    
-    // Solo slug identici dei ministeri
+    // SISTEMA UNIFICATO - Copiato dalla logica MIMIT che funziona
+    mef:["csrd-2022-2464","cbam-2023-956","ets-revision-2023-959","riforma-dogane-com-2023-258-260","pnrr-italia-domani"],
+    mimit:["suap-dpr-160-2010","direttiva-servizi-2006-123","espr-dpp-2024-1781","pnrr-italia-domani"],
     interno:["suap-dpr-160-2010","pdnd","sdg-2018-1724","agid-linee-interoperabilita","eidas2-2024-1183"],
     mase:["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464"],
-    mit:["espr-dpp-2024-1781","pnrr-italia-domani","sdg-2018-1724","interop-europe-2024-903"],
-    salute:["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","eidas2-2024-1183"],
-    mic:["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","pnrr-italia-domani"],
-    turismo:["sdg-2018-1724","interop-europe-2024-903","direttiva-servizi-2006-123","suap-dpr-160-2010"],
+    mit:["espr-dpp-2024-1781","pnrr-italia-domani","sdg-2018-1724","interoperable-europe-2024-903"],
+    salute:["sdg-2018-1724","interoperable-europe-2024-903","pdnd","agid-linee-interoperabilita","eidas2-2024-1183"],
+    mic:["sdg-2018-1724","interoperable-europe-2024-903","pdnd","agid-linee-interoperabilita","pnrr-italia-domani"],
+    turismo:["sdg-2018-1724","interoperable-europe-2024-903","direttiva-servizi-2006-123","suap-dpr-160-2010"],
     masaf:["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464","pnrr-italia-domani"],
-    mim:["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","ai-act-2024-1689"],
-    lavoro:["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","pnrr-italia-domani"],
-    maeci:["sdg-2018-1724","interop-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689"],
-    agid:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interop-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689"],
-    pagopa:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interop-europe-2024-903","eidas2-2024-1183"],
-    ae:["csrd-2022-2464","cbam-2023-956","ets-revision-2023-959","dogane-com-2023-258-260","pdnd"],
-    adm:["dogane-com-2023-258-260","espr-dpp-2024-1781","cbam-2023-956","direttiva-servizi-2006-123","suap-dpr-160-2010"]
+    mim:["sdg-2018-1724","interoperable-europe-2024-903","pdnd","agid-linee-interoperabilita","ai-act-2024-1689"],
+    lavoro:["sdg-2018-1724","interoperable-europe-2024-903","pdnd","agid-linee-interoperabilita","pnrr-italia-domani"],
+    maeci:["sdg-2018-1724","interoperable-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689"],
+    agid:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interoperable-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689"],
+    pagopa:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interoperable-europe-2024-903","eidas2-2024-1183"],
+    ae:["csrd-2022-2464","cbam-2023-956","ets-revision-2023-959","riforma-dogane-com-2023-258-260","pdnd"],
+    adm:["riforma-dogane-com-2023-258-260","espr-dpp-2024-1781","cbam-2023-956","direttiva-servizi-2006-123","suap-dpr-160-2010"]
   };
 
   (function initFromURL(){
@@ -1338,16 +1336,7 @@ function applyMinisterHighlight(mKey){
   const N = s => (s||'').toString().trim().toLowerCase()
                   .replace(/\s+/g,'-').replace(/[_.]+/g,'-').replace(/[^a-z0-9\-]/g,'');
 
-  // 1) MAPPING UFFICIALE: ministero → lista ID norme (data-norma)
-  const MAP = {
-    mef: ["csrd-2022-2464","cbam-2023-956","ets-revision-2023-959","riforma-dogane-com-2023-258-260"],
-    mimit: ["suap-dpr-160-2010","direttiva-servizi-2006-123","espr-dpp-2024-1781","pnrr-italia-domani"],
-    innovazione: ["sdg-2018-1724","interoperable-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689","pdnd","agid-linee-interoperabilita"],
-    ambiente: ["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464"],
-    dogane: ["riforma-dogane-com-2023-258-260","espr-dpp-2024-1781","cbam-2023-956"],
-    pa: ["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interoperable-europe-2024-903"],
-    interno_regioni: ["suap-dpr-160-2010","pdnd","direttiva-servizi-2006-123"]
-  };
+  // SISTEMA UNIFICATO - Usa solo MAP_MIN sopra
 
   // 2) ALIAS ROBUSTI: accetta sinonimi dall'altra pagina (mappa) o link esterni
   const ALIAS = {
@@ -1364,7 +1353,7 @@ function applyMinisterHighlight(mKey){
     if (!k) return null;
     const x = N(k);
     // match diretto
-    if (MAP[x]) return x;
+    if (MAP_MIN[x]) return x;
     // cerca negli alias
     for (const std in ALIAS){
       if (ALIAS[std].some(a => N(a)===x)) return std;
@@ -1378,7 +1367,7 @@ function applyMinisterHighlight(mKey){
     // reset
     document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>b.classList.remove('is-min-hot'));
     if (!std) return;
-    const set = new Set(MAP[std].map(N));
+    const set = new Set(MAP_MIN[std].map(N));
     document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>{
       const id = N(b.getAttribute('data-norma'));
       if (set.has(id)) b.classList.add('is-min-hot');
