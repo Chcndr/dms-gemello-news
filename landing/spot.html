@@ -1781,28 +1781,7 @@ function applyMinisterHighlight(mKey){
 })();
 </script>
 
-<!-- DMS • STABILIZER v1 (freeze 2025-09-11) • ADD-ONLY -->
-<script>
-(function(){
-  if (window.__DMS_STABLE_LOCK__) return; window.__DMS_STABLE_LOCK__=true;
-
-  // 1) Lascia il comportamento attuale: niente re-render forzati della scheda ricca
-  //    (se la scheda è vuota, va bene così)
-
-  // 2) Nascondi eventuali contenitori vuoti per evitare "box bianco"
-  const css = document.createElement('style');
-  css.textContent = '#card-rich-host:empty, #scheda-norma:empty { display:none !important }';
-  document.head.appendChild(css);
-
-  // 3) Badge diagnostico (solo se &diag=1) per verificare che il freeze sia attivo
-  if (new URLSearchParams(location.search).get('diag')==='1'){
-     const b=document.createElement('div');
-     b.style='position:fixed;left:10px;bottom:10px;background:#0b0f14;color:#9bd3ff;padding:6px 10px;border-radius:6px;font:12px/1.2 system-ui;z-index:99999;opacity:.92';
-     b.textContent='diag • stable-lock • 2025-09-11';
-     document.body.appendChild(b);
-  }
-})();
-</script>
+<!-- DMS • STABILIZER RIMOSSO - Non serve più per sfarfallamento -->
 
 <!-- Script shim robusto per PDF e pagine HTML -->
 <script>
