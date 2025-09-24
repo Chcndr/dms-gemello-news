@@ -135,7 +135,9 @@
     "desc": "Mercati digitali trasparenti: token di servizio, tracciabilità end-to-end, tutela del consumatore.",
     "pdfs": [
       {"label": "DMS Web3 Smart Contract", "file": "/dms-gemello-news/assets/doc/DMSWeb3-SmartContract(2).pdf"},
-      {"label": "Chiodo Ancoraggio", "file": "/dms-gemello-news/assets/doc/CHIODOANCORAGGIO_compressed.pdf"}
+      {"label": "DMS FinTech 2", "file": "/dms-gemello-news/assets/doc/DMSFINTECH2_compressed.pdf"},
+      {"label": "IoT Civico", "file": "/dms-gemello-news/assets/doc/IoTCivico(1).pdf"},
+      {"label": "Automazione Eventi", "file": "/dms-gemello-news/assets/doc/AUTOMAZIONEEVENTI1_compressed.pdf"}
     ]
   },
   {
@@ -143,6 +145,11 @@
     "title": "11 • Video & Timeline — Storytelling finale",
     "sub": "Q2 2028",
     "desc": "Comunicazione, adozione e risultati: playbook operativo e materiali per gli stakeholder.",
-    "pdfs": []
+    "pdfs": [
+      {"label": "DMS Locandina", "file": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"},
+      {"label": "Presentazione DMS", "file": "/dms-gemello-news/assets/doc/PRESENTAZIONEDMS-compressed.pdf"},
+      {"label": "DMS Set v2", "file": "/dms-gemello-news/assets/doc/DMSSSET(2).pdf"},
+      {"label": "Eventi Straordinari", "file": "/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"}
+    ]
   }
 ]
