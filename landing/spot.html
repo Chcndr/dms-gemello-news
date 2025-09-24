@@ -1378,7 +1378,7 @@ function applyMinisterHighlight(mKey){
     // reset
     document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>b.classList.remove('is-min-hot'));
     if (!std) return;
-    const set = new Set(MAP[std].map(N));
+    const set = new Set(MAP_MIN[std].map(N));
     document.querySelectorAll('.btn-norme[data-norma]').forEach(b=>{
       const id = N(b.getAttribute('data-norma'));
       if (set.has(id)) b.classList.add('is-min-hot');
