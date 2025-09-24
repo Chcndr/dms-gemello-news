@@ -1009,22 +1009,22 @@
       
       // Mapping per evidenziazione rossa (parole-chiave per ogni ministero)
       const hotTerms = {
-        pcm: ["Dossier", "All-in-One", "Presentazione", "DMS al Centro di Tutto", "Frammentazione Digitale PA", "DMS Offline con CIE", "Progetto Nazionale", "DMS Catalogo", "DMS Locandina", "DMS Spot", "DMS SSET", "Modulo GIS", "Mercato Connesso"],
-        mef: ["Costi PA", "Progetto Nazionale", "Bilancio", "Ecosistema Costi PA", "DMS FinTech", "Gestione Servizi Accessori", "Eventi Straordinari", "DMS Catalogo", "App DMS Assistente Personale", "DMS SSET"],
-        interno: ["Controlli", "Sicurezza", "Territorio", "Report Controlli PA", "DMS Offline con CIE", "DMS al Centro di Tutto", "DMS Catalogo", "Eventi Straordinari", "App DMS Assistente Personale", "Mercato Connesso", "DMS Spot"],
+        pcm: ["Dossier", "All-in-One", "Presentazione", "DMS al Centro di Tutto", "Frammentazione Digitale PA", "DMS Offline con CIE", "Progetto Nazionale", "DMS Catalogo", "DMS Locandina", "DMS Spot", "DMS SSET", "Modulo GIS", "Mercato Connesso", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico"],
+        mef: ["Costi PA", "Progetto Nazionale", "Bilancio", "Ecosistema Costi PA", "DMS FinTech", "Gestione Servizi Accessori", "Eventi Straordinari", "DMS Catalogo", "App DMS Assistente Personale", "DMS SSET", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico", "Carbon Credit – Logica", "Carbon Credit DMS"],
+        interno: ["Sicurezza", "Territorio", "Report Controlli PA", "DMS Offline con CIE", "DMS al Centro di Tutto", "DMS Catalogo", "Eventi Straordinari", "App DMS Assistente Personale", "Mercato Connesso", "DMS Spot", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico"],
         mimit: ["Industria", "Web3", "Usato", "Bolkestein", "Hub Nazionale del Commercio", "Mercato dell'Usato", "Bolkestein Commercio", "DMS Catalogo", "Implementazioni Avanzate", "DMS Web3 - Smart Contract", "Mercati in Italia", "Progetto Nazionale", "DMS FinTech", "Gestione Servizi Accessori", "App DMS Assistente Personale", "DMS Spot", "Mercato Connesso", "Modulo GIS"],
-        mase: ["Ambiente", "Equilibrio", "Carbon Credit", "DMS ECC (narrativo)", "Carbon Credit – Logica", "Carbon Credit DMS", "Eco Carbon Credit", "Bolkestein Commercio"],
-        mit: ["Infrastrutture", "Trasporti", "Logistica", "Hub Urbani e di Prossimità in Emilia-Romagna", "Modulo GIS"],
-        salute: ["Sanità", "Once Only", "Assistente", "App DMS Assistente Personale", "DMS al Centro di Tutto"],
-        mic: ["Cultura", "Riaccendiamo", "Patrimonio", "DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città"],
-        turismo: ["Turismo", "Ospitalità", "Territorio", "Modulo GIS"],
-        masaf: ["Agricoltura", "Filiere", "Sostenibilità", "Analisi Commercio Ambulante"],
-        mim: ["Clust-ER", "Istruzione", "Scuola", "DMS & CLUST-ER"],
-        lavoro: ["Lavoro", "Occupazione", "Formazione", "Implementazioni Avanzate", "Gestione Servizi Accessori", "DMS FinTech", "App DMS Assistente Personale", "Bolkestein Commercio"],
-        maeci: ["Esteri", "ECC", "Cooperazione", "Passaporto EU", "Gemello DMS"],
-        agid: ["Digitale", "ECC", "Interoperabilità", "DMS ECC (tecnico)"],
-        pagopa: ["Pagamenti", "SSET", "Servizi", "App DMS Assistente Personale"],
-        ae: ["Entrate", "Fiscale", "Tributi", "Chiodo Ancoraggio"],
+        mase: ["Ambiente", "Equilibrio", "Carbon Credit", "DMS ECC (narrativo)", "Carbon Credit – Logica", "Carbon Credit DMS", "Eco Carbon Credit", "Bolkestein Commercio", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico", "Passaporto EU"],
+        mit: ["Infrastrutture", "Trasporti", "Logistica", "Hub Urbani e di Prossimità in Emilia-Romagna", "Modulo GIS", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico"],
+        salute: ["Sanità", "Once Only", "Assistente", "App DMS Assistente Personale", "DMS al Centro di Tutto", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico"],
+        mic: ["Cultura", "Riaccendiamo", "Patrimonio", "DMS - Riaccendiamo i Mercati, Rivitalizziamo le Città", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico"],
+        turismo: ["Turismo", "Ospitalità", "Territorio", "Modulo GIS", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico"],
+        masaf: ["Agricoltura", "Filiere", "Sostenibilità", "Analisi Commercio Ambulante", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico", "Carbon Credit – Logica", "Carbon Credit DMS", "Eco Carbon Credit"],
+        mim: ["Clust-ER", "Istruzione", "Scuola", "DMS & CLUST-ER", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS ECC (tecnico)", "Riequilibrio Economico"],
+        lavoro: ["Lavoro", "Occupazione", "Formazione", "Implementazioni Avanzate", "Gestione Servizi Accessori", "DMS FinTech", "App DMS Assistente Personale", "Bolkestein Commercio", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico"],
+        maeci: ["Esteri", "ECC", "Cooperazione", "Passaporto EU", "Gemello DMS", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico"],
+        agid: ["Digitale", "ECC", "Interoperabilità", "DMS ECC (tecnico)", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "Riequilibrio Economico", "Carbon Credit – Logica", "Carbon Credit DMS", "Eco Carbon Credit", "Passaporto EU", "DMS ECC (narrativo)"],
+        pagopa: ["Pagamenti", "SSET", "Servizi", "App DMS Assistente Personale", "Hub Nazionale del Commercio", "Dossier Nazionale", "DMS & CLUST-ER", "DMS ECC (tecnico)", "Riequilibrio Economico"],
+        ae: ["Entrate", "Fiscale", "Tributi", "Riequilibrio Economico", "Dossier Nazionale", "DMS ECC (tecnico)", "Carbon Credit – Logica", "Carbon Credit DMS"],
         adm: ["Dogane", "Commercio", "Controlli", "Riequilibrio Economico", "Carbon Credit – Logica", "Carbon Credit DMS", "DMS ECC (tecnico)"]
       };
       
