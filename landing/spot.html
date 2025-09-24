@@ -1286,6 +1286,10 @@ function applyMinisterHighlight(mKey){
   }, {passive:false});
 
   /* Evidenziazione iniziale da URL (?m, ?hot) + apertura scheda (?open) */
+  // Funzioni di supporto necessarie per MAP_MIN
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const N  = s => (s||'').toString().trim().toLowerCase().replace(/_/g,'-');
+  
   const MAP_MIN = {
     // Mappature esistenti ottimizzate
     mef:["csrd-2022-2464","cbam-2023-956","dogane-com-2023-258-260","ets-revision-2023-959","pnrr-italia-domani"],
