@@ -932,8 +932,7 @@ function applyMinisterHighlight(mKey){
     });
   }
 
-  // Aspetta che il DOM sia completamente caricato
-  setTimeout(function initFromURL(){
+  (function initFromURL(){
     const p = new URLSearchParams(location.search);
     const m   = p.get('m');
     const hot = norm(p.get('hot'));
@@ -1273,8 +1272,7 @@ function applyMinisterHighlight(mKey){
     adm:["dogane-com-2023-258-260","espr-dpp-2024-1781","cbam-2023-956","direttiva-servizi-2006-123","suap-dpr-160-2010"]
   };
 
-  // Aspetta che il DOM sia completamente caricato
-  setTimeout(function initFromURL(){
+  (function initFromURL(){
     const p=new URLSearchParams(location.search);
     const m=p.get('m'); const hot=N(p.get('hot')); const opn=N(p.get('open'));
     
@@ -1321,7 +1319,7 @@ function applyMinisterHighlight(mKey){
       tag.textContent=`diag • m=${m||'-'} • hot=${hot||'-'} • open=${opn||'-'} • ricche-v4`;
       document.body.appendChild(tag);
     }
-  }, 500); // Aspetta 500ms per il caricamento del DOM
+  })();
 
   /* Stili per schede ricche e CTA (con ID per evitare duplicazioni) */
   if(!document.getElementById('dms-ricche-style')){
@@ -1574,8 +1572,7 @@ function applyMinisterHighlight(mKey){
   }, {passive:true});
 
   // 6) Apertura diretta da URL (?open=…)
-  // Aspetta che il DOM sia completamente caricato
-  setTimeout(function initFromURL(){
+  (function initFromURL(){
     const p = new URLSearchParams(location.search);
     const opn = ID(p.get('open'));
     if (!opn) return;
@@ -1745,8 +1742,7 @@ function applyMinisterHighlight(mKey){
   }, {passive:true});
 
   /* ===== 6) Apertura diretta da URL (?open=…) ===== */
-  // Aspetta che il DOM sia completamente caricato
-  function initFromURL(){
+  (function initFromURL(){
     const p=new URLSearchParams(location.search);
     const raw=p.get('open'); const opn=ID(raw);
     // badge avanzato
@@ -1767,15 +1763,7 @@ function applyMinisterHighlight(mKey){
     renderRich(opn);
     // porta in vista la sezione
     (document.getElementById('viewer')||document.getElementById('card-rich-host'))?.scrollIntoView({behavior:'smooth',block:'start'});
-  }
-
-  // Esegui initFromURL quando il DOM è completamente caricato
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFromURL);
-  } else {
-    // Se il DOM è già caricato, esegui immediatamente
-    initFromURL();
-  }
+  })();
 
   /* ===== 7) Stili minimi (un solo tag) ===== */
   if(!document.getElementById('dms-rich-style-v5')){
