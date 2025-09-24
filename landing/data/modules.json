@@ -122,10 +122,10 @@
     "sub": "Q4 2027",
     "desc": "Scalabilità nazionale, accordi quadro e governo dei dati—una piattaforma, molti servizi.",
     "pdfs": [
-      {"label": "DMS FinTech", "file": "/dms-gemello-news/assets/doc/DMSFINTECH.pdf"},
-      {"label": "Progetto Nazionale", "file": "/dms-gemello-news/assets/doc/PROGETTONAZIONALE1(1).pdf"},
-      {"label": "Premessa Politica", "file": "/dms-gemello-news/assets/doc/PREMESSAPOLITICA.pdf"},
-      {"label": "Analisi & Soluzione DMS", "file": "/dms-gemello-news/assets/doc/ANALISIESOLUZIONEDMS(1).pdf"}
+      {"label": "DMS Catalogo", "file": "/dms-gemello-news/assets/doc/DMSCATALOGO_compressed.pdf"},
+      {"label": "DMS Spot", "file": "/dms-gemello-news/assets/doc/DMSSPOT.pdf"},
+      {"label": "Implementazioni", "file": "/dms-gemello-news/assets/doc/IMPLEMENTAZIONI(1).pdf"},
+      {"label": "Mercati in Italia", "file": "/dms-gemello-news/assets/doc/MERCATIINITALIA.pdf"}
     ]
   },
   {
@@ -134,10 +134,10 @@
     "sub": "Q1 2028",
     "desc": "Mercati digitali trasparenti: token di servizio, tracciabilità end-to-end, tutela del consumatore.",
     "pdfs": [
-      {"label": "Hub DMS Web3 Europa", "file": "/dms-gemello-news/assets/doc/HUBDMSTheFirstWeb3-ReadyPublicMarketPlatforminEurope.pdf"},
-      {"label": "Mercato dell'Usato", "file": "/dms-gemello-news/assets/doc/USATO.pdf"},
-      {"label": "IoT Civico", "file": "/dms-gemello-news/assets/doc/IoTCivico.pdf"},
-      {"label": "DMS FinTech 2", "file": "/dms-gemello-news/assets/doc/DMSFINTECH2_compressed.pdf"}
+      {"label": "DMS Web3 Smart Contract", "file": "/dms-gemello-news/assets/doc/DMSWeb3-SmartContract(2).pdf"},
+      {"label": "MEF Scheda 1", "file": "/dms-gemello-news/assets/doc/MEF/MEF-scheda-1.pdf"},
+      {"label": "MEF Scheda 2", "file": "/dms-gemello-news/assets/doc/MEF/MEF-scheda-2.pdf"},
+      {"label": "MEF Scheda 3", "file": "/dms-gemello-news/assets/doc/MEF/MEF-scheda-3.pdf"}
     ]
   },
   {
@@ -146,10 +146,10 @@
     "sub": "Q2 2028",
     "desc": "Comunicazione, adozione e risultati: playbook operativo e materiali per gli stakeholder.",
     "pdfs": [
-      {"label": "DMS Locandina", "file": "/dms-gemello-news/assets/doc/DMSLOCANDINA.pdf"},
-      {"label": "DMS Set v2", "file": "/dms-gemello-news/assets/doc/DMSSSET(2).pdf"},
-      {"label": "Eventi Straordinari", "file": "/dms-gemello-news/assets/doc/EVENTISTRAORDINARI(2).pdf"},
-      {"label": "Idee per Hub", "file": "/dms-gemello-news/assets/doc/IDEEPERHUB.pdf"}
+      {"label": "PCM Scheda 1", "file": "/dms-gemello-news/assets/doc/PCM/PCM-scheda-1.pdf"},
+      {"label": "PCM Scheda 2", "file": "/dms-gemello-news/assets/doc/PCM/PCM-scheda-2.pdf"},
+      {"label": "Salute Scheda A", "file": "/dms-gemello-news/assets/doc/salute/salute-scheda-a.pdf"},
+      {"label": "Chiodo Ancoraggio", "file": "/dms-gemello-news/assets/doc/CHIODOANCORAGGIO_compressed.pdf"}
     ]
   }
 ]
