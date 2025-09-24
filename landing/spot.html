@@ -1275,12 +1275,22 @@ function applyMinisterHighlight(mKey){
   (function initFromURL(){
     const p=new URLSearchParams(location.search);
     const m=p.get('m'); const hot=N(p.get('hot')); const opn=N(p.get('open'));
+    
+    console.log('🔍 DEBUG MAP_MIN: m=', m, 'MAP_MIN[m]=', MAP_MIN[m]);
+    console.log('🔍 DEBUG MAP_MIN: MAP_MIN=', MAP_MIN);
 
     if(m && MAP_MIN[m]){
       const set=new Set(MAP_MIN[m].map(N));
-      $$('.btn-norme[data-norma]').forEach(b=>{
+      console.log('🔍 DEBUG MAP_MIN: set=', set);
+      const buttons = $$('.btn-norme[data-norma]');
+      console.log('🔍 DEBUG MAP_MIN: buttons found=', buttons.length);
+      buttons.forEach(b=>{
+        const normaId = b.getAttribute('data-norma');
+        const normalizedId = N(normaId);
+        const shouldHighlight = set.has(normalizedId);
+        console.log('🔍 DEBUG MAP_MIN: button', normaId, '→', normalizedId, 'highlight=', shouldHighlight);
         b.classList.remove('is-min-hot');
-        if(set.has(N(b.getAttribute('data-norma')))) b.classList.add('is-min-hot');
+        if(shouldHighlight) b.classList.add('is-min-hot');
       });
     }
     if(hot){
