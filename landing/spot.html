@@ -404,13 +404,63 @@
       }
     });
 
-    // applica stile e rimuovi al click
+    // Sistema di persistenza per documenti visualizzati
+    const STORAGE_KEY = 'dms_viewed_docs';
+    
+    function getViewedDocs() {
+      try {
+        return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+      } catch(e) {
+        return new Set();
+      }
+    }
+    
+    function markAsViewed(docId) {
+      try {
+        const viewed = getViewedDocs();
+        viewed.add(docId);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...viewed]));
+      } catch(e) {
+        console.warn('Impossibile salvare stato visualizzazione:', e);
+      }
+    }
+    
+    function getDocId(el) {
+      // Genera un ID univoco per il documento basato su href o contenuto
+      const href = el.href || '';
+      const text = (el.textContent || '').trim();
+      if (href.includes('/assets/doc/')) {
+        // Estrae il nome del file PDF
+        const match = href.match(/\/([^\/]+\.pdf)(\?|$)/i);
+        if (match) return match[1];
+      }
+      // Fallback: usa il testo normalizzato
+      return text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+    }
+
+    // applica stile escludendo documenti già visualizzati
+    const viewedDocs = getViewedDocs();
     let first = null;
+    
     hot.forEach(el=>{
+      const docId = getDocId(el);
+      
+      // Non evidenziare se già visualizzato
+      if (viewedDocs.has(docId)) {
+        el.classList.remove('is-hot');
+        return;
+      }
+      
       el.classList.add('is-hot');
       if (!first) first = el;
-      el.addEventListener('click', ()=> el.classList.remove('is-hot'), {once:true});
+      
+      // Rimuovi evidenziazione e marca come visualizzato al click
+      el.addEventListener('click', () => {
+        el.classList.remove('is-hot');
+        markAsViewed(docId);
+      }, {once: true});
     });
+    
     if (first) first.scrollIntoView({behavior:'smooth', block:'start'});
 
   })();
