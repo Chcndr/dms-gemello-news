@@ -808,27 +808,7 @@ window.DOC_MAP = {
 })();
 
 // MODULO NORME - Mappatura Ministeri e Evidenziazione
-const MAP_MINISTERO = {
-  // Mappature esistenti ottimizzate
-  mef: ["csrd-2022-2464","cbam-2023-956","dogane-com-2023-258-260","ets-revision-2023-959","pnrr-italia-domani"],
-  mimit: ["suap-dpr-160-2010","espr-dpp-2024-1781","direttiva-servizi-2006-123","pnrr-italia-domani"],
-  
-  // Mappature corrette con slug reali dei ministeri
-  interno: ["suap-dpr-160-2010","pdnd","sdg-2018-1724","agid-linee-interoperabilita","eidas2-2024-1183"],
-  mase: ["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464"],
-  mit: ["espr-dpp-2024-1781","pnrr-italia-domani","sdg-2018-1724","interop-europe-2024-903"],
-  salute: ["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","eidas2-2024-1183"],
-  mic: ["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","pnrr-italia-domani"],
-  turismo: ["sdg-2018-1724","interop-europe-2024-903","direttiva-servizi-2006-123","suap-dpr-160-2010"],
-  masaf: ["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464","pnrr-italia-domani"],
-  mim: ["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","ai-act-2024-1689"],
-  lavoro: ["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","pnrr-italia-domani"],
-  maeci: ["sdg-2018-1724","interop-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689"],
-  agid: ["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interop-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689"],
-  pagopa: ["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interop-europe-2024-903","eidas2-2024-1183"],
-  ae: ["csrd-2022-2464","cbam-2023-956","ets-revision-2023-959","dogane-com-2023-258-260","pdnd"],
-  adm: ["dogane-com-2023-258-260","espr-dpp-2024-1781","cbam-2023-956","direttiva-servizi-2006-123","suap-dpr-160-2010"]
-};
+// MAP_MINISTERO #1 rimosso - usa solo MAP_MIN
 
 function applyMinisterHighlight(mKey){
   console.log('🔍 DEBUG: applyMinisterHighlight called with:', mKey);
@@ -942,27 +922,7 @@ function applyMinisterHighlight(mKey){
   }, {passive:true});
 
   /* 4) Accensione BLU da Mappa (?m, ?hot, ?open) tollerando _ / - */
-  const MAP_MINISTERO = {
-    // Mappature esistenti ottimizzate
-    mef:["csrd-2022-2464","cbam-2023-956","dogane-com-2023-258-260","ets-revision-2023-959","pnrr-italia-domani"],
-    mimit:["suap-dpr-160-2010","espr-dpp-2024-1781","direttiva-servizi-2006-123","pnrr-italia-domani"],
-    
-    // Solo slug identici dei ministeri
-    interno:["suap-dpr-160-2010","pdnd","sdg-2018-1724","agid-linee-interoperabilita","eidas2-2024-1183"],
-    mase:["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464"],
-    mit:["espr-dpp-2024-1781","pnrr-italia-domani","sdg-2018-1724","interop-europe-2024-903"],
-    salute:["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","eidas2-2024-1183"],
-    mic:["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","pnrr-italia-domani"],
-    turismo:["sdg-2018-1724","interop-europe-2024-903","direttiva-servizi-2006-123","suap-dpr-160-2010"],
-    masaf:["espr-dpp-2024-1781","cbam-2023-956","ets-revision-2023-959","csrd-2022-2464","pnrr-italia-domani"],
-    mim:["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","ai-act-2024-1689"],
-    lavoro:["sdg-2018-1724","interop-europe-2024-903","pdnd","agid-linee-interoperabilita","pnrr-italia-domani"],
-    maeci:["sdg-2018-1724","interop-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689"],
-    agid:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interop-europe-2024-903","eidas2-2024-1183","ai-act-2024-1689"],
-    pagopa:["pdnd","agid-linee-interoperabilita","sdg-2018-1724","interop-europe-2024-903","eidas2-2024-1183"],
-    ae:["csrd-2022-2464","cbam-2023-956","ets-revision-2023-959","dogane-com-2023-258-260","pdnd"],
-    adm:["dogane-com-2023-258-260","espr-dpp-2024-1781","cbam-2023-956","direttiva-servizi-2006-123","suap-dpr-160-2010"]
-  };
+  // MAP_MINISTERO #2 rimosso - usa solo MAP_MIN
   function applyBluFromMinister(mKey){
     if (typeof window.applyMinisterHighlight === 'function') return window.applyMinisterHighlight(mKey);
     const ids = new Set((MAP_MINISTERO[mKey]||[]).map(norm));
