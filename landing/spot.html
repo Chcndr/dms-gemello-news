@@ -1804,7 +1804,7 @@ function applyMinisterHighlight(mKey){
   var VIEWER_PATH = 'landing/pdfjs-lite/';                 // percorso viewer interno
   var VERSION     = 'finale-006';                          // per cache-busting coerente
   var MARKER      = 'pdfjs-enforced';                      // flag per idempotenza
-  var VERBOSE     = true;                                  // true per log
+  var VERBOSE     = false;                                 // false per nascondere debug
 
   function toViewer(urlAbs){
     try{
