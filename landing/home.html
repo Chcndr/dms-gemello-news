@@ -138,22 +138,22 @@ addEventListener('click', function (e) {
       pointer-events: none;
     }
     
-    /* Secondo alone MOLTO piu ampio e intenso */
+    /* Secondo alone contenuto nei bordi della scheda */
     #panel.panel.is-open::after{
       content: "";
       position: absolute;
-      inset: -60px;
+      inset: -20px;
       background: 
         radial-gradient(
-          ellipse 200% 200% at 50% 50%,
-          transparent 20%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.8) 40%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.6) 60%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.3) 80%,
+          ellipse 150% 150% at 50% 50%,
+          transparent 30%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.6) 50%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.4) 70%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.2) 85%,
           transparent 100%
         );
-      filter: blur(60px);
-      opacity: 0.9;
+      filter: blur(30px);
+      opacity: 0.8;
       z-index: -2;
       pointer-events: none;
       border-radius: inherit;
