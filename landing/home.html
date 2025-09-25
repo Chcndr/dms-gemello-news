@@ -859,19 +859,6 @@ addEventListener('click', function (e) {
     hero && hero.classList.add('is-hidden');
     panel.hidden = false;
     panel.classList.add('is-open');
-    
-    // ATTIVA SCANSIONI PDF ogni volta che si apre una scheda
-    if (typeof scan === 'function') {
-      if (VERBOSE) console.log('[PDF ENFORCER] Panel opened, scheduling rescans');
-      // Scansioni multiple per catturare tutti i link generati dinamicamente
-      setTimeout(function(){ scan(document); }, 50);   // Prima scansione veloce
-      setTimeout(function(){ scan(document); }, 150);  // Seconda scansione
-      setTimeout(function(){ scan(document); }, 300);  // Terza scansione per sicurezza
-      setTimeout(function(){ scan(document); }, 500);  // Quarta scansione finale
-      setTimeout(function(){ scan(document); }, 800);  // Quinta scansione per sesto pulsante
-      setTimeout(function(){ scan(document); }, 1200); // Sesta scansione di sicurezza
-      setTimeout(function(){ scan(document); }, 1800); // Settima scansione finale tardiva
-    }
   };
 
   // Chiudi pannello
@@ -1002,8 +989,23 @@ addEventListener('click', function (e) {
     }
   }, true);
 
-  // CORREZIONE ROBUSTA: Le scansioni sono ora gestite direttamente in openPanelByIndex()
-  // Questo commento mantiene la traccia della logica precedente
+  // CORREZIONE ROBUSTA: Trigger riscansione multipla quando si aprono pannelli orologio
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest ? e.target.closest('button') : null;
+    if (btn && btn.textContent && btn.textContent.includes('Q')) {
+      // È un pulsante dell'orologio (contiene "Q1 2025", "Q2 2025", etc.)
+      if (VERBOSE) console.log('[PDF ENFORCER] clock button clicked, scheduling rescans');
+      
+      // Scansioni multiple per catturare tutti i link generati dinamicamente
+      setTimeout(function(){ scan(document); }, 50);   // Prima scansione veloce
+      setTimeout(function(){ scan(document); }, 150);  // Seconda scansione
+      setTimeout(function(){ scan(document); }, 300);  // Terza scansione per sicurezza
+      setTimeout(function(){ scan(document); }, 500);  // Quarta scansione finale
+      setTimeout(function(){ scan(document); }, 800);  // Quinta scansione per sesto pulsante
+      setTimeout(function(){ scan(document); }, 1200); // Sesta scansione di sicurezza
+      setTimeout(function(){ scan(document); }, 1800); // Settima scansione finale tardiva
+    }
+  });
 
   // INTERCETTAZIONE AGGIUNTIVA: Cattura TUTTI i click sui PDF come fallback
   document.addEventListener('click', function(e){
