@@ -208,12 +208,16 @@ addEventListener('click', function (e) {
       padding: clamp(16px, 3vw, 28px);
       border-radius: inherit;
       background: color-mix(in srgb, var(--accent, #14b8a6) 10%, #0b1c20 92%);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
+      border: 2px solid var(--accent, #14b8a6);
+      box-shadow: 
+        0 18px 40px rgba(0,0,0,.45), 
+        inset 0 0 0 1px rgba(255,255,255,.04),
+        0 0 20px rgba(var(--accent-rgb, 20, 184, 166), 0.4),
+        inset 0 0 20px rgba(var(--accent-rgb, 20, 184, 166), 0.1);
       opacity: 0;
       transform: scale(.985);
       pointer-events: none;
-      transition: opacity .24s ease, transform .24s ease;
+      transition: opacity .24s ease, transform .24s ease, border-color .24s ease, box-shadow .24s ease;
       z-index: 1; /* sopra al video, sotto ai .node perché è dentro il viewport */
       color: #e9f7f4;
     }
@@ -806,8 +810,18 @@ addEventListener('click', function (e) {
     
     if(!panel) return;
 
-    // Colore accent dal tasto (fallback teal)
-    panel.style.setProperty('--accent', accent || '#14b8a6');
+  // Colore accent dal tasto (fallback teal)
+  const accentColor = accent || '#14b8a6';
+  panel.style.setProperty('--accent', accentColor);
+  
+  // Converti hex in RGB per le ombre colorate
+  const hexToRgb = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? 
+      `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : 
+      '20, 184, 166'; // fallback teal RGB
+  };
+  panel.style.setProperty('--accent-rgb', hexToRgb(accentColor));
 
     // (Opzionale) riempi contenuti
     if(data && data.title){
