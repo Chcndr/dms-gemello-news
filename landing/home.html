@@ -125,29 +125,36 @@ addEventListener('click', function (e) {
       transform: translateY(-2px);
     }
 
-    /* Retroilluminazione che esce dal CONTORNO della scheda */
+    /* Retroilluminazione che irradia dal CONTORNO della scheda - VERSIONE MIGLIORATA */
     #panel.panel.is-open::before{
       content: "";
       position: absolute;
-      inset: -80px;
+      inset: -4px; /* Molto vicino al bordo per seguire il contorno */
+      background: var(--accent, #14b8a6);
+      border-radius: inherit;
+      filter: blur(20px);
+      opacity: 0.8;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    /* Secondo alone più ampio per diffusione */
+    #panel.panel.is-open::after{
+      content: "";
+      position: absolute;
+      inset: -40px;
       background: 
-        /* Alone che segue il perimetro della scheda */
-        linear-gradient(0deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.8) 50%, transparent 55%),
-        linear-gradient(90deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.8) 50%, transparent 55%),
-        linear-gradient(180deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.8) 50%, transparent 55%),
-        linear-gradient(270deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.8) 50%, transparent 55%),
-        /* Glow generale per diffusione */
         radial-gradient(
-          ellipse 120% 120% at 50% 50%,
-          transparent 60%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.6) 70%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.3) 85%,
+          ellipse 140% 140% at 50% 50%,
+          transparent 40%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.4) 60%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.2) 80%,
           transparent 100%
         );
-      filter: blur(25px);
+      filter: blur(35px);
+      opacity: 0.6;
       z-index: -2;
       pointer-events: none;
-      opacity: 1;
       border-radius: inherit;
     }
 
