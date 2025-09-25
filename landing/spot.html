@@ -152,6 +152,21 @@
 </style>
 </head>
 <body>
+  <!-- DEBUG IMMEDIATO - Test se JavaScript funziona -->
+  <script>
+  (function(){
+    console.log('🔍 DEBUG: Script iniziato');
+    
+    // Badge visibile ROSSO per essere sicuri di vederlo
+    const badge = document.createElement('div');
+    badge.style = 'position:fixed;top:10px;left:10px;background:red;color:white;padding:15px;z-index:99999;font:16px monospace;border:3px solid yellow;';
+    badge.innerHTML = '🔍 DEBUG ATTIVO<br>Param ?m = ' + (new URLSearchParams(location.search).get('m') || 'NONE');
+    document.body.appendChild(badge);
+    
+    console.log('🔍 DEBUG: Badge aggiunto, parametro ?m =', new URLSearchParams(location.search).get('m'));
+  })();
+  </script>
+
   <nav class="top">
     <a href="/dms-gemello-news/landing/home.html" class="btn">Home</a>
     <a href="/dms-gemello-news/landing/mappa-ministeri.html" class="btn">Mappa</a>
