@@ -125,6 +125,24 @@ addEventListener('click', function (e) {
       transform: translateY(-2px);
     }
 
+    /* Retroilluminazione dietro la scheda quando è aperta */
+    #panel.panel.is-open::before{
+      content: "";
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(
+        ellipse 120% 80% at 50% 50%,
+        rgba(var(--accent-rgb, 20, 184, 166), 0.6) 0%,
+        rgba(var(--accent-rgb, 20, 184, 166), 0.3) 30%,
+        rgba(var(--accent-rgb, 20, 184, 166), 0.1) 60%,
+        transparent 100%
+      );
+      filter: blur(20px);
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
     /* alone leggero che segue il mouse */
     #glowLayer{
       background:
