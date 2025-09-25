@@ -125,32 +125,30 @@ addEventListener('click', function (e) {
       transform: translateY(-2px);
     }
 
-    /* Retroilluminazione INTENSA dietro la scheda - come il pulsante */
+    /* Retroilluminazione che esce dal CONTORNO della scheda */
     #panel.panel.is-open::before{
       content: "";
       position: absolute;
-      inset: -100px;
+      inset: -80px;
       background: 
+        /* Alone che segue il perimetro della scheda */
+        linear-gradient(0deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.8) 50%, transparent 55%),
+        linear-gradient(90deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.8) 50%, transparent 55%),
+        linear-gradient(180deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.8) 50%, transparent 55%),
+        linear-gradient(270deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.8) 50%, transparent 55%),
+        /* Glow generale per diffusione */
         radial-gradient(
-          ellipse 200% 150% at 50% 50%,
-          rgba(var(--accent-rgb, 20, 184, 166), 1) 0%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.8) 15%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.6) 30%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.4) 50%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.2) 70%,
-          transparent 100%
-        ),
-        radial-gradient(
-          ellipse 300% 200% at 50% 50%,
-          transparent 0%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.3) 40%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.1) 80%,
+          ellipse 120% 120% at 50% 50%,
+          transparent 60%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.6) 70%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.3) 85%,
           transparent 100%
         );
-      filter: blur(40px);
+      filter: blur(25px);
       z-index: -2;
       pointer-events: none;
       opacity: 1;
+      border-radius: inherit;
     }
 
     /* alone leggero che segue il mouse */
