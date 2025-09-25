@@ -125,34 +125,35 @@ addEventListener('click', function (e) {
       transform: translateY(-2px);
     }
 
-    /* Retroilluminazione che irradia dal contorno della scheda - versione migliorata */
+    /* Retroilluminazione INTENSA che irradia dal contorno - come sui pulsanti */
     #panel.panel.is-open::before{
       content: "";
       position: absolute;
-      inset: -4px; /* Molto vicino al bordo per seguire il contorno */
+      inset: -8px;
       background: var(--accent, #14b8a6);
       border-radius: inherit;
-      filter: blur(20px);
-      opacity: 0.8;
+      filter: blur(40px);
+      opacity: 1;
       z-index: -1;
       pointer-events: none;
     }
     
-    /* Secondo alone piu ampio per diffusione */
+    /* Secondo alone MOLTO piu ampio e intenso */
     #panel.panel.is-open::after{
       content: "";
       position: absolute;
-      inset: -40px;
+      inset: -60px;
       background: 
         radial-gradient(
-          ellipse 140% 140% at 50% 50%,
-          transparent 40%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.4) 60%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.2) 80%,
+          ellipse 200% 200% at 50% 50%,
+          transparent 20%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.8) 40%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.6) 60%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.3) 80%,
           transparent 100%
         );
-      filter: blur(35px);
-      opacity: 0.6;
+      filter: blur(60px);
+      opacity: 0.9;
       z-index: -2;
       pointer-events: none;
       border-radius: inherit;
