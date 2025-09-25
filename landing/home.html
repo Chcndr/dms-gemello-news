@@ -125,22 +125,23 @@ addEventListener('click', function (e) {
       transform: translateY(-2px);
     }
 
-    /* Retroilluminazione dietro la scheda quando è aperta */
+    /* Retroilluminazione dietro la scheda quando è aperta - INTENSITÀ ALTA */
     #panel.panel.is-open::before{
       content: "";
       position: absolute;
-      inset: -40px;
+      inset: -60px;
       background: radial-gradient(
-        ellipse 120% 80% at 50% 50%,
-        rgba(var(--accent-rgb, 20, 184, 166), 0.6) 0%,
-        rgba(var(--accent-rgb, 20, 184, 166), 0.3) 30%,
-        rgba(var(--accent-rgb, 20, 184, 166), 0.1) 60%,
+        ellipse 150% 100% at 50% 50%,
+        rgba(var(--accent-rgb, 20, 184, 166), 0.9) 0%,
+        rgba(var(--accent-rgb, 20, 184, 166), 0.7) 20%,
+        rgba(var(--accent-rgb, 20, 184, 166), 0.4) 40%,
+        rgba(var(--accent-rgb, 20, 184, 166), 0.2) 70%,
         transparent 100%
       );
-      filter: blur(20px);
+      filter: blur(30px);
       z-index: -1;
       pointer-events: none;
-      opacity: 0.8;
+      opacity: 1;
     }
 
     /* alone leggero che segue il mouse */
