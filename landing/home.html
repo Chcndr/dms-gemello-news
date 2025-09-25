@@ -1012,7 +1012,7 @@ addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       var cb = (link.href.includes('?') ? '&' : '?') + '_cb=' + Date.now().toString(36);
-      var viewerUrl = VIEWER + '?src=' + encodeURIComponent(link.href + cb) + '&v=' + VERSION;
+      var viewerUrl = VIEWER_PATH + '?src=' + encodeURIComponent(link.href + cb) + '&v=' + VERSION;
       window.location.href = viewerUrl; // UNIFICATO: sempre stessa pagina
       return false;
     }
