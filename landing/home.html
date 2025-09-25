@@ -125,21 +125,30 @@ addEventListener('click', function (e) {
       transform: translateY(-2px);
     }
 
-    /* Retroilluminazione dietro la scheda quando è aperta - INTENSITÀ ALTA */
+    /* Retroilluminazione INTENSA dietro la scheda - come il pulsante */
     #panel.panel.is-open::before{
       content: "";
       position: absolute;
-      inset: -60px;
-      background: radial-gradient(
-        ellipse 150% 100% at 50% 50%,
-        rgba(var(--accent-rgb, 20, 184, 166), 0.9) 0%,
-        rgba(var(--accent-rgb, 20, 184, 166), 0.7) 20%,
-        rgba(var(--accent-rgb, 20, 184, 166), 0.4) 40%,
-        rgba(var(--accent-rgb, 20, 184, 166), 0.2) 70%,
-        transparent 100%
-      );
-      filter: blur(30px);
-      z-index: -1;
+      inset: -100px;
+      background: 
+        radial-gradient(
+          ellipse 200% 150% at 50% 50%,
+          rgba(var(--accent-rgb, 20, 184, 166), 1) 0%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.8) 15%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.6) 30%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.4) 50%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.2) 70%,
+          transparent 100%
+        ),
+        radial-gradient(
+          ellipse 300% 200% at 50% 50%,
+          transparent 0%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.3) 40%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.1) 80%,
+          transparent 100%
+        );
+      filter: blur(40px);
+      z-index: -2;
       pointer-events: none;
       opacity: 1;
     }
