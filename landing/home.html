@@ -859,15 +859,6 @@ addEventListener('click', function (e) {
     hero && hero.classList.add('is-hidden');
     panel.hidden = false;
     panel.classList.add('is-open');
-    
-    // TRIGGER AGGIUNTIVO: Riattiva scansioni quando si riapre una scheda (per bug crash PDF)
-    if (typeof scan === 'function') {
-      // Scansioni tardive per catturare tutti i pulsanti, incluso il sesto
-      setTimeout(function(){ scan(document); }, 100);  // Scansione dopo apertura pannello
-      setTimeout(function(){ scan(document); }, 400);  // Scansione dopo generazione pulsanti
-      setTimeout(function(){ scan(document); }, 800);  // Scansione per sesto pulsante
-      setTimeout(function(){ scan(document); }, 1200); // Scansione di sicurezza finale
-    }
   };
 
   // Chiudi pannello
