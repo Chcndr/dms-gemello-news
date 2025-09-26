@@ -42,6 +42,56 @@
       max-width: 1400px;
       margin: 0 auto;
     }
+
+    /* Overlay orientamento mobile */
+    #orientation-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    
+    #orientation-overlay .content {
+      padding: 40px 20px;
+      max-width: 400px;
+    }
+    
+    #orientation-overlay .icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      display: block;
+      animation: rotate 2s infinite linear;
+    }
+    
+    #orientation-overlay h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: #14b8a6;
+    }
+    
+    #orientation-overlay p {
+      font-size: 16px;
+      line-height: 1.5;
+      opacity: 0.9;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Forza orientamento landscape su mobile */
+    @media screen and (max-width: 1024px) and (orientation: portrait) {
+      #orientation-overlay {
+        display: flex !important;
+      }
+    }
     
     .card {
       background: rgba(255,255,255,0.1);
@@ -446,6 +496,17 @@
   }
 })();
 </script>
+
+<!-- Overlay orientamento mobile -->
+<div id="orientation-overlay">
+  <div class="content">
+    <span class="icon">🏛️</span>
+    <h2>Ruota il dispositivo</h2>
+    <p>Per una migliore esperienza con le slide politiche, ruota il tuo dispositivo in <strong>orizzontale</strong>.</p>
+    <p>Le presentazioni sono ottimizzate per la visualizzazione landscape.</p>
+  </div>
+</div>
+
 </body>
 </html>
 
