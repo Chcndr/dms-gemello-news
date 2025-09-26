@@ -57,42 +57,47 @@ addEventListener('click', function (e) {
       --hc11:#21c55d; /* verde acceso (finale) */
     }
 
-    /* Overlay orientamento mobile */
+    /* Overlay orientamento mobile - PRIORITÀ MASSIMA */
     #orientation-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 2147483647;
-      background: rgba(0, 0, 0, 0.95);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-      font-family: system-ui, -apple-system, sans-serif;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 2147483647 !important;
+      background: rgba(0, 0, 0, 0.95) !important;
+      display: none !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      color: white !important;
+      font-family: system-ui, -apple-system, sans-serif !important;
+      pointer-events: auto !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
     
     #orientation-overlay .content {
-      padding: 40px 20px;
-      max-width: 400px;
+      padding: 40px 20px !important;
+      max-width: 400px !important;
+      position: relative !important;
+      z-index: 2147483647 !important;
     }
     
     #orientation-overlay .icon {
-      font-size: 80px;
-      margin-bottom: 20px;
-      display: block;
-      animation: rotate 2s infinite linear;
+      font-size: 80px !important;
+      margin-bottom: 20px !important;
+      display: block !important;
+      animation: rotate 2s infinite linear !important;
     }
     
     #orientation-overlay h2 {
-      font-size: 24px;
-      margin-bottom: 16px;
-      color: #14b8a6;
+      font-size: 24px !important;
+      margin-bottom: 16px !important;
+      color: #14b8a6 !important;
     }
     
     #orientation-overlay p {
-      font-size: 16px;
-      line-height: 1.5;
-      opacity: 0.9;
+      font-size: 16px !important;
+      line-height: 1.5 !important;
+      opacity: 0.9 !important;
     }
     
     @keyframes rotate {
@@ -100,10 +105,25 @@ addEventListener('click', function (e) {
       to { transform: rotate(360deg); }
     }
     
-    /* Forza orientamento landscape su mobile */
+    /* Forza orientamento landscape su mobile - BLOCCA TUTTO IN PORTRAIT */
     @media screen and (max-width: 1024px) and (orientation: portrait) {
       #orientation-overlay {
         display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+      
+      /* Nasconde completamente il contenuto principale in portrait */
+      body > *:not(#orientation-overlay) {
+        display: none !important;
+        visibility: hidden !important;
+      }
+      
+      /* Forza il body a non essere scrollabile */
+      html, body {
+        overflow: hidden !important;
+        height: 100vh !important;
+        width: 100vw !important;
       }
     }
 
