@@ -420,60 +420,80 @@
 
   // Evidenziazione blu per norme ministeriali da parametro ?m=
   (function(){
-    const q = new URLSearchParams(location.search);
-    const mSlug = q.get("m");
-    if (!mSlug) return;
+    function applyMinisterialHighlight() {
+      const q = new URLSearchParams(location.search);
+      const mSlug = q.get("m");
+      if (!mSlug) return;
 
-    // Mapping ministeri -> norme pertinenti (stesso mapping della mappa)
-    const ministerialNorms = {
-      pcm: ["sdg-2018-1724", "interoperable-europe-2024-903", "pnrr-italia-domani", "pdnd", "agid-linee-interoperabilita"],
-      mef: ["pnrr-italia-domani", "cbam-2023-956", "ets-revision-2023-959", "csrd-2022-2464"],
-      interno: ["suap-dpr-160-2010", "eidas2-2024-1183"],
-      mimit: ["direttiva-servizi-2006-123", "suap-dpr-160-2010", "espr-dpp-2024-1781"],
-      mase: ["espr-dpp-2024-1781", "cbam-2023-956", "ets-revision-2023-959", "csrd-2022-2464"],
-      mit: ["espr-dpp-2024-1781"],
-      salute: ["sdg-2018-1724", "espr-dpp-2024-1781"],
-      mic: ["sdg-2018-1724"],
-      turismo: ["sdg-2018-1724"],
-      masaf: ["espr-dpp-2024-1781", "cbam-2023-956", "csrd-2022-2464"],
-      mim: ["interoperable-europe-2024-903", "pdnd"],
-      lavoro: ["eidas2-2024-1183", "suap-dpr-160-2010"],
-      maeci: ["interoperable-europe-2024-903", "eidas2-2024-1183"],
-      agid: ["interoperable-europe-2024-903", "pdnd", "agid-linee-interoperabilita", "ai-act-2024-1689"],
-      pagopa: ["eidas2-2024-1183", "pdnd"],
-      ae: ["cbam-2023-956", "csrd-2022-2464"],
-      adm: ["dogane-com-2023-258-260", "cbam-2023-956", "espr-dpp-2024-1781"]
-    };
+      console.log('[DMS] Evidenziazione norme per ministero:', mSlug);
 
-    const relevantNorms = ministerialNorms[mSlug] || [];
-    if (!relevantNorms.length) return;
+      // Mapping ministeri -> norme pertinenti (corretto con data-norma effettivi)
+      const ministerialNorms = {
+        pcm: ["sdg-2018-1724", "interop-europe-2024-903", "pnrr-italia-domani", "pdnd", "agid-linee-interoperabilita"],
+        mef: ["pnrr-italia-domani", "cbam-2023-956", "ets-revision-2023-959", "csrd-2022-2464"],
+        interno: ["suap-dpr-160-2010", "eidas2-2024-1183"],
+        mimit: ["direttiva-servizi-2006-123", "suap-dpr-160-2010", "espr-dpp-2024-1781"],
+        mase: ["espr-dpp-2024-1781", "cbam-2023-956", "ets-revision-2023-959", "csrd-2022-2464"],
+        mit: ["espr-dpp-2024-1781"],
+        salute: ["sdg-2018-1724", "espr-dpp-2024-1781"],
+        mic: ["sdg-2018-1724"],
+        turismo: ["sdg-2018-1724"],
+        masaf: ["espr-dpp-2024-1781", "cbam-2023-956", "csrd-2022-2464"],
+        mim: ["interop-europe-2024-903", "pdnd"],
+        lavoro: ["eidas2-2024-1183", "suap-dpr-160-2010"],
+        maeci: ["interop-europe-2024-903", "eidas2-2024-1183"],
+        agid: ["interop-europe-2024-903", "pdnd", "agid-linee-interoperabilita", "ai-act-2024-1689"],
+        pagopa: ["eidas2-2024-1183", "pdnd"],
+        ae: ["cbam-2023-956", "csrd-2022-2464"],
+        adm: ["dogane-com-2023-258-260", "cbam-2023-956", "espr-dpp-2024-1781"]
+      };
 
-    const hotNorms = new Set();
-    let first = null;
+      const relevantNorms = ministerialNorms[mSlug] || [];
+      console.log('[DMS] Norme pertinenti:', relevantNorms);
+      
+      if (!relevantNorms.length) return;
 
-    relevantNorms.forEach(normId => {
-      // Cerca il pulsante della norma
-      const btn = document.querySelector(`.btn-norme[data-norma="${normId}"]`) ||
-                  document.querySelector(`.btn-norme[data-norma*="${normId}"]`);
-      if (btn) {
-        hotNorms.add(btn);
-        if (!first) first = btn;
-      }
-    });
+      const hotNorms = new Set();
+      let first = null;
 
-    // Applica stile blu e rimuovi al click
-    hotNorms.forEach(btn => {
-      btn.classList.add('is-min-hot');
-      btn.addEventListener('click', () => btn.classList.remove('is-min-hot'), {once: true});
-    });
+      relevantNorms.forEach(normId => {
+        // Cerca il pulsante della norma
+        const btn = document.querySelector(`.btn-norme[data-norma="${normId}"]`);
+        console.log(`[DMS] Cercando norma ${normId}:`, btn ? 'TROVATA' : 'NON TROVATA');
+        if (btn) {
+          hotNorms.add(btn);
+          if (!first) first = btn;
+        }
+      });
 
-    // Scrolla alla sezione riferimenti normativi se ci sono norme evidenziate
-    if (first) {
-      const normeSection = document.getElementById('riferimenti-normativi');
-      if (normeSection) {
-        normeSection.scrollIntoView({behavior: 'smooth', block: 'start'});
+      console.log('[DMS] Pulsanti da evidenziare:', hotNorms.size);
+
+      // Applica stile blu e rimuovi al click
+      hotNorms.forEach(btn => {
+        btn.classList.add('is-min-hot');
+        console.log('[DMS] Evidenziato:', btn.textContent.trim());
+        btn.addEventListener('click', () => btn.classList.remove('is-min-hot'), {once: true});
+      });
+
+      // Scrolla alla sezione riferimenti normativi se ci sono norme evidenziate
+      if (first) {
+        const normeSection = document.getElementById('riferimenti-normativi');
+        if (normeSection) {
+          normeSection.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
       }
     }
+
+    // Esegui quando il DOM è pronto
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', applyMinisterialHighlight);
+    } else {
+      applyMinisterialHighlight();
+    }
+
+    // Esegui anche dopo un breve delay per sicurezza
+    setTimeout(applyMinisterialHighlight, 100);
+    setTimeout(applyMinisterialHighlight, 500);
 
   })();
 </script>
