@@ -93,6 +93,47 @@
       }
     }
     
+    /* MODALITÀ FULLSCREEN MOBILE - Come video a schermo intero */
+    @media screen and (max-width: 1024px) and (orientation: landscape) {
+      /* Nasconde navbar su mobile */
+      .nav {
+        display: none !important;
+      }
+      
+      body {
+        transform-origin: center center;
+        transform: scale(0.5);
+        width: 200vw;
+        height: 200vh;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        margin-left: -100vw;
+        margin-top: -100vh;
+        overflow: hidden;
+      }
+    }
+    
+    @media screen and (max-width: 768px) and (orientation: landscape) {
+      body {
+        transform: scale(0.45);
+        width: 222.22vw;
+        height: 222.22vh;
+        margin-left: -111.11vw;
+        margin-top: -111.11vh;
+      }
+    }
+    
+    @media screen and (max-width: 480px) and (orientation: landscape) {
+      body {
+        transform: scale(0.4);
+        width: 250vw;
+        height: 250vh;
+        margin-left: -125vw;
+        margin-top: -125vh;
+      }
+    }
+    
     .card {
       background: rgba(255,255,255,0.1);
       border-radius: 12px;
