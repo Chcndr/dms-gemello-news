@@ -425,8 +425,6 @@
       const mSlug = q.get("m");
       if (!mSlug) return;
 
-      console.log('[DMS] Evidenziazione norme per ministero:', mSlug);
-
       // Mapping ministeri -> norme pertinenti (corretto con data-norma effettivi)
       const ministerialNorms = {
         pcm: ["sdg-2018-1724", "interop-europe-2024-903", "pnrr-italia-domani", "pdnd", "agid-linee-interoperabilita"],
@@ -449,8 +447,6 @@
       };
 
       const relevantNorms = ministerialNorms[mSlug] || [];
-      console.log('[DMS] Norme pertinenti:', relevantNorms);
-      
       if (!relevantNorms.length) return;
 
       const hotNorms = new Set();
@@ -459,19 +455,15 @@
       relevantNorms.forEach(normId => {
         // Cerca il pulsante della norma
         const btn = document.querySelector(`.btn-norme[data-norma="${normId}"]`);
-        console.log(`[DMS] Cercando norma ${normId}:`, btn ? 'TROVATA' : 'NON TROVATA');
         if (btn) {
           hotNorms.add(btn);
           if (!first) first = btn;
         }
       });
 
-      console.log('[DMS] Pulsanti da evidenziare:', hotNorms.size);
-
       // Applica stile blu e rimuovi al click
       hotNorms.forEach(btn => {
         btn.classList.add('is-min-hot');
-        console.log('[DMS] Evidenziato:', btn.textContent.trim());
         btn.addEventListener('click', () => btn.classList.remove('is-min-hot'), {once: true});
       });
 
