@@ -135,6 +135,32 @@ addEventListener('click', function (e) {
       overflow:hidden;
     }
 
+    /* SCALA MOBILE FISSA - Layout non responsive che si rimpicciolisce */
+    @media screen and (max-width: 1024px) and (orientation: landscape) {
+      body {
+        transform-origin: 0 0;
+        transform: scale(0.7);
+        width: 142.86vw; /* 100/0.7 per compensare la scala */
+        height: 142.86vh;
+      }
+    }
+    
+    @media screen and (max-width: 768px) and (orientation: landscape) {
+      body {
+        transform: scale(0.6);
+        width: 166.67vw; /* 100/0.6 */
+        height: 166.67vh;
+      }
+    }
+    
+    @media screen and (max-width: 480px) and (orientation: landscape) {
+      body {
+        transform: scale(0.5);
+        width: 200vw; /* 100/0.5 */
+        height: 200vh;
+      }
+    }
+
     /* nav+claim */
     .top{position:fixed; left:16px; top:16px; display:flex; gap:10px; z-index:10}
     .btn{
