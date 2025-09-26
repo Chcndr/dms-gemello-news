@@ -135,46 +135,7 @@ addEventListener('click', function (e) {
       overflow:hidden;
     }
 
-    /* MODALITÀ FULLSCREEN MOBILE - Come video a schermo intero */
-    @media screen and (max-width: 1024px) and (orientation: landscape) {
-      /* Nasconde navbar su mobile */
-      .top, .claim {
-        display: none !important;
-      }
-      
-      body {
-        transform-origin: center center;
-        transform: scale(0.5);
-        width: 200vw; /* 100/0.5 per compensare la scala */
-        height: 200vh;
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        margin-left: -100vw; /* -width/2 per centrare */
-        margin-top: -100vh; /* -height/2 per centrare */
-        overflow: hidden;
-      }
-    }
-    
-    @media screen and (max-width: 768px) and (orientation: landscape) {
-      body {
-        transform: scale(0.45);
-        width: 222.22vw; /* 100/0.45 */
-        height: 222.22vh;
-        margin-left: -111.11vw;
-        margin-top: -111.11vh;
-      }
-    }
-    
-    @media screen and (max-width: 480px) and (orientation: landscape) {
-      body {
-        transform: scale(0.4);
-        width: 250vw; /* 100/0.4 */
-        height: 250vh;
-        margin-left: -125vw;
-        margin-top: -125vh;
-      }
-    }
+
 
     /* nav+claim */
     .top{position:fixed; left:16px; top:16px; display:flex; gap:10px; z-index:10}
