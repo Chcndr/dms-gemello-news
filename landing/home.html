@@ -279,12 +279,20 @@ addEventListener('click', function (e) {
     #panel .btn{
       padding:.55rem .9rem;
       border-radius:.6rem;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06);
-      color:#e9f7f4;
+      border:1px solid color-mix(in srgb, var(--accent, #14b8a6) 60%, #fff 20%);
+      background: color-mix(in srgb, var(--accent, #14b8a6) 85%, #000 15%);
+      color:#fff;
       backdrop-filter: blur(6px);
       cursor: pointer;
       text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    #panel .btn:hover{
+      background: var(--accent, #14b8a6);
+      border-color: color-mix(in srgb, var(--accent, #14b8a6) 80%, #fff 30%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(var(--accent-rgb, 20, 184, 166), 0.3);
     }
     #panel .btn.btn-cta{
       background: var(--accent, #14b8a6);
