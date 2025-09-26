@@ -1155,14 +1155,7 @@ addEventListener('click', function (e) {
     }
   }, true); // Usa capture per intercettare prima di altri handler
 
-  // Beacon di presenza per debug visivo rapido (DISATTIVATO)
-  if (false) { // VERBOSE disattivato
-    var b = document.createElement('div');
-    b.textContent = 'PDF ENFORCER ' + VERSION;
-    Object.assign(b.style,{position:'fixed',bottom:'6px',left:'6px',padding:'4px 6px',font:'11px/1.2 monospace',
-      color:'#9cf',background:'#102030',border:'1px solid #214',borderRadius:'6px',zIndex:2147483647,opacity:.9});
-    document.body.appendChild(b);
-  }
+
   
 
 })();
