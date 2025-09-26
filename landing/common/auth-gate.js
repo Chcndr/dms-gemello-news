@@ -3,12 +3,11 @@
   const qs = new URLSearchParams(location.search);
   const email = (qs.get('email')||'').trim().toLowerCase();
   const token = (qs.get('token')||'').trim();
+  const adminKey = (qs.get('admin')||'').trim();
   const WLURL = '/dms-gemello-news/landing/viewer/whitelist.json';
   
-  // IP Whitelist permanente per admin
-  const ADMIN_IPS = [
-    '172.225.99.108'  // Admin IP (iCloud Private Relay)
-  ];
+  // Codice admin segreto per accesso permanente
+  const ADMIN_SECRET = 'dms-gemello-2025-admin-key-secure';
 
   // overlay
   const showBlock = (msg) => {
@@ -21,34 +20,23 @@
   };
   const hideBlock = ()=>{ const x=document.getElementById('dmsLock'); if(x) x.remove(); };
 
-  // Funzione per ottenere IP pubblico
-  const getPublicIP = async () => {
-    try {
-      const res = await fetch('https://api.ipify.org?format=json');
-      const data = await res.json();
-      return data.ip;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  // Controllo IP admin prima di tutto
-  const checkAdminIP = async () => {
-    const userIP = await getPublicIP();
-    if (userIP && ADMIN_IPS.includes(userIP)) {
+  // Controllo admin key per accesso permanente
+  const checkAdminKey = () => {
+    if (adminKey === ADMIN_SECRET) {
       hideBlock();
       return true;
     }
     return false;
   };
 
-  // param mancanti -> controlla IP admin, poi blocco
+  // Controllo admin key prima di tutto
+  if (checkAdminKey()) {
+    return; // Accesso admin garantito
+  }
+
+  // param mancanti -> blocco (solo se non admin)
   if (!email || !token) {
-    checkAdminIP().then(isAdmin => {
-      if (!isAdmin) {
-        showBlock('Link incompleto. Assicurati che contenga <b>?email=…&token=…</b>.');
-      }
-    });
+    showBlock('Link incompleto. Assicurati che contenga <b>?email=…&token=…</b> oppure usa il link admin.');
     return;
   }
 
@@ -60,8 +48,8 @@
   };
 
   async function check(){
-    // Prima controlla se è admin IP
-    if (await checkAdminIP()) {
+    // Prima controlla se è admin key
+    if (checkAdminKey()) {
       return true;
     }
     

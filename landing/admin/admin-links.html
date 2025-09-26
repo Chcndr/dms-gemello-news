@@ -1,0 +1,79 @@
+<!doctype html><meta charset="utf-8">
+<title>DMS Admin Links</title>
+<style>
+body{font:16px system-ui;padding:20px;max-width:800px;margin:0 auto;background:#f8f9fa}
+.header{background:#007acc;color:white;padding:20px;border-radius:8px;margin-bottom:20px;text-align:center}
+.link-box{background:white;border:2px solid #007acc;border-radius:8px;padding:20px;margin:15px 0}
+.link{font:bold 14px monospace;color:#007acc;word-break:break-all;background:#f8f9fa;padding:10px;border-radius:4px;margin:10px 0}
+.copy-btn{padding:8px 16px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;margin:5px}
+.copy-btn:hover{background:#218838}
+.warning{background:#fff3cd;border:1px solid #ffeaa7;color:#856404;padding:15px;border-radius:6px;margin:20px 0}
+</style>
+
+<div class="header">
+  <h2>🔑 DMS Admin Links</h2>
+  <p>Link permanenti per accesso amministratore senza token</p>
+</div>
+
+<div class="warning">
+  <strong>⚠️ IMPORTANTE:</strong> Questi link sono riservati all'amministratore. Non condividerli con nessuno!
+</div>
+
+<div class="link-box">
+  <h3>🏠 Home Page</h3>
+  <div class="link" id="home-link">https://chcndr.github.io/dms-gemello-news/landing/home.html?admin=dms-gemello-2025-admin-key-secure</div>
+  <button class="copy-btn" onclick="copyLink('home-link')">📋 Copia Link</button>
+</div>
+
+<div class="link-box">
+  <h3>🗺️ Mappa Ministeri</h3>
+  <div class="link" id="mappa-link">https://chcndr.github.io/dms-gemello-news/landing/mappa-ministeri.html?admin=dms-gemello-2025-admin-key-secure</div>
+  <button class="copy-btn" onclick="copyLink('mappa-link')">📋 Copia Link</button>
+</div>
+
+<div class="link-box">
+  <h3>📄 Spot & Documenti</h3>
+  <div class="link" id="spot-link">https://chcndr.github.io/dms-gemello-news/landing/spot.html?admin=dms-gemello-2025-admin-key-secure</div>
+  <button class="copy-btn" onclick="copyLink('spot-link')">📋 Copia Link</button>
+</div>
+
+<div class="link-box">
+  <h3>🏛️ Politica 0</h3>
+  <div class="link" id="pol0-link">https://chcndr.github.io/dms-gemello-news/landing/pol0/?admin=dms-gemello-2025-admin-key-secure</div>
+  <button class="copy-btn" onclick="copyLink('pol0-link')">📋 Copia Link</button>
+</div>
+
+<div class="link-box">
+  <h3>🔧 Token Maker</h3>
+  <div class="link" id="token-link">https://chcndr.github.io/dms-gemello-news/landing/admin/make-token.html</div>
+  <button class="copy-btn" onclick="copyLink('token-link')">📋 Copia Link</button>
+  <p><small>Il Token Maker non ha protezione - è già nella sezione admin</small></p>
+</div>
+
+<div style="margin-top:30px;padding:20px;background:#e9ecef;border-radius:8px">
+  <h3>💡 Come usare</h3>
+  <ol>
+    <li><strong>Salva nei preferiti:</strong> Aggiungi questi link ai tuoi bookmark</li>
+    <li><strong>Accesso diretto:</strong> Clicca e accedi immediatamente senza token</li>
+    <li><strong>Funziona sempre:</strong> Anche con VPN/Private Relay attivo</li>
+    <li><strong>Nessuna scadenza:</strong> I link sono permanenti</li>
+  </ol>
+</div>
+
+<script>
+function copyLink(elementId) {
+  const element = document.getElementById(elementId);
+  const text = element.textContent;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    const original = btn.textContent;
+    btn.textContent = '✅ Copiato!';
+    btn.style.background = '#28a745';
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.style.background = '#28a745';
+    }, 2000);
+  });
+}
+</script>
