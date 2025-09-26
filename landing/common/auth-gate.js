@@ -4,6 +4,11 @@
   const email = (qs.get('email')||'').trim().toLowerCase();
   const token = (qs.get('token')||'').trim();
   const WLURL = '/dms-gemello-news/landing/viewer/whitelist.json';
+  
+  // IP Whitelist permanente per admin
+  const ADMIN_IPS = [
+    '172.225.99.108'  // Admin IP (iCloud Private Relay)
+  ];
 
   // overlay
   const showBlock = (msg) => {
@@ -16,9 +21,34 @@
   };
   const hideBlock = ()=>{ const x=document.getElementById('dmsLock'); if(x) x.remove(); };
 
-  // param mancanti -> blocco
+  // Funzione per ottenere IP pubblico
+  const getPublicIP = async () => {
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      return data.ip;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  // Controllo IP admin prima di tutto
+  const checkAdminIP = async () => {
+    const userIP = await getPublicIP();
+    if (userIP && ADMIN_IPS.includes(userIP)) {
+      hideBlock();
+      return true;
+    }
+    return false;
+  };
+
+  // param mancanti -> controlla IP admin, poi blocco
   if (!email || !token) {
-    showBlock('Link incompleto. Assicurati che contenga <b>?email=…&token=…</b>.');
+    checkAdminIP().then(isAdmin => {
+      if (!isAdmin) {
+        showBlock('Link incompleto. Assicurati che contenga <b>?email=…&token=…</b>.');
+      }
+    });
     return;
   }
 
@@ -30,6 +60,11 @@
   };
 
   async function check(){
+    // Prima controlla se è admin IP
+    if (await checkAdminIP()) {
+      return true;
+    }
+    
     try{
       const res = await fetch(WLURL + '?v=' + Date.now(), {cache:'no-store'});
       if(!res.ok) throw 0;

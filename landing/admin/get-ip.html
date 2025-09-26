@@ -1,0 +1,61 @@
+<!doctype html><meta charset="utf-8">
+<title>DMS IP Detector</title>
+<style>
+body{font:16px system-ui;padding:20px;max-width:600px;margin:0 auto}
+.ip-box{background:#f0f8ff;border:2px solid #007acc;border-radius:8px;padding:20px;text-align:center;margin:20px 0}
+.ip{font:bold 24px monospace;color:#007acc;margin:10px 0}
+button{padding:12px 24px;background:#007acc;color:white;border:none;border-radius:6px;cursor:pointer;font-size:16px}
+button:hover{background:#005a99}
+</style>
+
+<h2>🌐 Rilevamento IP per Whitelist Admin</h2>
+<p>Questo strumento rileva il tuo IP pubblico per aggiungerlo alla whitelist permanente.</p>
+
+<div class="ip-box">
+  <div>Il tuo IP pubblico è:</div>
+  <div class="ip" id="ip">Rilevamento in corso...</div>
+  <button onclick="copyIP()" id="copyBtn" style="display:none">📋 Copia IP</button>
+</div>
+
+<div id="instructions" style="display:none">
+  <h3>📋 Prossimi passi:</h3>
+  <ol>
+    <li>Copia l'IP sopra</li>
+    <li>Invialo al developer per aggiungerlo alla whitelist</li>
+    <li>Una volta aggiunto, potrai accedere liberamente a tutte le pagine</li>
+  </ol>
+</div>
+
+<script>
+let userIP = '';
+
+async function getIP() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    userIP = data.ip;
+    document.getElementById('ip').textContent = userIP;
+    document.getElementById('copyBtn').style.display = 'inline-block';
+    document.getElementById('instructions').style.display = 'block';
+  } catch (e) {
+    document.getElementById('ip').textContent = 'Errore nel rilevamento IP';
+    document.getElementById('ip').style.color = '#cc0000';
+  }
+}
+
+function copyIP() {
+  navigator.clipboard.writeText(userIP).then(() => {
+    const btn = document.getElementById('copyBtn');
+    const original = btn.textContent;
+    btn.textContent = '✅ Copiato!';
+    btn.style.background = '#28a745';
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.style.background = '#007acc';
+    }, 2000);
+  });
+}
+
+// Rileva IP all'avvio
+getIP();
+</script>
