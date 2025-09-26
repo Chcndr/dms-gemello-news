@@ -129,38 +129,40 @@ addEventListener('click', function (e) {
     #panel.panel.is-open::before{
       content: "";
       position: absolute;
-      top: -40px;
-      left: -40px;
-      right: -40px;
-      bottom: -40px;
+      top: -30px;
+      left: -30px;
+      right: -30px;
+      bottom: -30px;
       background: 
         radial-gradient(
-          ellipse 120% 120% at 50% 50%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.8) 0%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.6) 20%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.4) 40%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.2) 60%,
-          rgba(var(--accent-rgb, 20, 184, 166), 0.1) 80%,
+          ellipse 140% 140% at 50% 50%,
+          transparent 40%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.6) 50%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.4) 65%,
+          rgba(var(--accent-rgb, 20, 184, 166), 0.2) 80%,
           transparent 100%
         );
       border-radius: inherit;
-      filter: blur(25px);
+      filter: blur(35px);
       z-index: -1;
       pointer-events: none;
     }
     
-    /* Alone intenso sul bordo della scheda */
+    /* Alone sottile sul contorno della scheda (senza coprire il contenuto) */
     #panel.panel.is-open::after{
       content: "";
       position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      background: var(--accent, #14b8a6);
+      top: -8px;
+      left: -8px;
+      right: -8px;
+      bottom: -8px;
+      background: 
+        linear-gradient(0deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.4) 50%, transparent 55%),
+        linear-gradient(90deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.4) 50%, transparent 55%),
+        linear-gradient(45deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.3) 50%, transparent 55%),
+        linear-gradient(-45deg, transparent 45%, rgba(var(--accent-rgb, 20, 184, 166), 0.3) 50%, transparent 55%);
       border-radius: inherit;
-      filter: blur(12px);
-      opacity: 0.9;
+      filter: blur(20px);
       z-index: -2;
       pointer-events: none;
     }
