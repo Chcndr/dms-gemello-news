@@ -22,8 +22,8 @@
 
   // Controllo admin key personale per accesso permanente
   const checkAdminKey = () => {
-    // Chiave admin personale - cambia questa per invalidare accessi non autorizzati
-    const PERSONAL_ADMIN_KEY = 'checchi-dms-private-access-2025-v2';
+    // Chiave admin personale con cognome - cambia questa per invalidare accessi non autorizzati
+    const PERSONAL_ADMIN_KEY = 'checchi';
     
     if (adminKey === PERSONAL_ADMIN_KEY) {
       hideBlock();
@@ -31,7 +31,7 @@
     }
     
     // Se qualcuno usa la vecchia chiave pubblica, mostra messaggio
-    if (adminKey === ADMIN_SECRET) {
+    if (adminKey === ADMIN_SECRET || adminKey === 'checchi-dms-private-access-2025-v2') {
       showBlock('Chiave admin obsoleta. Usa il nuovo link admin personale o il sistema email+token.');
       return false;
     }
