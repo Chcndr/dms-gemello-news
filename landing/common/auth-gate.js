@@ -15,7 +15,7 @@
     el.id = 'dmsLock';
     el.style.cssText = 'position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.92);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font:600 16px system-ui';
     el.innerHTML = `<div><div style="font-size:22px;margin-bottom:8px">🔒 Accesso Protetto</div>
-    <div style="opacity:.9">${msg || 'Rispondi all'email di invito da <b>checchi@me.com</b> per sbloccare 60 minuti.'}</div></div>`;
+    <div style="opacity:.9">${msg || 'Rispondi all\'email di invito da <b>checchi@me.com</b> per sbloccare 60 minuti.'}</div></div>`;
     document.body.appendChild(el);
   };
   
