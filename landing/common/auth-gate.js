@@ -20,24 +20,32 @@
   };
   const hideBlock = ()=>{ const x=document.getElementById('dmsLock'); if(x) x.remove(); };
 
-  // Controllo admin key per accesso permanente
+  // Controllo admin key personale per accesso permanente
   const checkAdminKey = () => {
-    if (adminKey === ADMIN_SECRET) {
+    // Chiave admin personale - cambia questa per invalidare accessi non autorizzati
+    const PERSONAL_ADMIN_KEY = 'checchi-dms-private-access-2025-v2';
+    
+    if (adminKey === PERSONAL_ADMIN_KEY) {
       hideBlock();
       return true;
     }
+    
+    // Se qualcuno usa la vecchia chiave pubblica, mostra messaggio
+    if (adminKey === ADMIN_SECRET) {
+      showBlock('Chiave admin obsoleta. Usa il nuovo link admin personale o il sistema email+token.');
+      return false;
+    }
+    
     return false;
   };
 
-  // Controllo admin key prima di tutto
-  if (checkAdminKey()) {
-    return; // Accesso admin garantito
-  }
-
-  // param mancanti -> blocco (solo se non admin)
+  // param mancanti -> blocco (ma admin key può bypassare)
   if (!email || !token) {
-    showBlock('Link incompleto. Assicurati che contenga <b>?email=…&token=…</b> oppure usa il link admin.');
-    return;
+    // Se ha admin key, lascia che check() la gestisca
+    if (!adminKey) {
+      showBlock('Link incompleto. Assicurati che contenga <b>?email=…&token=…</b> oppure usa il link admin.');
+      return;
+    }
   }
 
   const uaHash = async () => {
