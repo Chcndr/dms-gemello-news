@@ -16,7 +16,7 @@ function generateShortId(jwtToken) {
 // Crea link corto
 window.createShortLink = function(longUrl, jwtToken, userEmail) {
     const shortId = generateShortId(jwtToken);
-    const shortUrl = `https://chcndr.github.io/dms-gemello-news/s/${shortId}`;
+    const shortUrl = `https://chcndr.github.io/dms-gemello-news/redirect.html?s=${shortId}`;
     
     // Salva mapping
     const linkData = {
