@@ -80,9 +80,14 @@
   };
 
   // AVVIO CONTROLLO
-  checkAccess();
-  
-  // POLLING ogni 10 secondi per sblocco automatico
-  setInterval(checkAccess, 10000);
+  checkAccess().then(success => {
+    // Se admin key funziona, NON fare polling
+    if (adminKey && adminKey === PERSONAL_ADMIN_KEY) {
+      return; // STOP - Admin accesso garantito
+    }
+    
+    // POLLING ogni 10 secondi SOLO per sistema email+token
+    setInterval(checkAccess, 10000);
+  });
   
 })();
