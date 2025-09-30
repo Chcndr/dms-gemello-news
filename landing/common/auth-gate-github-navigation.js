@@ -15,10 +15,45 @@
   const SESSION_DURATION = 3600; // 60 minuti
   const MAX_POLL_ATTEMPTS = 240; // 1 ora di polling
 
-  // Estrai parametri URL
+  // DATABASE SHORT LINKS
+  const SHORT_LINKS = {
+    "demo": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QGRtcy5jb20iLCJzY29wZSI6WyJuZXdzLXByaXZhdGUiXSwiZXhwIjoxNzU5MzU2NzM1LCJqdGkiOiJOQjMyMVQwRSIsImlzcyI6ImRtcy1nZW1lbGxvLW5ld3MiLCJpYXQiOjE3NTkyNzAzMzUsImdpdGh1Yl9hdXRvIjp0cnVlLCJnaXRodWJfaXNzdWUiOjgsImdpdGh1Yl9yZXBvIjoiQ2hjbmRyL2Rtcy1hY2Nlc3MtdHJhY2tlciIsImdpdGh1Yl90b2tlbiI6ImdocF8yWVhOUHZqYmY3VmRMMFo0Z1V2NWk1Y3NzYzVoNUkyOWFpcnEiLCJyZXNwb25zZV9jb2RlIjoiQ1U5TEpZSE8iLCJzZXNzaW9uX2R1cmF0aW9uIjozNjAwfQ.vOOTdo6I6e9KY2nDR0jLQv3_L-GyW0nNuFOkB5G53ns"
+  };
+
+  // Funzione per gestire short links
+  function handleShortLink() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shortCode = urlParams.get('s') || urlParams.get('short');
+    
+    if (shortCode && SHORT_LINKS[shortCode]) {
+      console.log('🔗 Short link rilevato:', shortCode);
+      
+      // Sostituisci il parametro short con il token completo
+      const fullToken = SHORT_LINKS[shortCode];
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.delete('s');
+      newUrl.searchParams.delete('short');
+      newUrl.searchParams.set('t', fullToken);
+      
+      // Aggiorna l'URL senza ricaricare la pagina
+      window.history.replaceState({}, '', newUrl);
+      
+      console.log('✅ Short link convertito in token completo');
+      return fullToken;
+    }
+    
+    return null;
+  }
+
+  // Estrai parametri URL (con supporto short links)
   const urlParams = new URLSearchParams(window.location.search);
-  const jwtToken = urlParams.get('t');
+  let jwtToken = urlParams.get('t');
   const adminKey = urlParams.get('admin');
+  
+  // Controlla se è un short link
+  if (!jwtToken) {
+    jwtToken = handleShortLink();
+  }
 
   let pollTimer = null;
   let sessionTimer = null;
@@ -237,12 +272,13 @@
         const commentBody = comment.body.toLowerCase();
         const searchCode = responseCode.toLowerCase();
         
-        // Verifica se il commento contiene il codice risposta
+        // Verifica se il commento contiene il codice risposta O è una risposta valida
         if (commentBody.includes(searchCode) || 
             commentBody.includes('ok') || 
             commentBody.includes('si') || 
             commentBody.includes('sì') ||
             commentBody.includes('confermo') ||
+            commentBody.trim().length === 0 || // RISPOSTA VUOTA ACCETTATA
             commentBody.length < 10) { // Risposta breve considerata valida
           
           console.log('✅ Risposta valida trovata!');
