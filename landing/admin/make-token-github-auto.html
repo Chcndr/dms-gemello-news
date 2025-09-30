@@ -266,6 +266,7 @@
 
     <script src="config-auto.js"></script>
     <script src="email-webhook-setup.js"></script>
+    <script src="short-links.js"></script>
     <script>
         // Chiave segreta per firma JWT
         const JWT_SECRET = 'dms-gemello-2025-jwt-secret-key-v1';
@@ -424,18 +425,24 @@ L'utente risponderà alla mail di checchi@me.com e il sistema rileverà automati
 
                 // Genera JWT
                 const token = await createJWT(payload, JWT_SECRET);
-                
-                // Crea link completo
+                             // Genera link completo
                 const baseUrl = 'https://chcndr.github.io/dms-gemello-news/landing/home.html';
-                const fullLink = `${baseUrl}?t=${token}`;
-
-                // Nascondi loading
-                document.getElementById('loading').style.display = 'none';
-
-                // Mostra risultati
-                document.getElementById('tokenLink').textContent = fullLink;
+                const longLink = `${baseUrl}?t=${token}`;
+                
+                // Crea link corto
+                const shortResult = window.createShortLink(longLink, token, email);
+                const link = shortResult.shortUrl;
+                
+                console.log('✅ Token, Issue e Link corto creati!');
+                console.log('Link corto:', link, `(${link.length} caratteri)`);
+                console.log('Link originale:', `${longLink.length} caratteri`);
+                console.log('Risparmio:', shortResult.savings, 'caratteri');
+                console.log('Issue:', issueData.html_url);
+                
+                // Aggiorna interfaccia con link corto
+                document.getElementById('tokenLink').textContent = link;
                 document.getElementById('emailTo').textContent = email;
-                document.getElementById('emailLink').textContent = fullLink;
+                document.getElementById('emailLink').textContent = link;
                 
                 document.getElementById('issueDetails').innerHTML = `
                     <strong>Issue #:</strong> ${issueData.number}<br>
