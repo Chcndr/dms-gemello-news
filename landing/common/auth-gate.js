@@ -27,12 +27,24 @@
   // CONTROLLO PRINCIPALE - LOGICA SEMPLICE E CHIARA
   const checkAccess = async () => {
     
+    // DEBUG - Mostra cosa legge dai parametri
+    console.log('🔍 DEBUG AUTH:', {
+      adminKey: `"${adminKey}"`,
+      adminKeyLength: adminKey.length,
+      expectedKey: `"${PERSONAL_ADMIN_KEY}"`,
+      match: adminKey === PERSONAL_ADMIN_KEY,
+      email: `"${email}"`,
+      token: `"${token}"`
+    });
+    
     // 1. CONTROLLO ADMIN KEY - PRIORITÀ ASSOLUTA
     if (adminKey) {
       if (adminKey === PERSONAL_ADMIN_KEY) {
+        console.log('✅ Admin key valida - accesso garantito');
         hideBlock();
         return true; // ACCESSO GARANTITO
       } else {
+        console.log('❌ Admin key non valida:', adminKey);
         showBlock('🚫 Chiave admin non valida.<br>Usa il sistema email+token normale.');
         return false; // BLOCCATO
       }
