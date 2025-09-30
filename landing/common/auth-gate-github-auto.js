@@ -166,13 +166,30 @@
     }
   }
 
-  // Controlla GitHub Issue per risposte
-  async function checkGitHubIssueResponse(issueNumber) {
+  // Controlla risposte email (sistema ibrido GitHub + Email)
+  async function checkEmailResponse(issueNumber) {
     try {
-      // Prima controlla se l'issue esiste e ottieni i dettagli
+      console.log('🔍 Controllo risposta email per Issue:', issueNumber);
+      
+      // Prima controlla se c'è una risposta email locale (simulazione/webhook)
+      if (window.DMS_EMAIL_WEBHOOK && window.DMS_EMAIL_WEBHOOK.checkEmailResponse) {
+        const emailResponse = window.DMS_EMAIL_WEBHOOK.checkEmailResponse(issueNumber);
+        if (emailResponse) {
+          console.log('📧 Risposta email trovata (locale):', emailResponse);
+          return {
+            responded_at: emailResponse.receivedAt,
+            response_body: emailResponse.responseText,
+            user: emailResponse.userEmail,
+            issue_number: issueNumber,
+            method: 'email_forwarding'
+          };
+        }
+      }
+      
+      // Fallback: controlla GitHub Issue per commenti diretti
       const issueUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues/${issueNumber}`;
       
-      console.log('🔍 Controllo GitHub Issue:', issueUrl);
+      console.log('🔍 Controllo GitHub Issue (fallback):', issueUrl);
       
       const issueResponse = await fetch(issueUrl, {
         headers: {
@@ -215,10 +232,10 @@
             );
             
             if (userComment) {
-              console.log('📧 Risposta utente trovata:', userComment);
+              console.log('📧 Risposta GitHub trovata (anche se vuota):', userComment);
               return {
                 responded_at: userComment.created_at,
-                response_body: userComment.body,
+                response_body: userComment.body || '', // Accetta anche risposte vuote
                 user: userComment.user.login,
                 comment_id: userComment.id,
                 issue_number: issueNumber,
@@ -231,7 +248,7 @@
 
       return null;
     } catch (error) {
-      console.error('❌ Errore controllo GitHub Issue:', error);
+      console.error('❌ Errore controllo risposta:', error);
       return null;
     }
   }
@@ -343,7 +360,7 @@
       
       console.log(`🔍 Controllo GitHub Issue ${issueNumber} (${attempts}/${maxAttempts})`);
       
-      const response = await checkGitHubIssueResponse(issueNumber);
+      const response = await checkEmailResponse(issueNumber);
       
       if (response) {
         // Risposta trovata automaticamente!
@@ -372,9 +389,9 @@
       const remainingMinutes = Math.floor((maxAttempts - attempts) * 10 / 60);
       
       updateBlockMessage(
-        `📧 Rilevamento automatico risposta GitHub in corso...<br>` +
-        `<small>Rispondi alla notifica GitHub per sbloccare l'accesso.<br>` +
-        `Issue #${issueNumber} - Timeout tra ${remainingMinutes} minuti.</small>`, 
+        `📧 Rilevamento automatico risposta email in corso...<br>` +
+        `<small>Rispondi alla mail di checchi@me.com per sbloccare l'accesso.<br>` +
+        `(Anche risposta vuota va bene) - Timeout tra ${remainingMinutes} minuti.</small>`, 
         true, true, progress
       );
       
@@ -492,8 +509,9 @@
       console.log('⏳ Avvio rilevamento automatico risposte GitHub');
       
       showBlock(
-        '📧 Rilevamento automatico risposta GitHub in corso...<br>' +
-        '<small>Rispondi alla notifica GitHub per sbloccare l\'accesso.</small>', 
+        '📧 Rilevamento automatico risposta email in corso...<br>' +
+        '<small>Rispondi alla mail di checchi@me.com per sbloccare l\'accesso.<br>' +
+        '(Anche risposta vuota va bene, basta premere "Rispondi" e "Invia")</small>', 
         true, true, 0
       );
 

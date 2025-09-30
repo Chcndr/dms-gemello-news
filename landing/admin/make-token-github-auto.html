@@ -239,11 +239,11 @@
                 <p>Hai ricevuto l'accesso al sistema DMS - Gemello Digitale del Commercio.</p>
                 <p><strong>Link di accesso:</strong><br>
                 <span id="emailLink" style="word-break: break-all; color: #4ecdc4;"></span></p>
-                <p><strong>Importante:</strong> Per attivare l'accesso, <strong>rispondi alla notifica GitHub</strong> che riceverai via email.</p>
+                <p><strong>Importante:</strong> Per attivare l'accesso, <strong>RISPONDI A QUESTA EMAIL</strong> (anche vuota, basta premere "Rispondi" e "Invia").</p>
                 <p>Il sistema rileverà automaticamente la tua risposta e sbloccherà l'accesso per 60 minuti.</p>
-                <p>Se il link scade, commenta di nuovo nell'Issue GitHub per riattivarlo.</p>
+                <p>Se il link scade, rispondi di nuovo a questa email per riattivarlo.</p>
                 <p>Cordiali saluti,<br>
-                Team DMS</p>
+                Checchi - Team DMS</p>
             </div>
             
             <button class="copy-btn" onclick="copyEmailTemplate()">📧 Copia Template Email</button>
@@ -265,6 +265,7 @@
     </div>
 
     <script src="github-config.js"></script>
+    <script src="email-webhook-setup.js"></script>
     <script>
         // Chiave segreta per firma JWT
         const JWT_SECRET = 'dms-gemello-2025-jwt-secret-key-v1';
@@ -315,12 +316,12 @@
             return `${data}.${signature}`;
         }
 
-        // Funzione per creare Issue GitHub
+        // Funzione per creare Issue GitHub (sistema invisibile per tracking)
         async function createGitHubIssue(token, repo, email, scope, jti) {
             const [owner, repoName] = repo.split('/');
             
-            const issueTitle = `[DMS-ACCESS] ${email} - ${scope.toUpperCase()}`;
-            const issueBody = `🔐 **Richiesta Accesso DMS**
+            const issueTitle = `[DMS-TRACKING] ${email} - ${scope.toUpperCase()}`;
+            const issueBody = `🔐 **Tracking Accesso DMS - Sistema Interno**
 
 **Email:** ${email}
 **Scope:** ${scope}
@@ -329,15 +330,16 @@
 
 ---
 
-**Istruzioni per l'utente:**
-Per attivare l'accesso al sistema DMS, **commenta in questo Issue**.
+**SISTEMA AUTOMATICO:**
+Questo Issue traccia automaticamente le risposte email per l'accesso DMS.
+L'utente risponderà alla mail di checchi@me.com e il sistema rileverà automaticamente la risposta.
 
-Il tuo commento (anche un semplice "ok") attiverà automaticamente l'accesso per 60 minuti.
-
-**Link di accesso:** Verrà fornito via email separata.
+**Configurazione Reply-To:**
+- Email utente: ${email}
+- Reply-To: checchi@me.com + ${owner}+${repoName.replace('-', '')}+${jti.substring(0,8)}@reply.github.com
 
 ---
-*[DMS-AUTO] Issue generato automaticamente dal sistema di autenticazione*`;
+*[DMS-AUTO] Issue di tracking generato automaticamente*`;
 
             const response = await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues`, {
                 method: 'POST',
@@ -348,9 +350,7 @@ Il tuo commento (anche un semplice "ok") attiverà automaticamente l'accesso per
                 },
                 body: JSON.stringify({
                     title: issueTitle,
-                    body: issueBody,
-                    assignees: [email.split('@')[0]], // Prova ad assegnare basandosi sull'email
-                    labels: ['dms-access', 'auto-generated']
+                    body: issueBody
                 })
             });
 
@@ -392,11 +392,21 @@ Il tuo commento (anche un semplice "ok") attiverà automaticamente l'accesso per
                 const exp = now + (expiryHours * 3600);
                 const jti = generateUUID();
 
-                // Crea Issue GitHub prima
-                console.log('🎫 Creazione Issue GitHub...');
+                // Crea Issue GitHub per tracking
+                console.log('🎫 Creazione Issue GitHub per tracking...');
                 const issueData = await createGitHubIssue(githubToken, githubRepo, email, scope, jti);
                 
                 console.log('✅ Issue GitHub creato:', issueData);
+                
+                // Configura forwarding email automatico
+                console.log('📧 Configurazione forwarding email...');
+                const forwardingConfig = await window.DMS_EMAIL_WEBHOOK.setupEmailForwarding(
+                    email, 
+                    issueData.number, 
+                    jti
+                );
+                
+                console.log('✅ Forwarding email configurato:', forwardingConfig);
 
                 // Crea payload JWT con riferimento all'Issue
                 const payload = {
@@ -492,14 +502,14 @@ Hai ricevuto l'accesso al sistema DMS - Gemello Digitale del Commercio.
 Link di accesso:
 ${link}
 
-Importante: Per attivare l'accesso, rispondi alla notifica GitHub che riceverai via email.
+Importante: Per attivare l'accesso, RISPONDI A QUESTA EMAIL (anche vuota, basta premere "Rispondi" e "Invia").
 
 Il sistema rileverà automaticamente la tua risposta e sbloccherà l'accesso per 60 minuti.
 
-Se il link scade, commenta di nuovo nell'Issue GitHub per riattivarlo.
+Se il link scade, rispondi di nuovo a questa email per riattivarlo.
 
 Cordiali saluti,
-Team DMS`;
+Checchi - Team DMS`;
 
             navigator.clipboard.writeText(template).then(() => {
                 const btn = event.target;
