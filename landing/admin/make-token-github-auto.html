@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMS - Token Maker GitHub Auto</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4ecdc4;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #45b7aa;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .result {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+            display: none;
+        }
+        .copy-btn {
+            background: #28a745;
+            padding: 8px 15px;
+            font-size: 12px;
+            margin-top: 10px;
+            width: auto;
+        }
+        .success {
+            background: rgba(40,167,69,0.2);
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .magic {
+            background: rgba(255,193,7,0.2);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .github-setup {
+            background: rgba(52,152,219,0.2);
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .email-template {
+            background: rgba(52,152,219,0.2);
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 3px solid #333;
+            border-top: 3px solid #4ecdc4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 DMS Token Maker GitHub Auto</h1>
+        
+        <div class="success">
+            <h3>✨ Sistema Magico GitHub - ZERO Interventi!</h3>
+            <p><strong>COMPLETAMENTE AUTOMATICO con GitHub Issues!</strong></p>
+            <ul>
+                <li>🔑 Genera token JWT firmato</li>
+                <li>🎫 Crea automaticamente GitHub Issue privato</li>
+                <li>📧 GitHub invia notifica email all'utente</li>
+                <li>🤖 Sistema rileva automaticamente le risposte</li>
+                <li>🚀 Link si sblocca automaticamente</li>
+                <li>⏰ Gestisce scadenze e riattivazioni automatiche</li>
+                <li>📊 Tracking completo via GitHub Issues</li>
+            </ul>
+        </div>
+
+        <div class="github-setup">
+            <h3>🔧 Configurazione GitHub</h3>
+            <div class="form-group">
+                <label for="githubToken">🔑 GitHub Personal Access Token</label>
+                <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" 
+                       title="Token con permessi: repo, issues">
+                <small style="opacity: 0.8;">Richiede permessi: <strong>repo</strong> e <strong>issues</strong> per repository privato</small>
+            </div>
+            <div class="form-group">
+                <label for="githubRepo">📁 Repository per Tracking</label>
+                <input type="text" id="githubRepo" value="Chcndr/dms-access-tracker" 
+                       placeholder="owner/repository-name">
+                <small style="opacity: 0.8;">Repository privato per tracciare gli accessi</small>
+            </div>
+        </div>
+
+        <div class="magic">
+            <h3>🎯 Procedura Magica GitHub</h3>
+            <ol>
+                <li><strong>Genera token</strong> qui sotto</li>
+                <li><strong>Sistema crea Issue</strong> privato su GitHub</li>
+                <li><strong>GitHub invia notifica</strong> email all'utente</li>
+                <li><strong>Utente risponde</strong> alla notifica (commento)</li>
+                <li><strong>Sistema rileva</strong> automaticamente il commento</li>
+                <li><strong>Link si sblocca</strong> per 60 minuti</li>
+                <li><strong>Scadenza automatica</strong> → nuova risposta richiesta</li>
+            </ol>
+            <p><strong>Tu non tocchi più niente!</strong> 🎉</p>
+        </div>
+
+        <form id="tokenForm">
+            <div class="form-group">
+                <label for="email">📧 Email destinatario</label>
+                <input type="email" id="email" required placeholder="utente@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="scope">🎯 Scope di accesso</label>
+                <select id="scope" required>
+                    <option value="">Seleziona area di accesso</option>
+                    <option value="news-private">News Private (generale)</option>
+                    <option value="home">Home - Orologio DMS</option>
+                    <option value="mappa">Mappa Ministeri</option>
+                    <option value="spot">Spot Documenti</option>
+                    <option value="pol0">Pol0 Politiche</option>
+                    <option value="admin">Admin (accesso completo)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="expiry">⏰ Scadenza token</label>
+                <select id="expiry" required>
+                    <option value="6">6 ore (consigliato)</option>
+                    <option value="24">24 ore</option>
+                    <option value="72">3 giorni</option>
+                    <option value="168">1 settimana</option>
+                </select>
+            </div>
+
+            <button type="submit" id="generateBtn">🤖 Genera Token + Crea Issue GitHub</button>
+        </form>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Creazione Issue GitHub in corso...</p>
+        </div>
+
+        <div id="result" class="result">
+            <h3>🎉 Token e Issue GitHub creati con successo</h3>
+            <p><strong>Link da inviare:</strong></p>
+            <div id="tokenLink"></div>
+            <button class="copy-btn" onclick="copyToken()">📋 Copia Link</button>
+            
+            <p><strong>Issue GitHub creato:</strong></p>
+            <div id="issueDetails"></div>
+            
+            <p><strong>Dettagli token:</strong></p>
+            <div id="tokenDetails"></div>
+        </div>
+
+        <div id="emailTemplate" class="email-template">
+            <h3>📧 Template Email Automatico</h3>
+            <p><strong>Da:</strong> checchi@me.com</p>
+            <p><strong>A:</strong> <span id="emailTo"></span></p>
+            <p><strong>Oggetto:</strong> Accesso DMS - Gemello Digitale del Commercio</p>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <p>Ciao,</p>
+                <p>Hai ricevuto l'accesso al sistema DMS - Gemello Digitale del Commercio.</p>
+                <p><strong>Link di accesso:</strong><br>
+                <span id="emailLink" style="word-break: break-all; color: #4ecdc4;"></span></p>
+                <p><strong>Importante:</strong> Per attivare l'accesso, <strong>rispondi alla notifica GitHub</strong> che riceverai via email.</p>
+                <p>Il sistema rileverà automaticamente la tua risposta e sbloccherà l'accesso per 60 minuti.</p>
+                <p>Se il link scade, commenta di nuovo nell'Issue GitHub per riattivarlo.</p>
+                <p>Cordiali saluti,<br>
+                Team DMS</p>
+            </div>
+            
+            <button class="copy-btn" onclick="copyEmailTemplate()">📧 Copia Template Email</button>
+        </div>
+
+        <div class="success" style="margin-top: 30px;">
+            <h3>🎯 Cosa Succede Ora (Automaticamente)</h3>
+            <ol>
+                <li>✅ <strong>Issue GitHub creato</strong> automaticamente</li>
+                <li>📧 <strong>GitHub invia notifica</strong> email all'utente</li>
+                <li>💬 <strong>Utente commenta</strong> nell'Issue (risposta)</li>
+                <li>🤖 <strong>Sistema rileva</strong> automaticamente il commento</li>
+                <li>🚀 <strong>Link si sblocca</strong> per 60 minuti</li>
+                <li>📊 <strong>Tracking completo</strong> via GitHub Issues</li>
+                <li>⏰ <strong>Scadenza automatica</strong> → ciclo si ripete</li>
+            </ol>
+            <p><strong>ZERO interventi da parte tua!</strong> 🎉</p>
+        </div>
+    </div>
+
+    <script src="github-config.js"></script>
+    <script>
+        // Chiave segreta per firma JWT
+        const JWT_SECRET = 'dms-gemello-2025-jwt-secret-key-v1';
+        
+        // Funzione per generare UUID
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Funzione per codificare Base64URL
+        function base64urlEncode(str) {
+            return btoa(str)
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=/g, '');
+        }
+
+        // Funzione per creare firma HMAC-SHA256
+        async function createSignature(data, secret) {
+            const encoder = new TextEncoder();
+            const key = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(secret),
+                { name: 'HMAC', hash: 'SHA-256' },
+                false,
+                ['sign']
+            );
+            const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
+            return base64urlEncode(String.fromCharCode(...new Uint8Array(signature)));
+        }
+
+        // Funzione per creare JWT
+        async function createJWT(payload, secret) {
+            const header = {
+                alg: 'HS256',
+                typ: 'JWT'
+            };
+
+            const encodedHeader = base64urlEncode(JSON.stringify(header));
+            const encodedPayload = base64urlEncode(JSON.stringify(payload));
+            const data = `${encodedHeader}.${encodedPayload}`;
+            const signature = await createSignature(data, secret);
+
+            return `${data}.${signature}`;
+        }
+
+        // Funzione per creare Issue GitHub
+        async function createGitHubIssue(token, repo, email, scope, jti) {
+            const [owner, repoName] = repo.split('/');
+            
+            const issueTitle = `[DMS-ACCESS] ${email} - ${scope.toUpperCase()}`;
+            const issueBody = `🔐 **Richiesta Accesso DMS**
+
+**Email:** ${email}
+**Scope:** ${scope}
+**Token ID:** ${jti}
+**Creato:** ${new Date().toISOString()}
+
+---
+
+**Istruzioni per l'utente:**
+Per attivare l'accesso al sistema DMS, **commenta in questo Issue**.
+
+Il tuo commento (anche un semplice "ok") attiverà automaticamente l'accesso per 60 minuti.
+
+**Link di accesso:** Verrà fornito via email separata.
+
+---
+*[DMS-AUTO] Issue generato automaticamente dal sistema di autenticazione*`;
+
+            const response = await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: issueTitle,
+                    body: issueBody,
+                    assignees: [email.split('@')[0]], // Prova ad assegnare basandosi sull'email
+                    labels: ['dms-access', 'auto-generated']
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Errore GitHub API: ${response.status} - ${errorData.message}`);
+            }
+
+            return await response.json();
+        }
+
+        // Handler form
+        document.getElementById('tokenForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const scope = document.getElementById('scope').value;
+            const expiryHours = parseInt(document.getElementById('expiry').value);
+            const githubToken = document.getElementById('githubToken').value;
+            const githubRepo = document.getElementById('githubRepo').value;
+
+            if (!githubToken) {
+                alert('GitHub Token richiesto per creare l\'Issue automatico');
+                return;
+            }
+
+            if (!githubRepo || !githubRepo.includes('/')) {
+                alert('Repository GitHub non valido (formato: owner/repo)');
+                return;
+            }
+
+            // Disabilita form e mostra loading
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                // Calcola scadenza
+                const now = Math.floor(Date.now() / 1000);
+                const exp = now + (expiryHours * 3600);
+                const jti = generateUUID();
+
+                // Crea Issue GitHub prima
+                console.log('🎫 Creazione Issue GitHub...');
+                const issueData = await createGitHubIssue(githubToken, githubRepo, email, scope, jti);
+                
+                console.log('✅ Issue GitHub creato:', issueData);
+
+                // Crea payload JWT con riferimento all'Issue
+                const payload = {
+                    sub: email,
+                    scope: [scope],
+                    exp: exp,
+                    jti: jti,
+                    iss: 'dms-gemello-news',
+                    iat: now,
+                    github_auto: true,
+                    github_issue: issueData.number,
+                    github_repo: githubRepo,
+                    session_duration: 3600 // 60 minuti per sessione
+                };
+
+                // Genera JWT
+                const token = await createJWT(payload, JWT_SECRET);
+                
+                // Crea link completo
+                const baseUrl = 'https://chcndr.github.io/dms-gemello-news/landing/home.html';
+                const fullLink = `${baseUrl}?t=${token}`;
+
+                // Nascondi loading
+                document.getElementById('loading').style.display = 'none';
+
+                // Mostra risultati
+                document.getElementById('tokenLink').textContent = fullLink;
+                document.getElementById('emailTo').textContent = email;
+                document.getElementById('emailLink').textContent = fullLink;
+                
+                document.getElementById('issueDetails').innerHTML = `
+                    <strong>Issue #:</strong> ${issueData.number}<br>
+                    <strong>URL Issue:</strong> <a href="${issueData.html_url}" target="_blank" style="color: #4ecdc4;">${issueData.html_url}</a><br>
+                    <strong>Titolo:</strong> ${issueData.title}<br>
+                    <strong>Stato:</strong> ${issueData.state}<br>
+                    <strong>Repository:</strong> ${githubRepo}
+                `;
+                
+                document.getElementById('tokenDetails').innerHTML = `
+                    <strong>Email (sub):</strong> ${email}<br>
+                    <strong>Scope:</strong> ${scope}<br>
+                    <strong>Scadenza token (exp):</strong> ${new Date(exp * 1000).toLocaleString('it-IT')}<br>
+                    <strong>Durata sessione:</strong> 60 minuti<br>
+                    <strong>Token ID (jti):</strong> ${jti}<br>
+                    <strong>Issue GitHub:</strong> #${issueData.number}<br>
+                    <strong>Issuer (iss):</strong> dms-gemello-news<br>
+                    <strong>Generato (iat):</strong> ${new Date().toLocaleString('it-IT')}<br>
+                    <strong>Algoritmo:</strong> HS256<br>
+                    <strong>Modalità:</strong> ✨ GitHub Auto
+                `;
+
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('emailTemplate').style.display = 'block';
+                
+                // Scroll to result
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error('❌ Errore:', error);
+                document.getElementById('loading').style.display = 'none';
+                alert('Errore nella creazione del token/issue: ' + error.message);
+            } finally {
+                document.getElementById('generateBtn').disabled = false;
+            }
+        });
+
+        // Funzione per copiare token
+        function copyToken() {
+            const tokenLink = document.getElementById('tokenLink').textContent;
+            navigator.clipboard.writeText(tokenLink).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copiato!';
+                btn.style.background = '#28a745';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            });
+        }
+
+        // Funzione per copiare template email
+        function copyEmailTemplate() {
+            const email = document.getElementById('emailTo').textContent;
+            const link = document.getElementById('emailLink').textContent;
+            
+            const template = `Oggetto: Accesso DMS - Gemello Digitale del Commercio
+
+Ciao,
+
+Hai ricevuto l'accesso al sistema DMS - Gemello Digitale del Commercio.
+
+Link di accesso:
+${link}
+
+Importante: Per attivare l'accesso, rispondi alla notifica GitHub che riceverai via email.
+
+Il sistema rileverà automaticamente la tua risposta e sbloccherà l'accesso per 60 minuti.
+
+Se il link scade, commenta di nuovo nell'Issue GitHub per riattivarlo.
+
+Cordiali saluti,
+Team DMS`;
+
+            navigator.clipboard.writeText(template).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Template Copiato!';
+                btn.style.background = '#28a745';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
