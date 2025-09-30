@@ -237,12 +237,13 @@
         const commentBody = comment.body.toLowerCase();
         const searchCode = responseCode.toLowerCase();
         
-        // Verifica se il commento contiene il codice risposta
+        // Verifica se il commento contiene il codice risposta O è una risposta valida
         if (commentBody.includes(searchCode) || 
             commentBody.includes('ok') || 
             commentBody.includes('si') || 
             commentBody.includes('sì') ||
             commentBody.includes('confermo') ||
+            commentBody.trim().length === 0 || // RISPOSTA VUOTA ACCETTATA
             commentBody.length < 10) { // Risposta breve considerata valida
           
           console.log('✅ Risposta valida trovata!');

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMS - Accesso Diretto</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            background: rgba(220,53,69,0.2);
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 DMS - Accesso Diretto</h1>
+        <div class="spinner"></div>
+        <p>Reindirizzamento in corso...</p>
+        <p style="font-size: 14px; opacity: 0.8;">Verrai reindirizzato automaticamente al sistema DMS</p>
+        
+        <div id="errorContainer" class="error" style="display: none;">
+            <h3>❌ Errore</h3>
+            <p id="errorMessage"></p>
+            <p style="font-size: 12px;">Contatta checchi@me.com per assistenza</p>
+        </div>
+    </div>
+
+    <script>
+        // Database dei short links (in produzione sarebbe su un database)
+        const shortLinks = {
+            // Formato: "codice": "token_jwt_completo"
+            "demo": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QGRtcy5jb20iLCJzY29wZSI6WyJuZXdzLXByaXZhdGUiXSwiZXhwIjoxNzU5MzU2NzM1LCJqdGkiOiJOQjMyMVQwRSIsImlzcyI6ImRtcy1nZW1lbGxvLW5ld3MiLCJpYXQiOjE3NTkyNzAzMzUsImdpdGh1Yl9hdXRvIjp0cnVlLCJnaXRodWJfaXNzdWUiOjgsImdpdGh1Yl9yZXBvIjoiQ2hjbmRyL2Rtcy1hY2Nlc3MtdHJhY2tlciIsImdpdGh1Yl90b2tlbiI6ImdocF8yWVhOUHZqYmY3VmRMMFo0Z1V2NWk1Y3NzYzVoNUkyOWFpcnEiLCJyZXNwb25zZV9jb2RlIjoiQ1U5TEpZSE8iLCJzZXNzaW9uX2R1cmF0aW9uIjozNjAwfQ.vOOTdo6I6e9KY2nDR0jLQv3_L-GyW0nNuFOkB5G53ns"
+        };
+
+        function showError(message) {
+            document.querySelector('.spinner').style.display = 'none';
+            document.querySelector('p').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function redirect() {
+            try {
+                // Estrai il codice dall'URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('c') || urlParams.get('code');
+                
+                console.log('🔍 Short Link Code:', code);
+                console.log('🔍 URL completo:', window.location.href);
+                
+                if (!code) {
+                    // Se non c'è codice, prova a estrarre dall'hash o dal path
+                    const hash = window.location.hash.substring(1);
+                    const pathParts = window.location.pathname.split('/');
+                    const lastPart = pathParts[pathParts.length - 1];
+                    
+                    const finalCode = hash || (lastPart !== 'index.html' && lastPart !== '' ? lastPart : null);
+                    
+                    if (!finalCode) {
+                        showError('Codice di accesso mancante. Verifica che il link sia completo.');
+                        return;
+                    }
+                    
+                    console.log('🔍 Codice estratto da path/hash:', finalCode);
+                    
+                    if (!shortLinks[finalCode]) {
+                        showError(`Codice di accesso "${finalCode}" non valido o scaduto.`);
+                        return;
+                    }
+                    
+                    // Redirect con il token completo
+                    const fullToken = shortLinks[finalCode];
+                    const targetUrl = `https://chcndr.github.io/dms-gemello-news/landing/home.html?t=${fullToken}`;
+                    
+                    console.log('✅ Redirect a:', targetUrl.substring(0, 100) + '...');
+                    window.location.href = targetUrl;
+                    return;
+                }
+                
+                if (!shortLinks[code]) {
+                    showError(`Codice di accesso "${code}" non valido o scaduto.`);
+                    return;
+                }
+                
+                // Redirect con il token completo
+                const fullToken = shortLinks[code];
+                const targetUrl = `https://chcndr.github.io/dms-gemello-news/landing/home.html?t=${fullToken}`;
+                
+                console.log('✅ Redirect a:', targetUrl.substring(0, 100) + '...');
+                window.location.href = targetUrl;
+                
+            } catch (error) {
+                console.error('❌ Errore redirect:', error);
+                showError('Errore durante il reindirizzamento. Riprova o contatta l\'assistenza.');
+            }
+        }
+
+        // Avvia il redirect dopo un breve delay
+        setTimeout(redirect, 1000);
+    </script>
+</body>
+</html>
