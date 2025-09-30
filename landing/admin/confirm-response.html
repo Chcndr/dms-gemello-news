@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMS - Conferma Risposta Email</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4ecdc4;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #45b7aa;
+        }
+        .info {
+            background: rgba(52,152,219,0.2);
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .success {
+            background: rgba(40,167,69,0.2);
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .pending {
+            background: rgba(255,193,7,0.2);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Conferma Risposta Email</h1>
+        
+        <div class="info">
+            <h3>🎯 Procedura</h3>
+            <ol>
+                <li><strong>Utente riceve</strong> link JWT via email</li>
+                <li><strong>Utente risponde</strong> alla mail (anche vuota)</li>
+                <li><strong>Tu confermi</strong> qui che la risposta è arrivata</li>
+                <li><strong>Link si sblocca</strong> automaticamente per l'utente</li>
+            </ol>
+        </div>
+
+        <div class="pending">
+            <h3>⚠️ Sistema Temporaneo</h3>
+            <p>Questo è un sistema manuale temporaneo. In futuro sarà completamente automatico con webhook email.</p>
+        </div>
+
+        <form id="confirmForm">
+            <div class="form-group">
+                <label for="email">📧 Email utente che ha risposto</label>
+                <input type="email" id="email" required placeholder="utente@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="jti">🔑 Token ID (JTI) dal Token Maker</label>
+                <input type="text" id="jti" placeholder="Opzionale - se disponibile">
+            </div>
+
+            <div class="form-group">
+                <label for="duration">⏰ Durata accesso</label>
+                <select id="duration" required>
+                    <option value="60">60 minuti (standard)</option>
+                    <option value="120">2 ore</option>
+                    <option value="360">6 ore</option>
+                    <option value="1440">24 ore</option>
+                </select>
+            </div>
+
+            <button type="submit">✅ Conferma Risposta e Sblocca Accesso</button>
+        </form>
+
+        <div id="success" class="success">
+            <h3>🎉 Risposta Confermata!</h3>
+            <p>L'utente può ora accedere al sito usando il link JWT per la durata specificata.</p>
+            <p><strong>Prossimi passi:</strong></p>
+            <ol>
+                <li>✅ Risposta registrata nel sistema</li>
+                <li>🔓 Link JWT ora sbloccato</li>
+                <li>⏰ Accesso valido per <span id="durationText"></span></li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('confirmForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const jti = document.getElementById('jti').value || `manual-${Date.now()}`;
+            const durationMinutes = parseInt(document.getElementById('duration').value);
+
+            // Calcola scadenza
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + (durationMinutes * 60);
+
+            // Crea entry di risposta
+            const responseEntry = {
+                email: email,
+                jti: jti,
+                responded_at: new Date().toISOString(),
+                exp: exp,
+                method: 'manual_confirmation',
+                confirmed_by: 'admin',
+                duration_minutes: durationMinutes
+            };
+
+            // Salva in localStorage per il sistema di controllo
+            const responseKey = `dms_response_${jti}`;
+            localStorage.setItem(responseKey, JSON.stringify(responseEntry));
+
+            // Salva anche con email come chiave
+            const emailKey = `dms_response_${email.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            localStorage.setItem(emailKey, JSON.stringify(responseEntry));
+
+            console.log('✅ Risposta confermata:', responseEntry);
+
+            // Mostra successo
+            document.getElementById('durationText').textContent = 
+                durationMinutes < 60 ? `${durationMinutes} minuti` :
+                durationMinutes < 1440 ? `${Math.floor(durationMinutes / 60)} ore` :
+                `${Math.floor(durationMinutes / 1440)} giorni`;
+
+            document.getElementById('success').style.display = 'block';
+            document.getElementById('confirmForm').style.display = 'none';
+
+            // Scroll to success
+            document.getElementById('success').scrollIntoView({ behavior: 'smooth' });
+
+            // Simula aggiornamento file remoto (in futuro sarà automatico)
+            setTimeout(() => {
+                console.log('📝 In un sistema completo, questo aggiornerebbe automaticamente check-response.json');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

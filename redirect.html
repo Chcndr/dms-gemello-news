@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMS - Accesso</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .success {
+            color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚀 DMS - Gemello Digitale del Commercio</h2>
+        <div class="spinner" id="spinner"></div>
+        <p id="status">Elaborazione link in corso...</p>
+        <div id="message" style="display: none;"></div>
+    </div>
+
+    <script>
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        function showMessage(text, type = 'info') {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('status').style.display = 'none';
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+            messageDiv.style.display = 'block';
+        }
+
+        function processRedirect() {
+            // Controlla se c'è un parametro 's' per il link corto
+            const shortId = getUrlParameter('s');
+            
+            if (shortId) {
+                console.log('🔍 Processamento link corto:', shortId);
+                
+                // Cerca nei dati salvati
+                const linkData = localStorage.getItem(`dms_short_${shortId}`);
+                
+                if (linkData) {
+                    try {
+                        const data = JSON.parse(linkData);
+                        console.log('✅ Link trovato:', data);
+                        
+                        // Incrementa contatore click
+                        data.clicks = (data.clicks || 0) + 1;
+                        localStorage.setItem(`dms_short_${shortId}`, JSON.stringify(data));
+                        
+                        // Mostra messaggio di reindirizzamento
+                        document.getElementById('status').textContent = 
+                            `Reindirizzamento per ${data.userEmail}...`;
+                        
+                        // Reindirizza al link originale
+                        setTimeout(() => {
+                            window.location.href = data.longUrl;
+                        }, 1500);
+                        
+                        return;
+                        
+                    } catch (e) {
+                        console.error('❌ Errore parsing dati link:', e);
+                        showMessage('Errore nei dati del link', 'error');
+                        return;
+                    }
+                } else {
+                    console.log('❌ Link non trovato:', shortId);
+                    showMessage('Link non trovato o scaduto. Verifica di aver generato il link dallo stesso browser.', 'error');
+                    
+                    // Reindirizza alla home dopo 5 secondi
+                    setTimeout(() => {
+                        window.location.href = '/dms-gemello-news/landing/home.html';
+                    }, 5000);
+                    return;
+                }
+            }
+            
+            // Se non c'è parametro 's', controlla se c'è un token diretto
+            const token = getUrlParameter('t');
+            if (token) {
+                console.log('🎫 Token diretto trovato, reindirizzamento...');
+                window.location.href = `/dms-gemello-news/landing/home.html?t=${token}`;
+                return;
+            }
+            
+            // Nessun parametro valido
+            showMessage('Link non valido. Contatta checchi@me.com per assistenza.', 'error');
+            setTimeout(() => {
+                window.location.href = '/dms-gemello-news/landing/home.html';
+            }, 5000);
+        }
+
+        // Avvia il processamento al caricamento
+        document.addEventListener('DOMContentLoaded', processRedirect);
+    </script>
+</body>
+</html>

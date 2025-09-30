@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMS - Setup Gmail Webhook</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .step {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4ecdc4;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #4ecdc4;
+        }
+        .code-block {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+            overflow-x: auto;
+        }
+        .warning {
+            background: rgba(255,193,7,0.2);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background: rgba(76,175,80,0.2);
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background: #45b7aa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Setup Gmail Webhook Automatico</h1>
+        
+        <div class="warning">
+            <h3>⚠️ IMPORTANTE</h3>
+            <p>Questo setup è necessario per automatizzare completamente il sistema di sicurezza email.</p>
+        </div>
+
+        <div class="step">
+            <h3>📋 STEP 1: Webhook Endpoint</h3>
+            <p>L'endpoint webhook è già creato e pronto:</p>
+            <div class="code-block">
+                https://chcndr.github.io/dms-gemello-news/landing/api/email-webhook.js
+                <button class="copy-btn" onclick="copyText(this)">Copia</button>
+            </div>
+            <p><strong>Secret webhook:</strong> <code>dms-webhook-secret-2025</code></p>
+        </div>
+
+        <div class="step">
+            <h3>🔑 STEP 2: GitHub Token</h3>
+            <p>Crea un GitHub Personal Access Token:</p>
+            <ol>
+                <li>Vai su: <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a></li>
+                <li>Clicca "Generate new token (classic)"</li>
+                <li>Nome: <code>DMS Webhook Automation</code></li>
+                <li>Scopes: <code>repo</code> e <code>workflow</code></li>
+                <li>Copia il token generato</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>📧 STEP 3: Gmail API Setup</h3>
+            <p>Configura Gmail per inviare webhook:</p>
+            <ol>
+                <li>Vai su: <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a></li>
+                <li>Crea nuovo progetto: "DMS Email Automation"</li>
+                <li>Abilita Gmail API</li>
+                <li>Crea credenziali OAuth 2.0</li>
+                <li>Configura webhook URL sopra</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>🔄 STEP 4: Alternative Semplici</h3>
+            <p>Se Gmail API è troppo complesso, usa questi servizi:</p>
+            
+            <h4>OPZIONE A - Zapier (Consigliato)</h4>
+            <ol>
+                <li>Crea account su <a href="https://zapier.com" target="_blank">Zapier</a></li>
+                <li>Trigger: "Gmail - New Email Matching Search"</li>
+                <li>Search: <code>from:bebaviola@gmail.com subject:"Re:"</code></li>
+                <li>Action: "Webhooks - POST"</li>
+                <li>URL: L'endpoint sopra</li>
+                <li>Headers: <code>x-webhook-secret: dms-webhook-secret-2025</code></li>
+            </ol>
+
+            <h4>OPZIONE B - IFTTT</h4>
+            <ol>
+                <li>Crea account su <a href="https://ifttt.com" target="_blank">IFTTT</a></li>
+                <li>If: "Gmail - New email in inbox from"</li>
+                <li>Email: <code>bebaviola@gmail.com</code></li>
+                <li>Then: "Webhooks - Make a web request"</li>
+                <li>URL: L'endpoint sopra</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>🧪 STEP 5: Test del Sistema</h3>
+            <p>Per testare manualmente il webhook:</p>
+            <div class="code-block">
+curl -X POST https://chcndr.github.io/dms-gemello-news/landing/api/email-webhook.js \
+  -H "Content-Type: application/json" \
+  -H "x-webhook-secret: dms-webhook-secret-2025" \
+  -d '{"from":"bebaviola@gmail.com","subject":"Re: Accesso DMS","body":"token: test-token-123"}'
+                <button class="copy-btn" onclick="copyText(this)">Copia</button>
+            </div>
+        </div>
+
+        <div class="success">
+            <h3>✅ RISULTATO ATTESO</h3>
+            <p><strong>Flusso automatico completo:</strong></p>
+            <ol>
+                <li>Tu invii mail con link a bebaviola@gmail.com</li>
+                <li>Bebaviola risponde alla mail</li>
+                <li>Webhook riceve risposta automaticamente</li>
+                <li>GitHub Actions si triggera automaticamente</li>
+                <li>Whitelist.json si aggiorna automaticamente</li>
+                <li>Link funziona per 60 minuti</li>
+                <li>Tu ricevi copia per statistica</li>
+            </ol>
+            <p><strong>ZERO INTERVENTO MANUALE RICHIESTO!</strong></p>
+        </div>
+    </div>
+
+    <script>
+        function copyText(button) {
+            const text = button.parentElement.textContent.trim().replace('Copia', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✓ Copiato';
+                button.style.background = '#4caf50';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#4ecdc4';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

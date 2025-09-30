@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "generated_at": "2025-09-30T02:00:00Z",
+  "description": "File per tracciare risposte email confermate - aggiornato automaticamente",
+  "responses": [
+    {
+      "email": "bebaviola@gmail.com",
+      "jti": "demo-token-id-123",
+      "responded_at": "2025-09-30T01:30:00Z",
+      "exp": 1727659200,
+      "method": "manual_confirmation",
+      "note": "Risposta confermata manualmente per test"
+    }
+  ],
+  "stats": {
+    "total_responses": 1,
+    "active_sessions": 1
+  }
+}

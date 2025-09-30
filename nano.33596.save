@@ -1,0 +1,4 @@
+tu/dms-gemello-news && git checkout -b fix/home-clean-layout && git tag 
+-f STABLE-HOME-BEFORE-CLEAN-LAYOUT cd /home/ubuntu/dms-gemello-news && 
+git checkout -b feat/home-clean-base && git tag -f 
+STABLE-BEFORE-HOME-CLEAN

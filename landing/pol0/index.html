@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Politica 0 — Visione DMS</title>
+  <link rel="preload" as="image" href="slides/01.jpg?v=stable-news-001">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a2e2e 0%, #1a4a4a 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+    
+    .header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(0,0,0,0.3);
+    }
+    
+    .header h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      margin-bottom: 0.5rem;
+      color: #f0f8f8;
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Overlay orientamento mobile */
+    #orientation-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    
+    #orientation-overlay .content {
+      padding: 40px 20px;
+      max-width: 400px;
+    }
+    
+    #orientation-overlay .icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      display: block;
+      animation: rotate 2s infinite linear;
+    }
+    
+    #orientation-overlay h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: #14b8a6;
+    }
+    
+    #orientation-overlay p {
+      font-size: 16px;
+      line-height: 1.5;
+      opacity: 0.9;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Forza orientamento landscape su mobile */
+    @media screen and (max-width: 1024px) and (orientation: portrait) {
+      #orientation-overlay {
+        display: flex !important;
+      }
+    }
+
+    
+    .card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+    
+    .card figcaption {
+      padding: 1rem;
+      font-size: 0.9rem;
+      text-align: center;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    /* Lightbox CSS (no ratio fisso) */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(8,28,28,.86);
+      padding: clamp(8px,2vh,24px);
+    }
+    
+    .lightbox.open {
+      display: flex;
+    }
+    
+    .lightbox__img {
+      max-width: min(96vw, 1600px);
+      max-height: calc(100dvh - 2*clamp(8px,2vh,24px));
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      background: transparent;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    
+    .lb-close, .lb-prev, .lb-next {
+      position: absolute;
+      background: rgba(0,0,0,.45);
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: .6rem .8rem;
+      font-size: 16px;
+      backdrop-filter: saturate(1.4) blur(6px);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    
+    .lb-close:hover, .lb-prev:hover, .lb-next:hover {
+      background: rgba(0,0,0,.65);
+    }
+    
+    .lb-close {
+      top: 10px;
+      right: 10px;
+    }
+    
+    .lb-prev {
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .lb-next {
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .back-link {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      backdrop-filter: blur(10px);
+      transition: background 0.2s ease;
+    }
+    
+    .back-link:hover {
+      background: rgba(0,0,0,0.7);
+    }
+
+/* Messaggio nascosto a schermo, visibile su stampa */
+#print-block{
+  display:none; position:fixed; inset:0; z-index:99999;
+  align-items:center; justify-content:center;
+  background:rgba(0,0,0,.92); color:#fff; text-align:center;
+  padding:24px; font:700 18px/1.4 system-ui;
+}
+
+/* In modalità stampa: nascondi tutto e mostra SOLO il messaggio */
+@media print {
+  body * { visibility: hidden !important; }
+  #print-block{
+    display:flex !important; visibility:visible !important;
+  }
+}
+  </style>
+</head>
+<body>
+  <!-- DMS Auth Gate -->
+  <script src="/dms-gemello-news/landing/common/auth-gate-github-navigation.js?v=NAVIGATION-1"></script>
+  
+  <a href="../home.html?v=stable-news-001" class="back-link">← Torna all'orologio</a>
+  
+  <div class="header">
+    <h1>Politica 0 — Visione DMS</h1>
+    <p>Esplora le slide della strategia DMS per il rilancio del commercio italiano</p>
+  </div>
+  
+  <section id="gallery" class="grid"></section>
+  
+  <!-- Lightbox -->
+  <div class="lightbox" id="lb" aria-hidden="true">
+    <button class="lb-close" aria-label="Chiudi" onclick="LB.close()">Chiudi ×</button>
+    <img class="lightbox__img" id="lb-img" alt="">
+    <button class="lb-prev" aria-label="Precedente" onclick="LB.prev()">‹</button>
+    <button class="lb-next" aria-label="Successiva" onclick="LB.next()">›</button>
+  </div>
+
+  <script>
+    // Lightbox minimale
+    const LB = (() => {
+      let i = 0, slides = [];
+      const lb = document.getElementById('lb');
+      const img = document.getElementById('lb-img');
+
+      function open(idx) {
+        i = idx;
+        const s = slides[i];
+        img.src = s.src;
+        img.alt = s.alt || '';
+        lb.classList.add('open');
+        lb.setAttribute('aria-hidden', 'false');
+      }
+      
+      function close() {
+        lb.classList.remove('open');
+        lb.setAttribute('aria-hidden', 'true');
+        img.removeAttribute('src');
+      }
+      
+      function next() {
+        i = (i + 1) % slides.length;
+        open(i);
+      }
+      
+      function prev() {
+        i = (i - 1 + slides.length) % slides.length;
+        open(i);
+      }
+
+      function mount() {
+        slides = [...document.querySelectorAll('[data-slide]')].map((el, idx) => {
+          el.addEventListener('click', () => open(idx));
+          return { src: el.dataset.src, alt: el.dataset.alt || ('Slide ' + (idx + 1)) };
+        });
+        
+        lb.addEventListener('click', e => {
+          if (e.target === lb) close();
+        });
+        
+        document.addEventListener('keydown', e => {
+          if (!lb.classList.contains('open')) return;
+          if (e.key === 'Escape') close();
+          if (e.key === 'ArrowRight') next();
+          if (e.key === 'ArrowLeft') prev();
+        });
+      }
+      
+      return { mount, open, close, next, prev };
+    })();
+
+    // Griglia autogenerata (47 slide)
+    const NUM = 47;
+    const grid = document.getElementById('gallery');
+    
+    const slideNames = [
+      'ITALIA — Emergenza Commercio',
+      'DMS — Gemello Digitale del Commercio', 
+      'Governance • Bandi • Criteri Bolkestein',
+      'Crediti di Carbonio — Univoco Doganale',
+      'Indicatori Economici',
+      'DMS al Centro di Tutto',
+      'GIS del Commercio — DMS',
+      'Gettito Progressivo — Strategia Carbon Credit',
+      'Redistribuzione Benefici — Famiglia Italiana',
+      'Impatti Economici — PMI e Posti Lavoro',
+      'Timeline Implementazione — DMS + UE',
+      'Confronto Scenari — Attuale vs DMS 2030'
+    ];
+    
+    grid.innerHTML = Array.from({length: NUM}, (_, i) => {
+      const n = String(i + 1).padStart(2, '0');
+      const src = `slides/${n}.jpg?v=stable-news-001`;
+      const title = slideNames[i] || `Slide ${n}`;
+      return `
+        <figure class="card">
+          <img src="${src}" alt="${title}" data-slide data-src="${src}" data-alt="${title}" loading="lazy">
+          <figcaption>${title}</figcaption>
+        </figure>`;
+    }).join('');
+    
+    // Monta il lightbox dopo aver creato la griglia
+    window.addEventListener('DOMContentLoaded', () => LB.mount());
+    
+    // Apertura immediata slide 1 (rossa)
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => { LB.open(0); }, 150);
+    });
+  </script>
+
+<!-- Messaggio unico -->
+<div id="print-block">Stampa/Esporta disabilitata su questo contenuto.</div>
+
+<script>
+(function(){
+  const msg = document.getElementById('print-block');
+  const show = () => {
+    if (!msg) return;
+    msg.style.display = 'flex';
+    // dopo 2,5s lo nascondo a schermo (in stampa resta visibile per via di @media print)
+    setTimeout(()=>{ msg.style.display = 'none'; }, 2500);
+  };
+  const kill = e => { e.preventDefault(); e.stopPropagation(); return false; };
+
+  // Blocca Ctrl/⌘+P e mostra il messaggio
+  document.addEventListener('keydown', e=>{
+    const k = e.key?.toLowerCase();
+    const meta = e.ctrlKey || e.metaKey;
+    if (meta && k === 'p') { kill(e); show(); }
+  }, {capture:true});
+
+  // Se qualcuno apre la stampa "in altri modi", intercettiamo l'evento di sistema
+  try {
+    const mm = window.matchMedia('print');
+    if (mm && mm.addEventListener) {
+      mm.addEventListener('change', m => { if (m.matches) show(); });
+    } else if ('onbeforeprint' in window) {
+      window.onbeforeprint = show;
+    }
+  } catch(_) {}
+})();
+</script>
+
+<script>
+/* — Anti tasto destro / salva / ispeziona — */
+(function(){
+  const msg = document.getElementById('print-block'); // riuso del messaggio
+  const show = (text) => {
+    if (!msg) return;
+    const old = msg.textContent;
+    if (text) msg.textContent = text;
+    msg.style.display = 'flex';
+    setTimeout(()=>{ msg.style.display='none'; if (text) msg.textContent = old; }, 1800);
+  };
+  const kill = e => { e.preventDefault(); e.stopPropagation(); return false; };
+
+  // Blocca menu contestuale e selezione/drag immagini
+  document.addEventListener('contextmenu', e => { show('Azione disabilitata.'); return kill(e); }, {capture:true});
+  document.addEventListener('selectstart', kill, {capture:true});
+  document.addEventListener('dragstart', kill, {capture:true});
+
+  // Blocca combinazioni comuni (salva, sorgente, devtools)
+  document.addEventListener('keydown', e => {
+    const k = e.key?.toLowerCase();
+    const meta = e.ctrlKey || e.metaKey;
+    if (meta && (k === 's' || k === 'u' || k === 'o')) { show('Azione disabilitata.'); return kill(e); }
+    if (k === 'f12' || (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k))) { show('Azione disabilitata.'); return kill(e); }
+  }, {capture:true});
+
+  // iOS: gesture share/quick-actions su immagini
+  ['touchstart','gesturestart'].forEach(ev => {
+    document.addEventListener(ev, e => {
+      if (e.target.closest('img, video, canvas')) { e.preventDefault(); }
+    }, {passive:false});
+  });
+
+  // Piccolo rinforzo CSS runtime (niente selezione)
+  document.documentElement.style.setProperty('user-select','none');
+  document.documentElement.style.setProperty('-webkit-user-select','none');
+})();
+</script>
+
+<script>
+/* PDF VIEWER ENFORCER – v=f006-rewrite */
+(function(){
+  var VIEWER_PATH = '../pdfjs-lite/';                      // percorso viewer interno (relativo da pol0/)
+  var VERSION     = 'finale-006';                          // per cache-busting coerente
+  var MARKER      = 'pdfjs-enforced';                      // flag per idempotenza
+  var VERBOSE     = true;                                  // true per log
+
+  function toViewer(urlAbs){
+    try{
+      var u = new URL(urlAbs, location.href);
+      // evita doppi passaggi se già nel viewer
+      if (u.pathname.replace(/\/+$/,'').endsWith('/pdfjs-lite')) return urlAbs;
+      // cache buster coerente
+      var pdfUrl = u.href + (u.search ? '&' : '?') + '_cb=' + Date.now().toString(36);
+      return VIEWER_PATH + '?src=' + encodeURIComponent(pdfUrl) + '&v=' + VERSION;
+    }catch(e){ return urlAbs; }
+  }
+
+  function isPdfHref(href){
+    if (!href) return false;
+    // riconosce .pdf anche con query/hash
+    return /\.pdf(\?|#|$)/i.test(href);
+  }
+
+  function rewriteAnchor(a){
+    if (!a || a.dataset && a.dataset[MARKER]) return;
+    var href = a.getAttribute('href') || '';
+    if (!isPdfHref(href)) return;
+
+    // calcola assoluto, costruisce viewer e riscrive href
+    var abs = a.href;                      // assolutizza rispetto alla pagina
+    var v   = toViewer(abs);
+    a.dataset.originalHref = href;         // per debug eventuale
+    a.setAttribute('href', v);
+    a.dataset[MARKER] = '1';
+    // opzionale: assicura new tab (su iOS evita handler strani del viewer nativo)
+    if (!a.hasAttribute('target')) a.setAttribute('target','_blank');
+    a.setAttribute('rel','noopener');
+
+    if (VERBOSE) console.log('[PDF ENFORCER] rewrite', href, '→', v);
+  }
+
+  function scan(root){
+    (root.querySelectorAll ? root.querySelectorAll('a[href]') : []).forEach(rewriteAnchor);
+  }
+
+  // Prima passata quando il DOM è pronto
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ scan(document); });
+  } else {
+    scan(document);
+  }
+
+  // Osserva aggiunte/modifiche future (es. Orologio che inietta link dopo)
+  var mo = new MutationObserver(function(muts){
+    muts.forEach(function(m){
+      if (m.type === 'childList') {
+        m.addedNodes.forEach(function(n){
+          if (n.nodeType === 1) {
+            if (n.matches && n.matches('a[href]')) rewriteAnchor(n);
+            scan(n);
+          }
+        });
+      } else if (m.type === 'attributes' && m.target && m.target.matches && m.target.matches('a[href]')) {
+        rewriteAnchor(m.target);
+      }
+    });
+  });
+  mo.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:['href'] });
+
+  // (Facoltativo) Ultima rete di sicurezza: intercetta click residui
+  document.addEventListener('click', function(e){
+    var a = e.target.closest ? e.target.closest('a[href]') : null;
+    if(!a) return;
+    var href = a.getAttribute('href') || '';
+    // Se è ancora un .pdf diretto (non riscritto per qualche motivo), forza qui
+    if (isPdfHref(href) && !/\/pdfjs-lite\/\?src=/i.test(href)){
+      e.preventDefault();
+      var v = toViewer(a.href);
+      window.open(v, a.getAttribute('target')==='_blank' ? '_blank' : '_self', 'noopener');
+    }
+  }, true);
+
+  // Beacon di presenza per debug visivo rapido (disattiva dopo i test)
+  if (VERBOSE) {
+    var b = document.createElement('div');
+    b.textContent = 'PDF ENFORCER ' + VERSION;
+    Object.assign(b.style,{position:'fixed',bottom:'6px',left:'6px',padding:'4px 6px',font:'11px/1.2 monospace',
+      color:'#9cf',background:'#102030',border:'1px solid #214',borderRadius:'6px',zIndex:2147483647,opacity:.9});
+    document.body.appendChild(b);
+  }
+})();
+</script>
+
+<!-- Overlay orientamento mobile -->
+<div id="orientation-overlay">
+  <div class="content">
+    <span class="icon">🏛️</span>
+    <h2>Ruota il dispositivo</h2>
+    <p>Per una migliore esperienza con le slide politiche, ruota il tuo dispositivo in <strong>orizzontale</strong>.</p>
+    <p>Le presentazioni sono ottimizzate per la visualizzazione landscape.</p>
+  </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,21 @@
+=== ANALISI PDF OROLOGIO - 11 TASTI ===
+
+TASTO 0 - Dashboard Politica: 6 PDF ✅ (OK - non toccare)
+TASTO 1 - Grosseto Pilota: 3 PDF (manca 1)
+TASTO 2 - DMS & CLUST-ER: 2 PDF (mancano 2) 
+TASTO 3 - Pagamenti & PDND: 2 PDF (mancano 2)
+TASTO 4 - DPP (ESPR): 1 PDF (mancano 3)
+TASTO 5 - ECC Narrativa: 1 PDF (mancano 3)
+TASTO 6 - ECC Tecnica: 1 PDF (mancano 3)
+TASTO 7 - Costi PA & ROI: 1 PDF (mancano 3)
+TASTO 8 - Analisi & Soluzione: 2 PDF (mancano 2)
+TASTO 9 - Scenario & KPI: 2 PDF (mancano 2)
+TASTO 10 - Hub Nazionale: 2 PDF (mancano 2)
+TASTO 11 - App/PWA: 1 PDF (mancano 3)
+
+TOTALE ATTUALE: 22 PDF
+OBIETTIVO: 44 PDF (4 per tasto x 11 tasti)
+MANCANO: 22 PDF
+
+NOTA: Tasto 0 ha 6 PDF ma va bene così (non toccare)
+Per gli altri 10 tasti servono 18 PDF aggiuntivi per arrivare a 4 ciascuno

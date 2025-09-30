@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF.js Lite</title>
+<style>
+  html,body{height:100%;margin:0;background:#000!important;color:#fff;overflow:hidden}
+
+  #wrap{
+    position:fixed;inset:0;overflow:auto;padding:20px;
+    /* Disabilita pull-to-refresh e scroll elastico */
+    overscroll-behavior:none;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-y;
+  }
+  
+  /* Pulsante X per chiudere */
+  #closeBtn{
+    position:fixed;top:15px;right:15px;z-index:9999;
+    width:40px;height:40px;border-radius:50%;
+    background:rgba(255,255,255,0.9);color:#000;
+    border:none;font-size:20px;font-weight:bold;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.3);
+    transition:all 0.2s ease; pointer-events:auto !important;
+  }
+  #closeBtn:hover{
+    background:#fff;transform:scale(1.1);
+  }
+  #loading{color:#fff;text-align:center;padding:50px;font-family:Arial,sans-serif}
+  #error{color:#ff6b6b;text-align:center;padding:50px;font-family:Arial,sans-serif}
+  canvas{display:block;margin:0 auto 12px auto;max-width:100%;height:auto;background:#000;border:1px solid #333}
+  @media print{*{display:none!important}}
+</style>
+</head>
+<body>
+
+<button id="closeBtn" title="Chiudi visualizzatore">×</button>
+
+<div id="wrap"></div>
+
+<!-- Prova multipli CDN per PDF.js -->
+<script>
+(async function(){
+  const qs=new URLSearchParams(location.search);
+  const src=(qs.get('src')||'').trim();
+  
+  if(!src) return;
+  
+  // Costruisci URL assoluto
+  const baseUrl = window.location.origin + '/dms-gemello-news/';
+  let pdfUrl;
+  if(src.startsWith('http')) {
+    pdfUrl = src;
+  } else if(src.startsWith('/')) {
+    pdfUrl = window.location.origin + src;
+  } else {
+    pdfUrl = baseUrl + src;
+  }
+  
+  console.log('Caricamento PDF da:', pdfUrl);
+
+  const wrap=document.getElementById('wrap');
+
+  // Caricamento ottimizzato di PDF.js con fallback
+  let pdfjsLib = null;
+  
+  // Mostra indicatore di caricamento
+  wrap.innerHTML = '<div id="loading">Caricamento PDF in corso...</div>';
+  
+  try {
+    // Prova prima il CDN più affidabile
+    console.log('Caricamento PDF.js...');
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.onload = resolve;
+      script.onerror = reject;
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      document.head.appendChild(script);
+    });
+    
+    if(window.pdfjsLib) {
+      pdfjsLib = window.pdfjsLib;
+      console.log('PDF.js caricato con successo');
+    } else {
+      throw new Error('PDF.js non disponibile dopo il caricamento');
+    }
+  } catch(e) {
+    console.warn('Caricamento primario fallito, provo fallback:', e);
+    
+    // Fallback con CDN alternativo
+    try {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.onload = resolve;
+        script.onerror = reject;
+        script.src = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js';
+        document.head.appendChild(script);
+      });
+      
+      if(window.pdfjsLib) {
+        pdfjsLib = window.pdfjsLib;
+        console.log('PDF.js caricato da fallback');
+      } else {
+        throw new Error('Fallback PDF.js non disponibile');
+      }
+    } catch(fallbackError) {
+      throw new Error('Impossibile caricare PDF.js: ' + fallbackError.message);
+    }
+  }
+
+  // Cache-buster più leggero (solo se necessario)
+  const urlParams = new URLSearchParams(window.location.search);
+  const version = urlParams.get('v') || 'finale-006';
+  const finalUrl = pdfUrl + (pdfUrl.includes('?')?'&':'?') + 'v=' + version;
+
+  console.log('Inizializzazione PDF.js...');
+  
+  // Configurazione PDF.js ottimizzata
+  const workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+
+  // Pulisci l'indicatore di caricamento
+  wrap.innerHTML = '<div id="loading">Caricamento documento...</div>';
+
+  const doc = await pdfjsLib.getDocument({
+    url: finalUrl,
+    disableAutoFetch: true,  // Riduce richieste multiple
+    disableStream: true,     // Evita streaming che può causare sfarfallio
+    cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+    cMapPacked: true
+  }).promise;
+
+  console.log('PDF caricato, pagine:', doc.numPages);
+
+  // Pulisci completamente il contenitore prima del rendering
+  wrap.innerHTML = '';
+  
+  // Render pagine ottimizzato
+  const DPR = Math.max(1, Math.min(1.5, window.devicePixelRatio || 1)); // Ridotto per performance
+  const containerWidth = Math.min(document.documentElement.clientWidth - 40, 1200);
+  
+  for(let p=1; p<=doc.numPages; p++){
+    console.log('Rendering pagina', p);
+    const page = await doc.getPage(p);
+    
+    const baseViewport = page.getViewport({ scale: 1 });
+    const scale = (containerWidth / baseViewport.width);
+
+    const viewport = page.getViewport({ scale: scale * DPR });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { 
+      alpha: false,
+      willReadFrequently: false,
+      desynchronized: true  // Migliora performance
+    });
+    
+    canvas.width  = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    canvas.style.width = Math.floor(viewport.width / DPR) + 'px';
+    canvas.style.height = Math.floor(viewport.height / DPR) + 'px';
+    
+    // Aggiungi canvas prima del rendering per evitare sfarfallio
+    wrap.appendChild(canvas);
+    
+    // Rendering con gestione errori
+    try {
+      await page.render({ 
+        canvasContext: ctx, 
+        viewport: viewport,
+        intent: 'display'
+      }).promise;
+      console.log('Pagina', p, 'renderizzata');
+    } catch(renderError) {
+      console.warn('Errore rendering pagina', p, ':', renderError);
+      // Rimuovi canvas fallito
+      if(canvas.parentNode) canvas.parentNode.removeChild(canvas);
+    }
+  }
+
+  console.log('Tutte le pagine renderizzate');
+
+})().catch(err => {
+  console.error('Errore PDF.js:', err);
+});
+
+// Protezioni anti-stampa
+document.addEventListener('contextmenu', e=>e.preventDefault(), true);
+document.addEventListener('keydown', e=>{
+  const k=(e.key||'').toLowerCase();
+  if((e.ctrlKey||e.metaKey)&&(k==='p'||e.keyCode===80)){
+    e.preventDefault(); e.stopPropagation();
+    alert('Stampa disabilitata.');
+    return false;
+  }
+  if((e.ctrlKey||e.metaKey)&&(k==='s'||e.keyCode===83)){
+    e.preventDefault(); e.stopPropagation();
+    alert('Salvataggio disabilitato.');
+    return false;
+  }
+}, true);
+
+window.onbeforeprint=()=>{ 
+  document.body.innerHTML='<div style="color:#fff;padding:50px;text-align:center">Stampa non disponibile</div>'; 
+};
+
+// Gestione migliorata del pulsante di chiusura
+document.getElementById('closeBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  // Prova diversi metodi di chiusura in ordine di preferenza
+  try {
+    // Metodo 1: Torna alla pagina precedente se possibile
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+  } catch(err) {
+    console.log('history.back() fallito:', err);
+  }
+  
+  try {
+    // Metodo 2: Chiudi la finestra se è stata aperta da JavaScript
+    window.close();
+  } catch(err) {
+    console.log('window.close() fallito:', err);
+  }
+  
+  try {
+    // Metodo 3: Naviga alla pagina spot come fallback
+    const referrer = document.referrer;
+    if (referrer && referrer.includes('spot.html')) {
+      window.location.href = referrer;
+      return;
+    }
+    
+    // Metodo 4: Naviga alla pagina spot di default
+    const baseUrl = window.location.origin + window.location.pathname.replace('/pdfjs-lite/index.html', '');
+    window.location.href = baseUrl + '/spot.html';
+  } catch(err) {
+    console.log('Navigazione fallita:', err);
+    // Ultimo tentativo: ricarica la pagina precedente
+    window.location.href = document.referrer || '../spot.html';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+PDF ENFORCER v=f006-rewrite deployed: 2025-09-19 19:47
+HOTFIX: Forza viewer nero su TUTTI i link PDF con rewrite + observer + fallback click
+Files updated: home.html, spot.html, mappa-ministeri.html, pol0/index.html
