@@ -1,17 +1,22 @@
-name: Activate session (60m)
+name: Open 60' Window
 on:
   workflow_dispatch:
     inputs:
-      email:
-        description: "Email dell'utente"
+      sub:
+        description: "Email/subject dell'utente"
         required: true
         type: string
-      token:
-        description: "Token link inviato"
-        required: true
+      jti:
+        description: "Token ID (jti) - opzionale se non disponibile"
+        required: false
+        type: string
+      scope:
+        description: "Scope di accesso (default: news-private)"
+        required: false
+        default: "news-private"
         type: string
       minutes:
-        description: "Durata (min) - default 60"
+        description: "Durata in minuti (default: 60)"
         required: false
         default: "60"
         type: string
@@ -19,33 +24,107 @@ on:
 jobs:
   update_whitelist:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
       - name: Update whitelist.json
         run: |
-          node -e '
-          const fs=require("fs");
-          const path="landing/viewer/whitelist.json";
-          const email=process.env.EMAIL.toLowerCase().trim();
-          const token=process.env.TOKEN.trim();
-          const minutes=parseInt(process.env.MINUTES||"60",10);
-          const expires=new Date(Date.now()+minutes*60000).toISOString();
-          const ua=null; // opzionale: puoi incollare un ua hash noto
+          python3 -c "
+          import json
+          import os
+          from datetime import datetime, timezone, timedelta
+          
+          # Parametri input
+          sub = '${{ github.event.inputs.sub }}'.lower().strip()
+          jti = '${{ github.event.inputs.jti }}'.strip() if '${{ github.event.inputs.jti }}' else None
+          scope = '${{ github.event.inputs.scope }}'.strip() or 'news-private'
+          minutes = int('${{ github.event.inputs.minutes }}' or '60')
+          
+          # Calcola scadenza
+          now = datetime.now(timezone.utc)
+          exp = int((now + timedelta(minutes=minutes)).timestamp())
+          
+          # Path del file
+          whitelist_path = 'landing/viewer/whitelist.json'
+          
+          # Carica whitelist esistente o crea nuova
+          if os.path.exists(whitelist_path):
+              with open(whitelist_path, 'r') as f:
+                  data = json.load(f)
+          else:
+              data = {
+                  'version': 1,
+                  'generated_at': now.isoformat(),
+                  'entries': []
+              }
+          
+          # Assicura struttura corretta
+          if 'entries' not in data:
+              data['entries'] = []
+          
+          # Cerca entry esistente per sub o jti
+          existing_index = -1
+          for i, entry in enumerate(data['entries']):
+              if (entry.get('sub', '').lower() == sub) or (jti and entry.get('jti') == jti):
+                  existing_index = i
+                  break
+          
+          # Crea nuova entry
+          new_entry = {
+              'sub': sub,
+              'scope': [scope],
+              'exp': exp
+          }
+          
+          if jti:
+              new_entry['jti'] = jti
+          
+          # Aggiorna o inserisci entry
+          if existing_index >= 0:
+              data['entries'][existing_index] = new_entry
+              print(f'✅ Aggiornata entry esistente per {sub}')
+          else:
+              data['entries'].append(new_entry)
+              print(f'✅ Creata nuova entry per {sub}')
+          
+          # Aggiorna metadata
+          data['generated_at'] = now.isoformat()
+          
+          # Salva file
+          os.makedirs(os.path.dirname(whitelist_path), exist_ok=True)
+          with open(whitelist_path, 'w') as f:
+              json.dump(data, f, indent=2)
+          
+          print(f'📋 Whitelist aggiornata:')
+          print(f'   - Email: {sub}')
+          print(f'   - JTI: {jti or \"N/A\"}')
+          print(f'   - Scope: {scope}')
+          print(f'   - Scadenza: {datetime.fromtimestamp(exp, timezone.utc).isoformat()}')
+          print(f'   - Durata: {minutes} minuti')
+          "
 
-          const data=fs.existsSync(path)?JSON.parse(fs.readFileSync(path,"utf8")):{sessions:[]};
-          const i=data.sessions.findIndex(s=>s.email.toLowerCase()===email && s.token===token);
-          if(i>=0){ data.sessions[i].expires=expires; if(ua) data.sessions[i].ua=ua; }
-          else { data.sessions.push({email, token, expires, ...(ua?{ua}: {})}); }
-          fs.writeFileSync(path, JSON.stringify(data,null,2));
-          console.log("Activated:", email, token, expires);
-          '
-        env:
-          EMAIL: ${{ inputs.email }}
-          TOKEN: ${{ inputs.token }}
-          MINUTES: ${{ inputs.minutes }}
-      - name: Commit changes
+      - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore(auth): activate ${{ inputs.email }} for ${{ inputs.minutes }}m"
+          commit_message: "chore(auth): open 60' window for ${{ github.event.inputs.sub }} (${{ github.event.inputs.minutes }}m)"
           file_pattern: "landing/viewer/whitelist.json"
+          commit_user_name: "DMS Auth Bot"
+          commit_user_email: "auth-bot@dms-gemello-news.github.io"
 
+      - name: Verify deployment
+        run: |
+          echo "🎉 Sessione attivata con successo!"
+          echo "📧 Email: ${{ github.event.inputs.sub }}"
+          echo "🔑 JTI: ${{ github.event.inputs.jti }}"
+          echo "🎯 Scope: ${{ github.event.inputs.scope }}"
+          echo "⏰ Durata: ${{ github.event.inputs.minutes }} minuti"
+          echo ""
+          echo "🔗 Verifica whitelist:"
+          echo "https://chcndr.github.io/dms-gemello-news/landing/viewer/whitelist.json"
+          echo ""
+          echo "📝 L'utente può ora accedere con il suo link JWT per i prossimi ${{ github.event.inputs.minutes }} minuti."

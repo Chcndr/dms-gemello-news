@@ -1,71 +1,292 @@
-<!doctype html><meta charset="utf-8">
-<title>DMS Token Maker</title>
-<style>
-body{font:14px system-ui;padding:20px;max-width:800px}
-input{width:360px;padding:8px;margin:4px 0}
-button{padding:8px 16px;background:#007acc;color:white;border:none;border-radius:4px;cursor:pointer}
-button:hover{background:#005a99}
-pre{background:#f5f5f5;padding:12px;border-radius:4px;white-space:pre-wrap;word-wrap:break-word}
-.section{margin:20px 0;padding:16px;border:1px solid #ddd;border-radius:6px}
-</style>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMS - Token Maker JWT</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4ecdc4;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #45b7aa;
+        }
+        .result {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+            display: none;
+        }
+        .copy-btn {
+            background: #28a745;
+            padding: 8px 15px;
+            font-size: 12px;
+            margin-top: 10px;
+            width: auto;
+        }
+        .info {
+            background: rgba(52,152,219,0.2);
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .warning {
+            background: rgba(255,193,7,0.2);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔑 DMS Token Maker JWT</h1>
+        
+        <div class="info">
+            <h3>ℹ️ Sistema JWT + Whitelist</h3>
+            <p>Genera token JWT firmati crittograficamente per accesso sicuro. Il sistema verifica sia la firma del token che la presenza nella whitelist temporanea.</p>
+        </div>
 
-<div class="section">
-<h3>🔐 DMS Token Maker</h3>
-<p>Genera link di invito per accesso temporaneo (60 minuti) al sito DMS.</p>
-<label>Email destinatario: <br><input id="em" placeholder="utente@dominio.it" type="email"></label><br>
-<button id="mk">🎯 Crea token & link</button>
-</div>
+        <div class="warning">
+            <h3>⚠️ Procedura completa</h3>
+            <ol>
+                <li><strong>Genera token JWT</strong> qui sotto</li>
+                <li><strong>Invia link</strong> via mail da checchi@me.com</li>
+                <li><strong>Attendi risposta</strong> utente</li>
+                <li><strong>Attiva sessione</strong> su GitHub Actions (60 min)</li>
+                <li><strong>Utente può accedere</strong> con il link JWT</li>
+            </ol>
+        </div>
 
-<div class="section" id="result" style="display:none">
-<h4>📧 Link generato</h4>
-<pre id="out"></pre>
-</div>
+        <form id="tokenForm">
+            <div class="form-group">
+                <label for="email">📧 Email destinatario</label>
+                <input type="email" id="email" required placeholder="utente@example.com">
+            </div>
 
-<div class="section">
-<h4>📋 Istruzioni operative</h4>
-<ol>
-<li><strong>Genera link:</strong> Inserisci email e clicca "Crea token & link"</li>
-<li><strong>Invia email:</strong> Copia il link e invialo da <code>checchi@me.com</code></li>
-<li><strong>Attendi risposta:</strong> L'utente deve rispondere alla tua email</li>
-<li><strong>Attiva sessione:</strong> Vai su GitHub → Actions → "Activate session" → inserisci email+token → Run</li>
-<li><strong>Rinnovo:</strong> Se scade, rilancia la stessa Action per altri 60 minuti</li>
-</ol>
-</div>
+            <div class="form-group">
+                <label for="scope">🎯 Scope di accesso</label>
+                <select id="scope" required>
+                    <option value="">Seleziona area di accesso</option>
+                    <option value="news-private">News Private (generale)</option>
+                    <option value="home">Home - Orologio DMS</option>
+                    <option value="mappa">Mappa Ministeri</option>
+                    <option value="spot">Spot Documenti</option>
+                    <option value="pol0">Pol0 Politiche</option>
+                    <option value="admin">Admin (accesso completo)</option>
+                </select>
+            </div>
 
-<div class="section">
-<h4>🔗 Link utili</h4>
-<ul>
-<li><a href="https://github.com/Chcndr/dms-gemello-news/actions" target="_blank">GitHub Actions</a></li>
-<li><a href="https://chcndr.github.io/dms-gemello-news/landing/viewer/whitelist.json" target="_blank">Whitelist attuale</a></li>
-</ul>
-</div>
+            <div class="form-group">
+                <label for="expiry">⏰ Scadenza token</label>
+                <select id="expiry" required>
+                    <option value="24">24 ore</option>
+                    <option value="72">3 giorni</option>
+                    <option value="168">1 settimana</option>
+                    <option value="720">1 mese</option>
+                </select>
+            </div>
 
-<script>
-function hex(n){return [...crypto.getRandomValues(new Uint8Array(n))].map(b=>b.toString(16).padStart(2,'0')).join('');}
-document.getElementById('mk').onclick=()=>{
-  const em=(document.getElementById('em').value||'').trim();
-  if(!em){ alert('Inserisci email'); return; }
-  if(!em.includes('@')){ alert('Email non valida'); return; }
-  
-  const token=hex(12);
-  const base='https://chcndr.github.io/dms-gemello-news/landing/home.html';
-  const url = `${base}?email=${encodeURIComponent(em)}&token=${token}`;
-  
-  document.getElementById('out').textContent =
-    `📧 INVIA QUESTO LINK ALL'UTENTE:\n${url}\n\n` +
-    `⚙️ DOPO LA SUA RISPOSTA, ATTIVA LA SESSIONE:\n` +
-    `1. Vai su: https://github.com/Chcndr/dms-gemello-news/actions\n` +
-    `2. Clicca "Activate session (60m)"\n` +
-    `3. Clicca "Run workflow"\n` +
-    `4. Inserisci:\n` +
-    `   - email: ${em}\n` +
-    `   - token: ${token}\n` +
-    `   - minutes: 60\n` +
-    `5. Clicca "Run workflow"\n\n` +
-    `🔄 PER RINNOVARE: Rilancia la stessa Action con gli stessi parametri`;
-    
-  document.getElementById('result').style.display = 'block';
-  document.getElementById('result').scrollIntoView({behavior: 'smooth'});
-};
-</script>
+            <button type="submit">🔑 Genera Token JWT</button>
+        </form>
 
+        <div id="result" class="result">
+            <h3>✅ Token JWT generato con successo</h3>
+            <p><strong>Link da inviare:</strong></p>
+            <div id="tokenLink"></div>
+            <button class="copy-btn" onclick="copyToken()">📋 Copia Link</button>
+            
+            <p><strong>Dettagli token:</strong></p>
+            <div id="tokenDetails"></div>
+            
+            <p><strong>Prossimi passi:</strong></p>
+            <ol>
+                <li>Copia il link sopra</li>
+                <li>Invia via mail da <strong>checchi@me.com</strong></li>
+                <li>Attendi risposta dell'utente</li>
+                <li>Vai su <a href="https://github.com/Chcndr/dms-gemello-news/actions" target="_blank">GitHub Actions</a></li>
+                <li>Lancia "Open 60' Window" con:<br>
+                    - <strong>sub:</strong> <span id="userEmail"></span><br>
+                    - <strong>jti:</strong> <span id="tokenId"></span>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Chiave segreta per firma JWT (stessa usata nel viewer)
+        const JWT_SECRET = 'dms-gemello-2025-jwt-secret-key-v1';
+        
+        // Funzione per generare UUID
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Funzione per codificare Base64URL
+        function base64urlEncode(str) {
+            return btoa(str)
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=/g, '');
+        }
+
+        // Funzione per creare firma HMAC-SHA256
+        async function createSignature(data, secret) {
+            const encoder = new TextEncoder();
+            const key = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(secret),
+                { name: 'HMAC', hash: 'SHA-256' },
+                false,
+                ['sign']
+            );
+            const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
+            return base64urlEncode(String.fromCharCode(...new Uint8Array(signature)));
+        }
+
+        // Funzione per creare JWT
+        async function createJWT(payload, secret) {
+            const header = {
+                alg: 'HS256',
+                typ: 'JWT'
+            };
+
+            const encodedHeader = base64urlEncode(JSON.stringify(header));
+            const encodedPayload = base64urlEncode(JSON.stringify(payload));
+            const data = `${encodedHeader}.${encodedPayload}`;
+            const signature = await createSignature(data, secret);
+
+            return `${data}.${signature}`;
+        }
+
+        // Handler form
+        document.getElementById('tokenForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const scope = document.getElementById('scope').value;
+            const expiryHours = parseInt(document.getElementById('expiry').value);
+
+            // Calcola scadenza
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + (expiryHours * 3600);
+            const jti = generateUUID();
+
+            // Crea payload JWT secondo specifiche
+            const payload = {
+                sub: email,
+                scope: [scope],
+                exp: exp,
+                jti: jti,
+                iss: 'dms-gemello-news',
+                iat: now
+            };
+
+            try {
+                // Genera JWT
+                const token = await createJWT(payload, JWT_SECRET);
+                
+                // Crea link completo
+                const baseUrl = 'https://chcndr.github.io/dms-gemello-news/landing/home.html';
+                const fullLink = `${baseUrl}?t=${token}`;
+
+                // Mostra risultati
+                document.getElementById('tokenLink').textContent = fullLink;
+                document.getElementById('userEmail').textContent = email;
+                document.getElementById('tokenId').textContent = jti;
+                document.getElementById('tokenDetails').innerHTML = `
+                    <strong>Email (sub):</strong> ${email}<br>
+                    <strong>Scope:</strong> ${scope}<br>
+                    <strong>Scadenza (exp):</strong> ${new Date(exp * 1000).toLocaleString('it-IT')}<br>
+                    <strong>Token ID (jti):</strong> ${jti}<br>
+                    <strong>Issuer (iss):</strong> dms-gemello-news<br>
+                    <strong>Generato (iat):</strong> ${new Date().toLocaleString('it-IT')}<br>
+                    <strong>Algoritmo:</strong> HS256
+                `;
+
+                document.getElementById('result').style.display = 'block';
+                
+                // Scroll to result
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                alert('Errore nella generazione del token JWT: ' + error.message);
+            }
+        });
+
+        // Funzione per copiare token
+        function copyToken() {
+            const tokenLink = document.getElementById('tokenLink').textContent;
+            navigator.clipboard.writeText(tokenLink).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copiato!';
+                btn.style.background = '#28a745';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
