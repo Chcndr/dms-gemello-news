@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "name": "dms-gemello-news",
+  "builds": [
+    {
+      "src": "landing/api/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/landing/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/landing/$1"
+    }
+  ],
+  "env": {
+    "GITHUB_TOKEN": "@github_token",
+    "WEBHOOK_SECRET": "dms-webhook-secret-2025"
+  },
+  "functions": {
+    "landing/api/email-webhook.js": {
+      "maxDuration": 30
+    }
+  }
+}
