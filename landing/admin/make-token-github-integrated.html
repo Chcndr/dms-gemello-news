@@ -1,0 +1,287 @@
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DMS - Token Maker + Email</title>
+        <style>
+            body {
+                font-family: system-ui, -apple-system, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                margin: 0;
+                padding: 20px;
+                min-height: 100vh;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: rgba(255,255,255,0.1);
+                border-radius: 15px;
+                padding: 30px;
+                backdrop-filter: blur(10px);
+            }
+            h1 {
+                text-align: center;
+                margin-bottom: 30px;
+                font-size: 2.5em;
+            }
+            .form-group {
+                margin-bottom: 20px;
+            }
+            label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #4ecdc4;
+            }
+            input, select, textarea {
+                width: 100%;
+                padding: 12px;
+                border: none;
+                border-radius: 8px;
+                background: rgba(255,255,255,0.9);
+                color: #333;
+                font-size: 16px;
+                box-sizing: border-box;
+            }
+            button {
+                background: #4ecdc4;
+                color: white;
+                border: none;
+                padding: 15px 30px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: 600;
+                width: 100%;
+                margin-top: 20px;
+            }
+            button:hover {
+                background: #45b7aa;
+            }
+            button:disabled {
+                background: #666;
+                cursor: not-allowed;
+            }
+            .result {
+                background: rgba(0,0,0,0.3);
+                border-radius: 8px;
+                padding: 20px;
+                margin-top: 20px;
+                word-break: break-all;
+                font-family: monospace;
+                font-size: 14px;
+                display: none;
+            }
+            .copy-btn {
+                background: #28a745;
+                padding: 8px 15px;
+                font-size: 12px;
+                margin-top: 10px;
+                width: auto;
+            }
+            .loading {
+                display: none;
+                text-align: center;
+                padding: 20px;
+            }
+            .spinner {
+                border: 3px solid #333;
+                border-top: 3px solid #4ecdc4;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 15px;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 Genera Token e Invia Email</h1>
+            
+            <form id="tokenForm">
+                <div class="form-group">
+                    <label for="email">📧 Email destinatario</label>
+                    <input type="email" id="email" required placeholder="utente@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="scope">🎯 Scope di accesso</label>
+                    <select id="scope" required>
+                        <option value="">Seleziona area di accesso</option>
+                        <option value="news-private">News Private (generale)</option>
+                        <option value="home">Home - Orologio DMS</option>
+                        <option value="mappa">Mappa Ministeri</option>
+                        <option value="spot">Spot Documenti</option>
+                        <option value="pol0">Pol0 Politiche</option>
+                        <option value="admin">Admin (accesso completo)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="expiry">⏰ Scadenza token</label>
+                    <select id="expiry" required>
+                        <option value="24">24 ore</option>
+                        <option value="72">3 giorni</option>
+                        <option value="168">1 settimana</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="githubToken">🔑 GitHub Personal Access Token</label>
+                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" 
+                           title="Token con permessi: repo, workflow">
+                    <small style="opacity: 0.8;">Richiede permessi: <strong>repo</strong> e <strong>workflow</strong></small>
+                </div>
+
+                <button type="submit" id="generateBtn">🚀 Genera e Invia Email</button>
+            </form>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Invocazione del workflow di invio email in corso...</p>
+            </div>
+
+            <div id="result" class="result">
+                <h3>🎉 Email inviata con successo!</h3>
+                <p>Il workflow di invio email è stato avviato. L'utente riceverà l'email a breve.</p>
+                <p><strong>Dettagli:</strong></p>
+                <div id="resultDetails"></div>
+            </div>
+        </div>
+
+        <script>
+            const JWT_SECRET = 'dms-gemello-2025-jwt-secret-key-v1';
+
+            function generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0;
+                    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+
+            function base64urlEncode(str) {
+                return btoa(str)
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_')
+                    .replace(/=/g, '');
+            }
+
+            async function createSignature(data, secret) {
+                const encoder = new TextEncoder();
+                const key = await crypto.subtle.importKey(
+                    'raw',
+                    encoder.encode(secret),
+                    { name: 'HMAC', hash: 'SHA-256' },
+                    false,
+                    ['sign']
+                );
+                const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
+                return base64urlEncode(String.fromCharCode(...new Uint8Array(signature)));
+            }
+
+            async function createJWT(payload, secret) {
+                const header = {
+                    alg: 'HS256',
+                    typ: 'JWT'
+                };
+
+                const encodedHeader = base64urlEncode(JSON.stringify(header));
+                const encodedPayload = base64urlEncode(JSON.stringify(payload));
+                const data = `${encodedHeader}.${encodedPayload}`;
+                const signature = await createSignature(data, secret);
+
+                return `${data}.${signature}`;
+            }
+
+            async function triggerSendEmailWorkflow(githubToken, email, issueNumber, tokenLink) {
+                const owner = 'Chcndr';
+                const repo = 'dms-gemello-news';
+                const workflow_id = 'send_access_email.yml';
+
+                const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflow_id}/dispatches`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ref: 'main',
+                        inputs: {
+                            to: email,
+                            issue: issueNumber.toString(),
+                            token_link: tokenLink
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Errore API GitHub: ${response.status} - ${errorData.message}`);
+                }
+            }
+
+            document.getElementById('tokenForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const scope = document.getElementById('scope').value;
+                const expiryHours = parseInt(document.getElementById('expiry').value);
+                const githubToken = document.getElementById('githubToken').value;
+
+                if (!githubToken) {
+                    alert('Token di accesso personale GitHub richiesto.');
+                    return;
+                }
+
+                document.getElementById('generateBtn').disabled = true;
+                document.getElementById('loading').style.display = 'block';
+
+                try {
+                    const now = Math.floor(Date.now() / 1000);
+                    const exp = now + (expiryHours * 3600);
+                    const jti = generateUUID();
+                    const issueNumber = Math.floor(Math.random() * 10000);
+
+                    const payload = {
+                        sub: email,
+                        scope: [scope],
+                        exp: exp,
+                        jti: jti,
+                        iss: 'dms-gemello-news',
+                        iat: now
+                    };
+
+                    const token = await createJWT(payload, JWT_SECRET);
+                    const baseUrl = 'https://chcndr.github.io/dms-gemello-news/landing/home.html';
+                    const fullLink = `${baseUrl}?t=${token}`;
+
+                    await triggerSendEmailWorkflow(githubToken, email, issueNumber, fullLink);
+
+                    document.getElementById('resultDetails').innerHTML = `
+                        <strong>Email:</strong> ${email}<br>
+                        <strong>Scope:</strong> ${scope}<br>
+                        <strong>Link Token:</strong> ${fullLink}
+                    `;
+
+                    document.getElementById('result').style.display = 'block';
+
+                } catch (error) {
+                    alert('Errore: ' + error.message);
+                } finally {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('generateBtn').disabled = false;
+                }
+            });
+        </script>
+    </body>
+    </html>
+
