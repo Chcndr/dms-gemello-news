@@ -1,0 +1,28 @@
+name: Rollback Pages to a commit
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Commit SHA da ripristinare (es. 1a2b3c4)"
+        required: true
+      target_branch:
+        description: "Branch usato da GitHub Pages (es. gh-pages o main)"
+        required: true
+permissions:
+  contents: write
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree to restore
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.sha }}
+
+      - name: Force-push this tree to target branch
+        run: |
+          git config user.name  "dms-rollback-bot"
+          git config user.email "dms-rollback-bot@users.noreply.github.com"
+          # Creiamo/reattraversiamo il branch target con il contenuto di questo commit
+          git checkout -B "${{ github.event.inputs.target_branch }}"
+          git push -f origin "${{ github.event.inputs.target_branch }}"
