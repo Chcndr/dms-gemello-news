@@ -1,0 +1,52 @@
+name: Fix PDF ENFORCER text
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: 'gh-pages'
+          
+      - name: Find and fix files
+        run: |
+          # Cerca file HTML che potrebbero contenere "PDF ENFORCER"
+          FILES=$(grep -l "PDF ENFORCER" $(find . -name "*.html") 2>/dev/null || echo "")
+          
+          if [ -z "$FILES" ]; then
+            echo "Nessun file con 'PDF ENFORCER' trovato, cercando la directory pol0"
+            if [ -d "./landing/pol0" ]; then
+              echo "Directory pol0 trovata, aggiungendo script a tutti i file HTML"
+              for file in $(find ./landing/pol0 -name "*.html"); do
+                echo "Aggiungendo script a $file"
+                # Aggiungi lo script prima di </body>
+                sed -i 's|</body>|<script>\ndocument.addEventListener("DOMContentLoaded", () => {\n  // rimuove qualunque elemento che contiene "PDF ENFORCER"\n  const BAD = /PDF\\s*ENFORCER/i;\n  const all = document.querySelectorAll("body *:not(script):not(style)");\n  for (const el of all) {\n    const txt = (el.textContent || "").trim();\n    if (txt && BAD.test(txt)) { el.remove(); }\n  }\n  // pulisce anche eventuali nodi testo sciolti\n  for (const n of document.body.childNodes) {\n    if (n.nodeType === 3 && BAD.test(n.nodeValue || "")) n.nodeValue = "";\n  }\n});\n</script>\n</body>|g' "$file"
+              done
+            else
+              echo "Directory pol0 non trovata, cercando file index.html"
+              # Aggiungi lo script a index.html se esiste
+              if [ -f "./landing/index.html" ]; then
+                echo "Aggiungendo script a index.html"
+                sed -i 's|</body>|<script>\ndocument.addEventListener("DOMContentLoaded", () => {\n  // rimuove qualunque elemento che contiene "PDF ENFORCER"\n  const BAD = /PDF\\s*ENFORCER/i;\n  const all = document.querySelectorAll("body *:not(script):not(style)");\n  for (const el of all) {\n    const txt = (el.textContent || "").trim();\n    if (txt && BAD.test(txt)) { el.remove(); }\n  }\n  // pulisce anche eventuali nodi testo sciolti\n  for (const n of document.body.childNodes) {\n    if (n.nodeType === 3 && BAD.test(n.nodeValue || "")) n.nodeValue = "";\n  }\n});\n</script>\n</body>|g' "./landing/index.html"
+              fi
+            fi
+          else
+            echo "File con 'PDF ENFORCER' trovati: $FILES"
+            for file in $FILES; do
+              echo "Aggiungendo script a $file"
+              # Aggiungi lo script prima di </body>
+              sed -i 's|</body>|<script>\ndocument.addEventListener("DOMContentLoaded", () => {\n  // rimuove qualunque elemento che contiene "PDF ENFORCER"\n  const BAD = /PDF\\s*ENFORCER/i;\n  const all = document.querySelectorAll("body *:not(script):not(style)");\n  for (const el of all) {\n    const txt = (el.textContent || "").trim();\n    if (txt && BAD.test(txt)) { el.remove(); }\n  }\n  // pulisce anche eventuali nodi testo sciolti\n  for (const n of document.body.childNodes) {\n    if (n.nodeType === 3 && BAD.test(n.nodeValue || "")) n.nodeValue = "";\n  }\n});\n</script>\n</body>|g' "$file"
+            done
+          fi
+          
+      - name: Commit changes
+        run: |
+          git config user.name "PDF Enforcer Fix Bot"
+          git config user.email "bot@example.com"
+          git add -A
+          git commit -m "Fix: Rimuove il testo 'PDF ENFORCER' dalle pagine" || echo "No changes to commit"
+          git push
