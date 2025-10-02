@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMS · Gemello Digitale — Politica 0</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0a1929;
+            color: #ffffff;
+        }
+        .header {
+            background-color: rgba(10, 25, 41, 0.8);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav {
+            display: flex;
+            gap: 10px;
+        }
+        .nav a {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .title {
+            text-align: right;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .subtitle {
+            text-align: right;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        .content {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+        .card {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #4caf50;
+        }
+        .card p {
+            line-height: 1.6;
+        }
+        .highlight {
+            background-color: rgba(76, 175, 80, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+<!-- DMS Auth Gate - Protezione accesso -->
+<script src="/dms-gemello-news/landing/common/auth-gate-github-navigation.js?v=NAVIGATION-1"></script>
+
+<!-- Script per preservare il parametro admin durante la navigazione -->
+<script src="/dms-gemello-news/landing/common/preserve-auth-param.js?v=1"></script>
+
+<!-- Script per la gestione della sessione e dei link -->
+<script src="/dms-gemello-news/landing/gate/dms-session-keeper.js" defer></script>
+<script src="/dms-gemello-news/landing/gate/dms-link-rewriter.js" defer></script>
+
+<div class="header">
+    <div class="nav">
+        <a href="home.html">Home</a>
+        <a href="mappa-ministeri.html">Mappa</a>
+        <a href="spot.html">Spot</a>
+    </div>
+    <div>
+        <div class="title">GEMELLO DIGITALE DEL COMMERCIO</div>
+        <div class="subtitle">DMS • Orologio roadmap</div>
+    </div>
+</div>
+
+<div class="content">
+    <h1>Politica 0 - Visione Strategica</h1>
+    
+    <div class="card">
+        <h2>Obiettivi Strategici</h2>
+        <p>
+            La <span class="highlight">Politica 0</span> rappresenta il fondamento strategico del Gemello Digitale del Commercio, 
+            definendo la visione complessiva e gli obiettivi di lungo termine per la digitalizzazione del settore commerciale italiano.
+        </p>
+        <p>
+            Questo documento stabilisce le linee guida per l'implementazione di soluzioni digitali innovative che possano 
+            supportare il commercio di prossimità, migliorare l'efficienza operativa e promuovere la competitività del 
+            sistema commerciale italiano nel contesto europeo e globale.
+        </p>
+    </div>
+    
+    <div class="card">
+        <h2>Principi Fondamentali</h2>
+        <ul>
+            <li>Interoperabilità tra sistemi pubblici e privati</li>
+            <li>Accessibilità e inclusività digitale</li>
+            <li>Sostenibilità economica e ambientale</li>
+            <li>Sicurezza e protezione dei dati</li>
+            <li>Innovazione continua e adattabilità</li>
+        </ul>
+    </div>
+    
+    <div class="card">
+        <h2>Aree di Intervento</h2>
+        <p>
+            La strategia si articola in diverse aree di intervento, ciascuna con obiettivi specifici e misure dedicate:
+        </p>
+        <ol>
+            <li>Digitalizzazione dei processi commerciali</li>
+            <li>Supporto al commercio di prossimità</li>
+            <li>Integrazione con i sistemi della Pubblica Amministrazione</li>
+            <li>Formazione e sviluppo delle competenze digitali</li>
+            <li>Monitoraggio e analisi dei dati di settore</li>
+        </ol>
+        <a href="#" class="button">Scarica il documento completo</a>
+    </div>
+</div>
+
+<!-- Script per rimuovere il testo "PDF ENFORCER" -->
+<script src="/dms-gemello-news/landing/common/remove-pdf-enforcer.js" defer></script>
+
+<!-- CSS per correggere i pulsanti fuori allineamento -->
+<link rel="stylesheet" href="/dms-gemello-news/landing/assets/fix-ui.css">
+
+</body>
+</html>
