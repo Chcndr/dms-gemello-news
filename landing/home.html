@@ -5,20 +5,13 @@
 (function(){
   function show(msg){
     var el=document.createElement('pre');
-    el.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b0f14;color:#fff;padding:16px;overflow:auto;font:14px/1.4 system-ui;white-space:pre-wrap';
+    el.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b0f14;color:#fff;padding:16px;overflow:auto;font:14px system-ui;white-space:pre-wrap';
     el.textContent='BOOT ERROR\n\n'+msg;
     document.documentElement.appendChild(el);
   }
-  window.onerror=function(m,src,ln,cn,err){show((err&&err.stack)||(`${m}\n@ ${src}:${ln}:${cn}`));};
-  window.onunhandledrejection=function(ev){show('Promise rejection:\n'+(ev.reason&&ev.reason.stack||ev.reason));};
+  window.onerror=(m,src,ln,cn,err)=>show((err&&err.stack)||(`${m}\n@ ${src}:${ln}:${cn}`));
+  window.onunhandledrejection=(e)=>show('Promise rejection:\n'+(e.reason&&e.reason.stack||e.reason));
 })();
-</script>
-
-<script>
-if (new URLSearchParams(location.search).has('safe')) {
-  document.write('<h1>DMS Gemello News</h1><p>Site OK – app temporaneamente spenta (safe mode).</p>');
-  throw 'SAFE_MODE'; // blocca il resto degli script
-}
 </script>
 
 <meta charset="UTF-8">
@@ -29,10 +22,10 @@ if (new URLSearchParams(location.search).has('safe')) {
 <div id="app"></div>
 
 <!-- DMS Auth Gate - Protezione accesso -->
-<script src="/dms-gemello-news/landing/common/auth-gate-github-navigation.js?v=NAVIGATION-1"></script>
+<script src="/dms-gemello-news/landing/common/auth-gate-github-navigation.js?v=NAVIGATION-1" defer></script>
 
 <!-- Script per preservare il parametro admin durante la navigazione -->
-<script src="/dms-gemello-news/landing/common/preserve-auth-param.js?v=1"></script>
+<script src="/dms-gemello-news/landing/common/preserve-auth-param.js?v=1" defer></script>
 
 <!-- Script per la gestione della sessione e dei link -->
 <script src="/dms-gemello-news/landing/gate/dms-session-keeper.js" defer></script>
