@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf-8">
+<title>DMS – PDF</title>
+<script src="/dms-gemello-news/landing/gate/dms-session-keeper.js"></script>
+<style>html,body,iframe{height:100%;width:100%;margin:0;border:0} .blocked{padding:24px;font:16px system-ui}</style>
+<div id="app"></div>
+<script>
+const qs=new URLSearchParams(location.search); const f=qs.get('f');
+const s=window.DMS_SESSION?.get?.(); const ok=s && s.exp && s.exp>Math.floor(Date.now()/1000);
+document.getElementById('app').innerHTML = ok && f
+  ? '<iframe src="'+decodeURIComponent(f)+'" allow="fullscreen"></iframe>'
+  : '<div class="blocked">Accesso scaduto o non valido. Torna con il link di ingresso.</div>';
+</script>
