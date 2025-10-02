@@ -1,3 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<script>
+(function(){
+  function show(msg){
+    var el=document.createElement('pre');
+    el.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b0f14;color:#fff;padding:16px;overflow:auto;font:14px/1.4 system-ui;white-space:pre-wrap';
+    el.textContent='BOOT ERROR\n\n'+msg;
+    document.documentElement.appendChild(el);
+  }
+  window.onerror=function(m,src,ln,cn,err){show((err&&err.stack)||(`${m}\n@ ${src}:${ln}:${cn}`));};
+  window.onunhandledrejection=function(ev){show('Promise rejection:\n'+(ev.reason&&ev.reason.stack||ev.reason));};
+})();
+</script>
+
+<script>
+if (new URLSearchParams(location.search).has('safe')) {
+  document.write('<h1>DMS Gemello News</h1><p>Site OK – app temporaneamente spenta (safe mode).</p>');
+  throw 'SAFE_MODE'; // blocca il resto degli script
+}
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMS Gemello News</title>
+</head>
+<body>
+<div id="app"></div>
+
 <!-- DMS Auth Gate - Protezione accesso -->
 <script src="/dms-gemello-news/landing/common/auth-gate-github-navigation.js?v=NAVIGATION-1"></script>
 
@@ -13,5 +43,5 @@
 
 <!-- CSS per correggere i pulsanti fuori allineamento -->
 <link rel="stylesheet" href="/dms-gemello-news/landing/assets/fix-ui.css">
-
 </body>
+</html>
