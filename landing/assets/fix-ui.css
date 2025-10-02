@@ -1,0 +1,9 @@
+/* Contenitori dei pulsanti tipo "pill" */
+.pills, .chip-row, .card-buttons { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+
+/* Ogni pill/bottone allineato e con margine coerente */
+.pills > *, .chip-row > *, .card-buttons > *,
+.card button, .card a.button, .pill {
+  display:inline-flex; align-items:center; justify-content:center;
+  margin:0; padding:8px 12px; line-height:1; white-space:nowrap; vertical-align:middle;
+}
