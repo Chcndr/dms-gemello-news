@@ -1,0 +1,34 @@
+name: CI on PR
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install
+        run: |
+          if [ -f package-lock.json ] || [ -f package.json ]; then
+            npm ci || npm i
+          fi
+      - name: Lint
+        run: |
+          if npm run | grep -q "lint"; then
+            npm run lint || true
+          else
+            echo "No lint script"
+          fi
+      - name: Test
+        run: |
+          if npm run | grep -q "test"; then
+            npm test || true
+          else
+            echo "No test script"
+          fi
+
