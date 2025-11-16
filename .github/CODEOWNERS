@@ -1,0 +1,29 @@
+# Global owners
+* @Chcndr
+
+# Landing pages and main content
+/landing/ @Chcndr
+
+# Security and authentication
+/landing/common/auth-gate.js @Chcndr
+/landing/viewer/whitelist.json @Chcndr
+/.github/workflows/ @Chcndr
+
+# Documentation
+*.md @Chcndr
+/docs/ @Chcndr
+
+# Configuration files
+/.github/ @Chcndr
+package.json @Chcndr
+*.yml @Chcndr
+*.yaml @Chcndr
+
+# Protected content
+/landing/pol0/ @Chcndr
+/landing/viewer/ @Chcndr
+
+# Assets and documents
+/assets/ @Chcndr
+/docs/ @Chcndr
+
